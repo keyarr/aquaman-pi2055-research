@@ -1,0 +1,3 @@
+14.05%  /tmp/kernel-src/linux-amlogic/arch/arm64/configs/meson64_defconfig (631 opts, union with target)
+11.81%  /tmp/kernel-src/linux-amlogic/arch/arm64/configs/meson64_smarthome_defconfig (547 opts, union with target)
+2.59%  /tmp/kernel-src/linux-amlogic/arch/arm64/configs/defconfig (465 opts, union with target)

@@ -1,0 +1,5 @@
+*.img
+*.br
+*.dat
+*.patch.dat
+__pycache__/

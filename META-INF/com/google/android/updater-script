@@ -1,0 +1,64 @@
+(!less_than_int(1662439617, getprop("ro.build.date.utc"))) || abort("E3003: Can't install this package (Tue Sep  6 12:46:57 CST 2022) over newer build (" + getprop("ro.build.date") + ").");
+getprop("ro.product.device") == "aquaman" || abort("E3004: This package is for \"aquaman\" devices; this is a \"" + getprop("ro.product.device") + "\".");
+if get_update_stage() == "-1" then
+package_extract_file("dt.img", "/cache/recovery/dtb.img");
+package_extract_file("recovery-tmp.img", "/cache/recovery/recovery.img");
+set_bootloader_env("upgrade_step", "3");
+reboot_recovery();
+endif;
+if ota_zip_check() == "1" then
+package_extract_file("dt.img", "/cache/recovery/dtb.img");
+package_extract_file("recovery.img", "/cache/recovery/recovery.img");
+set_bootloader_env("upgrade_step", "3");
+ui_print("first update bootloader.img...");
+write_bootloader_image(package_extract_file("bootloader.img"));
+write_dtb_image(package_extract_file("dt.img"));
+package_extract_file("recovery.img", "/dev/block/recovery");
+delete_file("/cache/recovery/dtb.img");
+delete_file("/cache/recovery/recovery.img");
+reboot_recovery();
+else
+ui_print("Target: Xiaomi/aquaman/aquaman:9/PI/2055:user/release-keys");
+set_bootloader_env("upgrade_step", "3");
+show_progress(0.650000, 0);
+ui_print("Patching system image unconditionally...");
+block_image_update("/dev/block/system", package_extract_file("system.transfer.list"), "system.new.dat.br", "system.patch.dat") ||
+  abort("E1001: Failed to update system image.");
+show_progress(0.100000, 0);
+ui_print("Patching vendor image unconditionally...");
+block_image_update("/dev/block/vendor", package_extract_file("vendor.transfer.list"), "vendor.new.dat.br", "vendor.patch.dat") ||
+  abort("E2001: Failed to update vendor image.");
+show_progress(0.050000, 5);
+package_extract_file("boot.img", "/dev/block/boot");
+show_progress(0.200000, 10);
+ui_print("Patching odm image unconditionally...");
+block_image_update("/dev/block/odm", package_extract_file("odm.transfer.list"), "odm.new.dat.br", "odm.patch.dat") ||
+  abort("E2001: Failed to update odm image.");
+ui_print("Patching product image unconditionally...");
+block_image_update("/dev/block/product", package_extract_file("product.transfer.list"), "product.new.dat.br", "product.patch.dat") ||
+  abort("E2001: Failed to update product image.");
+package_extract_file("rsv.img", "/dev/block/rsv");
+set_bootloader_env("password_efuse", "1");
+ui_print("update logo.img...");
+package_extract_file("logo.img", "/dev/block/logo");
+ui_print("update dtbo.img...");
+package_extract_file("dtbo.img", "/dev/block/dtbo");
+ui_print("update dtb.img...");
+backup_data_cache(dtb, /cache/recovery/);
+write_dtb_image(package_extract_file("dt.img"));
+ui_print("update recovery.img...");
+backup_data_cache(recovery, /cache/recovery/);
+package_extract_file("recovery.img", "/dev/block/recovery");
+ui_print("update vbmeta.img...");
+package_extract_file("vbmeta.img", "/dev/block/vbmeta");
+ui_print("update bootloader.img...");
+write_bootloader_image(package_extract_file("bootloader.img"));
+if get_update_stage() == "2" then
+format("ext4", "EMMC", "/dev/block/metadata", "0", "/metadata");
+wipe_cache();
+set_update_stage("0");
+endif;
+set_bootloader_env("upgrade_step", "4");
+set_bootloader_env("force_auto_update", "false");
+endif;
+set_progress(1.000000);

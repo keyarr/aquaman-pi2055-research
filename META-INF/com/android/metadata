@@ -1,0 +1,9 @@
+ota-property-files=metadata:69:270         
+ota-required-cache=0
+ota-type=BLOCK
+post-build=Xiaomi/aquaman/aquaman:9/PI/2055:user/release-keys
+post-build-incremental=2055
+post-sdk-level=28
+post-security-patch-level=2022-08-05
+post-timestamp=1662439617
+pre-device=aquaman
