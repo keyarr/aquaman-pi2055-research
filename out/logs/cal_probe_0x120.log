@@ -1,0 +1,8 @@
+[info] page_offset=0xffffff8000000000 stamp_word=0xffffff8000000000
+[info] pselect nfds=320 size=0x28 slots=6 span=0xf0 (stack, nao kmalloc)
+[info] lab: waiter_off_sp=0x2b0 stack_fds_off_sp=0x190 slot3=0x78
+[info] varredura pad=[0x120..0x120] step=0x8 trials=1
+[baseline] stalled=0 prio=0 us=19  (rapido: baseline inesperado, revisar consumer)
+[pad 0x120] stall, frame intocado (us=6393)
+[summary] hits=0 first=0 last=0
+[verdict] nenhum PAD acertou: o aparelho diverge do lab (WAITER_OFF ou frame de core_sys_select). Trocar stamper: setsockopt IPV6 MCAST_JOIN_SOURCE_GROUP ou sendmsg, e recalibrar a faixa.

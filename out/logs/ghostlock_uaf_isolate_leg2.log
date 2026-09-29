@@ -1,0 +1,6 @@
+[info] leg=2 (vuln sem consumer) with_cmp=1 consumer=0
+[cmp] errno=35 (Resource deadlock would occur)
+[waiter] saiu do wait (waiter=sem consumer)
+[owner] saiu do lock
+[wait] w_done=1 apos 0 spins
+[verdict] leg=2 sobreviveu, consumer=0

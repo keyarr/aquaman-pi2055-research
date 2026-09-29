@@ -1,0 +1,59 @@
+cannot read device status, Resource temporarily unavailable (11)
+
+Bus 003 Device 011: ID 18d1:0d02 Google Inc. Celkon A88
+Negotiated speed: High Speed (480Mbps)
+Device Descriptor:
+  bLength                18
+  bDescriptorType         1
+  bcdUSB               2.00
+  bDeviceClass            2 Communications
+  bDeviceSubClass         2 Abstract (modem)
+  bDeviceProtocol         0 
+  bMaxPacketSize0        64
+  idVendor           0x18d1 Google Inc.
+  idProduct          0x0d02 Celkon A88
+  bcdDevice           99.99
+  iManufacturer           1 amlogic
+  iProduct                2 USB download gadget
+  iSerial                 3 1234567890
+  bNumConfigurations      1
+  Configuration Descriptor:
+    bLength                 9
+    bDescriptorType         2
+    wTotalLength       0x0020
+    bNumInterfaces          1
+    bConfigurationValue     1
+    iConfiguration          2 USB download gadget
+    bmAttributes         0xc0
+      Self Powered
+    MaxPower              500mA
+    Interface Descriptor:
+      bLength                 9
+      bDescriptorType         4
+      bInterfaceNumber        0
+      bAlternateSetting       0
+      bNumEndpoints           2
+      bInterfaceClass       255 Vendor Specific Class
+      bInterfaceSubClass     66 [unknown]
+      bInterfaceProtocol      3 
+      iInterface              4 Android Fastboot
+      Endpoint Descriptor:
+        bLength                 7
+        bDescriptorType         5
+        bEndpointAddress     0x81  EP 1 IN
+        bmAttributes            2
+          Transfer Type            Bulk
+          Synch Type               None
+          Usage Type               Data
+        wMaxPacketSize     0x0200  1x 512 bytes
+        bInterval               0
+      Endpoint Descriptor:
+        bLength                 7
+        bDescriptorType         5
+        bEndpointAddress     0x01  EP 1 OUT
+        bmAttributes            2
+          Transfer Type            Bulk
+          Synch Type               None
+          Usage Type               Data
+        wMaxPacketSize     0x0200  1x 512 bytes
+        bInterval               0

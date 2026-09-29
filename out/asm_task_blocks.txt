@@ -1,0 +1,75 @@
+
+build-aq/vmlinux:	file format elf64-littleaarch64
+
+Disassembly of section .text:
+
+ffffff8009105228 <task_blocks_on_rt_mutex>:
+ffffff8009105228: a9bb7bfd     	stp	x29, x30, [sp, #-0x50]!
+ffffff800910522c: 910003fd     	mov	x29, sp
+ffffff8009105230: a90153f3     	stp	x19, x20, [sp, #0x10]
+ffffff8009105234: a9025bf5     	stp	x21, x22, [sp, #0x20]
+ffffff8009105238: a90363f7     	stp	x23, x24, [sp, #0x30]
+ffffff800910523c: a9046bf9     	stp	x25, x26, [sp, #0x40]
+ffffff8009105240: aa0003f3     	mov	x19, x0
+ffffff8009105244: aa0203f4     	mov	x20, x2
+ffffff8009105248: aa0103f5     	mov	x21, x1
+ffffff800910524c: 2a0303f8     	mov	w24, w3
+ffffff8009105250: aa1e03e0     	mov	x0, x30
+ffffff8009105254: 97fe42e7     	bl	0xffffff8009095df0 <_mcount>
+ffffff8009105258: f9400e76     	ldr	x22, [x19, #0x18]
+ffffff800910525c: 927ffad6     	and	x22, x22, #0xfffffffffffffffe
+ffffff8009105260: eb16029f     	cmp	x20, x22
+ffffff8009105264: 54000ca0     	b.eq	0xffffff80091053f8 <task_blocks_on_rt_mutex+0x1d0>
+ffffff8009105268: 911f5297     	add	x23, x20, #0x7d4
+ffffff800910526c: aa1703e0     	mov	x0, x23
+ffffff8009105270: 9433d868     	bl	0xffffff8009dfb410 <_raw_spin_lock>
+ffffff8009105274: aa1403e0     	mov	x0, x20
+ffffff8009105278: 97fffea4     	bl	0xffffff8009104d08 <__rt_mutex_adjust_prio>
+ffffff800910527c: a9034eb4     	stp	x20, x19, [x21, #0x30]
+ffffff8009105280: b9406a80     	ldr	w0, [x20, #0x68]
+ffffff8009105284: b90042a0     	str	w0, [x21, #0x40]
+ffffff8009105288: f941ce80     	ldr	x0, [x20, #0x398]
+ffffff800910528c: f90026a0     	str	x0, [x21, #0x48]
+ffffff8009105290: f9400660     	ldr	x0, [x19, #0x8]
+ffffff8009105294: b4000960     	cbz	x0, 0xffffff80091053c0 <task_blocks_on_rt_mutex+0x198>
+ffffff8009105298: f9400a60     	ldr	x0, [x19, #0x10]
+ffffff800910529c: aa0003f9     	mov	x25, x0
+ffffff80091052a0: f9401c00     	ldr	x0, [x0, #0x38]
+ffffff80091052a4: eb00027f     	cmp	x19, x0
+ffffff80091052a8: 54000801     	b.ne	0xffffff80091053a8 <task_blocks_on_rt_mutex+0x180>
+ffffff80091052ac: aa1503e1     	mov	x1, x21
+ffffff80091052b0: aa1303e0     	mov	x0, x19
+ffffff80091052b4: 97fffde5     	bl	0xffffff8009104a48 <rt_mutex_enqueue>
+ffffff80091052b8: f903fa95     	str	x21, [x20, #0x7f0]
+ffffff80091052bc: aa1703e0     	mov	x0, x23
+ffffff80091052c0: 9433d966     	bl	0xffffff8009dfb858 <_raw_spin_unlock>
+ffffff80091052c4: b40002d6     	cbz	x22, 0xffffff800910531c <task_blocks_on_rt_mutex+0xf4>
+ffffff80091052c8: 911f52da     	add	x26, x22, #0x7d4
+ffffff80091052cc: aa1a03e0     	mov	x0, x26
+ffffff80091052d0: 9433d850     	bl	0xffffff8009dfb410 <_raw_spin_lock>
+ffffff80091052d4: f9400a60     	ldr	x0, [x19, #0x10]
+ffffff80091052d8: f9401c01     	ldr	x1, [x0, #0x38]
+ffffff80091052dc: eb01027f     	cmp	x19, x1
+ffffff80091052e0: 54000641     	b.ne	0xffffff80091053a8 <task_blocks_on_rt_mutex+0x180>
+ffffff80091052e4: eb0002bf     	cmp	x21, x0
+ffffff80091052e8: 54000700     	b.eq	0xffffff80091053c8 <task_blocks_on_rt_mutex+0x1a0>
+ffffff80091052ec: 7100071f     	cmp	w24, #0x1
+ffffff80091052f0: f943fac0     	ldr	x0, [x22, #0x7f0]
+ffffff80091052f4: 1a9f17f7     	cset	w23, eq
+ffffff80091052f8: b40005c0     	cbz	x0, 0xffffff80091053b0 <task_blocks_on_rt_mutex+0x188>
+ffffff80091052fc: f9401c19     	ldr	x25, [x0, #0x38]
+ffffff8009105300: aa1a03e0     	mov	x0, x26
+ffffff8009105304: 9433d955     	bl	0xffffff8009dfb858 <_raw_spin_unlock>
+ffffff8009105308: 520002f7     	eor	w23, w23, #0x1
+ffffff800910530c: f100033f     	cmp	x25, #0x0
+ffffff8009105310: 1a9f17e0     	cset	w0, eq
+ffffff8009105314: 2a170017     	orr	w23, w0, w23
+ffffff8009105318: 34000157     	cbz	w23, 0xffffff8009105340 <task_blocks_on_rt_mutex+0x118>
+ffffff800910531c: 52800014     	mov	w20, #0x0       // =0
+ffffff8009105320: 2a1403e0     	mov	w0, w20
+ffffff8009105324: a94153f3     	ldp	x19, x20, [sp, #0x10]
+ffffff8009105328: a9425bf5     	ldp	x21, x22, [sp, #0x20]
+ffffff800910532c: a94363f7     	ldp	x23, x24, [sp, #0x30]
+ffffff8009105330: a9446bf9     	ldp	x25, x26, [sp, #0x40]
+ffffff8009105334: a8c57bfd     	ldp	x29, x30, [sp], #0x50
+ffffff8009105338: d65f03c0     	ret

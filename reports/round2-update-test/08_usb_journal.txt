@@ -1,0 +1,20 @@
+set 29 07:53:07 erickpcl kernel: usb 3-5: new high-speed USB device number 7 using xhci_hcd
+set 29 07:53:07 erickpcl kernel: usb 3-5: New USB device found, idVendor=18d1, idProduct=0d02, bcdDevice=99.99
+set 29 07:53:07 erickpcl kernel: usb 3-5: New USB device strings: Mfr=1, Product=2, SerialNumber=3
+set 29 07:53:07 erickpcl kernel: usb 3-5: Product: USB download gadget
+set 29 07:53:07 erickpcl kernel: usb 3-5: Manufacturer: amlogic
+set 29 07:53:07 erickpcl kernel: usb 3-5: SerialNumber: 1234567890
+set 29 07:53:44 erickpcl kernel: usb 3-5: USB disconnect, device number 7
+set 29 07:54:02 erickpcl kernel: usb 3-5: new high-speed USB device number 8 using xhci_hcd
+set 29 07:54:02 erickpcl kernel: usb 3-5: New USB device found, idVendor=2717, idProduct=4e40, bcdDevice= 2.23
+set 29 07:54:02 erickpcl kernel: usb 3-5: New USB device strings: Mfr=1, Product=2, SerialNumber=3
+set 29 07:54:02 erickpcl kernel: usb 3-5: Product: aquaman
+set 29 07:54:02 erickpcl kernel: usb 3-5: Manufacturer: xiaomi
+set 29 07:54:02 erickpcl kernel: usb 3-5: SerialNumber: 26919800005844922
+set 29 07:59:30 erickpcl kernel: usb 3-5: USB disconnect, device number 8
+set 29 07:59:42 erickpcl kernel: usb 3-5: new high-speed USB device number 9 using xhci_hcd
+set 29 07:59:42 erickpcl kernel: usb 3-5: New USB device found, idVendor=18d1, idProduct=4e41, bcdDevice= 2.23
+set 29 07:59:42 erickpcl kernel: usb 3-5: New USB device strings: Mfr=1, Product=2, SerialNumber=3
+set 29 07:59:42 erickpcl kernel: usb 3-5: Product: aquaman
+set 29 07:59:42 erickpcl kernel: usb 3-5: Manufacturer: droidlogic
+set 29 07:59:42 erickpcl kernel: usb 3-5: SerialNumber: 26919800005844922

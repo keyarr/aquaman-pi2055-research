@@ -1,0 +1,3 @@
+List of devices attached
+26919800005844922      device usb:3-5 product:aquaman model:MiTV_AESP0 device:aquaman transport_id:2
+

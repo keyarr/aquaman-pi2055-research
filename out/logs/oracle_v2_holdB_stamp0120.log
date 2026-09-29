@@ -1,0 +1,6 @@
+[info] mode=stamp pad=0x120 fake=0x7f89201000 fake_byte=0x30
+[cmp] errno=35 EDEADLK ok, tid_waiter=4963
+[teardown] waiter acordou e soltou a chain
+[teardown] owner virou zumbi (nao joined), task_struct vivo
+[teardown] carimbo feito, settle 250ms com heartbeat
+[hb] +0ms

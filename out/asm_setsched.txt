@@ -1,0 +1,564 @@
+
+build-aq/vmlinux:	file format elf64-littleaarch64
+
+Disassembly of section .text:
+
+ffffff80090d7558 <__sched_setscheduler>:
+ffffff80090d7558: a9b87bfd     	stp	x29, x30, [sp, #-0x80]!
+ffffff80090d755c: 910003fd     	mov	x29, sp
+ffffff80090d7560: a90153f3     	stp	x19, x20, [sp, #0x10]
+ffffff80090d7564: a9025bf5     	stp	x21, x22, [sp, #0x20]
+ffffff80090d7568: a90363f7     	stp	x23, x24, [sp, #0x30]
+ffffff80090d756c: a9046bf9     	stp	x25, x26, [sp, #0x40]
+ffffff80090d7570: a90573fb     	stp	x27, x28, [sp, #0x50]
+ffffff80090d7574: aa0103f4     	mov	x20, x1
+ffffff80090d7578: aa0003fb     	mov	x27, x0
+ffffff80090d757c: 12001c53     	and	w19, w2, #0xff
+ffffff80090d7580: aa1e03e0     	mov	x0, x30
+ffffff80090d7584: 12001c79     	and	w25, w3, #0xff
+ffffff80090d7588: 97fefa1a     	bl	0xffffff8009095df0 <_mcount>
+ffffff80090d758c: b9400695     	ldr	w21, [x20, #0x4]
+ffffff80090d7590: d5384100     	mrs	x0, SP_EL0
+ffffff80090d7594: 71001abf     	cmp	w21, #0x6
+ffffff80090d7598: 54001d80     	b.eq	0xffffff80090d7948 <__sched_setscheduler+0x3f0>
+ffffff80090d759c: b9401001     	ldr	w1, [x0, #0x10]
+ffffff80090d75a0: 52800c7a     	mov	w26, #0x63      // =99
+ffffff80090d75a4: b9401680     	ldr	w0, [x20, #0x14]
+ffffff80090d75a8: 7218303f     	tst	w1, #0x1fff00
+ffffff80090d75ac: 4b000340     	sub	w0, w26, w0
+ffffff80090d75b0: b9006ba0     	str	w0, [x29, #0x68]
+ffffff80090d75b4: 54003de1     	b.ne	0xffffff80090d7d70 <__sched_setscheduler+0x818>
+ffffff80090d75b8: 37f80575     	tbnz	w21, #0x1f, 0xffffff80090d7664 <__sched_setscheduler+0x10c>
+ffffff80090d75bc: f9400680     	ldr	x0, [x20, #0x8]
+ffffff80090d75c0: 12800018     	mov	w24, #-0x1      // =-1
+ffffff80090d75c4: 710016bf     	cmp	w21, #0x5
+ffffff80090d75c8: 12000001     	and	w1, w0, #0x1
+ffffff80090d75cc: b9006fa1     	str	w1, [x29, #0x6c]
+ffffff80090d75d0: 54000560     	b.eq	0xffffff80090d767c <__sched_setscheduler+0x124>
+ffffff80090d75d4: 71000ebf     	cmp	w21, #0x3
+ffffff80090d75d8: 54000529     	b.ls	0xffffff80090d767c <__sched_setscheduler+0x124>
+ffffff80090d75dc: 128002b6     	mov	w22, #-0x16     // =-22
+ffffff80090d75e0: 2a1603e0     	mov	w0, w22
+ffffff80090d75e4: a94153f3     	ldp	x19, x20, [sp, #0x10]
+ffffff80090d75e8: a9425bf5     	ldp	x21, x22, [sp, #0x20]
+ffffff80090d75ec: a94363f7     	ldp	x23, x24, [sp, #0x30]
+ffffff80090d75f0: a9446bf9     	ldp	x25, x26, [sp, #0x40]
+ffffff80090d75f4: a94573fb     	ldp	x27, x28, [sp, #0x50]
+ffffff80090d75f8: a8c87bfd     	ldp	x29, x30, [sp], #0x80
+ffffff80090d75fc: d65f03c0     	ret
+ffffff80090d7600: 710002bf     	cmp	w21, #0x0
+ffffff80090d7604: 7a431aa4     	ccmp	w21, #0x3, #0x4, ne
+ffffff80090d7608: 54002941     	b.ne	0xffffff80090d7b30 <__sched_setscheduler+0x5d8>
+ffffff80090d760c: b9406f61     	ldr	w1, [x27, #0x6c]
+ffffff80090d7610: b9401282     	ldr	w2, [x20, #0x10]
+ffffff80090d7614: 5101e021     	sub	w1, w1, #0x78
+ffffff80090d7618: 6b01005f     	cmp	w2, w1
+ffffff80090d761c: 540028a0     	b.eq	0xffffff80090d7b30 <__sched_setscheduler+0x5d8>
+ffffff80090d7620: 34000673     	cbz	w19, 0xffffff80090d76ec <__sched_setscheduler+0x194>
+ffffff80090d7624: 9000c021     	adrp	x1, 0xffffff800a8db000 <__syscall_meta__setns+0x38>
+ffffff80090d7628: b94c4021     	ldr	w1, [x1, #0xc40]
+ffffff80090d762c: 37f80601     	tbnz	w1, #0x1f, 0xffffff80090d76ec <__sched_setscheduler+0x194>
+ffffff80090d7630: 710006ff     	cmp	w23, #0x1
+ffffff80090d7634: 54003aa9     	b.ls	0xffffff80090d7d88 <__sched_setscheduler+0x830>
+ffffff80090d7638: 71001abf     	cmp	w21, #0x6
+ffffff80090d763c: 54002ba0     	b.eq	0xffffff80090d7bb0 <__sched_setscheduler+0x658>
+ffffff80090d7640: 3100071f     	cmn	w24, #0x1
+ffffff80090d7644: 540005c0     	b.eq	0xffffff80090d76fc <__sched_setscheduler+0x1a4>
+ffffff80090d7648: 6b18001f     	cmp	w0, w24
+ffffff80090d764c: 54000580     	b.eq	0xffffff80090d76fc <__sched_setscheduler+0x1a4>
+ffffff80090d7650: aa1603e0     	mov	x0, x22
+ffffff80090d7654: 94349081     	bl	0xffffff8009dfb858 <_raw_spin_unlock>
+ffffff80090d7658: f9403fa1     	ldr	x1, [x29, #0x78]
+ffffff80090d765c: 911f5360     	add	x0, x27, #0x7d4
+ffffff80090d7660: 943490f4     	bl	0xffffff8009dfba30 <_raw_spin_unlock_irqrestore>
+ffffff80090d7664: b9440b78     	ldr	w24, [x27, #0x408]
+ffffff80090d7668: 39545361     	ldrb	w1, [x27, #0x514]
+ffffff80090d766c: f9400680     	ldr	x0, [x20, #0x8]
+ffffff80090d7670: 2a1803f5     	mov	w21, w24
+ffffff80090d7674: 12000021     	and	w1, w1, #0x1
+ffffff80090d7678: b9006fa1     	str	w1, [x29, #0x6c]
+ffffff80090d767c: f27ff81f     	tst	x0, #0xfffffffffffffffe
+ffffff80090d7680: 54fffae1     	b.ne	0xffffff80090d75dc <__sched_setscheduler+0x84>
+ffffff80090d7684: b9401680     	ldr	w0, [x20, #0x14]
+ffffff80090d7688: 71018c1f     	cmp	w0, #0x63
+ffffff80090d768c: 54fffa88     	b.hi	0xffffff80090d75dc <__sched_setscheduler+0x84>
+ffffff80090d7690: 71001abf     	cmp	w21, #0x6
+ffffff80090d7694: 54001d20     	b.eq	0xffffff80090d7a38 <__sched_setscheduler+0x4e0>
+ffffff80090d7698: 7100001f     	cmp	w0, #0x0
+ffffff80090d769c: 510006b7     	sub	w23, w21, #0x1
+ffffff80090d76a0: 1a9f07e1     	cset	w1, ne
+ffffff80090d76a4: 710006ff     	cmp	w23, #0x1
+ffffff80090d76a8: 1a9f87e0     	cset	w0, ls
+ffffff80090d76ac: 6b00003f     	cmp	w1, w0
+ffffff80090d76b0: 54fff961     	b.ne	0xffffff80090d75dc <__sched_setscheduler+0x84>
+ffffff80090d76b4: 350015f3     	cbnz	w19, 0xffffff80090d7970 <__sched_setscheduler+0x418>
+ffffff80090d76b8: 9101e3a1     	add	x1, x29, #0x78
+ffffff80090d76bc: aa1b03e0     	mov	x0, x27
+ffffff80090d76c0: 97fffb9e     	bl	0xffffff80090d6538 <task_rq_lock>
+ffffff80090d76c4: b948b001     	ldr	w1, [x0, #0x8b0]
+ffffff80090d76c8: aa0003f6     	mov	x22, x0
+ffffff80090d76cc: 36081b01     	tbz	w1, #0x1, 0xffffff80090d7a2c <__sched_setscheduler+0x4d4>
+ffffff80090d76d0: f9444ec0     	ldr	x0, [x22, #0x898]
+ffffff80090d76d4: eb00037f     	cmp	x27, x0
+ffffff80090d76d8: 54004860     	b.eq	0xffffff80090d7fe4 <__sched_setscheduler+0xa8c>
+ffffff80090d76dc: b9440b60     	ldr	w0, [x27, #0x408]
+ffffff80090d76e0: 6b15001f     	cmp	w0, w21
+ffffff80090d76e4: 54fff8e0     	b.eq	0xffffff80090d7600 <__sched_setscheduler+0xa8>
+ffffff80090d76e8: 35fff9f3     	cbnz	w19, 0xffffff80090d7624 <__sched_setscheduler+0xcc>
+ffffff80090d76ec: 3100071f     	cmn	w24, #0x1
+ffffff80090d76f0: 54003441     	b.ne	0xffffff80090d7d78 <__sched_setscheduler+0x820>
+ffffff80090d76f4: 71001abf     	cmp	w21, #0x6
+ffffff80090d76f8: 54002720     	b.eq	0xffffff80090d7bdc <__sched_setscheduler+0x684>
+ffffff80090d76fc: b9406b73     	ldr	w19, [x27, #0x68]
+ffffff80090d7700: 37f83893     	tbnz	w19, #0x1f, 0xffffff80090d7e10 <__sched_setscheduler+0x8b8>
+ffffff80090d7704: 39545360     	ldrb	w0, [x27, #0x514]
+ffffff80090d7708: b9406fa1     	ldr	w1, [x29, #0x6c]
+ffffff80090d770c: 33000020     	bfxil	w0, w1, #0, #1
+ffffff80090d7710: 39145360     	strb	w0, [x27, #0x514]
+ffffff80090d7714: 35000bf9     	cbnz	w25, 0xffffff80090d7890 <__sched_setscheduler+0x338>
+ffffff80090d7718: 528000da     	mov	w26, #0x6       // =6
+ffffff80090d771c: b9406777     	ldr	w23, [x27, #0x64]
+ffffff80090d7720: f94446d5     	ldr	x21, [x22, #0x888]
+ffffff80090d7724: 710006ff     	cmp	w23, #0x1
+ffffff80090d7728: 54001d80     	b.eq	0xffffff80090d7ad8 <__sched_setscheduler+0x580>
+ffffff80090d772c: eb15037f     	cmp	x27, x21
+ffffff80090d7730: 54003ec0     	b.eq	0xffffff80090d7f08 <__sched_setscheduler+0x9b0>
+ffffff80090d7734: b9400680     	ldr	w0, [x20, #0x4]
+ffffff80090d7738: f9403f78     	ldr	x24, [x27, #0x78]
+ffffff80090d773c: 3100041f     	cmn	w0, #0x1
+ffffff80090d7740: 54001a40     	b.eq	0xffffff80090d7a88 <__sched_setscheduler+0x530>
+ffffff80090d7744: b9040b60     	str	w0, [x27, #0x408]
+ffffff80090d7748: 7100181f     	cmp	w0, #0x6
+ffffff80090d774c: 54001a60     	b.eq	0xffffff80090d7a98 <__sched_setscheduler+0x540>
+ffffff80090d7750: 7100001f     	cmp	w0, #0x0
+ffffff80090d7754: 7a431804     	ccmp	w0, #0x3, #0x4, ne
+ffffff80090d7758: 54000ac1     	b.ne	0xffffff80090d78b0 <__sched_setscheduler+0x358>
+ffffff80090d775c: b9401281     	ldr	w1, [x20, #0x10]
+ffffff80090d7760: 51000403     	sub	w3, w0, #0x1
+ffffff80090d7764: 7100047f     	cmp	w3, #0x1
+ffffff80090d7768: 1101e021     	add	w1, w1, #0x78
+ffffff80090d776c: b9006f61     	str	w1, [x27, #0x6c]
+ffffff80090d7770: b9401682     	ldr	w2, [x20, #0x14]
+ffffff80090d7774: b9007762     	str	w2, [x27, #0x74]
+ffffff80090d7778: 54000a89     	b.ls	0xffffff80090d78c8 <__sched_setscheduler+0x370>
+ffffff80090d777c: b9007361     	str	w1, [x27, #0x70]
+ffffff80090d7780: 7100141f     	cmp	w0, #0x5
+ffffff80090d7784: 54000ce0     	b.eq	0xffffff80090d7920 <__sched_setscheduler+0x3c8>
+ffffff80090d7788: 51019021     	sub	w1, w1, #0x64
+ffffff80090d778c: d0006a00     	adrp	x0, 0xffffff8009e19000 <param_ops_short>
+ffffff80090d7790: 9101a000     	add	x0, x0, #0x68
+ffffff80090d7794: 93407c21     	sxtw	x1, w1
+ffffff80090d7798: 91030002     	add	x2, x0, #0xc0
+ffffff80090d779c: 91058000     	add	x0, x0, #0x160
+ffffff80090d77a0: b8617842     	ldr	w2, [x2, x1, lsl #2]
+ffffff80090d77a4: b8617800     	ldr	w0, [x0, x1, lsl #2]
+ffffff80090d77a8: b9008b60     	str	w0, [x27, #0x88]
+ffffff80090d77ac: 53165440     	lsl	w0, w2, #10
+ffffff80090d77b0: 93407c00     	sxtw	x0, w0
+ffffff80090d77b4: f9004360     	str	x0, [x27, #0x80]
+ffffff80090d77b8: 34000bf9     	cbz	w25, 0xffffff80090d7934 <__sched_setscheduler+0x3dc>
+ffffff80090d77bc: 7100047f     	cmp	w3, #0x1
+ffffff80090d77c0: 54001a09     	b.ls	0xffffff80090d7b00 <__sched_setscheduler+0x5a8>
+ffffff80090d77c4: b9406f61     	ldr	w1, [x27, #0x6c]
+ffffff80090d77c8: aa1b03e0     	mov	x0, x27
+ffffff80090d77cc: 9400b7ab     	bl	0xffffff8009105678 <rt_mutex_get_effective_prio>
+ffffff80090d77d0: b9006b60     	str	w0, [x27, #0x68]
+ffffff80090d77d4: 37f80820     	tbnz	w0, #0x1f, 0xffffff80090d78d8 <__sched_setscheduler+0x380>
+ffffff80090d77d8: 71018c1f     	cmp	w0, #0x63
+ffffff80090d77dc: 5400292d     	b.le	0xffffff80090d7d00 <__sched_setscheduler+0x7a8>
+ffffff80090d77e0: d0006a01     	adrp	x1, 0xffffff8009e19000 <param_ops_short>
+ffffff80090d77e4: 91106021     	add	x1, x1, #0x418
+ffffff80090d77e8: f9003f61     	str	x1, [x27, #0x78]
+ffffff80090d77ec: 710006ff     	cmp	w23, #0x1
+ffffff80090d77f0: 540007e0     	b.eq	0xffffff80090d78ec <__sched_setscheduler+0x394>
+ffffff80090d77f4: eb15037f     	cmp	x27, x21
+ffffff80090d77f8: 540037c0     	b.eq	0xffffff80090d7ef0 <__sched_setscheduler+0x998>
+ffffff80090d77fc: f9403f60     	ldr	x0, [x27, #0x78]
+ffffff80090d7800: eb00031f     	cmp	x24, x0
+ffffff80090d7804: 54002860     	b.eq	0xffffff80090d7d10 <__sched_setscheduler+0x7b8>
+ffffff80090d7808: f9404b02     	ldr	x2, [x24, #0x90]
+ffffff80090d780c: b40000a2     	cbz	x2, 0xffffff80090d7820 <__sched_setscheduler+0x2c8>
+ffffff80090d7810: aa1603e0     	mov	x0, x22
+ffffff80090d7814: aa1b03e1     	mov	x1, x27
+ffffff80090d7818: d63f0040     	blr	x2
+ffffff80090d781c: f9403f60     	ldr	x0, [x27, #0x78]
+ffffff80090d7820: f9404c02     	ldr	x2, [x0, #0x98]
+ffffff80090d7824: aa1b03e1     	mov	x1, x27
+ffffff80090d7828: aa1603e0     	mov	x0, x22
+ffffff80090d782c: d63f0040     	blr	x2
+ffffff80090d7830: 52800020     	mov	w0, #0x1        // =1
+ffffff80090d7834: 97fff7ab     	bl	0xffffff80090d56e0 <preempt_count_add>
+ffffff80090d7838: aa1603e0     	mov	x0, x22
+ffffff80090d783c: 94349007     	bl	0xffffff8009dfb858 <_raw_spin_unlock>
+ffffff80090d7840: f9403fa1     	ldr	x1, [x29, #0x78]
+ffffff80090d7844: 911f5360     	add	x0, x27, #0x7d4
+ffffff80090d7848: 9434907a     	bl	0xffffff8009dfba30 <_raw_spin_unlock_irqrestore>
+ffffff80090d784c: 35001179     	cbnz	w25, 0xffffff80090d7a78 <__sched_setscheduler+0x520>
+ffffff80090d7850: f9447ac0     	ldr	x0, [x22, #0x8f0]
+ffffff80090d7854: b5002be0     	cbnz	x0, 0xffffff80090d7dd0 <__sched_setscheduler+0x878>
+ffffff80090d7858: 52800020     	mov	w0, #0x1        // =1
+ffffff80090d785c: 97fff7eb     	bl	0xffffff80090d5808 <preempt_count_sub>
+ffffff80090d7860: d5384100     	mrs	x0, SP_EL0
+ffffff80090d7864: b9401001     	ldr	w1, [x0, #0x10]
+ffffff80090d7868: 52800016     	mov	w22, #0x0       // =0
+ffffff80090d786c: 34002a21     	cbz	w1, 0xffffff80090d7db0 <__sched_setscheduler+0x858>
+ffffff80090d7870: 2a1603e0     	mov	w0, w22
+ffffff80090d7874: a94153f3     	ldp	x19, x20, [sp, #0x10]
+ffffff80090d7878: a9425bf5     	ldp	x21, x22, [sp, #0x20]
+ffffff80090d787c: a94363f7     	ldp	x23, x24, [sp, #0x30]
+ffffff80090d7880: a9446bf9     	ldp	x25, x26, [sp, #0x40]
+ffffff80090d7884: a94573fb     	ldp	x27, x28, [sp, #0x50]
+ffffff80090d7888: a8c87bfd     	ldp	x29, x30, [sp], #0x80
+ffffff80090d788c: d65f03c0     	ret
+ffffff80090d7890: b9406ba1     	ldr	w1, [x29, #0x68]
+ffffff80090d7894: aa1b03e0     	mov	x0, x27
+ffffff80090d7898: 9400b778     	bl	0xffffff8009105678 <rt_mutex_get_effective_prio>
+ffffff80090d789c: 6b13001f     	cmp	w0, w19
+ffffff80090d78a0: 54fff3c1     	b.ne	0xffffff80090d7718 <__sched_setscheduler+0x1c0>
+ffffff80090d78a4: 5280005a     	mov	w26, #0x2       // =2
+ffffff80090d78a8: 17ffff9d     	b	0xffffff80090d771c <__sched_setscheduler+0x1c4>
+ffffff80090d78ac: d503201f     	nop
+ffffff80090d78b0: b9401682     	ldr	w2, [x20, #0x14]
+ffffff80090d78b4: 51000403     	sub	w3, w0, #0x1
+ffffff80090d78b8: b9007762     	str	w2, [x27, #0x74]
+ffffff80090d78bc: 7100047f     	cmp	w3, #0x1
+ffffff80090d78c0: b9406f61     	ldr	w1, [x27, #0x6c]
+ffffff80090d78c4: 54fff5c8     	b.hi	0xffffff80090d777c <__sched_setscheduler+0x224>
+ffffff80090d78c8: 52800c60     	mov	w0, #0x63       // =99
+ffffff80090d78cc: 4b020002     	sub	w2, w0, w2
+ffffff80090d78d0: b9007362     	str	w2, [x27, #0x70]
+ffffff80090d78d4: 17ffffad     	b	0xffffff80090d7788 <__sched_setscheduler+0x230>
+ffffff80090d78d8: d0006a01     	adrp	x1, 0xffffff8009e19000 <param_ops_short>
+ffffff80090d78dc: 911c0021     	add	x1, x1, #0x700
+ffffff80090d78e0: f9003f61     	str	x1, [x27, #0x78]
+ffffff80090d78e4: 710006ff     	cmp	w23, #0x1
+ffffff80090d78e8: 54fff861     	b.ne	0xffffff80090d77f4 <__sched_setscheduler+0x29c>
+ffffff80090d78ec: b948b2c1     	ldr	w1, [x22, #0x8b0]
+ffffff80090d78f0: 6b00027f     	cmp	w19, w0
+ffffff80090d78f4: 321d0340     	orr	w0, w26, #0x8
+ffffff80090d78f8: 1a9ab01a     	csel	w26, w0, w26, lt
+ffffff80090d78fc: 360810a1     	tbz	w1, #0x1, 0xffffff80090d7b10 <__sched_setscheduler+0x5b8>
+ffffff80090d7900: f9403f63     	ldr	x3, [x27, #0x78]
+ffffff80090d7904: 2a1a03e2     	mov	w2, w26
+ffffff80090d7908: aa1b03e1     	mov	x1, x27
+ffffff80090d790c: aa1603e0     	mov	x0, x22
+ffffff80090d7910: f9400463     	ldr	x3, [x3, #0x8]
+ffffff80090d7914: d63f0060     	blr	x3
+ffffff80090d7918: 17ffffb7     	b	0xffffff80090d77f4 <__sched_setscheduler+0x29c>
+ffffff80090d791c: d503201f     	nop
+ffffff80090d7920: d2818000     	mov	x0, #0xc00      // =3072
+ffffff80090d7924: f9004360     	str	x0, [x27, #0x80]
+ffffff80090d7928: 3200f3e0     	mov	w0, #0x55555555 // =1431655765
+ffffff80090d792c: b9008b60     	str	w0, [x27, #0x88]
+ffffff80090d7930: 35fff4b9     	cbnz	w25, 0xffffff80090d77c4 <__sched_setscheduler+0x26c>
+ffffff80090d7934: 7100047f     	cmp	w3, #0x1
+ffffff80090d7938: 54002549     	b.ls	0xffffff80090d7de0 <__sched_setscheduler+0x888>
+ffffff80090d793c: b9406f60     	ldr	w0, [x27, #0x6c]
+ffffff80090d7940: b9006b60     	str	w0, [x27, #0x68]
+ffffff80090d7944: 17ffffa4     	b	0xffffff80090d77d4 <__sched_setscheduler+0x27c>
+ffffff80090d7948: b9401000     	ldr	w0, [x0, #0x10]
+ffffff80090d794c: 7218301f     	tst	w0, #0x1fff00
+ffffff80090d7950: 54002101     	b.ne	0xffffff80090d7d70 <__sched_setscheduler+0x818>
+ffffff80090d7954: f9400680     	ldr	x0, [x20, #0x8]
+ffffff80090d7958: 12800001     	mov	w1, #-0x1       // =-1
+ffffff80090d795c: 2a0103f8     	mov	w24, w1
+ffffff80090d7960: b9006ba1     	str	w1, [x29, #0x68]
+ffffff80090d7964: 12000001     	and	w1, w0, #0x1
+ffffff80090d7968: b9006fa1     	str	w1, [x29, #0x6c]
+ffffff80090d796c: 17ffff44     	b	0xffffff80090d767c <__sched_setscheduler+0x124>
+ffffff80090d7970: 528002e0     	mov	w0, #0x17       // =23
+ffffff80090d7974: 97ff67eb     	bl	0xffffff80090b1920 <capable>
+ffffff80090d7978: 72001c1f     	tst	w0, #0xff
+ffffff80090d797c: 54000441     	b.ne	0xffffff80090d7a04 <__sched_setscheduler+0x4ac>
+ffffff80090d7980: 710002bf     	cmp	w21, #0x0
+ffffff80090d7984: 7a431aa4     	ccmp	w21, #0x3, #0x4, ne
+ffffff80090d7988: 540000c1     	b.ne	0xffffff80090d79a0 <__sched_setscheduler+0x448>
+ffffff80090d798c: b9406f60     	ldr	w0, [x27, #0x6c]
+ffffff80090d7990: b9401281     	ldr	w1, [x20, #0x10]
+ffffff80090d7994: 5101e000     	sub	w0, w0, #0x78
+ffffff80090d7998: 6b01001f     	cmp	w0, w1
+ffffff80090d799c: 54002c2c     	b.gt	0xffffff80090d7f20 <__sched_setscheduler+0x9c8>
+ffffff80090d79a0: 710006ff     	cmp	w23, #0x1
+ffffff80090d79a4: 54002ea9     	b.ls	0xffffff80090d7f78 <__sched_setscheduler+0xa20>
+ffffff80090d79a8: 71001abf     	cmp	w21, #0x6
+ffffff80090d79ac: 54002ca0     	b.eq	0xffffff80090d7f40 <__sched_setscheduler+0x9e8>
+ffffff80090d79b0: b9440b60     	ldr	w0, [x27, #0x408]
+ffffff80090d79b4: 710016bf     	cmp	w21, #0x5
+ffffff80090d79b8: 7a451800     	ccmp	w0, #0x5, #0x0, ne
+ffffff80090d79bc: 54000121     	b.ne	0xffffff80090d79e0 <__sched_setscheduler+0x488>
+ffffff80090d79c0: f943a760     	ldr	x0, [x27, #0x748]
+ffffff80090d79c4: f941bc02     	ldr	x2, [x0, #0x378]
+ffffff80090d79c8: b9406f60     	ldr	w0, [x27, #0x6c]
+ffffff80090d79cc: 5101e001     	sub	w1, w0, #0x78
+ffffff80090d79d0: d2800280     	mov	x0, #0x14       // =20
+ffffff80090d79d4: cb21c000     	sub	x0, x0, w1, sxtw
+ffffff80090d79d8: eb20c05f     	cmp	x2, w0, sxtw
+ffffff80090d79dc: 54002c63     	b.lo	0xffffff80090d7f68 <__sched_setscheduler+0xa10>
+ffffff80090d79e0: aa1b03e0     	mov	x0, x27
+ffffff80090d79e4: 97fff495     	bl	0xffffff80090d4c38 <check_same_owner>
+ffffff80090d79e8: 72001c1f     	tst	w0, #0xff
+ffffff80090d79ec: 54002aa0     	b.eq	0xffffff80090d7f40 <__sched_setscheduler+0x9e8>
+ffffff80090d79f0: b9406fa1     	ldr	w1, [x29, #0x6c]
+ffffff80090d79f4: 39545360     	ldrb	w0, [x27, #0x514]
+ffffff80090d79f8: 52000021     	eor	w1, w1, #0x1
+ffffff80090d79fc: 6a00003f     	tst	w1, w0
+ffffff80090d7a00: 54002a01     	b.ne	0xffffff80090d7f40 <__sched_setscheduler+0x9e8>
+ffffff80090d7a04: aa1b03e0     	mov	x0, x27
+ffffff80090d7a08: 940c24b2     	bl	0xffffff80093e0cd0 <security_task_setscheduler>
+ffffff80090d7a0c: 2a0003f6     	mov	w22, w0
+ffffff80090d7a10: 35fff300     	cbnz	w0, 0xffffff80090d7870 <__sched_setscheduler+0x318>
+ffffff80090d7a14: 9101e3a1     	add	x1, x29, #0x78
+ffffff80090d7a18: aa1b03e0     	mov	x0, x27
+ffffff80090d7a1c: 97fffac7     	bl	0xffffff80090d6538 <task_rq_lock>
+ffffff80090d7a20: b948b001     	ldr	w1, [x0, #0x8b0]
+ffffff80090d7a24: aa0003f6     	mov	x22, x0
+ffffff80090d7a28: 370fe541     	tbnz	w1, #0x1, 0xffffff80090d76d0 <__sched_setscheduler+0x178>
+ffffff80090d7a2c: 97fff829     	bl	0xffffff80090d5ad0 <update_rq_clock.part.43>
+ffffff80090d7a30: 17ffff28     	b	0xffffff80090d76d0 <__sched_setscheduler+0x178>
+ffffff80090d7a34: d503201f     	nop
+ffffff80090d7a38: f9401281     	ldr	x1, [x20, #0x20]
+ffffff80090d7a3c: b4ffdd01     	cbz	x1, 0xffffff80090d75dc <__sched_setscheduler+0x84>
+ffffff80090d7a40: f9400e82     	ldr	x2, [x20, #0x18]
+ffffff80090d7a44: f10ffc5f     	cmp	x2, #0x3ff
+ffffff80090d7a48: 54ffdca9     	b.ls	0xffffff80090d75dc <__sched_setscheduler+0x84>
+ffffff80090d7a4c: b7ffdc81     	tbnz	x1, #0x3f, 0xffffff80090d75dc <__sched_setscheduler+0x84>
+ffffff80090d7a50: f9401683     	ldr	x3, [x20, #0x28]
+ffffff80090d7a54: f100007f     	cmp	x3, #0x0
+ffffff80090d7a58: 54ffdc2b     	b.lt	0xffffff80090d75dc <__sched_setscheduler+0x84>
+ffffff80090d7a5c: fa431020     	ccmp	x1, x3, #0x0, ne
+ffffff80090d7a60: 54ffdbe8     	b.hi	0xffffff80090d75dc <__sched_setscheduler+0x84>
+ffffff80090d7a64: eb02003f     	cmp	x1, x2
+ffffff80090d7a68: 54ffe182     	b.hs	0xffffff80090d7698 <__sched_setscheduler+0x140>
+ffffff80090d7a6c: 128002b6     	mov	w22, #-0x16     // =-22
+ffffff80090d7a70: 17fffedc     	b	0xffffff80090d75e0 <__sched_setscheduler+0x88>
+ffffff80090d7a74: d503201f     	nop
+ffffff80090d7a78: aa1b03e0     	mov	x0, x27
+ffffff80090d7a7c: 9400b729     	bl	0xffffff8009105720 <rt_mutex_adjust_pi>
+ffffff80090d7a80: 17ffff74     	b	0xffffff80090d7850 <__sched_setscheduler+0x2f8>
+ffffff80090d7a84: d503201f     	nop
+ffffff80090d7a88: b9440b60     	ldr	w0, [x27, #0x408]
+ffffff80090d7a8c: b9040b60     	str	w0, [x27, #0x408]
+ffffff80090d7a90: 7100181f     	cmp	w0, #0x6
+ffffff80090d7a94: 54ffe5e1     	b.ne	0xffffff80090d7750 <__sched_setscheduler+0x1f8>
+ffffff80090d7a98: f9400e81     	ldr	x1, [x20, #0x18]
+ffffff80090d7a9c: 910d4360     	add	x0, x27, #0x350
+ffffff80090d7aa0: f901b761     	str	x1, [x27, #0x368]
+ffffff80090d7aa4: f9401285     	ldr	x5, [x20, #0x20]
+ffffff80090d7aa8: f9001005     	str	x5, [x0, #0x20]
+ffffff80090d7aac: f9401683     	ldr	x3, [x20, #0x28]
+ffffff80090d7ab0: b5001e03     	cbnz	x3, 0xffffff80090d7e70 <__sched_setscheduler+0x918>
+ffffff80090d7ab4: f9001405     	str	x5, [x0, #0x28]
+ffffff80090d7ab8: b100043f     	cmn	x1, #0x1
+ffffff80090d7abc: f9400682     	ldr	x2, [x20, #0x8]
+ffffff80090d7ac0: b9005002     	str	w2, [x0, #0x50]
+ffffff80090d7ac4: 54002420     	b.eq	0xffffff80090d7f48 <__sched_setscheduler+0x9f0>
+ffffff80090d7ac8: b5002a65     	cbnz	x5, 0xffffff80090d8014 <__sched_setscheduler+0xabc>
+ffffff80090d7acc: d2800001     	mov	x1, #0x0        // =0
+ffffff80090d7ad0: f900181f     	str	xzr, [x0, #0x30]
+ffffff80090d7ad4: 140000f2     	b	0xffffff80090d7e9c <__sched_setscheduler+0x944>
+ffffff80090d7ad8: b948b2c0     	ldr	w0, [x22, #0x8b0]
+ffffff80090d7adc: 36080220     	tbz	w0, #0x1, 0xffffff80090d7b20 <__sched_setscheduler+0x5c8>
+ffffff80090d7ae0: f9403f60     	ldr	x0, [x27, #0x78]
+ffffff80090d7ae4: 2a1a03e2     	mov	w2, w26
+ffffff80090d7ae8: aa1b03e1     	mov	x1, x27
+ffffff80090d7aec: f9400803     	ldr	x3, [x0, #0x10]
+ffffff80090d7af0: aa1603e0     	mov	x0, x22
+ffffff80090d7af4: d63f0060     	blr	x3
+ffffff80090d7af8: 17ffff0d     	b	0xffffff80090d772c <__sched_setscheduler+0x1d4>
+ffffff80090d7afc: d503201f     	nop
+ffffff80090d7b00: b9407760     	ldr	w0, [x27, #0x74]
+ffffff80090d7b04: 52800c61     	mov	w1, #0x63       // =99
+ffffff80090d7b08: 4b000021     	sub	w1, w1, w0
+ffffff80090d7b0c: 17ffff2f     	b	0xffffff80090d77c8 <__sched_setscheduler+0x270>
+ffffff80090d7b10: aa1603e0     	mov	x0, x22
+ffffff80090d7b14: 97fff7ef     	bl	0xffffff80090d5ad0 <update_rq_clock.part.43>
+ffffff80090d7b18: 17ffff7a     	b	0xffffff80090d7900 <__sched_setscheduler+0x3a8>
+ffffff80090d7b1c: d503201f     	nop
+ffffff80090d7b20: aa1603e0     	mov	x0, x22
+ffffff80090d7b24: 97fff7eb     	bl	0xffffff80090d5ad0 <update_rq_clock.part.43>
+ffffff80090d7b28: 17ffffee     	b	0xffffff80090d7ae0 <__sched_setscheduler+0x588>
+ffffff80090d7b2c: d503201f     	nop
+ffffff80090d7b30: 710006ff     	cmp	w23, #0x1
+ffffff80090d7b34: 54002109     	b.ls	0xffffff80090d7f54 <__sched_setscheduler+0x9fc>
+ffffff80090d7b38: 71001abf     	cmp	w21, #0x6
+ffffff80090d7b3c: 54000221     	b.ne	0xffffff80090d7b80 <__sched_setscheduler+0x628>
+ffffff80090d7b40: f9400e82     	ldr	x2, [x20, #0x18]
+ffffff80090d7b44: f941b763     	ldr	x3, [x27, #0x368]
+ffffff80090d7b48: eb02007f     	cmp	x3, x2
+ffffff80090d7b4c: 54ffd6a1     	b.ne	0xffffff80090d7620 <__sched_setscheduler+0xc8>
+ffffff80090d7b50: f9401282     	ldr	x2, [x20, #0x20]
+ffffff80090d7b54: f941bb63     	ldr	x3, [x27, #0x370]
+ffffff80090d7b58: eb02007f     	cmp	x3, x2
+ffffff80090d7b5c: 54ffd621     	b.ne	0xffffff80090d7620 <__sched_setscheduler+0xc8>
+ffffff80090d7b60: f9401682     	ldr	x2, [x20, #0x28]
+ffffff80090d7b64: f941bf63     	ldr	x3, [x27, #0x378]
+ffffff80090d7b68: eb02007f     	cmp	x3, x2
+ffffff80090d7b6c: 54ffd5a1     	b.ne	0xffffff80090d7620 <__sched_setscheduler+0xc8>
+ffffff80090d7b70: b943a362     	ldr	w2, [x27, #0x3a0]
+ffffff80090d7b74: f9400681     	ldr	x1, [x20, #0x8]
+ffffff80090d7b78: eb01005f     	cmp	x2, x1
+ffffff80090d7b7c: 54ffd521     	b.ne	0xffffff80090d7620 <__sched_setscheduler+0xc8>
+ffffff80090d7b80: 39545361     	ldrb	w1, [x27, #0x514]
+ffffff80090d7b84: aa1603e0     	mov	x0, x22
+ffffff80090d7b88: b9406fa2     	ldr	w2, [x29, #0x6c]
+ffffff80090d7b8c: 52800016     	mov	w22, #0x0       // =0
+ffffff80090d7b90: 33000041     	bfxil	w1, w2, #0, #1
+ffffff80090d7b94: 39145361     	strb	w1, [x27, #0x514]
+ffffff80090d7b98: 94348f30     	bl	0xffffff8009dfb858 <_raw_spin_unlock>
+ffffff80090d7b9c: f9403fa1     	ldr	x1, [x29, #0x78]
+ffffff80090d7ba0: 911f5360     	add	x0, x27, #0x7d4
+ffffff80090d7ba4: 94348fa3     	bl	0xffffff8009dfba30 <_raw_spin_unlock_irqrestore>
+ffffff80090d7ba8: 17ffff32     	b	0xffffff80090d7870 <__sched_setscheduler+0x318>
+ffffff80090d7bac: d503201f     	nop
+ffffff80090d7bb0: f9446ac2     	ldr	x2, [x22, #0x8d0]
+ffffff80090d7bb4: f9420b61     	ldr	x1, [x27, #0x410]
+ffffff80090d7bb8: aa2103e1     	mvn	x1, x1
+ffffff80090d7bbc: f9400c43     	ldr	x3, [x2, #0x18]
+ffffff80090d7bc0: 92401c21     	and	x1, x1, #0xff
+ffffff80090d7bc4: ea03003f     	tst	x1, x3
+ffffff80090d7bc8: 54000e61     	b.ne	0xffffff80090d7d94 <__sched_setscheduler+0x83c>
+ffffff80090d7bcc: f9402441     	ldr	x1, [x2, #0x48]
+ffffff80090d7bd0: b4000e21     	cbz	x1, 0xffffff80090d7d94 <__sched_setscheduler+0x83c>
+ffffff80090d7bd4: 3100071f     	cmn	w24, #0x1
+ffffff80090d7bd8: 54000d01     	b.ne	0xffffff80090d7d78 <__sched_setscheduler+0x820>
+ffffff80090d7bdc: b9804763     	ldrsw	x3, [x27, #0x44]
+ffffff80090d7be0: 9000bf38     	adrp	x24, 0xffffff800a8bb000 <event_hash+0x380>
+ffffff80090d7be4: 91152302     	add	x2, x24, #0x548
+ffffff80090d7be8: b0009d97     	adrp	x23, 0xffffff800a488000 <bpf_sp+0x1e8>
+ffffff80090d7bec: 912902e1     	add	x1, x23, #0xa40
+ffffff80090d7bf0: f8637842     	ldr	x2, [x2, x3, lsl #3]
+ffffff80090d7bf4: 8b010041     	add	x1, x2, x1
+ffffff80090d7bf8: f9401682     	ldr	x2, [x20, #0x28]
+ffffff80090d7bfc: f944683c     	ldr	x28, [x1, #0x8d0]
+ffffff80090d7c00: b4002122     	cbz	x2, 0xffffff80090d8024 <__sched_setscheduler+0xacc>
+ffffff80090d7c04: d2a00203     	mov	x3, #0x100000   // =1048576
+ffffff80090d7c08: f9400e81     	ldr	x1, [x20, #0x18]
+ffffff80090d7c0c: f90033a3     	str	x3, [x29, #0x60]
+ffffff80090d7c10: b100043f     	cmn	x1, #0x1
+ffffff80090d7c14: 54001261     	b.ne	0xffffff80090d7e60 <__sched_setscheduler+0x908>
+ffffff80090d7c18: f941c361     	ldr	x1, [x27, #0x380]
+ffffff80090d7c1c: f94033a2     	ldr	x2, [x29, #0x60]
+ffffff80090d7c20: eb02003f     	cmp	x1, x2
+ffffff80090d7c24: 7a460800     	ccmp	w0, #0x6, #0x0, eq
+ffffff80090d7c28: 54000680     	b.eq	0xffffff80090d7cf8 <__sched_setscheduler+0x7a0>
+ffffff80090d7c2c: 9101039c     	add	x28, x28, #0x40
+ffffff80090d7c30: 91152318     	add	x24, x24, #0x548
+ffffff80090d7c34: aa1c03e0     	mov	x0, x28
+ffffff80090d7c38: 94348df6     	bl	0xffffff8009dfb410 <_raw_spin_lock>
+ffffff80090d7c3c: b9804760     	ldrsw	x0, [x27, #0x44]
+ffffff80090d7c40: 912902f7     	add	x23, x23, #0xa40
+ffffff80090d7c44: f000bf03     	adrp	x3, 0xffffff800a8ba000 <tstat_hash_table+0xbb8>
+ffffff80090d7c48: 52800013     	mov	w19, #0x0       // =0
+ffffff80090d7c4c: 9111907a     	add	x26, x3, #0x464
+ffffff80090d7c50: f8607b00     	ldr	x0, [x24, x0, lsl #3]
+ffffff80090d7c54: d000bf18     	adrp	x24, 0xffffff800a8b9000 <xt_connlimit_locks+0x140>
+ffffff80090d7c58: 910c4318     	add	x24, x24, #0x310
+ffffff80090d7c5c: 8b170017     	add	x23, x0, x23
+ffffff80090d7c60: 12800000     	mov	w0, #-0x1       // =-1
+ffffff80090d7c64: f9446af7     	ldr	x23, [x23, #0x8d0]
+ffffff80090d7c68: 910062f7     	add	x23, x23, #0x18
+ffffff80090d7c6c: 14000002     	b	0xffffff80090d7c74 <__sched_setscheduler+0x71c>
+ffffff80090d7c70: 11000673     	add	w19, w19, #0x1
+ffffff80090d7c74: aa1703e1     	mov	x1, x23
+ffffff80090d7c78: aa1803e2     	mov	x2, x24
+ffffff80090d7c7c: 940e310d     	bl	0xffffff80094640b0 <cpumask_next_and>
+ffffff80090d7c80: b9400341     	ldr	w1, [x26]
+ffffff80090d7c84: 6b01001f     	cmp	w0, w1
+ffffff80090d7c88: 54ffff4b     	b.lt	0xffffff80090d7c70 <__sched_setscheduler+0x718>
+ffffff80090d7c8c: 71001abf     	cmp	w21, #0x6
+ffffff80090d7c90: b9440b60     	ldr	w0, [x27, #0x408]
+ffffff80090d7c94: 54000520     	b.eq	0xffffff80090d7d38 <__sched_setscheduler+0x7e0>
+ffffff80090d7c98: 7100181f     	cmp	w0, #0x6
+ffffff80090d7c9c: 54000ae0     	b.eq	0xffffff80090d7df8 <__sched_setscheduler+0x8a0>
+ffffff80090d7ca0: aa1c03e0     	mov	x0, x28
+ffffff80090d7ca4: 94348eed     	bl	0xffffff8009dfb858 <_raw_spin_unlock>
+ffffff80090d7ca8: aa1603e0     	mov	x0, x22
+ffffff80090d7cac: 94348eeb     	bl	0xffffff8009dfb858 <_raw_spin_unlock>
+ffffff80090d7cb0: f9403fa1     	ldr	x1, [x29, #0x78]
+ffffff80090d7cb4: 911f5360     	add	x0, x27, #0x7d4
+ffffff80090d7cb8: 128001f6     	mov	w22, #-0x10     // =-16
+ffffff80090d7cbc: 94348f5d     	bl	0xffffff8009dfba30 <_raw_spin_unlock_irqrestore>
+ffffff80090d7cc0: 2a1603e0     	mov	w0, w22
+ffffff80090d7cc4: a94153f3     	ldp	x19, x20, [sp, #0x10]
+ffffff80090d7cc8: a9425bf5     	ldp	x21, x22, [sp, #0x20]
+ffffff80090d7ccc: a94363f7     	ldp	x23, x24, [sp, #0x30]
+ffffff80090d7cd0: a9446bf9     	ldp	x25, x26, [sp, #0x40]
+ffffff80090d7cd4: a94573fb     	ldp	x27, x28, [sp, #0x50]
+ffffff80090d7cd8: a8c87bfd     	ldp	x29, x30, [sp], #0x80
+ffffff80090d7cdc: d65f03c0     	ret
+ffffff80090d7ce0: f9400b80     	ldr	x0, [x28, #0x10]
+ffffff80090d7ce4: f94033a1     	ldr	x1, [x29, #0x60]
+ffffff80090d7ce8: 8b000020     	add	x0, x1, x0
+ffffff80090d7cec: f9000b80     	str	x0, [x28, #0x10]
+ffffff80090d7cf0: aa1c03e0     	mov	x0, x28
+ffffff80090d7cf4: 94348ed9     	bl	0xffffff8009dfb858 <_raw_spin_unlock>
+ffffff80090d7cf8: b9406b73     	ldr	w19, [x27, #0x68]
+ffffff80090d7cfc: 17fffe82     	b	0xffffff80090d7704 <__sched_setscheduler+0x1ac>
+ffffff80090d7d00: d0006a01     	adrp	x1, 0xffffff8009e19000 <param_ops_short>
+ffffff80090d7d04: 91190021     	add	x1, x1, #0x640
+ffffff80090d7d08: f9003f61     	str	x1, [x27, #0x78]
+ffffff80090d7d0c: 17fffeb8     	b	0xffffff80090d77ec <__sched_setscheduler+0x294>
+ffffff80090d7d10: b9406b60     	ldr	w0, [x27, #0x68]
+ffffff80090d7d14: 7100001f     	cmp	w0, #0x0
+ffffff80090d7d18: 7a53a000     	ccmp	w0, w19, #0x0, ge
+ffffff80090d7d1c: 54ffd8a0     	b.eq	0xffffff80090d7830 <__sched_setscheduler+0x2d8>
+ffffff80090d7d20: f9405303     	ldr	x3, [x24, #0xa0]
+ffffff80090d7d24: 2a1303e2     	mov	w2, w19
+ffffff80090d7d28: aa1b03e1     	mov	x1, x27
+ffffff80090d7d2c: aa1603e0     	mov	x0, x22
+ffffff80090d7d30: d63f0060     	blr	x3
+ffffff80090d7d34: 17fffebf     	b	0xffffff80090d7830 <__sched_setscheduler+0x2d8>
+ffffff80090d7d38: 7100181f     	cmp	w0, #0x6
+ffffff80090d7d3c: 540013a0     	b.eq	0xffffff80090d7fb0 <__sched_setscheduler+0xa58>
+ffffff80090d7d40: f9400780     	ldr	x0, [x28, #0x8]
+ffffff80090d7d44: b100041f     	cmn	x0, #0x1
+ffffff80090d7d48: 54fffcc0     	b.eq	0xffffff80090d7ce0 <__sched_setscheduler+0x788>
+ffffff80090d7d4c: 93407e61     	sxtw	x1, w19
+ffffff80090d7d50: f94033a2     	ldr	x2, [x29, #0x60]
+ffffff80090d7d54: 9b007c21     	mul	x1, x1, x0
+ffffff80090d7d58: f9400b80     	ldr	x0, [x28, #0x10]
+ffffff80090d7d5c: 8b000040     	add	x0, x2, x0
+ffffff80090d7d60: eb00003f     	cmp	x1, x0
+ffffff80090d7d64: 54fff9e3     	b.lo	0xffffff80090d7ca0 <__sched_setscheduler+0x748>
+ffffff80090d7d68: 17ffffe1     	b	0xffffff80090d7cec <__sched_setscheduler+0x794>
+ffffff80090d7d6c: d503201f     	nop
+ffffff80090d7d70: d4210000     	brk	#0x800
+ffffff80090d7d74: d503201f     	nop
+ffffff80090d7d78: 6b18001f     	cmp	w0, w24
+ffffff80090d7d7c: 54ffcbc0     	b.eq	0xffffff80090d76f4 <__sched_setscheduler+0x19c>
+ffffff80090d7d80: 17fffe34     	b	0xffffff80090d7650 <__sched_setscheduler+0xf8>
+ffffff80090d7d84: d503201f     	nop
+ffffff80090d7d88: f941a761     	ldr	x1, [x27, #0x348]
+ffffff80090d7d8c: f9409421     	ldr	x1, [x1, #0x128]
+ffffff80090d7d90: b5ffc541     	cbnz	x1, 0xffffff80090d7638 <__sched_setscheduler+0xe0>
+ffffff80090d7d94: aa1603e0     	mov	x0, x22
+ffffff80090d7d98: 94348eb0     	bl	0xffffff8009dfb858 <_raw_spin_unlock>
+ffffff80090d7d9c: f9403fa1     	ldr	x1, [x29, #0x78]
+ffffff80090d7da0: 911f5360     	add	x0, x27, #0x7d4
+ffffff80090d7da4: 12800016     	mov	w22, #-0x1      // =-1
+ffffff80090d7da8: 94348f22     	bl	0xffffff8009dfba30 <_raw_spin_unlock_irqrestore>
+ffffff80090d7dac: 17fffeb1     	b	0xffffff80090d7870 <__sched_setscheduler+0x318>
+ffffff80090d7db0: f9400016     	ldr	x22, [x0]
+ffffff80090d7db4: d34106d6     	ubfx	x22, x22, #1, #1
+ffffff80090d7db8: 34ffd5d6     	cbz	w22, 0xffffff80090d7870 <__sched_setscheduler+0x318>
+ffffff80090d7dbc: b9401000     	ldr	w0, [x0, #0x10]
+ffffff80090d7dc0: 52800016     	mov	w22, #0x0       // =0
+ffffff80090d7dc4: 35ffd560     	cbnz	w0, 0xffffff80090d7870 <__sched_setscheduler+0x318>
+ffffff80090d7dc8: 94347da0     	bl	0xffffff8009df7448 <preempt_schedule.part.45>
+ffffff80090d7dcc: 17fffea9     	b	0xffffff80090d7870 <__sched_setscheduler+0x318>
+ffffff80090d7dd0: aa1603e0     	mov	x0, x22
+ffffff80090d7dd4: 97ffe1eb     	bl	0xffffff80090d0580 <__balance_callback>
+ffffff80090d7dd8: 17fffea0     	b	0xffffff80090d7858 <__sched_setscheduler+0x300>
+ffffff80090d7ddc: d503201f     	nop
+ffffff80090d7de0: b9407761     	ldr	w1, [x27, #0x74]
+ffffff80090d7de4: 52800c60     	mov	w0, #0x63       // =99
+ffffff80090d7de8: 4b010000     	sub	w0, w0, w1
+ffffff80090d7dec: b9006b60     	str	w0, [x27, #0x68]
+ffffff80090d7df0: 17fffe79     	b	0xffffff80090d77d4 <__sched_setscheduler+0x27c>
+ffffff80090d7df4: d503201f     	nop
+ffffff80090d7df8: f941c361     	ldr	x1, [x27, #0x380]
+ffffff80090d7dfc: f9400b80     	ldr	x0, [x28, #0x10]
+ffffff80090d7e00: cb010000     	sub	x0, x0, x1
+ffffff80090d7e04: f9000b80     	str	x0, [x28, #0x10]
+ffffff80090d7e08: 17ffffba     	b	0xffffff80090d7cf0 <__sched_setscheduler+0x798>
+ffffff80090d7e0c: d503201f     	nop

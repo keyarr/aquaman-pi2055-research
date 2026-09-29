@@ -1,0 +1,209 @@
+#### PAD 0x120  uptime_before=1031.01
+[info] page_offset=0xffffff8000000000 stamp_word=0xffffff8000000000
+[info] pselect nfds=320 size=0x28 slots=6 span=0xf0 (stack, nao kmalloc)
+[info] lab: waiter_off_sp=0x2b0 stack_fds_off_sp=0x190 slot3=0x78
+[info] varredura pad=[0x120..0x120] step=0x8 trials=1
+[baseline] stalled=0 prio=0 us=19  (rapido: baseline inesperado, revisar consumer)
+[pad 0x120] stall, frame intocado (us=30666)
+[summary] hits=0 first=0 last=0
+[verdict] nenhum PAD acertou: o aparelho diverge do lab (WAITER_OFF ou frame de core_sys_select). Trocar stamper: setsockopt IPV6 MCAST_JOIN_SOURCE_GROUP ou sendmsg, e recalibrar a faixa.
+#### PAD 0x120 RESULT=SOBREVIVEU
+#### PAD 0x128  uptime_before=1035.52
+[info] page_offset=0xffffff8000000000 stamp_word=0xffffff8000000000
+[info] pselect nfds=320 size=0x28 slots=6 span=0xf0 (stack, nao kmalloc)
+[info] lab: waiter_off_sp=0x2b0 stack_fds_off_sp=0x190 slot3=0x78
+[info] varredura pad=[0x128..0x128] step=0x8 trials=1
+[baseline] stalled=0 prio=0 us=18  (rapido: baseline inesperado, revisar consumer)
+[pad 0x128] stall, frame intocado (us=106322535)
+[summary] hits=0 first=0 last=0
+[verdict] nenhum PAD acertou: o aparelho diverge do lab (WAITER_OFF ou frame de core_sys_select). Trocar stamper: setsockopt IPV6 MCAST_JOIN_SOURCE_GROUP ou sendmsg, e recalibrar a faixa.
+#### PAD 0x128 RESULT=SOBREVIVEU
+#### PAD 0x130  uptime_before=1146.33
+[info] page_offset=0xffffff8000000000 stamp_word=0xffffff8000000000
+[info] pselect nfds=320 size=0x28 slots=6 span=0xf0 (stack, nao kmalloc)
+[info] lab: waiter_off_sp=0x2b0 stack_fds_off_sp=0x190 slot3=0x78
+[info] varredura pad=[0x130..0x130] step=0x8 trials=1
+[baseline] stalled=0 prio=0 us=73  (rapido: baseline inesperado, revisar consumer)
+[pad 0x130] stall, frame intocado (us=15865)
+[summary] hits=0 first=0 last=0
+[verdict] nenhum PAD acertou: o aparelho diverge do lab (WAITER_OFF ou frame de core_sys_select). Trocar stamper: setsockopt IPV6 MCAST_JOIN_SOURCE_GROUP ou sendmsg, e recalibrar a faixa.
+#### PAD 0x130 RESULT=SOBREVIVEU
+#### PAD 0x138  uptime_before=1150.85
+[info] page_offset=0xffffff8000000000 stamp_word=0xffffff8000000000
+[info] pselect nfds=320 size=0x28 slots=6 span=0xf0 (stack, nao kmalloc)
+[info] lab: waiter_off_sp=0x2b0 stack_fds_off_sp=0x190 slot3=0x78
+[info] varredura pad=[0x138..0x138] step=0x8 trials=1
+[baseline] stalled=0 prio=0 us=44  (rapido: baseline inesperado, revisar consumer)
+#### PAD 0x138 RESULT=REBOOT (uptime 1150.85 -> 0), aguardando device
+#### device de volta apos reboot, uptime=25.39
+#### PAD 0x140  uptime_before=25.48
+[info] page_offset=0xffffff8000000000 stamp_word=0xffffff8000000000
+[info] pselect nfds=320 size=0x28 slots=6 span=0xf0 (stack, nao kmalloc)
+[info] lab: waiter_off_sp=0x2b0 stack_fds_off_sp=0x190 slot3=0x78
+[info] varredura pad=[0x140..0x140] step=0x8 trials=1
+[baseline] stalled=0 prio=0 us=75  (rapido: baseline inesperado, revisar consumer)
+[pad 0x140] stall, frame intocado (us=145006)
+[summary] hits=0 first=0 last=0
+[verdict] nenhum PAD acertou: o aparelho diverge do lab (WAITER_OFF ou frame de core_sys_select). Trocar stamper: setsockopt IPV6 MCAST_JOIN_SOURCE_GROUP ou sendmsg, e recalibrar a faixa.
+#### PAD 0x140 RESULT=SOBREVIVEU
+#### PAD 0x148  uptime_before=30.35
+[info] page_offset=0xffffff8000000000 stamp_word=0xffffff8000000000
+[info] pselect nfds=320 size=0x28 slots=6 span=0xf0 (stack, nao kmalloc)
+[info] lab: waiter_off_sp=0x2b0 stack_fds_off_sp=0x190 slot3=0x78
+[info] varredura pad=[0x148..0x148] step=0x8 trials=1
+[baseline] stalled=0 prio=0 us=28  (rapido: baseline inesperado, revisar consumer)
+[pad 0x148] stall, frame intocado (us=183718)
+[summary] hits=0 first=0 last=0
+[verdict] nenhum PAD acertou: o aparelho diverge do lab (WAITER_OFF ou frame de core_sys_select). Trocar stamper: setsockopt IPV6 MCAST_JOIN_SOURCE_GROUP ou sendmsg, e recalibrar a faixa.
+#### PAD 0x148 RESULT=SOBREVIVEU
+#### PAD 0x150  uptime_before=37.54
+[info] page_offset=0xffffff8000000000 stamp_word=0xffffff8000000000
+[info] pselect nfds=320 size=0x28 slots=6 span=0xf0 (stack, nao kmalloc)
+[info] lab: waiter_off_sp=0x2b0 stack_fds_off_sp=0x190 slot3=0x78
+[info] varredura pad=[0x150..0x150] step=0x8 trials=1
+[baseline] stalled=0 prio=0 us=55  (rapido: baseline inesperado, revisar consumer)
+[pad 0x150] stall, frame intocado (us=64941)
+[summary] hits=0 first=0 last=0
+[verdict] nenhum PAD acertou: o aparelho diverge do lab (WAITER_OFF ou frame de core_sys_select). Trocar stamper: setsockopt IPV6 MCAST_JOIN_SOURCE_GROUP ou sendmsg, e recalibrar a faixa.
+#### PAD 0x150 RESULT=SOBREVIVEU
+#### PAD 0x158  uptime_before=42.48
+[info] page_offset=0xffffff8000000000 stamp_word=0xffffff8000000000
+[info] pselect nfds=320 size=0x28 slots=6 span=0xf0 (stack, nao kmalloc)
+[info] lab: waiter_off_sp=0x2b0 stack_fds_off_sp=0x190 slot3=0x78
+[info] varredura pad=[0x158..0x158] step=0x8 trials=1
+[baseline] stalled=0 prio=0 us=44  (rapido: baseline inesperado, revisar consumer)
+[pad 0x158] stall, frame intocado (us=221901)
+[summary] hits=0 first=0 last=0
+[verdict] nenhum PAD acertou: o aparelho diverge do lab (WAITER_OFF ou frame de core_sys_select). Trocar stamper: setsockopt IPV6 MCAST_JOIN_SOURCE_GROUP ou sendmsg, e recalibrar a faixa.
+#### PAD 0x158 RESULT=SOBREVIVEU
+#### PAD 0x160  uptime_before=47.52
+[info] page_offset=0xffffff8000000000 stamp_word=0xffffff8000000000
+[info] pselect nfds=320 size=0x28 slots=6 span=0xf0 (stack, nao kmalloc)
+[info] lab: waiter_off_sp=0x2b0 stack_fds_off_sp=0x190 slot3=0x78
+[info] varredura pad=[0x160..0x160] step=0x8 trials=1
+[baseline] stalled=0 prio=0 us=705  (rapido: baseline inesperado, revisar consumer)
+[pad 0x160] stall, frame intocado (us=59003)
+[summary] hits=0 first=0 last=0
+[verdict] nenhum PAD acertou: o aparelho diverge do lab (WAITER_OFF ou frame de core_sys_select). Trocar stamper: setsockopt IPV6 MCAST_JOIN_SOURCE_GROUP ou sendmsg, e recalibrar a faixa.
+#### PAD 0x160 RESULT=SOBREVIVEU
+#### PAD 0x168  uptime_before=52.43
+[info] page_offset=0xffffff8000000000 stamp_word=0xffffff8000000000
+[info] pselect nfds=320 size=0x28 slots=6 span=0xf0 (stack, nao kmalloc)
+[info] lab: waiter_off_sp=0x2b0 stack_fds_off_sp=0x190 slot3=0x78
+[info] varredura pad=[0x168..0x168] step=0x8 trials=1
+[baseline] stalled=0 prio=0 us=32  (rapido: baseline inesperado, revisar consumer)
+[pad 0x168] stall, frame intocado (us=9599)
+[summary] hits=0 first=0 last=0
+[verdict] nenhum PAD acertou: o aparelho diverge do lab (WAITER_OFF ou frame de core_sys_select). Trocar stamper: setsockopt IPV6 MCAST_JOIN_SOURCE_GROUP ou sendmsg, e recalibrar a faixa.
+#### PAD 0x168 RESULT=SOBREVIVEU
+#### PAD 0x170  uptime_before=57.36
+[info] page_offset=0xffffff8000000000 stamp_word=0xffffff8000000000
+[info] pselect nfds=320 size=0x28 slots=6 span=0xf0 (stack, nao kmalloc)
+[info] lab: waiter_off_sp=0x2b0 stack_fds_off_sp=0x190 slot3=0x78
+[info] varredura pad=[0x170..0x170] step=0x8 trials=1
+[baseline] stalled=0 prio=0 us=143  (rapido: baseline inesperado, revisar consumer)
+[pad 0x170] stall, frame intocado (us=22083)
+[summary] hits=0 first=0 last=0
+[verdict] nenhum PAD acertou: o aparelho diverge do lab (WAITER_OFF ou frame de core_sys_select). Trocar stamper: setsockopt IPV6 MCAST_JOIN_SOURCE_GROUP ou sendmsg, e recalibrar a faixa.
+#### PAD 0x170 RESULT=SOBREVIVEU
+#### PAD 0x178  uptime_before=62.15
+[info] page_offset=0xffffff8000000000 stamp_word=0xffffff8000000000
+[info] pselect nfds=320 size=0x28 slots=6 span=0xf0 (stack, nao kmalloc)
+[info] lab: waiter_off_sp=0x2b0 stack_fds_off_sp=0x190 slot3=0x78
+[info] varredura pad=[0x178..0x178] step=0x8 trials=1
+[baseline] stalled=0 prio=0 us=23  (rapido: baseline inesperado, revisar consumer)
+[pad 0x178] stall, frame intocado (us=14253)
+[summary] hits=0 first=0 last=0
+[verdict] nenhum PAD acertou: o aparelho diverge do lab (WAITER_OFF ou frame de core_sys_select). Trocar stamper: setsockopt IPV6 MCAST_JOIN_SOURCE_GROUP ou sendmsg, e recalibrar a faixa.
+#### PAD 0x178 RESULT=SOBREVIVEU
+#### PAD 0x180  uptime_before=66.81
+[info] page_offset=0xffffff8000000000 stamp_word=0xffffff8000000000
+[info] pselect nfds=320 size=0x28 slots=6 span=0xf0 (stack, nao kmalloc)
+[info] lab: waiter_off_sp=0x2b0 stack_fds_off_sp=0x190 slot3=0x78
+[info] varredura pad=[0x180..0x180] step=0x8 trials=1
+[baseline] stalled=0 prio=0 us=28  (rapido: baseline inesperado, revisar consumer)
+[pad 0x180] ACERTO consumer rapido prio=0 us=706
+[summary] hits=1 first=0x180 last=0x180
+[verdict] PSELECT_SHIFT = 0x180, janela 0x180..0x180
+#### PAD 0x180 RESULT=SOBREVIVEU
+#### PAD 0x188  uptime_before=71.43
+[info] page_offset=0xffffff8000000000 stamp_word=0xffffff8000000000
+[info] pselect nfds=320 size=0x28 slots=6 span=0xf0 (stack, nao kmalloc)
+[info] lab: waiter_off_sp=0x2b0 stack_fds_off_sp=0x190 slot3=0x78
+[info] varredura pad=[0x188..0x188] step=0x8 trials=1
+[baseline] stalled=0 prio=0 us=21  (rapido: baseline inesperado, revisar consumer)
+[pad 0x188] stall, frame intocado (us=10093)
+[summary] hits=0 first=0 last=0
+[verdict] nenhum PAD acertou: o aparelho diverge do lab (WAITER_OFF ou frame de core_sys_select). Trocar stamper: setsockopt IPV6 MCAST_JOIN_SOURCE_GROUP ou sendmsg, e recalibrar a faixa.
+#### PAD 0x188 RESULT=SOBREVIVEU
+#### PAD 0x190  uptime_before=75.94
+[info] page_offset=0xffffff8000000000 stamp_word=0xffffff8000000000
+[info] pselect nfds=320 size=0x28 slots=6 span=0xf0 (stack, nao kmalloc)
+[info] lab: waiter_off_sp=0x2b0 stack_fds_off_sp=0x190 slot3=0x78
+[info] varredura pad=[0x190..0x190] step=0x8 trials=1
+[baseline] stalled=0 prio=0 us=24  (rapido: baseline inesperado, revisar consumer)
+[pad 0x190] stall, frame intocado (us=23339)
+[summary] hits=0 first=0 last=0
+[verdict] nenhum PAD acertou: o aparelho diverge do lab (WAITER_OFF ou frame de core_sys_select). Trocar stamper: setsockopt IPV6 MCAST_JOIN_SOURCE_GROUP ou sendmsg, e recalibrar a faixa.
+#### PAD 0x190 RESULT=SOBREVIVEU
+#### PAD 0x198  uptime_before=80.49
+[info] page_offset=0xffffff8000000000 stamp_word=0xffffff8000000000
+[info] pselect nfds=320 size=0x28 slots=6 span=0xf0 (stack, nao kmalloc)
+[info] lab: waiter_off_sp=0x2b0 stack_fds_off_sp=0x190 slot3=0x78
+[info] varredura pad=[0x198..0x198] step=0x8 trials=1
+[baseline] stalled=0 prio=0 us=38  (rapido: baseline inesperado, revisar consumer)
+[pad 0x198] stall, frame intocado (us=11299)
+[summary] hits=0 first=0 last=0
+[verdict] nenhum PAD acertou: o aparelho diverge do lab (WAITER_OFF ou frame de core_sys_select). Trocar stamper: setsockopt IPV6 MCAST_JOIN_SOURCE_GROUP ou sendmsg, e recalibrar a faixa.
+#### PAD 0x198 RESULT=SOBREVIVEU
+#### PAD 0x1a0  uptime_before=84.99
+[info] page_offset=0xffffff8000000000 stamp_word=0xffffff8000000000
+[info] pselect nfds=320 size=0x28 slots=6 span=0xf0 (stack, nao kmalloc)
+[info] lab: waiter_off_sp=0x2b0 stack_fds_off_sp=0x190 slot3=0x78
+[info] varredura pad=[0x1a0..0x1a0] step=0x8 trials=1
+[baseline] stalled=0 prio=0 us=45  (rapido: baseline inesperado, revisar consumer)
+[pad 0x1a0] stall, frame intocado (us=27583)
+[summary] hits=0 first=0 last=0
+[verdict] nenhum PAD acertou: o aparelho diverge do lab (WAITER_OFF ou frame de core_sys_select). Trocar stamper: setsockopt IPV6 MCAST_JOIN_SOURCE_GROUP ou sendmsg, e recalibrar a faixa.
+#### PAD 0x1a0 RESULT=SOBREVIVEU
+#### PAD 0x1a8  uptime_before=89.65
+[info] page_offset=0xffffff8000000000 stamp_word=0xffffff8000000000
+[info] pselect nfds=320 size=0x28 slots=6 span=0xf0 (stack, nao kmalloc)
+[info] lab: waiter_off_sp=0x2b0 stack_fds_off_sp=0x190 slot3=0x78
+[info] varredura pad=[0x1a8..0x1a8] step=0x8 trials=1
+[baseline] stalled=0 prio=0 us=57  (rapido: baseline inesperado, revisar consumer)
+[pad 0x1a8] stall, frame intocado (us=9681)
+[summary] hits=0 first=0 last=0
+[verdict] nenhum PAD acertou: o aparelho diverge do lab (WAITER_OFF ou frame de core_sys_select). Trocar stamper: setsockopt IPV6 MCAST_JOIN_SOURCE_GROUP ou sendmsg, e recalibrar a faixa.
+#### PAD 0x1a8 RESULT=SOBREVIVEU
+#### PAD 0x1b0  uptime_before=94.23
+[info] page_offset=0xffffff8000000000 stamp_word=0xffffff8000000000
+[info] pselect nfds=320 size=0x28 slots=6 span=0xf0 (stack, nao kmalloc)
+[info] lab: waiter_off_sp=0x2b0 stack_fds_off_sp=0x190 slot3=0x78
+[info] varredura pad=[0x1b0..0x1b0] step=0x8 trials=1
+[baseline] stalled=0 prio=0 us=43  (rapido: baseline inesperado, revisar consumer)
+[pad 0x1b0] stall, frame intocado (us=18023)
+[summary] hits=0 first=0 last=0
+[verdict] nenhum PAD acertou: o aparelho diverge do lab (WAITER_OFF ou frame de core_sys_select). Trocar stamper: setsockopt IPV6 MCAST_JOIN_SOURCE_GROUP ou sendmsg, e recalibrar a faixa.
+#### PAD 0x1b0 RESULT=SOBREVIVEU
+#### PAD 0x1b8  uptime_before=98.79
+[info] page_offset=0xffffff8000000000 stamp_word=0xffffff8000000000
+[info] pselect nfds=320 size=0x28 slots=6 span=0xf0 (stack, nao kmalloc)
+[info] lab: waiter_off_sp=0x2b0 stack_fds_off_sp=0x190 slot3=0x78
+[info] varredura pad=[0x1b8..0x1b8] step=0x8 trials=1
+[baseline] stalled=0 prio=0 us=47  (rapido: baseline inesperado, revisar consumer)
+[pad 0x1b8] stall, frame intocado (us=12958)
+[summary] hits=0 first=0 last=0
+[verdict] nenhum PAD acertou: o aparelho diverge do lab (WAITER_OFF ou frame de core_sys_select). Trocar stamper: setsockopt IPV6 MCAST_JOIN_SOURCE_GROUP ou sendmsg, e recalibrar a faixa.
+#### PAD 0x1b8 RESULT=SOBREVIVEU
+#### PAD 0x1c0  uptime_before=103.35
+[info] page_offset=0xffffff8000000000 stamp_word=0xffffff8000000000
+[info] pselect nfds=320 size=0x28 slots=6 span=0xf0 (stack, nao kmalloc)
+[info] lab: waiter_off_sp=0x2b0 stack_fds_off_sp=0x190 slot3=0x78
+[info] varredura pad=[0x1c0..0x1c0] step=0x8 trials=1
+[baseline] stalled=0 prio=0 us=37  (rapido: baseline inesperado, revisar consumer)
+[pad 0x1c0] stall, frame intocado (us=89620)
+[summary] hits=0 first=0 last=0
+[verdict] nenhum PAD acertou: o aparelho diverge do lab (WAITER_OFF ou frame de core_sys_select). Trocar stamper: setsockopt IPV6 MCAST_JOIN_SOURCE_GROUP ou sendmsg, e recalibrar a faixa.
+#### PAD 0x1c0 RESULT=SOBREVIVEU
+#### SCAN FIM

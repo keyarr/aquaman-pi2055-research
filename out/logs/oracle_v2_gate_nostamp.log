@@ -1,0 +1,18 @@
+#### GATE nostamp uptime_before=819.10
+[info] mode=nostamp (controle, sem carimbo)
+[cmp] errno=35 EDEADLK ok, tid_waiter=5181
+[teardown] waiter acordou e soltou a chain
+[teardown] carimbo feito, settle 2.5s
+#### REBOOT (uptime 819.10 -> 25.14). GATE VERMELHO. STOP.
+#### parou entre a linha "[teardown] carimbo feito, settle 2.5s" e o
+#### printf "[consumer]": ou seja, dentro do usleep(2500000) de settle ou
+#### dentro do pthread_setschedparam. nao chegou a imprimir [result].
+#### reboots usados = 2 de 3. trial (ii) NAO executado.
+####
+#### DELTA vs trial 1: a teardown endurecida (timeout wake, sem FUPI de fora,
+#### pre-read removido, owner joined) rodou inteira e imprimiu as duas linhas
+#### de teardown. o crash migrou para a janela do consumer. ou seja: o
+#### teardown da janela [cmp]..[teardown] esta estavel agora; o que mata o
+#### device e o consumer chamar __sched_setscheduler no waiter depois que o
+#### owner (que segurava f_target com a wait tree apontando pro no do waiter
+#### no frame morto) ja foi joined e portanto o task_struct dele foi liberado.

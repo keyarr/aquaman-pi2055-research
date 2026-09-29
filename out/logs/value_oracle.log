@@ -1,0 +1,27 @@
+value_oracle — 100% host, zero reboots (2026-09-29)
+tool: NDK r29 llvm-objdump em build-aq/vmlinux
+
+LEITURA — rt_mutex_get_effective_prio @ 0xffffff8009105678 (so 4 toques, retorna min):
+  0xffffff8009105694: ldr x0,[x19,#0x7e0]  (task->pi_waiters; NULL? -> fast path cbz @0x5698, retorna newprio)
+  0xffffff800910569c: ldr x0,[x19,#0x7e8]  (task->pi_waiters_leftmost)
+  0xffffff80091056a0: ldr x0,[x0,#0x18]    (waiter->task: leftmost+0x18 = 0x30-0x18)
+  0xffffff80091056a4: ldr w0,[x0,#0x68]    (waiter->task->prio)
+  0xffffff80091056a8: cmp w0,w20 / 0x56ac: csel w0,w0,w20,le  (min(prio,newprio))
+  -> fake task_struct em user-mem precisa de UMA palavra valida: prio em +0x68. nada mais e tocado.
+
+ESCRITA — __sched_setscheduler @ 0xffffff80090d7558 (x27=p, x20=attr, w3(user/pi?) -> w25):
+  0xffffff80090d77c8: ldr w1,[x27,#0x6c]; mov x0,x27; 0x77cc: bl rt_mutex_get_effective_prio; 0x77d0: str w0,[x27,#0x68]
+  (p->prio = E; pre-check identico @ 0x7890-0x789c; w25!=0 p/ setschedparam -> ajusta e retorna)
+  _sched_setscheduler @ 0xffffff80090d8030 passa w3=1 (0x809c: mov w3,#1) -> bl __sched_setscheduler @0x80a4
+  -> consumer pthread_setschedparam chega ao store; adjust_pi @0x7a78 (cbnz w25 @0x784c) e risco residual (sobreviveu no hit 0x180).
+
+EXPOSICAO — task_prio @ 0xffffff80090daf28: ldr w0,[x19,#0x68] @0xaf40; sub w0,w0,#0x64 @0xaf48 (prio-100)
+  do_task_stat @ 0xffffff800929a850: bl task_prio @0xaaf8, str w6,[x29,#0xfc] @0xab04, imprime via seq_* (f18 priority)
+  controle negativo: nice = [x20,#0x6c]-0x78 @0xab08/0xab1c (f19, intocado pelo carimbo)
+
+PADRAO: fake addr em waiter->task (waiter+0x30 = fd_set byte 0x30 no PAD nominal 0x120 lab); u32 P=0 em fake+0x68.
+  intacto E=min(120,120)=120 -> stat f18=20. hit E=min(0,120)=0 -> stat f18=-100. distancia 120, troca de sinal.
+  P=0: bit5 limpo, <=99 -> caminho fair @0x7d00, sem promocao RT. sem PAN (config) -> deref user ok. pagina fake mlockada.
+validacao em 1 reboot: (1) sem carimbo: consumer -> stall conhecido + f18==20 (prova o store pelo walk pendurado);
+(2) com fake: consumer rc=0 rapido + f18==-100 (bit deterministico); f19==0 nos dois (anti-troca-de-tid);
+(3) sweep PAD lendo f18 (20=miss, -100=hit), 3x no mesmo boot. sem consumer novo ate aqui.

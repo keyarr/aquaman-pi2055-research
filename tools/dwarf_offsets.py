@@ -11,11 +11,16 @@ So cobre as structs listadas em WANT. Byte order / LP64 assumidos.
 import re
 import subprocess
 import sys
+import os
 
 WANT = {
     "task_struct": ["tasks", "prio", "static_prio", "normal_prio", "mm",
                     "real_cred", "cred", "comm", "pi_lock", "pi_waiters",
-                    "pi_waiters_leftmost", "pi_blocked_on"],
+                    "pi_waiters_leftmost", "pi_blocked_on", "state",
+                    "stack", "files", "fs", "flags", "exit_state",
+                    "parent", "thread_group", "signal", "start_stack",
+                    "utime", "policy", "ptrace", "pending", "blocked",
+                    "on_cpu", "wake_cpu", "last_cpu", "nr_pages"],
     "rt_mutex_waiter": ["tree_entry", "pi_tree_entry", "task", "lock",
                         "prio", "deadline"],
     "cred": ["usage", "uid", "gid", "suid", "sgid", "euid", "egid",
@@ -24,6 +29,14 @@ WANT = {
     "mm_struct": [],
     "configfs_buffer": ["count", "pos", "page", "ops", "mutex",
                         "needs_read_fill"],
+    "mm_struct": ["mmap", "pgdat", "vm_next", "vm_prev", "owner", "task_size",
+                  "start_code", "end_code", "start_data", "end_data",
+                  "start_brk", "brk", "start_stack", "arg_start",
+                  "arg_end", "env_start", "env_end", "total_vm"],
+    "files_struct": ["fdt", "count"],
+    "vm_area_struct": ["vm_mm", "vm_start", "vm_end", "vm_next", "vm_prev",
+                       "vm_flags", "vm_page_prot", "vm_file", "vm_ops"],
+    "kthread": [],
     "ashmem_area": ["name", "unpinned_list", "file", "size", "prot_mask"],
     "file": ["f_pos", "f_op", "f_path"],
     "file_operations": ["read", "write", "open", "release",
@@ -42,6 +55,13 @@ DIE = re.compile(r"^ <(\d+)><[0-9a-f]+>:\s+Abbrev Number: \d+ \((DW_TAG_\w+)\)")
 ATTR = re.compile(r"^\s+<[0-9a-f]+>\s+(DW_AT_\w+)\s*:\s*(.*)$")
 LOC_UCONST = re.compile(r"DW_OP_plus_uconst:\s*(\d+)")
 
+def clean_name(val):
+    # readelf indireto: "(indirect string, offset: 0x...): nome"
+    # split no '): ' final, nao no ': ' do offset:
+    if val.startswith("(") and "): " in val:
+        return val.split("): ", 1)[1].strip()
+    return val.strip()
+
 
 def main(path):
     res = {s: {} for s in WANT}
@@ -54,7 +74,8 @@ def main(path):
 
     p = subprocess.Popen(["readelf", "--debug-dump=info", path],
                          stdout=subprocess.PIPE, text=True,
-                         errors="replace", bufsize=1 << 20)
+                         errors="replace", bufsize=1 << 20,
+                         env={**os.environ, "LC_ALL": "C"})
     assert p.stdout
     for line in p.stdout:
         m = DIE.match(line)
@@ -80,6 +101,7 @@ def main(path):
             continue
         attr, val = m.group(1), m.group(2).strip()
         if attr == "DW_AT_name":
+            val = clean_name(val)
             if cur_struct == "@pending" and stack and stack[-1][2] == "@pending":
                 stack[-1] = (stack[-1][0], stack[-1][1], val)
                 cur_struct = val

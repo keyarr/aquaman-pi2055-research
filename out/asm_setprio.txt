@@ -1,0 +1,194 @@
+
+build-aq/vmlinux:	file format elf64-littleaarch64
+
+Disassembly of section .text:
+
+ffffff80090daa50 <rt_mutex_setprio>:
+ffffff80090daa50: a9ba7bfd     	stp	x29, x30, [sp, #-0x60]!
+ffffff80090daa54: 910003fd     	mov	x29, sp
+ffffff80090daa58: a90153f3     	stp	x19, x20, [sp, #0x10]
+ffffff80090daa5c: a9025bf5     	stp	x21, x22, [sp, #0x20]
+ffffff80090daa60: a90363f7     	stp	x23, x24, [sp, #0x30]
+ffffff80090daa64: a9046bf9     	stp	x25, x26, [sp, #0x40]
+ffffff80090daa68: 2a0103f5     	mov	w21, w1
+ffffff80090daa6c: aa0003f3     	mov	x19, x0
+ffffff80090daa70: aa1e03e0     	mov	x0, x30
+ffffff80090daa74: 97feecdf     	bl	0xffffff8009095df0 <_mcount>
+ffffff80090daa78: 710232bf     	cmp	w21, #0x8c
+ffffff80090daa7c: 5400176c     	b.gt	0xffffff80090dad68 <rt_mutex_setprio+0x318>
+ffffff80090daa80: 910163a1     	add	x1, x29, #0x58
+ffffff80090daa84: aa1303e0     	mov	x0, x19
+ffffff80090daa88: 97ffee84     	bl	0xffffff80090d6498 <__task_rq_lock>
+ffffff80090daa8c: b948b001     	ldr	w1, [x0, #0x8b0]
+ffffff80090daa90: aa0003f4     	mov	x20, x0
+ffffff80090daa94: 36080ea1     	tbz	w1, #0x1, 0xffffff80090dac68 <rt_mutex_setprio+0x218>
+ffffff80090daa98: f9444a80     	ldr	x0, [x20, #0x890]
+ffffff80090daa9c: eb00027f     	cmp	x19, x0
+ffffff80090daaa0: 54001680     	b.eq	0xffffff80090dad70 <rt_mutex_setprio+0x320>
+ffffff80090daaa4: d503201f     	nop
+ffffff80090daaa8: 294cde7a     	ldp	w26, w23, [x19, #0x64]
+ffffff80090daaac: 52800056     	mov	w22, #0x2       // =2
+ffffff80090daab0: 528000c0     	mov	w0, #0x6        // =6
+ffffff80090daab4: f9403e78     	ldr	x24, [x19, #0x78]
+ffffff80090daab8: 6b1702bf     	cmp	w21, w23
+ffffff80090daabc: f9444699     	ldr	x25, [x20, #0x888]
+ffffff80090daac0: 1a8002d6     	csel	w22, w22, w0, eq
+ffffff80090daac4: 7100075f     	cmp	w26, #0x1
+ffffff80090daac8: 54000ec0     	b.eq	0xffffff80090daca0 <rt_mutex_setprio+0x250>
+ffffff80090daacc: eb19027f     	cmp	x19, x25
+ffffff80090daad0: 540010c0     	b.eq	0xffffff80090dace8 <rt_mutex_setprio+0x298>
+ffffff80090daad4: 37f80cf5     	tbnz	w21, #0x1f, 0xffffff80090dac70 <rt_mutex_setprio+0x220>
+ffffff80090daad8: 71018ebf     	cmp	w21, #0x63
+ffffff80090daadc: 5400072d     	b.le	0xffffff80090dabc0 <rt_mutex_setprio+0x170>
+ffffff80090daae0: 37f81117     	tbnz	w23, #0x1f, 0xffffff80090dad00 <rt_mutex_setprio+0x2b0>
+ffffff80090daae4: 71018eff     	cmp	w23, #0x63
+ffffff80090daae8: 540010ed     	b.le	0xffffff80090dad04 <rt_mutex_setprio+0x2b4>
+ffffff80090daaec: f00069e0     	adrp	x0, 0xffffff8009e19000 <param_ops_short>
+ffffff80090daaf0: b9006a75     	str	w21, [x19, #0x68]
+ffffff80090daaf4: 91106000     	add	x0, x0, #0x418
+ffffff80090daaf8: f9003e60     	str	x0, [x19, #0x78]
+ffffff80090daafc: 7100075f     	cmp	w26, #0x1
+ffffff80090dab00: 54000721     	b.ne	0xffffff80090dabe4 <rt_mutex_setprio+0x194>
+ffffff80090dab04: b948b280     	ldr	w0, [x20, #0x8b0]
+ffffff80090dab08: 36080e80     	tbz	w0, #0x1, 0xffffff80090dacd8 <rt_mutex_setprio+0x288>
+ffffff80090dab0c: f9403e63     	ldr	x3, [x19, #0x78]
+ffffff80090dab10: 2a1603e2     	mov	w2, w22
+ffffff80090dab14: aa1303e1     	mov	x1, x19
+ffffff80090dab18: aa1403e0     	mov	x0, x20
+ffffff80090dab1c: f9400463     	ldr	x3, [x3, #0x8]
+ffffff80090dab20: d63f0060     	blr	x3
+ffffff80090dab24: 14000030     	b	0xffffff80090dabe4 <rt_mutex_setprio+0x194>
+ffffff80090dab28: f0009ce0     	adrp	x0, 0xffffff800a479000 <cpu_number>
+ffffff80090dab2c: 91000000     	add	x0, x0, #0x0
+ffffff80090dab30: d538d081     	mrs	x1, TPIDR_EL1
+ffffff80090dab34: b8606821     	ldr	w1, [x1, x0]
+ffffff80090dab38: f000bee2     	adrp	x2, 0xffffff800a8b9000 <xt_connlimit_locks+0x140>
+ffffff80090dab3c: 910be042     	add	x2, x2, #0x2f8
+ffffff80090dab40: 1100fc20     	add	w0, w1, #0x3f
+ffffff80090dab44: 7100003f     	cmp	w1, #0x0
+ffffff80090dab48: 1a81b000     	csel	w0, w0, w1, lt
+ffffff80090dab4c: 13067c00     	asr	w0, w0, #6
+ffffff80090dab50: 93407c00     	sxtw	x0, w0
+ffffff80090dab54: f8607840     	ldr	x0, [x2, x0, lsl #3]
+ffffff80090dab58: 9ac12401     	lsr	x1, x0, x1
+ffffff80090dab5c: 3607fa61     	tbz	w1, #0x0, 0xffffff80090daaa8 <rt_mutex_setprio+0x58>
+ffffff80090dab60: d5384101     	mrs	x1, SP_EL0
+ffffff80090dab64: b9401020     	ldr	w0, [x1, #0x10]
+ffffff80090dab68: 11000400     	add	w0, w0, #0x1
+ffffff80090dab6c: b9001020     	str	w0, [x1, #0x10]
+ffffff80090dab70: b000cc40     	adrp	x0, 0xffffff800aa63000 <__tracepoint_sys_exit+0x8>
+ffffff80090dab74: 91124000     	add	x0, x0, #0x490
+ffffff80090dab78: f940dc16     	ldr	x22, [x0, #0x1b8]
+ffffff80090dab7c: b4000116     	cbz	x22, 0xffffff80090dab9c <rt_mutex_setprio+0x14c>
+ffffff80090dab80: f94002c3     	ldr	x3, [x22]
+ffffff80090dab84: f94006c0     	ldr	x0, [x22, #0x8]
+ffffff80090dab88: 2a1503e2     	mov	w2, w21
+ffffff80090dab8c: aa1303e1     	mov	x1, x19
+ffffff80090dab90: d63f0060     	blr	x3
+ffffff80090dab94: f8418ec3     	ldr	x3, [x22, #0x18]!
+ffffff80090dab98: b5ffff63     	cbnz	x3, 0xffffff80090dab84 <rt_mutex_setprio+0x134>
+ffffff80090dab9c: d5384101     	mrs	x1, SP_EL0
+ffffff80090daba0: b9401020     	ldr	w0, [x1, #0x10]
+ffffff80090daba4: 51000400     	sub	w0, w0, #0x1
+ffffff80090daba8: b9001020     	str	w0, [x1, #0x10]
+ffffff80090dabac: 35fff7e0     	cbnz	w0, 0xffffff80090daaa8 <rt_mutex_setprio+0x58>
+ffffff80090dabb0: f9400020     	ldr	x0, [x1]
+ffffff80090dabb4: 360ff7a0     	tbz	w0, #0x1, 0xffffff80090daaa8 <rt_mutex_setprio+0x58>
+ffffff80090dabb8: 9434725a     	bl	0xffffff8009df7520 <preempt_schedule_notrace>
+ffffff80090dabbc: 17ffffbb     	b	0xffffff80090daaa8 <rt_mutex_setprio+0x58>
+ffffff80090dabc0: 37f80a97     	tbnz	w23, #0x1f, 0xffffff80090dad10 <rt_mutex_setprio+0x2c0>
+ffffff80090dabc4: 6b1702bf     	cmp	w21, w23
+ffffff80090dabc8: 54000a6c     	b.gt	0xffffff80090dad14 <rt_mutex_setprio+0x2c4>
+ffffff80090dabcc: f00069e0     	adrp	x0, 0xffffff8009e19000 <param_ops_short>
+ffffff80090dabd0: 91190000     	add	x0, x0, #0x640
+ffffff80090dabd4: f9003e60     	str	x0, [x19, #0x78]
+ffffff80090dabd8: b9006a75     	str	w21, [x19, #0x68]
+ffffff80090dabdc: 7100075f     	cmp	w26, #0x1
+ffffff80090dabe0: 54fff920     	b.eq	0xffffff80090dab04 <rt_mutex_setprio+0xb4>
+ffffff80090dabe4: eb19027f     	cmp	x19, x25
+ffffff80090dabe8: 54000e80     	b.eq	0xffffff80090dadb8 <rt_mutex_setprio+0x368>
+ffffff80090dabec: f9403e60     	ldr	x0, [x19, #0x78]
+ffffff80090dabf0: eb00031f     	cmp	x24, x0
+ffffff80090dabf4: 54000960     	b.eq	0xffffff80090dad20 <rt_mutex_setprio+0x2d0>
+ffffff80090dabf8: f9404b02     	ldr	x2, [x24, #0x90]
+ffffff80090dabfc: b40000a2     	cbz	x2, 0xffffff80090dac10 <rt_mutex_setprio+0x1c0>
+ffffff80090dac00: aa1403e0     	mov	x0, x20
+ffffff80090dac04: aa1303e1     	mov	x1, x19
+ffffff80090dac08: d63f0040     	blr	x2
+ffffff80090dac0c: f9403e60     	ldr	x0, [x19, #0x78]
+ffffff80090dac10: f9404c02     	ldr	x2, [x0, #0x98]
+ffffff80090dac14: aa1303e1     	mov	x1, x19
+ffffff80090dac18: aa1403e0     	mov	x0, x20
+ffffff80090dac1c: d63f0040     	blr	x2
+ffffff80090dac20: 52800020     	mov	w0, #0x1        // =1
+ffffff80090dac24: 97ffeaaf     	bl	0xffffff80090d56e0 <preempt_count_add>
+ffffff80090dac28: aa1403e0     	mov	x0, x20
+ffffff80090dac2c: 9434830b     	bl	0xffffff8009dfb858 <_raw_spin_unlock>
+ffffff80090dac30: f9447a80     	ldr	x0, [x20, #0x8f0]
+ffffff80090dac34: b5000ba0     	cbnz	x0, 0xffffff80090dada8 <rt_mutex_setprio+0x358>
+ffffff80090dac38: 52800020     	mov	w0, #0x1        // =1
+ffffff80090dac3c: 97ffeaf3     	bl	0xffffff80090d5808 <preempt_count_sub>
+ffffff80090dac40: d5384100     	mrs	x0, SP_EL0
+ffffff80090dac44: b9401001     	ldr	w1, [x0, #0x10]
+ffffff80090dac48: 34000a41     	cbz	w1, 0xffffff80090dad90 <rt_mutex_setprio+0x340>
+ffffff80090dac4c: a94153f3     	ldp	x19, x20, [sp, #0x10]
+ffffff80090dac50: a9425bf5     	ldp	x21, x22, [sp, #0x20]
+ffffff80090dac54: a94363f7     	ldp	x23, x24, [sp, #0x30]
+ffffff80090dac58: a9446bf9     	ldp	x25, x26, [sp, #0x40]
+ffffff80090dac5c: a8c67bfd     	ldp	x29, x30, [sp], #0x60
+ffffff80090dac60: d65f03c0     	ret
+ffffff80090dac64: d503201f     	nop
+ffffff80090dac68: 97ffeb9a     	bl	0xffffff80090d5ad0 <update_rq_clock.part.43>
+ffffff80090dac6c: 17ffff8b     	b	0xffffff80090daa98 <rt_mutex_setprio+0x48>
+ffffff80090dac70: aa1303e0     	mov	x0, x19
+ffffff80090dac74: 9400aa6f     	bl	0xffffff8009105630 <rt_mutex_get_top_task>
+ffffff80090dac78: b9407261     	ldr	w1, [x19, #0x70]
+ffffff80090dac7c: 37f80661     	tbnz	w1, #0x1f, 0xffffff80090dad48 <rt_mutex_setprio+0x2f8>
+ffffff80090dac80: 321c02d6     	orr	w22, w22, #0x10
+ffffff80090dac84: 52800020     	mov	w0, #0x1        // =1
+ffffff80090dac88: b903aa60     	str	w0, [x19, #0x3a8]
+ffffff80090dac8c: f00069e0     	adrp	x0, 0xffffff8009e19000 <param_ops_short>
+ffffff80090dac90: 911c0000     	add	x0, x0, #0x700
+ffffff80090dac94: f9003e60     	str	x0, [x19, #0x78]
+ffffff80090dac98: 17ffffd0     	b	0xffffff80090dabd8 <rt_mutex_setprio+0x188>
+ffffff80090dac9c: d503201f     	nop
+ffffff80090daca0: b948b281     	ldr	w1, [x20, #0x8b0]
+ffffff80090daca4: aa1803e0     	mov	x0, x24
+ffffff80090daca8: 36080101     	tbz	w1, #0x1, 0xffffff80090dacc8 <rt_mutex_setprio+0x278>
+ffffff80090dacac: f9400803     	ldr	x3, [x0, #0x10]
+ffffff80090dacb0: 2a1603e2     	mov	w2, w22
+ffffff80090dacb4: aa1303e1     	mov	x1, x19
+ffffff80090dacb8: aa1403e0     	mov	x0, x20
+ffffff80090dacbc: d63f0060     	blr	x3
+ffffff80090dacc0: 17ffff83     	b	0xffffff80090daacc <rt_mutex_setprio+0x7c>
+ffffff80090dacc4: d503201f     	nop
+ffffff80090dacc8: aa1403e0     	mov	x0, x20
+ffffff80090daccc: 97ffeb81     	bl	0xffffff80090d5ad0 <update_rq_clock.part.43>
+ffffff80090dacd0: f9403e60     	ldr	x0, [x19, #0x78]
+ffffff80090dacd4: 17fffff6     	b	0xffffff80090dacac <rt_mutex_setprio+0x25c>
+ffffff80090dacd8: aa1403e0     	mov	x0, x20
+ffffff80090dacdc: 97ffeb7d     	bl	0xffffff80090d5ad0 <update_rq_clock.part.43>
+ffffff80090dace0: 17ffff8b     	b	0xffffff80090dab0c <rt_mutex_setprio+0xbc>
+ffffff80090dace4: d503201f     	nop
+ffffff80090dace8: f9403e60     	ldr	x0, [x19, #0x78]
+ffffff80090dacec: aa1303e1     	mov	x1, x19
+ffffff80090dacf0: f9401c02     	ldr	x2, [x0, #0x38]
+ffffff80090dacf4: aa1403e0     	mov	x0, x20
+ffffff80090dacf8: d63f0040     	blr	x2
+ffffff80090dacfc: 17ffff76     	b	0xffffff80090daad4 <rt_mutex_setprio+0x84>
+ffffff80090dad00: b903aa7f     	str	wzr, [x19, #0x3a8]
+ffffff80090dad04: f9016a7f     	str	xzr, [x19, #0x2d0]
+ffffff80090dad08: 17ffff79     	b	0xffffff80090daaec <rt_mutex_setprio+0x9c>
+ffffff80090dad0c: d503201f     	nop
+ffffff80090dad10: b903aa7f     	str	wzr, [x19, #0x3a8]
+ffffff80090dad14: 321d02d6     	orr	w22, w22, #0x8
+ffffff80090dad18: 17ffffad     	b	0xffffff80090dabcc <rt_mutex_setprio+0x17c>
+ffffff80090dad1c: d503201f     	nop
+ffffff80090dad20: b9406a60     	ldr	w0, [x19, #0x68]
+ffffff80090dad24: 7100001f     	cmp	w0, #0x0
+ffffff80090dad28: 7a40a2e0     	ccmp	w23, w0, #0x0, ge
+ffffff80090dad2c: 54fff7a0     	b.eq	0xffffff80090dac20 <rt_mutex_setprio+0x1d0>
+ffffff80090dad30: f9405303     	ldr	x3, [x24, #0xa0]
+ffffff80090dad34: 2a1703e2     	mov	w2, w23
+ffffff80090dad38: aa1303e1     	mov	x1, x19
+ffffff80090dad3c: aa1403e0     	mov	x0, x20

@@ -1,0 +1,16 @@
+
+build-aq/vmlinux:	file format elf64-littleaarch64
+
+Disassembly of section .text:
+
+ffffff8009105678 <rt_mutex_get_effective_prio>:
+ffffff8009105678: a9be7bfd     	stp	x29, x30, [sp, #-0x20]!
+ffffff800910567c: 910003fd     	mov	x29, sp
+ffffff8009105680: a90153f3     	stp	x19, x20, [sp, #0x10]
+ffffff8009105684: aa0003f3     	mov	x19, x0
+ffffff8009105688: 2a0103f4     	mov	w20, w1
+ffffff800910568c: aa1e03e0     	mov	x0, x30
+ffffff8009105690: 97fe41d8     	bl	0xffffff8009095df0 <_mcount>
+ffffff8009105694: f943f260     	ldr	x0, [x19, #0x7e0]
+ffffff8009105698: b4000140     	cbz	x0, 0xffffff80091056c0 <rt_mutex_get_effective_prio+0x48>
+ffffff800910569c: f943f660     	ldr	x0, [x19, #0x7e8]

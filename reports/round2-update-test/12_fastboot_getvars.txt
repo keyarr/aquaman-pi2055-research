@@ -1,0 +1,47 @@
+=== getvar version ===
+getvar:version                                     FAILED (Device sent unknown status code: )
+Finished. Total time: 0.000s
+exit:0
+Bus 003 Device 011: ID 18d1:0d02 Google Inc. Celkon A88
+=== getvar version-bootloader ===
+version-bootloader: U-Boot 2015.01-g7ac5df7677-dirty
+Finished. Total time: 0.000s
+exit:0
+Bus 003 Device 011: ID 18d1:0d02 Google Inc. Celkon A88
+=== getvar product ===
+product: aquaman
+Finished. Total time: 0.000s
+exit:0
+Bus 003 Device 011: ID 18d1:0d02 Google Inc. Celkon A88
+=== getvar serialno ===
+serialno: 1234567890
+Finished. Total time: 0.000s
+exit:0
+Bus 003 Device 011: ID 18d1:0d02 Google Inc. Celkon A88
+=== getvar unlocked ===
+unlocked: yes
+Finished. Total time: 0.000s
+exit:0
+Bus 003 Device 011: ID 18d1:0d02 Google Inc. Celkon A88
+=== getvar secure ===
+secure: no
+Finished. Total time: 0.000s
+exit:0
+Bus 003 Device 011: ID 18d1:0d02 Google Inc. Celkon A88
+=== getvar current-slot ===
+getvar:current-slot                                FAILED (Status read failed (No such device))
+Finished. Total time: 0.361s
+exit:0
+no target VID
+=== getvar slot-count ===
+< waiting for any device >
+exit:124
+no target VID
+=== getvar max-download-size ===
+< waiting for any device >
+exit:124
+no target VID
+=== getvar variant ===
+< waiting for any device >
+exit:124
+no target VID

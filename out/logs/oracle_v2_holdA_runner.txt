@@ -1,0 +1,18 @@
+=== ghostlock_oracle_v2 leg=nostamp hold  uptime_before=626.64
+  | [info] mode=nostamp (controle, sem carimbo)
+  | [cmp] errno=35 EDEADLK ok, tid_waiter=5111
+  | [teardown] waiter acordou e soltou a chain
+  | [teardown] owner virou zumbi (nao joined), task_struct vivo
+  | [teardown] carimbo feito, settle 2.5s com heartbeat
+  | [hb] +0ms
+  | [hb] +500ms
+  | [hb] +1000ms
+  | [hb] +1500ms
+  | [hb] +2000ms
+adb: no devices/emulators found
+=== uptime_after=
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+    print('REBOOT DETECTADO' if float('') < float('626.64') else 'sem reboot (uptime subiu %.1fs)' % (float('')-float('626.64')))
+                                ~~~~~^^^^
+ValueError: could not convert string to float: ''

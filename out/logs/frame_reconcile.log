@@ -1,0 +1,24 @@
+frame_reconcile — 100% host, zero reboots (2026-09-29)
+tool: NDK r29 llvm-objdump/llvm-dwarfdump + tools/dwarf_offsets.py em build-aq/vmlinux
+
+$ llvm-objdump -d --disassemble-symbols=SyS_futex       -> 0xffffff800913ca30: stp x29,x30,[sp,#-0x70]!   FRAME=0x70
+$ llvm-objdump -d --disassemble-symbols=do_futex        -> 0xffffff800913bec0: stp x29,x30,[sp,#-0x120]!  FRAME=0x120
+$ llvm-objdump -d --disassemble-symbols=futex_wait_requeue_pi.constprop.8 -> 0xffffff800913b398: stp [sp,#-0x1a0]! FRAME=0x1a0
+$ grep System.map futex_wait_requeue_pi -> SO constprop.8 (t 0xffffff800913b398); sem simbolo plain
+$ do_futex+0x4b4 @ 0xffffff800913c374: bl 0xffffff800913b398 <constprop.8>  (dispatch direto p/ o clone)
+$ llvm-objdump -d --disassemble-symbols=SyS_pselect6    -> 0xffffff8009230770: stp [sp,#-0x90]!   FRAME=0x90
+$ llvm-objdump -d --disassemble-symbols=core_sys_select -> 0xffffff8009230260: stp [sp,#-0x190]!  FRAME=0x190
+$ css+0x74 @ 0xffffff80092302d4: add x25,x29,#0x90   (stack_fds base = x29+0x90)
+$ css+0x6c @ 0xffffff80092302cc: cmp x19,#0x2a      (limite stack vs kmalloc: size>0x2a)
+$ fwrq+0xbc @ 0xffffff800913b454: add x21,x29,#0x80; fwrq+0xc8 @ 0xffffff800913b460: str x21,[x29,#0x80]
+$ fwrq+0x110 @ 0xffffff800913b4a8: stp x21,x22,[x29,#0x188]  (x21 -> q.rt_waiter; q=x29+0x130 +0x58=0x188)
+$ fwrq+0x338 @ 0xffffff800913b6d4: mov x2,x21; bl rt_mutex_finish_proxy_lock (x21=x29+0x80 como waiter)
+$ llvm-dwarfdump: DIE 0x00a9e1d8 rt_waiter (futex.c:2858, abstract 0x00a97449) DW_OP_fbreg -288; CFA=x29+0x1a0 -> x29+0x80 OK
+$ llvm-dwarfdump: stack_fds (fs/select.c:561, long[32]) DW_OP_fbreg -256; CFA=x29+0x190 -> x29+0x90 OK
+$ python3 tools/dwarf_offsets.py build-aq/vmlinux -> out/logs/frame_reconcile_dwarf.log (mismatches 0; task 0xdc0/prio 0x68/pi 0x7e0 rentals, rtmw 0x50/task 0x30, futex_q rt_waiter 0x58, rt_mutex 0x20 — tudo bate com target.h)
+$ grep aquaman-config: PREEMPT=y FUTEX=y RT_MUTEXES=y DEBUG_RT_MUTEXES unset SW_TTBR0_PAN unset
+$ boot_unpack/kernel = AMLSECU! magic (fechado, precisa secure world) -> stock frames NAO extraiveis no host; lab segue INFERIDO p/ stock
+
+contas: WAITER_OFF_SP = 0x70+0x120+0x1a0-0x80 = 0x2b0; STACK_FDS_OFF_SP = 0x90+0x190-0x90 = 0x190; PAD = 0x120, janela [0x120,0x1c0]
+achado extra (codigo, nao reboot): stamp() usa VLA fixo 4096 (MAX_PAD) e so varia memset len -> user SP identico p/ todo PAD;
+stack_fds e funcao pura de (stack base fixa, frames fixos) -> varredura PAD foi no-op; ver reports/ghostlock-value-oracle.md

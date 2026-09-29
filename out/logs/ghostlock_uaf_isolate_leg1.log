@@ -1,0 +1,6 @@
+[info] leg=1 (control) with_cmp=0 consumer=0
+[cmp] pulado (controle)
+[waiter] saiu do wait (waiter=sem consumer)
+[owner] saiu do lock
+[wait] w_done=1 apos 0 spins
+[verdict] leg=1 sobreviveu, consumer=0
