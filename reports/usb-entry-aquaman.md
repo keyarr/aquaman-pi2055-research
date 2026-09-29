@@ -341,6 +341,29 @@ trial 2 was run fully stepwise, the only one with a clean before/after:
 
 journal: `reports/round3-usb-entry/setusbboot_timeline.txt`.
 
+**positive proof of absence.** a bus watcher polling
+`/sys/bus/usb/devices/*/idVendor:idProduct` every **4 ms** ran across trials 2
+and 3 (`reports/round3-usb-entry/setusbboot_usbwatch.log`):
+
+```
+== 1b8e:c003 windows == NONE
+
+  0.000  2717:4e40            (Android, before the run)
+  5.341  Android gone
+  8.697  18d1:0d02             (fastboot up)
+ 26.962  fastboot gone         <- set_usb_boot 2 + reset
+195.822  2717:4e40             <- 168.9 s of total bus silence
+199.382  Android gone
+202.379  18d1:0d02             (trial 3, fastboot up)
+232.715  fastboot gone         <- fastboot reboot
+273.057  2717:4e40             <- 40.3 s of silence
+```
+
+this is not "the journal has no lines for it". a 4 ms poll over 600 s saw the
+device leave the bus and never come back in any USB mode. the actual silence
+is longer than the 83-89 s measured by hand earlier, because the earlier
+numbers stopped counting when I stopped looking.
+
 user observations, the part no log can give:
 - trial 1: rebooted, **Xiaomi logo for ~100 ms**, then powered off.
 - trials 2 and 3: **black screen**, nothing on the Linux bus.
@@ -351,7 +374,8 @@ what this settles:
   tag at all, and it failed the same way as PSCI mode 0. three different reset
   paths, one outcome.
 - "the ROM honoured FORCE_USB_BOOT and enumerated 1b8e:c003" → **REFUTADO**,
-  three times.
+  three times, and with a 4 ms poll covering two of them end to end, not just
+  an empty journal.
 - "the box stayed on the normal boot path" → **REFUTADO**, it never booted.
 - "the boot behaviour changed" → **CONFIRMADO**. a plain reset on this device
   returns to Android in 15-20 s; the round-2 log records exactly that for
