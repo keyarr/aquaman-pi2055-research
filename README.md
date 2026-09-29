@@ -1,6 +1,8 @@
 aquaman PI.2055 kernel provenance research
 
- spent way too long on this. Mi TV Stick 1080p (MiTV-AESP0, aquaman, S805Y/GXL),
+ spent way too long on this. 
+ 
+ Mi TV Stick 1080p (MiTV-AESP0, aquaman, S805Y/GXL),
  Android 9 PI.2055, kernel 4.9.113 built 2022-09-06 by jenkins@c5-mitv-cm-build06.bj.
  question was simple: which source tree built this kernel?
 
@@ -21,3 +23,6 @@ aquaman PI.2055 kernel provenance research
  - aquaman-config : kernel config extracted from the device.
 
  full writeup: reports/provenance.md
+
+how i unlocked the bootloader:
+[bootloader_unlock](https://github.com/keyarr/aquaman-pi2055-research/blob/main/reports/bootloader_unlock.md)
