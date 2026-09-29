@@ -7,6 +7,10 @@ evidence wins.
 
 ## files
 
+> audit date 2026-09-29, before the RAM dump rounds. items marked below as
+> since-superseded: the `dt.img` rows, the "40 reports" count, and the
+> hypothesis/blocker lists at the bottom, which are updated inline.
+
 ```text
 aquaman-config              146 KB  kernel config extracted from the device (4447 opts)
 firmware/                   boot.img, bootloader.img, dt.img, dtbo.img, vbmeta.img + SHA256SUMS.txt
@@ -144,7 +148,7 @@ this is a real regression in McMCCRU HEAD, and it means:
 | `boot.img` 16 MiB | stock boot, **AMLSECU 0x0905 encrypted**, 3 blocks, entropy ~8.0 | no, key missing |
 | `recovery.img` 25 MiB | same scheme, different payload | no |
 | `bootloader.img` 1.3 MB | encrypted, zero strings | no |
-| `dt.img` 59 KB | encrypted DTB payload, **the board DTB is in here** | no |
+| `dt.img` 59 KB | encrypted DTB payload, **the board DTB is in here** | no — but see `aquaman-dtb-extraction.md`, the same DTB was recovered from DRAM |
 | `dtbo.img` 8 MiB | valid Android sparse header but 320 bytes non-zero in 8 MiB; empty overlay | effectively no |
 | `vbmeta.img` 4 KB | AVB, locked as far as we know | no |
 | `*.new.dat.br` | **system/vendor/product/odm sparse data + transfer lists** | **YES — this is where the real content is** |
@@ -180,6 +184,18 @@ and no network. see `reports/vendor-modules.md`.
    (`3.14.29`).
 9. the vendor modules will not load on a kernel built from McMCCRU: 13
    symbols missing, 190 CRCs differ.
+10. **the aquaman DTB.** pulled out of DRAM at `0x01000000`, 58280 bytes, valid
+    FDT, `gxl_aquaman_1g`, 376 nodes / 1798 properties, `dtc` round-trips it
+    with zero errors. `artifacts/aquaman.dtb` / `.dts`
+    (`reports/aquaman-dtb-extraction.md`).
+11. **a U-Boot/Amlogic code fragment exists at `0x01040000..0x0107ffff`** and
+    matches `drivers/securestorage/securestorage.c` structurally: the three
+    `bl31_storage_ops*` stubs, `secure_storage_init` with the four share-storage
+    ids in source order, the six `bl31_storage_*` wrappers, and 13 distinct
+    BL31 ids materialised by `movz`/`movk` (`reports/bl33-offline-round10.md`).
+    **strong evidence of U-Boot/Amlogic code. NOT PROVEN** that
+    `0x01040000` is the base or entrypoint, and NOT PROVEN that the whole of
+    BL33 is in that window.
 
 ## what is still hypothesis
 
@@ -190,25 +206,42 @@ and no network. see `reports/vendor-modules.md`.
    recover.
 2. the true `CONFIG_USB_FASTBOOT_BUF_ADDR` and `loadaddr` on this build. the
    reference tree's values are the best guess; `bootloader.img` is encrypted.
-3. the aquaman DTS. sealed in `dt.img`. the port map is written
-   (`reports/aquaman-dts-port.md`) but a dozen nodes are TODO.
+3. the aquaman DTS **source**. **the DTB itself is no longer a hypothesis**: it
+   was read out of DRAM at `0x01000000` and is `artifacts/aquaman.dtb`
+   (`reports/aquaman-dtb-extraction.md`). what remains unknown is the vendor's
+   `.dts` file, since `dt.img` is still encrypted and the recovered blob is a
+   decompilation with no include/label structure. the port map is written
+   (`reports/aquaman-dts-port.md`) and is now checkable against the blob.
 4. the AMLSECU packing format and the `aml-user-key.sig`. parser understood,
    packer closed, key never published.
 5. everything in the GhostLock track. dispatch and rollback reached on device,
    exploitability not demonstrated, and the 2026-09-29 commit says
    "dead end documented, six panics for nothing".
+6. **where BL33 actually is.** `reports/bl33-offline-round10.md` matched a
+   U-Boot/Amlogic fragment at `0x01040000..0x0107ffff` on `securestorage.c` and
+   13 BL31 ids. the base address, the entrypoint and whether the whole of BL33
+   is in that window are all unproven. the relocation delta is unproven too:
+   a constant shift maps 1326 of 1567 out-of-window `BL` targets back inside,
+   but 47413 values reach that count. this is the live lead, and the call graph
+   from `0x01073ba0` is where the work is.
 
 ## blockers, ranked
 
 1. **BL31 rejects unsigned images.** every RAM-only path funnels through
    `do_bootm` → SMC. `booti` and `go` are not compiled in (E8). this blocks
    execution, and it is the reason to stop spending time on address hunting.
-2. **no exact source.** so no exact config, no exact DTS, and — as just
+2. **no exact source.** so no exact config, no exact DTS source, and — as just
    measured — no CRC-compatible kernel.
-3. **the board DTB is encrypted.** without it the DTS port cannot be finished.
-4. **`/proc/device-tree` has never been read off the stock device.** this is the
-   cheapest untried thing on the list and it would replace half the DTS TODO
-   column with ground truth. read-only, probably no root needed.
+3. **the board DTB.** ~~encrypted, unavailable~~ — **RESOLVED for the blob**,
+   recovered from DRAM. what is still unavailable is the vendor's `.dts`
+   source, so the 4.9 port can be validated but not authored from the original.
+4. ~~**`/proc/device-tree` has never been read off the stock device.**~~ **not
+   needed**, the FDT was read out of RAM instead. it would still be a cheap
+   confirmation that the running kernel received this exact blob.
+5. **`aml_sec_boot_check` is still not located.** the U-Boot fragment at
+   `0x01040000` is secure storage, not the boot gate, and `AML_DATA_PROCESS`
+   (`0x820000ff`) is built nowhere in the 16 MiB dump. blocker 1 stands and
+   this round did not touch it.
 
 ## reproducibility notes
 
@@ -240,7 +273,8 @@ things worth carrying into it, both found incidentally here:
 
 ## contradictions found between old and new reports
 
-listed, not fixed. the task said to enumerate first.
+rows 1-8 were listed and left alone at the time; rows 9-13 were added by the
+RAM-dump rounds and are already fixed in their own files.
 
 | # | file | claim | status |
 |---|---|---|---|
@@ -252,6 +286,12 @@ listed, not fixed. the task said to enumerate first.
 | 6 | `vendor-module-compat.md` | "extraction blocked... requires root" | **WRONG.** the modules are in the OTA dumps in this repo |
 | 7 | `kernel-build-env.md` | "baseline compiles, EXIT=0" | **no longer true at HEAD.** `3d4ab79e` does not compile; see the `AMLOGIC_DVB` delta |
 | 8 | `kernel-baseline.md` §unknowns.1 | "video decode in stock is unknown (vendor modules?)" | **answered**, yes, 14 `.ko`. `reports/vendor-modules.md` |
+| 9 | `bl33-offline-round8.md` §3.1 | "a second copy of the whole tree at `+0x80000`" | **REFUTED.** `d00dfeed` appears once in 16 MiB; `0x01080000` is an `AML_RES!` image. `aquaman-dtb-extraction.md` §3, `bl33-offline-round10.md` §7 |
+| 10 | `bl33-offline-round8.md` §5 | "SMC sites, 11 in total" | **REFUTED.** the `smc` verb compares against `0xD4000000`, which is not a valid `svc`/`hvc`/`smc` opcode. 5 real in the code window, 4 real `svc #0` in the kernel, 16 words matched. `bl33-offline-round10.md` §3 |
+| 11 | `bl33-offline-round8.md` §3.2 | "`0x01040000..0x01080000`, ARM64 code, unidentified", rejected as U-Boot for having no strings and no `brk` | **REFUTED.** it matches `securestorage.c` on 13 BL31 ids. `bl33-offline-round10.md` §4 |
+| 12 | `bl33-offline-round8.md` §3.5 | "the kernel in RAM is the device's own **stock** kernel" and located "at 0x0169e000" | **partly wrong.** the banner is `-dirty`, so it is a modified tree, not stock. `0x0169e000` is a run boundary, the first non-zero byte is `0x0169e8bb` |
+| 13 | `dts-analysis.md`, `aquaman-dts-port.md`, `rebuilt-kernel.md` #16, `custom-kernel-execution.md` §5.1, this file §blockers | "the board DTB is sealed in `dt.img`, unavailable" | **OBSOLETE for the DTB.** recovered from DRAM at `0x01000000`, `artifacts/aquaman.dtb`. `dt.img` itself is still encrypted, so the vendor `.dts` source is still missing |
+| 14 | `bl33-offline-round8.md` §7 | "high confidence that BL33 is not in 0x01000000..0x02000000" | **REFUTED as a range claim.** true of `0x01000000`, false of the window: there is U-Boot at `0x01040000`. the original wording overreached from a single address |
 
 on #4 specifically, because it is the one that carried a root cause:
 

@@ -1,0 +1,11 @@
+version 0.7
+stage   16 (TPL/BL33-u-boot)
+  len=  1 OK
+  len= 32 OK
+  len= 63 OK
+  len= 64 OK
+  len= 65 FAIL [Errno 110] Operation timed out
+  len= 66 FAIL [Errno 110] Operation timed out
+  len= 96 FAIL [Errno 110] Operation timed out
+  len=127 FAIL [Errno 110] Operation timed out
+  len=128 FAIL [Errno 110] Operation timed out

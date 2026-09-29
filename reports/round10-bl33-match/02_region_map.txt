@@ -1,0 +1,34 @@
+region map, derived from the dump
+region                                                   start      end          size  first   last
+0x01000000..0x0100e3a7      58280  DTB / FDT                                      ent 4.22  nz 31644
+0x0100e3a8..0x0100e3ff         88  gap (FDT totalsize -> next run)                ent -0.00  nz     0
+0x0100e400..0x0103ffff     203776  data before the AArch64 window                 ent 1.52  nz 106057
+0x01040000..0x0107ffff     262144  AArch64 code, candidate BL33 fragment          ent 6.31  nz 221392
+0x01080000..0x01139fff     761856  AML_RES! resource image (GXB_IMG_LOAD_ADDR)    ent 3.96  nz 129775
+0x0169e000..0x01ffffff    9838592  kernel region                                  ent 6.39  nz 8283333
+
+FDT header
+  magic              0xd00dfeed  3490578157
+  totalsize          0x0000e3a8  58280
+  off_dt_struct      0x00000038  56
+  off_dt_strings     0x0000caa4  51876
+  off_mem_rsvmap     0x00000028  40
+  version            0x00000011  17
+  last_comp_version  0x00000010  16
+  boot_cpuid_phys    0x00000000  0
+  size_dt_strings    0x00001904  6404
+  size_dt_struct     0x0000ca6c  51820
+
+occupancy of the kernel region
+  0x0169e000 nonzero  1662/4096
+  0x0169f000 nonzero  3682/4096
+  first non-zero byte at or after 0x01600000: 0x0169e8bb
+  => 0x0169e000 is the run boundary, not a measured kernel start
+
+resource image
+  AmlResImgHead_t crc 0x3755c7a4 version 2 magic b'AML_RES!'
+  imgSz 0xdfb80 (916352) items 8 align 16 -> declared end 0x0115fb80
+  last non-zero byte inside it: 0x0113906b
+
+d00dfeed occurrences
+  0x01000000

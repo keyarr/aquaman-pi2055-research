@@ -1,0 +1,264 @@
+reference: linux-amlogic arch/arm64/boot/dts/amlogic/gxl_p212_1g.dts + mesongxl.dtsi
+            + partition_mbox_normal.dtsi, preprocessed and compiled with dtc 1.7.2
+aquaman nodes 376, reference nodes 335
+
+=== nodes only in the reference (absent from aquaman) ===
+   /ethernet@0xc9410000
+   /firmware/android/fstab/system
+   /gpio_keypad
+   /pm
+
+=== nodes only in aquaman ===
+   /__symbols__
+   /aml_pm
+   /amremote_led
+   /btwakecontrol
+   /cpus/cpu-map/cluster0
+   /custom_maps/map_3
+   /custom_maps/map_4
+   /firmware/android/fstab/product
+   /partitions/metadata
+   /partitions/product
+   /partitions/vbmeta
+   /pinctrl@14/ao_i2c
+   /pinctrl@14/ao_uart
+   /pinctrl@14/hdmitx_eecec
+   /pinctrl@4b0/a_i2c
+   /pinctrl@4b0/a_uart/mux1
+   /pinctrl@4b0/ao_to_sd_uart_clr_pins
+   /pinctrl@4b0/audio_spdif_in
+   /pinctrl@4b0/audio_spdif_in_1
+   /pinctrl@4b0/audio_spdif_out_mute_pins
+   /pinctrl@4b0/audio_spdif_out_mute_pins/mux
+   /pinctrl@4b0/b_i2c
+   /pinctrl@4b0/c_i2c
+   /pinctrl@4b0/c_i2c_pin1
+   /pinctrl@4b0/d_i2c
+   /pinctrl@4b0/dvb_p_ts0_pins
+   /pinctrl@4b0/dvb_s_ts0_pins
+   /pinctrl@4b0/jtag_apao_pin
+   /pinctrl@4b0/jtag_apee_pin
+   /pinctrl@4b0/lcd_ttl_de_hvsync_off_pin
+   /pinctrl@4b0/lcd_ttl_de_hvsync_on_pin
+   /pinctrl@4b0/lcd_ttl_de_on_pin
+   /pinctrl@4b0/lcd_ttl_hvsync_on_pin
+   /pinctrl@4b0/lcd_ttl_rgb_6bit_off
+   /pinctrl@4b0/lcd_ttl_rgb_6bit_on
+   /pinctrl@4b0/lcd_ttl_rgb_8bit_off
+   /pinctrl@4b0/lcd_ttl_rgb_8bit_on
+   /pinctrl@4b0/nand_pulldown
+   /pinctrl@4b0/nand_pullup
+   /pinctrl@4b0/sd_iso7816_pins
+   /pinctrl@4b0/spicc_pulldown_z11z12z13
+   /pinctrl@4b0/spicc_pullup_z11z12z13
+   /reserved-memory/ramoops@0x07400000
+   /unifykey/key_17
+   /unifykey/key_18
+
+=== shared nodes whose values differ, phandle and pure-renumbering noise removed ===
+
+/  (amlogic-dt-id)
+   amlogic-dt-id            aquaman "gxl_aquaman_1g"                             p212 "gxl_p212_1g"
+
+/amhdmitx  (vend-data)
+   vend-data                aquaman <0x52>                                       p212 <0x4e>
+
+/aml-sensor@0/cooling_devices/cpucore_cool_cluster0  (min_state)
+   min_state                aquaman <0x3>                                        p212 <0x1>
+
+/aml-sensor@0/cooling_devices/gpufreq_cool  (min_state)
+   min_state                aquaman <0x1f4>                                      p212 <0x190>
+
+/amlvecm  (cfg_en_osd_100, tx_op_color_primary)
+   cfg_en_osd_100           aquaman <0x3>                                        p212 <0x1>
+   tx_op_color_primary      aquaman <0x1>                                        p212 <0x0>
+
+/aocec  (cec_osd_string, pinctrl-names)
+   cec_osd_string           aquaman "Mi TV Stick"                                p212 "MBox"
+   pinctrl-names            aquaman "default", "hdmitx_aocecb", "cec_pin_sleep"  p212 "default"
+
+/custom_maps  (mapnum)
+   mapnum                   aquaman <0x5>                                        p212 <0x3>
+
+/cvbsout  (status)
+   status                   aquaman "disabled"                                   p212 "okay"
+
+/dummy  (status)
+   status                   aquaman "okay"                                       p212 "disable"
+
+/dwc3@c9000000  (usb-phy)
+   usb-phy                  aquaman <0x50 0x51>                                  p212 <0x4c 0x4d>
+
+/firmware/android/fstab/vendor  (fsmgr_flags)
+   fsmgr_flags              aquaman "wait,avb"                                   p212 "wait"
+
+/mtd_nand/nandnormal  (partition)
+   partition                aquaman <0x49>                                       p212 <0x44>
+
+/partitions/cache  (size)
+   size                     aquaman <0x0 0x10000000>                             p212 <0x0 0x46000000>
+
+/partitions/odm  (size)
+   size                     aquaman <0x0 0x1400000>                              p212 <0x0 0x10000000>
+
+/partitions/system  (size)
+   size                     aquaman <0x0 0x5ac00000>                             p212 <0x0 0x74000000>
+
+/partitions/vendor  (size)
+   size                     aquaman <0x0 0x6400000>                              p212 <0x0 0x10000000>
+
+/pinctrl@4b0/a_uart/mux  (groups)
+   groups                   aquaman "uart_tx_a", "uart_rx_a"                     p212 "uart_tx_a", "uart_rx_a", "uart_cts_a", "uart_rts_a"
+
+/rc@c8100580  (protocol)
+   protocol                 aquaman <0x2>                                        p212 <0x1>
+
+/serial@c11084c0  (clocks)
+   clocks                   aquaman <0x10>                                       p212 <0x8 0x23>
+
+/soc/aobus@c8100000/i2c@0500  (status)
+   status                   aquaman "okay"                                       p212 "disabled"
+
+/t9015  (status)
+   status                   aquaman "disabled"                                   p212 "okay"
+
+/thermal-zones/soc_thermal/trips/trip-point@0  (temperature)
+   temperature              aquaman <0x15f90>                                    p212 <0x11170>
+
+/thermal-zones/soc_thermal/trips/trip-point@1  (temperature)
+   temperature              aquaman <0x17318>                                    p212 <0x13880>
+
+/thermal-zones/soc_thermal/trips/trip-point@2  (temperature)
+   temperature              aquaman <0x19a28>                                    p212 <0x14c08>
+
+/thermal-zones/soc_thermal/trips/trip-point@3  (temperature)
+   temperature              aquaman <0x1d4c0>                                    p212 <0x3f7a0>
+
+/unifykey  (unifykey-num)
+   unifykey-num             aquaman <0x13>                                       p212 <0x11>
+
+/unifykey/key_0  (key-name)
+   key-name                 aquaman "sn1"                                        p212 "usid"
+
+/unifykey/key_1  (key-name)
+   key-name                 aquaman "sn2"                                        p212 "mac"
+
+/unifykey/key_10  (key-name)
+   key-name                 aquaman "widevinekeybox"                             p212 "hdcp22_fw_private"
+
+/unifykey/key_11  (key-name)
+   key-name                 aquaman "hdcp22_fw_private"                          p212 "PlayReadykeybox25"
+
+/unifykey/key_12  (key-name)
+   key-name                 aquaman "PlayReadykeybox25"                          p212 "prpubkeybox"
+
+/unifykey/key_13  (key-device, key-name)
+   key-device               aquaman "normal"                                     p212 "secure"
+   key-name                 aquaman "bt_rc_mac"                                  p212 "prprivkeybox"
+
+/unifykey/key_14  (key-name)
+   key-name                 aquaman "prpubkeybox"                                p212 "attestationkeybox"
+
+/unifykey/key_15  (key-device, key-name)
+   key-device               aquaman "secure"                                     p212 "normal"
+   key-name                 aquaman "prprivkeybox"                               p212 "region_code"
+
+/unifykey/key_16  (key-name)
+   key-name                 aquaman "attestationkeybox"                          p212 "netflix_mgkid"
+
+/unifykey/key_4  (key-name)
+   key-name                 aquaman "mn1"                                        p212 "mac_bt"
+
+/unifykey/key_5  (key-name)
+   key-name                 aquaman "mn2"                                        p212 "mac_wifi"
+
+/unifykey/key_6  (key-name)
+   key-name                 aquaman "hdcp2_rx"                                   p212 "hdcp2_tx"
+
+/unifykey/key_7  (key-device, key-name, key-permit)
+   key-device               aquaman "efuse"                                      p212 "normal"
+   key-name                 aquaman "mac_bt"                                     p212 "hdcp2_rx"
+   key-permit               aquaman "read", "write"                              p212 "read", "write", "del"
+
+/unifykey/key_8  (key-device, key-name, key-permit)
+   key-device               aquaman "efuse"                                      p212 "secure"
+   key-name                 aquaman "mac"                                        p212 "widevinekeybox"
+   key-permit               aquaman "read", "write"                              p212 "read", "write", "del"
+
+/unifykey/key_9  (key-device, key-name, key-permit)
+   key-device               aquaman "efuse"                                      p212 "normal"
+   key-name                 aquaman "mac_wifi"                                   p212 "deviceid"
+   key-permit               aquaman "read", "write"                              p212 "read", "write", "del"
+
+/wifi_pwm_conf/pwm_channel1_conf  (pwms)
+   pwms                     aquaman <0x39 0x0 0x774d 0x0>                        p212 <0x34 0x0 0x774d 0x0>
+
+/wifi_pwm_conf/pwm_channel2_conf  (pwms)
+   pwms                     aquaman <0x39 0x2 0x7724 0x0>                        p212 <0x34 0x2 0x7724 0x0>
+
+=== properties present on a shared node in one tree but not the other ===
+  /@c1108d80                                     phandle                aquaman only
+  /amhdmitx                                      phandle                aquaman only
+  /aocec                                         phandle                aquaman only
+  /aocec                                         pinctrl-1              aquaman only
+  /aocec                                         pinctrl-2              aquaman only
+  /audio_data                                    phandle                aquaman only
+  /bt-dev                                        gpio_en                aquaman only
+  /cpus                                          phandle                aquaman only
+  /custom_maps                                   map3                   aquaman only
+  /custom_maps                                   map4                   aquaman only
+  /defendkey                                     phandle                aquaman only
+  /dummy                                         phandle                aquaman only
+  /dummy-battery                                 phandle                aquaman only
+  /dummy-charger                                 phandle                aquaman only
+  /dwc3@c9000000                                 phandle                aquaman only
+  /efuse                                         phandle                aquaman only
+  /emmc@d0074000                                 phandle                aquaman only
+  /mali@d00c0000                                 phandle                aquaman only
+  /mali@d00c0000/clk250_cfg                      phandle                aquaman only
+  /mali@d00c0000/clk800_cfg                      phandle                aquaman only
+  /partitions                                    part-14                aquaman only
+  /partitions                                    part-15                aquaman only
+  /partitions                                    part-16                aquaman only
+  /partitions                                    phandle                aquaman only
+  /pinctrl@14                                    phandle                aquaman only
+  /pinctrl@4b0                                   phandle                aquaman only
+  /pwm@c1108550                                  phandle                aquaman only
+  /pwm@c1108640                                  phandle                aquaman only
+  /pwm@c8100550                                  phandle                aquaman only
+  /ram-dump                                      reg                    reference only
+  /ram-dump                                      reg-names              reference only
+  /rc@c8100580                                   phandle                aquaman only
+  /reserved-memory/linux,secos                   phandle                aquaman only
+  /saradc                                        phandle                aquaman only
+  /sd@d0072000                                   phandle                aquaman only
+  /sdio@d0070000                                 phandle                aquaman only
+  /serial@c11084c0                               phandle                aquaman only
+  /serial@c11084dc                               phandle                aquaman only
+  /serial@c1108700                               phandle                aquaman only
+  /serial@c81004c0                               phandle                aquaman only
+  /serial@c81004e0                               phandle                aquaman only
+  /snd_dmic                                      phandle                aquaman only
+  /soc/aobus@c8100000                            phandle                aquaman only
+  /soc/aobus@c8100000/i2c@0500                   phandle                aquaman only
+  /soc/apb@d0000000                              phandle                aquaman only
+  /soc/cbus@c1100000                             phandle                aquaman only
+  /soc/cbus@c1100000/i2c@8500                    phandle                aquaman only
+  /soc/cbus@c1100000/i2c@87c0                    phandle                aquaman only
+  /soc/cbus@c1100000/i2c@87e0                    phandle                aquaman only
+  /soc/cbus@c1100000/i2c@8d20                    phandle                aquaman only
+  /soc/cbus@c1100000/interrupt-controller@9880   phandle                aquaman only
+  /soc/cbus@c1100000/reset-controller@4404       phandle                aquaman only
+  /soc/hiubus@c883c000                           phandle                aquaman only
+  /soc/periphs@c8834000                          phandle                aquaman only
+  /thermal-zones/soc_thermal/trips/trip-point@0  phandle                aquaman only
+  /thermal-zones/soc_thermal/trips/trip-point@2  phandle                aquaman only
+  /thermal-zones/soc_thermal/trips/trip-point@3  phandle                aquaman only
+  /unifykey                                      unifykey-index-17      aquaman only
+  /unifykey                                      unifykey-index-18      aquaman only
+  /unifykey/key_4                                key-type               reference only
+  /unifykey/key_5                                key-type               reference only
+  /unifykey/key_7                                key-type               aquaman only
+  /unifykey/key_8                                key-type               aquaman only
+  /unifykey/key_9                                key-type               aquaman only
+  /vout                                          tvout_monitor          aquaman only

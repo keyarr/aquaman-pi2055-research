@@ -1,0 +1,2185 @@
+// magic              0xd00dfeed  (3490578157)
+// totalsize          0x0000e3a8  (58280)
+// off_dt_struct      0x00000038  (56)
+// off_dt_strings     0x0000caa4  (51876)
+// off_mem_rsvmap     0x00000028  (40)
+// version            0x00000011  (17)
+// last_comp_version  0x00000010  (16)
+// boot_cpuid_phys    0x00000000  (0)
+// size_dt_strings    0x00001904  (6404)
+// size_dt_struct     0x0000ca6c  (51820)
+
+/
+    model                          str@0x0     "Amlogic"
+    amlogic-dt-id                  str@0x6     "gxl_aquaman_1g"
+    compatible                     str@0x14    "amlogic, Gxl"
+    interrupt-parent               str@0x1f    <0x1>
+    #address-cells                 str@0x30    <0x2>
+    #size-cells                    str@0x3f    <0x2>
+/mali@d00c0000
+    #cooling-cells                 str@0x4b    <0x2>
+    compatible                     str@0x14    "arm,mali-450"
+    interrupt-parent               str@0x1f    <0x1>
+    reg                            str@0x5a    <0x0 0xd00c0000 0x0 0x40000 0x0 0xc1104440 0x0 0x1000 0x0 0xc8100000 0x0 0x1000 0x0 0xc883c000 0x0 0x1000 0x0 0xc1104440 0x0 0x1000>
+    interrupts                     str@0x5e    <0x0 0xa0 0x4 0x0 0xa1 0x4 0x0 0xa2 0x4 0x0 0xa3 0x4 0x0 0xa4 0x4 0x0 0xa5 0x4 0x0 0xa6 0x4 0x0 0xa7 0x4 0x0 0xa8 0x4 0x0 0xa9 0x4>
+    interrupt-names                str@0x69    "IRQGP", "IRQGPMMU", "IRQPP", "IRQPMU", "IRQPP0", "IRQPPMMU0", "IRQPP1", "IRQPPMMU1", "IRQPP2", "IRQPPMMU2"
+    pmu_domain_config              str@0x79    <0x1 0x2 0x4 0x4 0x0 0x0 0x0 0x0 0x0 0x1 0x2 0x0>
+    pmu_switch_delay               str@0x8b    <0xffff>
+    num_of_pp                      str@0x9c    <0x3>
+    def_clk                        str@0xa6    <0x4>
+    sc_mpp                         str@0xae    <0x3>
+    tbl                            str@0xb5    <0x2 0x3 0x4 0x5 0x6 0x7 0x7>
+    clocks                         str@0xb9    <0x8 0x97 0x8 0x9>
+    clock-names                    str@0xc0    "gpu_mux", "gp0_pll"
+    control_interval               str@0xcc    <0xc8>
+    phandle                        str@0xdd    <0x83>
+/mali@d00c0000/clk125_cfg
+    clk_freq                       str@0xe5    <0x7735940>
+    clk_parent                     str@0xee    "fclk_div4"
+    clkp_freq                      str@0xf9    <0x1dcd6500>
+    voltage                        str@0x103   <0x47e>
+    keep_count                     str@0x10b   <0x5>
+    threshold                      str@0x116   <0x1e 0xfa>
+    phandle                        str@0xdd    <0x2>
+/mali@d00c0000/clk250_cfg
+    clk_freq                       str@0xe5    <0xee6b280>
+    clk_parent                     str@0xee    "fclk_div4"
+    clkp_freq                      str@0xf9    <0x1dcd6500>
+    voltage                        str@0x103   <0x47e>
+    keep_count                     str@0x10b   <0x5>
+    threshold                      str@0x116   <0x73 0xfa>
+    phandle                        str@0xdd    <0x84>
+/mali@d00c0000/clk285_cfg
+    clk_freq                       str@0xe5    <0x1107a76d>
+    clk_parent                     str@0xee    "fclk_div7"
+    clkp_freq                      str@0xf9    <0x1107a76d>
+    voltage                        str@0x103   <0x47e>
+    keep_count                     str@0x10b   <0x5>
+    threshold                      str@0x116   <0x64 0xfa>
+    phandle                        str@0xdd    <0x3>
+/mali@d00c0000/clk400_cfg
+    clk_freq                       str@0xe5    <0x17d78400>
+    clk_parent                     str@0xee    "fclk_div5"
+    clkp_freq                      str@0xf9    <0x17d78400>
+    voltage                        str@0x103   <0x47e>
+    keep_count                     str@0x10b   <0x3>
+    threshold                      str@0x116   <0xa8 0xfa>
+    phandle                        str@0xdd    <0x4>
+/mali@d00c0000/clk500_cfg
+    clk_freq                       str@0xe5    <0x1dcd6500>
+    clk_parent                     str@0xee    "fclk_div4"
+    clkp_freq                      str@0xf9    <0x1dcd6500>
+    voltage                        str@0x103   <0x47e>
+    keep_count                     str@0x10b   <0x2>
+    threshold                      str@0x116   <0xbe 0xfa>
+    phandle                        str@0xdd    <0x5>
+/mali@d00c0000/clk666_cfg
+    clk_freq                       str@0xe5    <0x27bc86aa>
+    clk_parent                     str@0xee    "fclk_div3"
+    clkp_freq                      str@0xf9    <0x27bc86aa>
+    voltage                        str@0x103   <0x47e>
+    keep_count                     str@0x10b   <0x1>
+    threshold                      str@0x116   <0xb1 0xfa>
+    phandle                        str@0xdd    <0x6>
+/mali@d00c0000/clk750_cfg
+    clk_freq                       str@0xe5    <0x2c588a00>
+    clk_parent                     str@0xee    "gp0_pll"
+    clkp_freq                      str@0xf9    <0x2c588a00>
+    voltage                        str@0x103   <0x47e>
+    keep_count                     str@0x10b   <0x1>
+    threshold                      str@0x116   <0xd5 0xff>
+    phandle                        str@0xdd    <0x7>
+/mali@d00c0000/clk800_cfg
+    clk_freq                       str@0xe5    <0x2f34f600>
+    clk_parent                     str@0xee    "gp0_pll"
+    clkp_freq                      str@0xf9    <0x2f34f600>
+    voltage                        str@0x103   <0x47e>
+    keep_count                     str@0x10b   <0x1>
+    threshold                      str@0x116   <0xe6 0xff>
+    phandle                        str@0xdd    <0x85>
+/cpus
+    #address-cells                 str@0x30    <0x2>
+    #size-cells                    str@0x3f    <0x0>
+    phandle                        str@0xdd    <0x86>
+/cpus/cpu-map/cluster0
+    phandle                        str@0xdd    <0x87>
+/cpus/cpu-map/cluster0/core0
+    cpu                            str@0x120   <0x9>
+/cpus/cpu-map/cluster0/core1
+    cpu                            str@0x120   <0xa>
+/cpus/cpu-map/cluster0/core2
+    cpu                            str@0x120   <0xb>
+/cpus/cpu-map/cluster0/core3
+    cpu                            str@0x120   <0xc>
+/cpus/cpu@0
+    device_type                    str@0x124   "cpu"
+    compatible                     str@0x14    "arm,cortex-a53", "arm,armv8"
+    reg                            str@0x5a    <0x0 0x0>
+    enable-method                  str@0x130   "psci"
+    clocks                         str@0xb9    <0xd 0x0>
+    clock-names                    str@0xc0    "cpu-cluster.0"
+    cpu-idle-states                str@0x13e   <0xe>
+    phandle                        str@0xdd    <0x9>
+/cpus/cpu@1
+    device_type                    str@0x124   "cpu"
+    compatible                     str@0x14    "arm,cortex-a53", "arm,armv8"
+    reg                            str@0x5a    <0x0 0x1>
+    enable-method                  str@0x130   "psci"
+    clocks                         str@0xb9    <0xd 0x0>
+    clock-names                    str@0xc0    "cpu-cluster.0"
+    cpu-idle-states                str@0x13e   <0xe>
+    phandle                        str@0xdd    <0xa>
+/cpus/cpu@2
+    device_type                    str@0x124   "cpu"
+    compatible                     str@0x14    "arm,cortex-a53", "arm,armv8"
+    reg                            str@0x5a    <0x0 0x2>
+    enable-method                  str@0x130   "psci"
+    clocks                         str@0xb9    <0xd 0x0>
+    clock-names                    str@0xc0    "cpu-cluster.0"
+    cpu-idle-states                str@0x13e   <0xe>
+    phandle                        str@0xdd    <0xb>
+/cpus/cpu@3
+    device_type                    str@0x124   "cpu"
+    compatible                     str@0x14    "arm,cortex-a53", "arm,armv8"
+    reg                            str@0x5a    <0x0 0x3>
+    enable-method                  str@0x130   "psci"
+    clocks                         str@0xb9    <0xd 0x0>
+    clock-names                    str@0xc0    "cpu-cluster.0"
+    cpu-idle-states                str@0x13e   <0xe>
+    phandle                        str@0xdd    <0xc>
+/cpus/idle-states
+    entry-method                   str@0x14e   "arm,psci"
+/cpus/idle-states/system-sleep-0
+    compatible                     str@0x14    "arm,idle-state"
+    arm,psci-suspend-param         str@0x15b   <0x20000>
+    local-timer-stop               str@0x172   (present, zero length)
+    entry-latency-us               str@0x183   <0x3fffffff>
+    exit-latency-us                str@0x194   <0x40000000>
+    min-residency-us               str@0x1a4   <0xffffffff>
+    phandle                        str@0xdd    <0xe>
+/timer
+    compatible                     str@0x14    "arm,armv8-timer"
+    interrupts                     str@0x5e    <0x1 0xd 0xff08 0x1 0xe 0xff08 0x1 0xb 0xff08 0x1 0xa 0xff08>
+/timer_bc
+    compatible                     str@0x14    "arm, meson-bc-timer"
+    reg                            str@0x5a    <0x0 0xc1109990 0x0 0x4 0x0 0xc1109994 0x0 0x4>
+    timer_name                     str@0x1b5   "Meson TimerF"
+    clockevent-rating              str@0x1c0   <0x12c>
+    clockevent-shift               str@0x1d2   <0x14>
+    clockevent-features            str@0x1e3   <0x23>
+    interrupts                     str@0x5e    <0x0 0x3c 0x1>
+    bit_enable                     str@0x1f7   <0x10>
+    bit_mode                       str@0x202   <0xc>
+    bit_resolution                 str@0x20b   <0x0>
+/arm_pmu
+    compatible                     str@0x14    "arm,armv8-pmuv3"
+    interrupts                     str@0x5e    <0x0 0x89 0x4>
+    reg                            str@0x5a    <0x0 0xc8834400 0x0 0x1000>
+    sys_cpu_status0_offset         str@0x21a   <0xa0>
+    sys_cpu_status0_pmuirq_mask    str@0x231   <0xf>
+    relax_timer_ns                 str@0x24d   <0x989680>
+    max_wait_cnt                   str@0x25c   <0x2710>
+/interrupt-controller@2c001000
+    compatible                     str@0x14    "arm,cortex-a15-gic", "arm,cortex-a9-gic"
+    #interrupt-cells               str@0x269   <0x3>
+    #address-cells                 str@0x30    <0x0>
+    interrupt-controller           str@0x27a   (present, zero length)
+    reg                            str@0x5a    <0x0 0xc4301000 0x0 0x1000 0x0 0xc4302000 0x0 0x100>
+    interrupts                     str@0x5e    <0x1 0x9 0xf04>
+    phandle                        str@0xdd    <0x1>
+/psci
+    compatible                     str@0x14    "arm,psci-0.2"
+    method                         str@0x137   "smc"
+/aml_pm
+    compatible                     str@0x14    "amlogic, pm"
+    status                         str@0x28f   "okay"
+    device_name                    str@0x296   "aml_pm"
+    debug_reg                      str@0x2a2   <0xc81000a8>
+    exit_reg                       str@0x2ac   <0xc810023c>
+/secmon
+    compatible                     str@0x14    "amlogic, secmon"
+    memory-region                  str@0x2b5   <0xf>
+    in_base_func                   str@0x2c3   <0x82000020>
+    out_base_func                  str@0x2d0   <0x82000021>
+    reserve_mem_size               str@0x2de   <0x300000>
+/vcodec_dec
+    compatible                     str@0x14    "amlogic, vcodec-dec"
+    dev_name                       str@0x2ef   "aml-vcodec-dec"
+    status                         str@0x28f   "okay"
+/securitykey
+    compatible                     str@0x14    "aml, securitykey"
+    storage_query                  str@0x2f8   <0x82000060>
+    storage_read                   str@0x306   <0x82000061>
+    storage_write                  str@0x313   <0x82000062>
+    storage_tell                   str@0x321   <0x82000063>
+    storage_verify                 str@0x32e   <0x82000064>
+    storage_status                 str@0x33d   <0x82000065>
+    storage_list                   str@0x34c   <0x82000067>
+    storage_remove                 str@0x359   <0x82000068>
+    storage_in_func                str@0x368   <0x82000023>
+    storage_out_func               str@0x378   <0x82000024>
+    storage_block_func             str@0x389   <0x82000025>
+    storage_size_func              str@0x39c   <0x82000027>
+    storage_set_enctype            str@0x3ae   <0x8200006a>
+    storage_get_enctype            str@0x3c2   <0x8200006b>
+    storage_version                str@0x3d6   <0x8200006c>
+/cpu_iomap
+    compatible                     str@0x14    "amlogic, iomap"
+    #address-cells                 str@0x30    <0x2>
+    #size-cells                    str@0x3f    <0x2>
+    ranges                         str@0x3e6   (present, zero length)
+/cpu_iomap/io_cbus_base
+    reg                            str@0x5a    <0x0 0xc1100000 0x0 0x100000>
+/cpu_iomap/io_apb_base
+    reg                            str@0x5a    <0x0 0xd0050000 0x0 0x50000>
+/cpu_iomap/io_aobus_base
+    reg                            str@0x5a    <0x0 0xc8100000 0x0 0x100000>
+/cpu_iomap/io_vapb_base
+    reg                            str@0x5a    <0x0 0xd0100000 0x0 0x100000>
+/cpu_iomap/io_hiu_base
+    reg                            str@0x5a    <0x0 0xc883c000 0x0 0x2000>
+/cpu_info
+    compatible                     str@0x14    "amlogic, cpuinfo"
+    cpuinfo_cmd                    str@0x3ed   <0x82000044>
+    status                         str@0x28f   "okay"
+/watchdog
+    compatible                     str@0x14    "amlogic, meson-wdt"
+    status                         str@0x28f   "okay"
+    default_timeout                str@0x3f9   <0xa>
+    reset_watchdog_method          str@0x409   <0x1>
+    reset_watchdog_time            str@0x41f   <0x2>
+    shutdown_timeout               str@0x433   <0xa>
+    firmware_timeout               str@0x444   <0x6>
+    suspend_timeout                str@0x455   <0x6>
+    reg                            str@0x5a    <0x0 0xc11098d0 0x0 0x10>
+    clock-names                    str@0xc0    "xtal"
+    clocks                         str@0xb9    <0x10>
+/ram-dump
+    compatible                     str@0x14    "amlogic, ram_dump"
+    status                         str@0x28f   "okay"
+/jtag
+    compatible                     str@0x14    "amlogic, jtag"
+    status                         str@0x28f   "okay"
+    select                         str@0x465   "apao"
+    jtagao-gpios                   str@0x46c   <0x11 0x16 0x0 0x11 0x17 0x0 0x11 0x18 0x0 0x11 0x19 0x0>
+    jtagee-gpios                   str@0x479   <0x11 0x2a 0x0 0x11 0x2b 0x0 0x11 0x2c 0x0 0x11 0x2d 0x0>
+/mhu@c883c400
+    compatible                     str@0x14    "amlogic, meson_mhu"
+    reg                            str@0x5a    <0x0 0xc883c400 0x0 0x4c 0x0 0xc8013000 0x0 0x800>
+    interrupts                     str@0x5e    <0x0 0xd1 0x1 0x0 0xd2 0x1>
+    #mbox-cells                    str@0x486   <0x1>
+    mbox-names                     str@0x492   "cpu_to_scp_low", "cpu_to_scp_high"
+    mboxes                         str@0x49d   <0x12 0x0 0x12 0x1>
+    phandle                        str@0xdd    <0x12>
+/scpi_clocks
+    compatible                     str@0x14    "arm, scpi-clks"
+/scpi_clocks/scpi_clocks@0
+    compatible                     str@0x14    "arm, scpi-clk-indexed"
+    #clock-cells                   str@0x4a4   <0x1>
+    clock-indices                  str@0x4b1   <0x0>
+    clock-output-names             str@0x4bf   "vcpu"
+    phandle                        str@0xdd    <0xd>
+/xtal-clk
+    compatible                     str@0x14    "fixed-clock"
+    clock-frequency                str@0x4d2   <0x16e3600>
+    clock-output-names             str@0x4bf   "xtal"
+    #clock-cells                   str@0x4a4   <0x0>
+    phandle                        str@0xdd    <0x10>
+/vpu
+    compatible                     str@0x14    "amlogic, vpu-gxl"
+    dev_name                       str@0x2ef   "vpu"
+    status                         str@0x28f   "okay"
+    clocks                         str@0xb9    <0x8 0xc4 0x8 0x59 0x8 0x9 0x8 0xb6 0x8 0xba 0x8 0xbb>
+    clock-names                    str@0xc0    "vapb_clk", "vpu_intr_gate", "gp_pll", "vpu_clk0", "vpu_clk1", "vpu_clk"
+    clk_level                      str@0x4e2   <0x7>
+/@c1108d80
+    compatible                     str@0x14    "amlogic, spicc"
+    status                         str@0x28f   "disabled"
+    reg                            str@0x5a    <0x0 0xc1108d80 0x0 0x28>
+    clocks                         str@0xb9    <0x8 0x1e>
+    clock-names                    str@0xc0    "spicc_clk"
+    interrupts                     str@0x5e    <0x0 0x51 0x1>
+    device_id                      str@0x4ec   <0x0>
+    pinctrl-names                  str@0x4f6   "spicc_pulldown", "spicc_pullup"
+    pinctrl-0                      str@0x504   <0x13>
+    pinctrl-1                      str@0x50e   <0x14>
+    num_chipselect                 str@0x518   <0x1>
+    cs-gpios                       str@0x527   <0x11 0x59 0x0>
+    dma_en                         str@0x530   <0x0>
+    dma_tx_threshold               str@0x537   <0x3>
+    dma_rx_threshold               str@0x548   <0x3>
+    dma_num_per_read_burst         str@0x559   <0x3>
+    dma_num_per_write_burst        str@0x570   <0x3>
+    delay_control                  str@0x588   <0x15>
+    ssctl                          str@0x596   <0x0>
+    phandle                        str@0xdd    <0x88>
+/serial@c81004c0
+    compatible                     str@0x14    "amlogic, meson-uart"
+    reg                            str@0x5a    <0x0 0xc81004c0 0x0 0x18>
+    interrupts                     str@0x5e    <0x0 0xc1 0x1>
+    status                         str@0x28f   "okay"
+    clocks                         str@0xb9    <0x10>
+    clock-names                    str@0xc0    "clk_uart"
+    xtal_tick_en                   str@0x59c   <0x1>
+    fifosize                       str@0x5a9   <0x40>
+    pinctrl-names                  str@0x4f6   "default"
+    support-sysrq                  str@0x5b2   <0x0>
+    phandle                        str@0xdd    <0x89>
+/serial@c11084c0
+    compatible                     str@0x14    "amlogic, meson-uart"
+    reg                            str@0x5a    <0x0 0xc11084c0 0x0 0x18>
+    interrupts                     str@0x5e    <0x0 0x1a 0x1>
+    status                         str@0x28f   "okay"
+    clocks                         str@0xb9    <0x10>
+    clock-names                    str@0xc0    "clk_uart"
+    fifosize                       str@0x5a9   <0x80>
+    pinctrl-names                  str@0x4f6   "default"
+    pinctrl-0                      str@0x504   <0x15>
+    phandle                        str@0xdd    <0x8a>
+/serial@c11084dc
+    compatible                     str@0x14    "amlogic, meson-uart"
+    reg                            str@0x5a    <0x0 0xc11084dc 0x0 0x18>
+    interrupts                     str@0x5e    <0x0 0x4b 0x1>
+    status                         str@0x28f   "disabled"
+    clocks                         str@0xb9    <0x8 0x40>
+    clock-names                    str@0xc0    "clk_uart"
+    fifosize                       str@0x5a9   <0x40>
+    pinctrl-names                  str@0x4f6   "default"
+    pinctrl-0                      str@0x504   <0x16>
+    phandle                        str@0xdd    <0x8b>
+/serial@c1108700
+    compatible                     str@0x14    "amlogic, meson-uart"
+    reg                            str@0x5a    <0x0 0xc1108700 0x0 0x18>
+    interrupts                     str@0x5e    <0x0 0x5d 0x1>
+    status                         str@0x28f   "disabled"
+    clocks                         str@0xb9    <0x8 0x57>
+    clock-names                    str@0xc0    "clk_uart"
+    fifosize                       str@0x5a9   <0x40>
+    pinctrl-names                  str@0x4f6   "default"
+    pinctrl-0                      str@0x504   <0x17>
+    phandle                        str@0xdd    <0x8c>
+/serial@c81004e0
+    compatible                     str@0x14    "amlogic, meson-uart"
+    reg                            str@0x5a    <0x0 0xc81004e0 0x0 0x18>
+    interrupts                     str@0x5e    <0x0 0xc5 0x1>
+    status                         str@0x28f   "disable"
+    clocks                         str@0xb9    <0x10>
+    clock-names                    str@0xc0    "clk_uart"
+    fifosize                       str@0x5a9   <0x40>
+    pinctrl-names                  str@0x4f6   "default"
+    pinctrl-0                      str@0x504   <0x18>
+    phandle                        str@0xdd    <0x8d>
+/pinctrl@14
+    compatible                     str@0x14    "amlogic,meson-gxl-aobus-pinctrl"
+    #address-cells                 str@0x30    <0x2>
+    #size-cells                    str@0x3f    <0x2>
+    ranges                         str@0x3e6   (present, zero length)
+    phandle                        str@0xdd    <0x8e>
+/pinctrl@14/bank@14
+    reg                            str@0x5a    <0x0 0xc8100014 0x0 0x8 0x0 0xc810002c 0x0 0x4 0x0 0xc8100024 0x0 0x8>
+    reg-names                      str@0x5c0   "mux", "pull", "gpio"
+    gpio-controller                str@0x5ca   (present, zero length)
+    #gpio-cells                    str@0x5da   <0x2>
+    phandle                        str@0xdd    <0x8f>
+/pinctrl@14/remote_pin
+    phandle                        str@0xdd    <0x1e>
+/pinctrl@14/remote_pin/mux
+    groups                         str@0x5e6   "remote_input"
+    function                       str@0x5ed   "remote"
+/pinctrl@14/sd_to_ao_uart_clr_pins
+    phandle                        str@0xdd    <0x40>
+/pinctrl@14/sd_to_ao_uart_clr_pins/mux
+    groups                         str@0x5e6   "GPIOAO_0", "GPIOAO_1"
+    function                       str@0x5ed   "gpio_aobus"
+/pinctrl@14/sd_to_ao_uart_pins
+    phandle                        str@0xdd    <0x42>
+/pinctrl@14/sd_to_ao_uart_pins/mux
+    groups                         str@0x5e6   "uart_tx_ao_a_0", "uart_rx_ao_a_0"
+    function                       str@0x5ed   "uart_ao"
+    bias-pull-up                   str@0x5f6   (present, zero length)
+    input-enable                   str@0x603   (present, zero length)
+/pinctrl@14/ao_uart
+    phandle                        str@0xdd    <0x90>
+/pinctrl@14/ao_uart/mux
+    groups                         str@0x5e6   "uart_tx_ao_a_0", "uart_rx_ao_a_0"
+    function                       str@0x5ed   "uart_ao"
+/pinctrl@14/ao_b_uart
+    phandle                        str@0xdd    <0x18>
+/pinctrl@14/ao_b_uart/mux
+    groups                         str@0x5e6   "uart_tx_ao_b_0", "uart_rx_ao_b_0"
+    function                       str@0x5ed   "uart_ao_b"
+/pinctrl@14/ao_i2c
+    phandle                        str@0xdd    <0x91>
+/pinctrl@14/ao_i2c/mux
+    groups                         str@0x5e6   "i2c_sda_ao", "i2c_sck_ao"
+    function                       str@0x5ed   "i2c_ao"
+/pinctrl@14/hdmitx_aocec
+    phandle                        str@0xdd    <0x55>
+/pinctrl@14/hdmitx_aocec/mux
+    groups                         str@0x5e6   "ao_cec"
+    function                       str@0x5ed   "ao_cec"
+/pinctrl@14/hdmitx_eecec
+    phandle                        str@0xdd    <0x56>
+/pinctrl@14/hdmitx_eecec/mux
+    groups                         str@0x5e6   "ee_cec"
+    function                       str@0x5ed   "ee_cec"
+/pinctrl@4b0
+    compatible                     str@0x14    "amlogic,meson-gxl-periphs-pinctrl"
+    #address-cells                 str@0x30    <0x2>
+    #size-cells                    str@0x3f    <0x2>
+    ranges                         str@0x3e6   (present, zero length)
+    phandle                        str@0xdd    <0x92>
+/pinctrl@4b0/bank@4b0
+    reg                            str@0x5a    <0x0 0xc88344b0 0x0 0x28 0x0 0xc88344e8 0x0 0x14 0x0 0xc8834520 0x0 0x14 0x0 0xc8834430 0x0 0x40>
+    reg-names                      str@0x5c0   "mux", "pull", "pull-enable", "gpio"
+    gpio-controller                str@0x5ca   (present, zero length)
+    #gpio-cells                    str@0x5da   <0x2>
+    phandle                        str@0xdd    <0x11>
+/pinctrl@4b0/external_eth_pins
+    phandle                        str@0xdd    <0x93>
+/pinctrl@4b0/external_eth_pins/mux
+    groups                         str@0x5e6   "eth_mdio", "eth_mdc", "eth_clk_rx_clk", "eth_rx_dv", "eth_rxd0", "eth_rxd1", "eth_rxd2", "eth_rxd3", "eth_rgmii_tx_clk", "eth_tx_en", "eth_txd0", "eth_txd1", "eth_txd2", "eth_txd3"
+    function                       str@0x5ed   "eth"
+/pinctrl@4b0/jtag_apao_pin
+    phandle                        str@0xdd    <0x94>
+/pinctrl@4b0/jtag_apao_pin/mux
+    groups                         str@0x5e6   "jtag_tdi_0", "jtag_tdo_0", "jtag_clk_0", "jtag_tms_0"
+    function                       str@0x5ed   "jtag"
+/pinctrl@4b0/jtag_apee_pin
+    phandle                        str@0xdd    <0x95>
+/pinctrl@4b0/jtag_apee_pin/mux
+    groups                         str@0x5e6   "jtag_tdi_1", "jtag_tdo_1", "jtag_clk_1", "jtag_tms_1"
+    function                       str@0x5ed   "jtag"
+/pinctrl@4b0/a_uart
+    phandle                        str@0xdd    <0x15>
+/pinctrl@4b0/a_uart/mux
+    groups                         str@0x5e6   "uart_tx_a", "uart_rx_a"
+    function                       str@0x5ed   "uart_a"
+/pinctrl@4b0/a_uart/mux1
+    groups                         str@0x5e6   "uart_cts_a", "uart_rts_a"
+    function                       str@0x5ed   "uart_a"
+    bias-pull-down                 str@0x610   (present, zero length)
+/pinctrl@4b0/b_uart
+    phandle                        str@0xdd    <0x16>
+/pinctrl@4b0/b_uart/mux
+    groups                         str@0x5e6   "uart_tx_b", "uart_rx_b", "uart_cts_b", "uart_rts_b"
+    function                       str@0x5ed   "uart_b"
+/pinctrl@4b0/c_uart
+    phandle                        str@0xdd    <0x17>
+/pinctrl@4b0/c_uart/mux
+    groups                         str@0x5e6   "uart_tx_c", "uart_rx_c", "uart_cts_c", "uart_rts_c"
+    function                       str@0x5ed   "uart_c"
+/pinctrl@4b0/wifi_32k_pins
+    phandle                        str@0xdd    <0x37>
+/pinctrl@4b0/wifi_32k_pins/mux
+    groups                         str@0x5e6   "pwm_e"
+    function                       str@0x5ed   "pwm_e"
+/pinctrl@4b0/ao_to_sd_uart_clr_pins
+    phandle                        str@0xdd    <0x96>
+/pinctrl@4b0/ao_to_sd_uart_clr_pins/mux
+    groups                         str@0x5e6   "sdcard_d2", "sdcard_d3"
+    function                       str@0x5ed   "sdcard"
+    input-enable                   str@0x603   (present, zero length)
+    bias-pull-up                   str@0x5f6   (present, zero length)
+/pinctrl@4b0/sd_1bit_pins
+    phandle                        str@0xdd    <0x3f>
+/pinctrl@4b0/sd_1bit_pins/mux
+    groups                         str@0x5e6   "sdcard_d0", "sdcard_cmd", "sdcard_clk"
+    function                       str@0x5ed   "sdcard"
+    input-enable                   str@0x603   (present, zero length)
+    bias-pull-up                   str@0x5f6   (present, zero length)
+/pinctrl@4b0/ao_to_sd_uart_pins
+    phandle                        str@0xdd    <0x41>
+/pinctrl@4b0/ao_to_sd_uart_pins/mux
+    groups                         str@0x5e6   "uart_tx_ao_a_card4", "uart_rx_ao_a_card5"
+    function                       str@0x5ed   "uart_ao_a_card"
+    bias-pull-up                   str@0x5f6   (present, zero length)
+    input-enable                   str@0x603   (present, zero length)
+/pinctrl@4b0/emmc_clk_cmd_pins
+    phandle                        str@0xdd    <0x3a>
+/pinctrl@4b0/emmc_clk_cmd_pins/mux
+    groups                         str@0x5e6   "emmc_cmd", "emmc_clk"
+    function                       str@0x5ed   "emmc"
+    input-enable                   str@0x603   (present, zero length)
+    bias-pull-up                   str@0x5f6   (present, zero length)
+/pinctrl@4b0/emmc_conf_pull_up
+    phandle                        str@0xdd    <0x3b>
+/pinctrl@4b0/emmc_conf_pull_up/mux
+    groups                         str@0x5e6   "emmc_nand_d07", "emmc_clk", "emmc_cmd"
+    function                       str@0x5ed   "emmc"
+    input-enable                   str@0x603   (present, zero length)
+    bias-pull-up                   str@0x5f6   (present, zero length)
+/pinctrl@4b0/emmc_conf_pull_done
+    phandle                        str@0xdd    <0x3c>
+/pinctrl@4b0/emmc_conf_pull_done/mux
+    groups                         str@0x5e6   "emmc_ds"
+    function                       str@0x5ed   "emmc"
+    input-enable                   str@0x603   (present, zero length)
+    bias-pull-down                 str@0x610   (present, zero length)
+/pinctrl@4b0/sd_clk_cmd_pins
+    phandle                        str@0xdd    <0x3e>
+/pinctrl@4b0/sd_clk_cmd_pins/mux
+    groups                         str@0x5e6   "sdcard_cmd", "sdcard_clk"
+    function                       str@0x5ed   "sdcard"
+    input-enable                   str@0x603   (present, zero length)
+    bias-pull-up                   str@0x5f6   (present, zero length)
+/pinctrl@4b0/sd_all_pins
+    phandle                        str@0xdd    <0x3d>
+/pinctrl@4b0/sd_all_pins/mux
+    groups                         str@0x5e6   "sdcard_d0", "sdcard_d1", "sdcard_d2", "sdcard_d3", "sdcard_cmd", "sdcard_clk"
+    function                       str@0x5ed   "sdcard"
+    input-enable                   str@0x603   (present, zero length)
+    bias-pull-up                   str@0x5f6   (present, zero length)
+/pinctrl@4b0/sdio_clk_cmd_pins
+    phandle                        str@0xdd    <0x43>
+/pinctrl@4b0/sdio_clk_cmd_pins/mux
+    groups                         str@0x5e6   "sdio_clk", "sdio_cmd"
+    function                       str@0x5ed   "sdio"
+    input-enable                   str@0x603   (present, zero length)
+    bias-pull-up                   str@0x5f6   (present, zero length)
+/pinctrl@4b0/sdio_all_pins
+    phandle                        str@0xdd    <0x44>
+/pinctrl@4b0/sdio_all_pins/mux
+    groups                         str@0x5e6   "sdio_d0", "sdio_d1", "sdio_d2", "sdio_d3", "sdio_clk", "sdio_cmd"
+    function                       str@0x5ed   "sdio"
+    input-enable                   str@0x603   (present, zero length)
+    bias-pull-up                   str@0x5f6   (present, zero length)
+/pinctrl@4b0/sd_iso7816_pins
+    phandle                        str@0xdd    <0x97>
+/pinctrl@4b0/sd_iso7816_pins/mux
+    groups                         str@0x5e6   "iso7816_clk_dv", "iso7816_data_dv"
+    function                       str@0x5ed   "iso7816"
+    input-enable                   str@0x603   (present, zero length)
+    bias-pull-down                 str@0x610   (present, zero length)
+/pinctrl@4b0/nand_pulldown
+    phandle                        str@0xdd    <0x98>
+/pinctrl@4b0/nand_pulldown/mux
+    groups                         str@0x5e6   "emmc_nand_d07", "emmc_ds"
+    function                       str@0x5ed   "emmc"
+    bias-pull-down                 str@0x610   (present, zero length)
+/pinctrl@4b0/nand_pullup
+    phandle                        str@0xdd    <0x99>
+/pinctrl@4b0/nand_pullup/mux
+    groups                         str@0x5e6   "emmc_clk", "emmc_cmd"
+    function                       str@0x5ed   "emmc"
+    bias-pull-up                   str@0x5f6   (present, zero length)
+/pinctrl@4b0/all_nand_pins
+    phandle                        str@0xdd    <0x45>
+/pinctrl@4b0/all_nand_pins/mux
+    groups                         str@0x5e6   "emmc_nand_d07", "nand_ce0", "nand_ce1", "nand_rb0", "nand_ale", "nand_cle", "nand_wen_clk", "nand_ren_wr", "nand_dqs"
+    function                       str@0x5ed   "nand"
+    input-enable                   str@0x603   (present, zero length)
+/pinctrl@4b0/nand_cs
+    phandle                        str@0xdd    <0x46>
+/pinctrl@4b0/nand_cs/mux
+    groups                         str@0x5e6   "nand_ce0", "nand_ce1"
+    function                       str@0x5ed   "nand"
+/pinctrl@4b0/hdmitx_hpd
+    phandle                        str@0xdd    <0x53>
+/pinctrl@4b0/hdmitx_hpd/mux
+    groups                         str@0x5e6   "hdmi_hpd"
+    function                       str@0x5ed   "hdmi_hpd"
+/pinctrl@4b0/hdmitx_ddc
+    phandle                        str@0xdd    <0x54>
+/pinctrl@4b0/hdmitx_ddc/mux
+    groups                         str@0x5e6   "hdmi_sda", "hdmi_scl"
+    function                       str@0x5ed   "hdmi_ddc"
+/pinctrl@4b0/a_i2c
+    phandle                        str@0xdd    <0x9a>
+/pinctrl@4b0/a_i2c/mux
+    groups                         str@0x5e6   "i2c_sda_a", "i2c_scl_a"
+    function                       str@0x5ed   "i2c_a"
+/pinctrl@4b0/b_i2c
+    phandle                        str@0xdd    <0x9b>
+/pinctrl@4b0/b_i2c/mux
+    groups                         str@0x5e6   "i2c_sda_b", "i2c_scl_b"
+    function                       str@0x5ed   "i2c_b"
+/pinctrl@4b0/c_i2c
+    phandle                        str@0xdd    <0x9c>
+/pinctrl@4b0/c_i2c/mux
+    groups                         str@0x5e6   "i2c_sda_c_dv28", "i2c_scl_c_dv29"
+    function                       str@0x5ed   "i2c_c"
+/pinctrl@4b0/c_i2c_pin1
+    phandle                        str@0xdd    <0x9d>
+/pinctrl@4b0/c_i2c_pin1/mux
+    groups                         str@0x5e6   "i2c_sda_c_dv18", "i2c_scl_c_dv19"
+    function                       str@0x5ed   "i2c_c"
+/pinctrl@4b0/d_i2c
+    phandle                        str@0xdd    <0x9e>
+/pinctrl@4b0/d_i2c/mux
+    groups                         str@0x5e6   "i2c_sda_d", "i2c_scl_d"
+    function                       str@0x5ed   "i2c_d"
+/pinctrl@4b0/spicc_pulldown_z11z12z13
+    phandle                        str@0xdd    <0x9f>
+/pinctrl@4b0/spicc_pulldown_z11z12z13/mux
+    groups                         str@0x5e6   "spi_sclk_0", "spi_miso_0", "spi_mosi_0"
+    function                       str@0x5ed   "spi"
+/pinctrl@4b0/spicc_pullup_z11z12z13
+    phandle                        str@0xdd    <0xa0>
+/pinctrl@4b0/spicc_pullup_z11z12z13/mux
+    groups                         str@0x5e6   "spi_sclk_0", "spi_miso_0", "spi_mosi_0"
+    function                       str@0x5ed   "spi"
+/pinctrl@4b0/spicc_pulldown_x8x9x11
+    phandle                        str@0xdd    <0x13>
+/pinctrl@4b0/spicc_pulldown_x8x9x11/mux
+    groups                         str@0x5e6   "spi_sclk_1", "spi_miso_1", "spi_mosi_1"
+    function                       str@0x5ed   "spi"
+    bias-pull-down                 str@0x610   (present, zero length)
+/pinctrl@4b0/spicc_pullup_x8x9x11
+    phandle                        str@0xdd    <0x14>
+/pinctrl@4b0/spicc_pullup_x8x9x11/mux
+    groups                         str@0x5e6   "spi_sclk_1", "spi_miso_1", "spi_mosi_1"
+    function                       str@0x5ed   "spi"
+    bias-pull-up                   str@0x5f6   (present, zero length)
+/pinctrl@4b0/audio_i2s
+    phandle                        str@0xdd    <0x5d>
+/pinctrl@4b0/audio_i2s/mux
+    groups                         str@0x5e6   "i2s_am_clk", "i2s_ao_clk_out", "i2s_lr_clk_out", "i2sout_ch01"
+    function                       str@0x5ed   "i2s"
+/pinctrl@4b0/audio_spdif
+    phandle                        str@0xdd    <0x5c>
+/pinctrl@4b0/audio_spdif/mux
+    groups                         str@0x5e6   "spdif_out"
+    function                       str@0x5ed   "spdif_out"
+/pinctrl@4b0/audio_spdif_out_mute_pins
+    phandle                        str@0xdd    <0xa1>
+/pinctrl@4b0/audio_spdif_out_mute_pins/mux
+    groups                         str@0x5e6   "GPIOH_4"
+    function                       str@0x5ed   "gpio_periphs"
+/pinctrl@4b0/audio_spdif_in
+    phandle                        str@0xdd    <0xa2>
+/pinctrl@4b0/audio_spdif_in/mux
+    groups                         str@0x5e6   "spdif_in_z14"
+    function                       str@0x5ed   "spdif_in"
+/pinctrl@4b0/audio_spdif_in_1
+    phandle                        str@0xdd    <0xa3>
+/pinctrl@4b0/audio_spdif_in_1/mux
+    groups                         str@0x5e6   "spdif_in_h4"
+    function                       str@0x5ed   "spdif_in"
+/pinctrl@4b0/audio_pcm
+    phandle                        str@0xdd    <0x5b>
+/pinctrl@4b0/audio_pcm/mux
+    groups                         str@0x5e6   "pcm_out_a", "pcm_in_a", "pcm_fs_a", "pcm_clk_a"
+    function                       str@0x5ed   "pcm_a"
+/pinctrl@4b0/audio_dmic
+    phandle                        str@0xdd    <0x5a>
+/pinctrl@4b0/audio_dmic/mux
+    groups                         str@0x5e6   "dmic_in_dv24", "dmic_clk_dv25"
+    function                       str@0x5ed   "dmic"
+/pinctrl@4b0/dvb_p_ts0_pins
+    phandle                        str@0xdd    <0xa4>
+/pinctrl@4b0/dvb_p_ts0_pins/tsin_a
+    groups                         str@0x5e6   "tsin_sop_a_dv9", "tsin_d_valid_a_dv10", "tsin_d0_a_dv0", "tsin_d1_7_a_dv1_7", "tsin_clk_a_dv8"
+    function                       str@0x5ed   "tsin_a"
+/pinctrl@4b0/dvb_s_ts0_pins
+    phandle                        str@0xdd    <0xa5>
+/pinctrl@4b0/dvb_s_ts0_pins/tsin_a
+    groups                         str@0x5e6   "tsin_sop_a_dv9", "tsin_d_valid_a_dv10", "tsin_clk_a_dv8", "tsin_d0_a_dv0"
+    function                       str@0x5ed   "tsin_a"
+/pinctrl@4b0/lcd_ttl_rgb_6bit_on
+    phandle                        str@0xdd    <0xa6>
+/pinctrl@4b0/lcd_ttl_rgb_6bit_on/mux
+    groups                         str@0x5e6   "lcd_r2_7", "lcd_g2_7", "lcd_b2_7"
+    function                       str@0x5ed   "lcd_ttl"
+/pinctrl@4b0/lcd_ttl_rgb_6bit_off
+    phandle                        str@0xdd    <0xa7>
+/pinctrl@4b0/lcd_ttl_rgb_6bit_off/mux
+    groups                         str@0x5e6   "GPIODV_2", "GPIODV_3", "GPIODV_4", "GPIODV_5", "GPIODV_6", "GPIODV_7", "GPIODV_10", "GPIODV_11", "GPIODV_12", "GPIODV_13", "GPIODV_14", "GPIODV_15", "GPIODV_18", "GPIODV_19", "GPIODV_20", "GPIODV_21", "GPIODV_22", "GPIODV_23"
+    function                       str@0x5ed   "gpio_periphs"
+    input-enable                   str@0x603   (present, zero length)
+/pinctrl@4b0/lcd_ttl_rgb_8bit_on
+    phandle                        str@0xdd    <0xa8>
+/pinctrl@4b0/lcd_ttl_rgb_8bit_on/mux
+    groups                         str@0x5e6   "lcd_r0_1", "lcd_r2_7", "lcd_g0_1", "lcd_g2_7", "lcd_b0_1", "lcd_b2_7"
+    function                       str@0x5ed   "lcd_ttl"
+/pinctrl@4b0/lcd_ttl_rgb_8bit_off
+    phandle                        str@0xdd    <0xa9>
+/pinctrl@4b0/lcd_ttl_rgb_8bit_off/mux
+    groups                         str@0x5e6   "GPIODV_0", "GPIODV_1", "GPIODV_2", "GPIODV_3", "GPIODV_4", "GPIODV_5", "GPIODV_6", "GPIODV_7", "GPIODV_8", "GPIODV_9", "GPIODV_10", "GPIODV_11", "GPIODV_12", "GPIODV_13", "GPIODV_14", "GPIODV_15", "GPIODV_16", "GPIODV_17", "GPIODV_18", "GPIODV_19", "GPIODV_20", "GPIODV_21", "GPIODV_22", "GPIODV_23"
+    function                       str@0x5ed   "gpio_periphs"
+    input-enable                   str@0x603   (present, zero length)
+/pinctrl@4b0/lcd_ttl_de_on_pin
+    phandle                        str@0xdd    <0xaa>
+/pinctrl@4b0/lcd_ttl_de_on_pin/mux
+    groups                         str@0x5e6   "tcon_cph", "tcon_oeh"
+    function                       str@0x5ed   "lcd_ttl"
+/pinctrl@4b0/lcd_ttl_hvsync_on_pin
+    phandle                        str@0xdd    <0xab>
+/pinctrl@4b0/lcd_ttl_hvsync_on_pin/mux
+    groups                         str@0x5e6   "tcon_cph", "tcon_stv1", "tcon_sth1"
+    function                       str@0x5ed   "lcd_ttl"
+/pinctrl@4b0/lcd_ttl_de_hvsync_on_pin
+    phandle                        str@0xdd    <0xac>
+/pinctrl@4b0/lcd_ttl_de_hvsync_on_pin/mux
+    groups                         str@0x5e6   "tcon_cph", "tcon_oeh", "tcon_stv1", "tcon_sth1"
+    function                       str@0x5ed   "lcd_ttl"
+/pinctrl@4b0/lcd_ttl_de_hvsync_off_pin
+    phandle                        str@0xdd    <0xad>
+/pinctrl@4b0/lcd_ttl_de_hvsync_off_pin/mux
+    groups                         str@0x5e6   "GPIODV_26", "GPIODV_27", "GPIODV_24", "GPIODV_25"
+    function                       str@0x5ed   "gpio_periphs"
+    input-enable                   str@0x603   (present, zero length)
+/soc
+    compatible                     str@0x14    "simple-bus"
+    #address-cells                 str@0x30    <0x2>
+    #size-cells                    str@0x3f    <0x2>
+    ranges                         str@0x3e6   (present, zero length)
+/soc/cbus@c1100000
+    compatible                     str@0x14    "simple-bus"
+    reg                            str@0x5a    <0x0 0xc1100000 0x0 0x100000>
+    #address-cells                 str@0x30    <0x2>
+    #size-cells                    str@0x3f    <0x2>
+    ranges                         str@0x3e6   <0x0 0x0 0x0 0xc1100000 0x0 0x100000>
+    phandle                        str@0xdd    <0xae>
+/soc/cbus@c1100000/interrupt-controller@9880
+    compatible                     str@0x14    "amlogic,meson-gpio-intc", "amlogic,meson-gxl-gpio-intc"
+    reg                            str@0x5a    <0x0 0x9880 0x0 0x10>
+    interrupt-controller           str@0x27a   (present, zero length)
+    #interrupt-cells               str@0x269   <0x2>
+    amlogic,channel-interrupts     str@0x61f   <0x40 0x41 0x42 0x43 0x44 0x45 0x46 0x47>
+    status                         str@0x28f   "okay"
+    phandle                        str@0xdd    <0xaf>
+/soc/cbus@c1100000/meson_clk_msr
+    compatible                     str@0x14    "amlogic, gxl_measure"
+    reg                            str@0x5a    <0x0 0x875c 0x0 0x4 0x0 0x8764 0x0 0x4>
+/soc/cbus@c1100000/i2c@8500
+    compatible                     str@0x14    "amlogic,meson-gx-i2c"
+    status                         str@0x28f   "disabled"
+    reg                            str@0x5a    <0x0 0x8500 0x0 0x20>
+    interrupts                     str@0x5e    <0x0 0x15 0x1 0x0 0x2f 0x1>
+    #address-cells                 str@0x30    <0x1>
+    #size-cells                    str@0x3f    <0x0>
+    clocks                         str@0xb9    <0x8 0x1f>
+    clock-names                    str@0xc0    "clk_i2c"
+    phandle                        str@0xdd    <0xb0>
+/soc/cbus@c1100000/i2c@87c0
+    compatible                     str@0x14    "amlogic,meson-gx-i2c"
+    status                         str@0x28f   "disabled"
+    reg                            str@0x5a    <0x0 0x87c0 0x0 0x20>
+    interrupts                     str@0x5e    <0x0 0xd6 0x1 0x0 0x30 0x1>
+    #address-cells                 str@0x30    <0x1>
+    #size-cells                    str@0x3f    <0x0>
+    clocks                         str@0xb9    <0x8 0x1f>
+    clock-names                    str@0xc0    "clk_i2c"
+    phandle                        str@0xdd    <0xb1>
+/soc/cbus@c1100000/i2c@87e0
+    compatible                     str@0x14    "amlogic,meson-gx-i2c"
+    status                         str@0x28f   "disabled"
+    reg                            str@0x5a    <0x0 0x87e0 0x0 0x20>
+    interrupts                     str@0x5e    <0x0 0xd7 0x1 0x0 0x31 0x1>
+    #address-cells                 str@0x30    <0x1>
+    #size-cells                    str@0x3f    <0x0>
+    clocks                         str@0xb9    <0x8 0x1f>
+    clock-names                    str@0xc0    "clk_i2c"
+    phandle                        str@0xdd    <0xb2>
+/soc/cbus@c1100000/i2c@8d20
+    compatible                     str@0x14    "amlogic,meson-gx-i2c"
+    status                         str@0x28f   "disabled"
+    reg                            str@0x5a    <0x0 0x8d20 0x0 0x20>
+    interrupts                     str@0x5e    <0x0 0x27 0x1 0x0 0x32 0x1>
+    #address-cells                 str@0x30    <0x1>
+    #size-cells                    str@0x3f    <0x0>
+    clocks                         str@0xb9    <0x8 0x1f>
+    clock-names                    str@0xc0    "clk_i2c"
+    phandle                        str@0xdd    <0xb3>
+/soc/cbus@c1100000/reset-controller@4404
+    compatible                     str@0x14    "amlogic,reset"
+    reg                            str@0x5a    <0x0 0x4404 0x0 0x20>
+    #reset-cells                   str@0x63a   <0x1>
+    phandle                        str@0xdd    <0xb4>
+/soc/aobus@c8100000
+    compatible                     str@0x14    "simple-bus"
+    reg                            str@0x5a    <0x0 0xc8100000 0x0 0x100000>
+    #address-cells                 str@0x30    <0x2>
+    #size-cells                    str@0x3f    <0x2>
+    ranges                         str@0x3e6   <0x0 0x0 0x0 0xc8100000 0x0 0x100000>
+    phandle                        str@0xdd    <0xb5>
+/soc/aobus@c8100000/cpu_version
+    reg                            str@0x5a    <0x0 0x220 0x0 0x4>
+/soc/aobus@c8100000/i2c@0500
+    compatible                     str@0x14    "amlogic,meson-gx-i2c"
+    status                         str@0x28f   "okay"
+    reg                            str@0x5a    <0x0 0x500 0x0 0x20>
+    interrupts                     str@0x5e    <0x0 0xc3 0x1>
+    #address-cells                 str@0x30    <0x1>
+    #size-cells                    str@0x3f    <0x0>
+    clocks                         str@0xb9    <0x8 0x1f>
+    clock-names                    str@0xc0    "clk_i2c"
+    phandle                        str@0xdd    <0xb6>
+/soc/periphs@c8834000
+    compatible                     str@0x14    "simple-bus"
+    reg                            str@0x5a    <0x0 0xc8834000 0x0 0x2000>
+    #address-cells                 str@0x30    <0x2>
+    #size-cells                    str@0x3f    <0x2>
+    ranges                         str@0x3e6   <0x0 0x0 0x0 0xc8834000 0x0 0x2000>
+    phandle                        str@0xdd    <0xb7>
+/soc/periphs@c8834000/rng
+    compatible                     str@0x14    "amlogic,meson-rng"
+    reg                            str@0x5a    <0x0 0x0 0x0 0x4>
+    quality                        str@0x647   [2 bytes: 03 e8...]
+/soc/hiubus@c883c000
+    compatible                     str@0x14    "simple-bus"
+    reg                            str@0x5a    <0x0 0xc883c000 0x0 0x2000>
+    #address-cells                 str@0x30    <0x2>
+    #size-cells                    str@0x3f    <0x2>
+    ranges                         str@0x3e6   <0x0 0x0 0x0 0xc883c000 0x0 0x2000>
+    phandle                        str@0xdd    <0xb8>
+/soc/hiubus@c883c000/clock-controller@0
+    compatible                     str@0x14    "amlogic,gxl-clkc"
+    #clock-cells                   str@0x4a4   <0x1>
+    reg                            str@0x5a    <0x0 0x0 0x0 0x3db>
+    phandle                        str@0xdd    <0x8>
+/soc/apb@d0000000
+    compatible                     str@0x14    "simple-bus"
+    reg                            str@0x5a    <0x0 0xd0000000 0x0 0x200000>
+    #address-cells                 str@0x30    <0x2>
+    #size-cells                    str@0x3f    <0x2>
+    ranges                         str@0x3e6   <0x0 0x0 0x0 0xd0000000 0x0 0x200000>
+    phandle                        str@0xdd    <0xb9>
+/cpu_ver_name
+    compatible                     str@0x14    "amlogic, cpu-major-id-gxl"
+/vdac
+    compatible                     str@0x14    "amlogic, vdac-gxl"
+    status                         str@0x28f   "okay"
+/defendkey
+    compatible                     str@0x14    "amlogic, defendkey"
+    reg                            str@0x5a    <0x0 0xc8834500 0x0 0x4>
+    mem_size                       str@0x2e6   <0x0 0x100000>
+    status                         str@0x28f   "okay"
+    phandle                        str@0xdd    <0xba>
+/aml_dma
+    compatible                     str@0x14    "amlogic,aml_gxl_dma"
+    reg                            str@0x5a    <0x0 0xc883e000 0x0 0x28>
+    interrupts                     str@0x5e    <0x0 0xbc 0x1>
+/aml_dma/aml_aes
+    compatible                     str@0x14    "amlogic,aes_dma"
+    dev_name                       str@0x2ef   "aml_aes_dma"
+    status                         str@0x28f   "okay"
+/aml_dma/aml_tdes
+    compatible                     str@0x14    "amlogic,des_dma,tdes_dma"
+    dev_name                       str@0x2ef   "aml_tdes_dma"
+    status                         str@0x28f   "okay"
+/audio_data
+    compatible                     str@0x14    "amlogic, audio_data"
+    query_licence_cmd              str@0x64f   <0x82000050>
+    status                         str@0x28f   "okay"
+    phandle                        str@0xdd    <0xbb>
+/saradc
+    compatible                     str@0x14    "amlogic,meson-gxl-saradc"
+    status                         str@0x28f   "okay"
+    #io-channel-cells              str@0x661   <0x1>
+    clocks                         str@0xb9    <0x10 0x8 0x58 0x8 0xe4>
+    clock-names                    str@0xc0    "xtal", "clk81_gate", "saradc_clk"
+    interrupts                     str@0x5e    <0x0 0x49 0x1>
+    reg                            str@0x5a    <0x0 0xc1108680 0x0 0x38>
+    phandle                        str@0xdd    <0xbc>
+/efuse
+    compatible                     str@0x14    "amlogic, efuse"
+    read_cmd                       str@0x673   <0x82000030>
+    write_cmd                      str@0x67c   <0x82000031>
+    get_max_cmd                    str@0x686   <0x82000033>
+    key                            str@0x692   <0x19>
+    clocks                         str@0xb9    <0x8 0x4a>
+    clock-names                    str@0xc0    "efuse_clk"
+    status                         str@0x28f   "ok"
+    phandle                        str@0xdd    <0xbd>
+/efusekey
+    keynum                         str@0x696   <0x4>
+    key0                           str@0x69d   <0x1a>
+    key1                           str@0x6a2   <0x1b>
+    key2                           str@0x6a7   <0x1c>
+    key3                           str@0x6ac   <0x1d>
+    phandle                        str@0xdd    <0x19>
+/efusekey/key_0
+    keyname                        str@0x6b1   "mac"
+    offset                         str@0x22a   <0x0>
+    size                           str@0x2ea   <0x6>
+    phandle                        str@0xdd    <0x1a>
+/efusekey/key_1
+    keyname                        str@0x6b1   "mac_bt"
+    offset                         str@0x22a   <0x6>
+    size                           str@0x2ea   <0x6>
+    phandle                        str@0xdd    <0x1b>
+/efusekey/key_2
+    keyname                        str@0x6b1   "mac_wifi"
+    offset                         str@0x22a   <0xc>
+    size                           str@0x2ea   <0x6>
+    phandle                        str@0xdd    <0x1c>
+/efusekey/key_3
+    keyname                        str@0x6b1   "usid"
+    offset                         str@0x22a   <0x12>
+    size                           str@0x2ea   <0x10>
+    phandle                        str@0xdd    <0x1d>
+/rc@c8100580
+    compatible                     str@0x14    "amlogic, aml_remote"
+    dev_name                       str@0x2ef   "meson-remote"
+    reg                            str@0x5a    <0x0 0xc8100580 0x0 0x44 0x0 0xc8100480 0x0 0x20>
+    status                         str@0x28f   "okay"
+    protocol                       str@0x6b9   <0x2>
+    interrupts                     str@0x5e    <0x0 0xc4 0x1>
+    pinctrl-names                  str@0x4f6   "default"
+    pinctrl-0                      str@0x504   <0x1e>
+    map                            str@0x6c2   <0x1f>
+    max_frame_time                 str@0x6c6   <0xc8>
+    phandle                        str@0xdd    <0xbe>
+/custom_maps
+    mapnum                         str@0x6d5   <0x5>
+    map0                           str@0x6dc   <0x20>
+    map1                           str@0x6e1   <0x21>
+    map2                           str@0x6e6   <0x22>
+    map3                           str@0x6eb   <0x23>
+    map4                           str@0x6f0   <0x24>
+    phandle                        str@0xdd    <0x1f>
+/custom_maps/map_0
+    mapname                        str@0x6f5   "amlogic-remote-1"
+    customcode                     str@0x6fd   <0xfb04>
+    release_delay                  str@0x708   <0x50>
+    size                           str@0x2ea   <0x32>
+    keymap                         str@0x716   <0x47000b 0x130002 0x100003 0x110004 0xf0005 0xc0006 0xd0007 0xb0008 0x80009 0x9000a 0x5c0061 0x51003d 0x50003e 0x40003f 0x4d0040 0x430041 0x170042 0x43 0x10044 0x160057 0x49000e 0x60082 0x140083 0x440067 0x1d006c 0x1c0069 0x48006a 0x53007d 0x450068 0x19006d 0x520077 0x5007a 0x59007b 0x1b0078 0x40079 0x1a0074 0xa000f 0xe0071 0x1f0066 0x1e0084 0x70085 0x120086 0x540087 0x20088 0x4f001e 0x420030 0x5d002e 0x4c0020 0x580089 0x55008c>
+    phandle                        str@0xdd    <0x20>
+/custom_maps/map_1
+    mapname                        str@0x6f5   "amlogic-remote-2"
+    customcode                     str@0x6fd   <0xfe01>
+    release_delay                  str@0x708   <0x50>
+    size                           str@0x2ea   <0x35>
+    keymap                         str@0x716   <0x10002 0x20003 0x30004 0x40005 0x50006 0x60007 0x70008 0x80009 0x9000a 0xa000b 0x1f01d2 0x15008b 0x16000f 0xc0192 0xd0193 0xe0073 0xf0072 0x110066 0x1c006a 0x1b0069 0x190067 0x1a006c 0x1d001c 0x170071 0x4900db 0x43009e 0x1201d5 0x1401d6 0x1801d7 0x590166 0x5a00a6 0x100074 0x4200a5 0x4400a3 0x1e00a8 0x4b00d0 0x5800a4 0x460082 0x400083 0x380046 0x5701d0 0x5b01d1 0x54018e 0x4c018f 0x4e0190 0x550191 0x5300ed 0x5200ee 0x3900d4 0x4100d5 0xb00d6 0xd8 0x1300d9>
+    phandle                        str@0xdd    <0x21>
+/custom_maps/map_2
+    mapname                        str@0x6f5   "amlogic-remote-3"
+    customcode                     str@0x6fd   <0xbd02>
+    release_delay                  str@0x708   <0x50>
+    size                           str@0x2ea   <0x11>
+    keymap                         str@0x716   <0xca0067 0xd2006c 0x990069 0xc1006a 0xce0061 0x450074 0xc50085 0x800071 0xd0000f 0xd6007d 0x950066 0xdd0068 0x8c006d 0x890083 0x9c0082 0x9a0078 0xcd0079>
+    phandle                        str@0xdd    <0x22>
+/custom_maps/map_3
+    mapname                        str@0x6f5   "xiaomi-ir-0"
+    customcode                     str@0x6fd   <0x86>
+    release_delay                  str@0x708   <0x50>
+    size                           str@0x2ea   <0xc>
+    keymap                         str@0x716   <0x50067 0x6006c 0xb0069 0xc006a 0xd0061 0x80066 0x7009e 0x4008b 0x1100ec 0x300f0 0xe0073 0xf0072>
+    phandle                        str@0xdd    <0x23>
+/custom_maps/map_4
+    mapname                        str@0x6f5   "xiaomi-ir-1"
+    customcode                     str@0x6fd   <0x3c>
+    release_delay                  str@0x708   <0x50>
+    size                           str@0x2ea   <0x1>
+    keymap                         str@0x716   <0xcc0074>
+    phandle                        str@0xdd    <0x24>
+/aml_reboot
+    compatible                     str@0x14    "aml, reboot"
+    sys_reset                      str@0x71d   <0x84000009>
+    sys_poweroff                   str@0x727   <0x84000008>
+/rtc
+    compatible                     str@0x14    "amlogic, aml_vrtc"
+    alarm_reg_addr                 str@0x734   <0xc81000a8>
+    timer_e_addr                   str@0x743   <0xc1109988>
+    init_date                      str@0x750   "2017/01/01"
+    status                         str@0x28f   "okay"
+/pwm@c1108550
+    compatible                     str@0x14    "amlogic,gx-ee-pwm"
+    reg                            str@0x5a    <0x0 0xc1108550 0x0 0x1c>
+    #pwm-cells                     str@0x75a   <0x3>
+    clocks                         str@0xb9    <0x10 0x10 0x10 0x10>
+    clock-names                    str@0xc0    "clkin0", "clkin1", "clkin2", "clkin3"
+    status                         str@0x28f   "disabled"
+    phandle                        str@0xdd    <0xbf>
+/pwm@c1108640
+    compatible                     str@0x14    "amlogic,gx-ee-pwm"
+    reg                            str@0x5a    <0x0 0xc1108640 0x0 0x1c>
+    #pwm-cells                     str@0x75a   <0x3>
+    clocks                         str@0xb9    <0x10 0x10 0x10 0x10>
+    clock-names                    str@0xc0    "clkin0", "clkin1", "clkin2", "clkin3"
+    status                         str@0x28f   "disabled"
+    phandle                        str@0xdd    <0xc0>
+/pwm@c11086c0
+    compatible                     str@0x14    "amlogic,gx-ee-pwm"
+    reg                            str@0x5a    <0x0 0xc11086c0 0x0 0x1c>
+    #pwm-cells                     str@0x75a   <0x3>
+    clocks                         str@0xb9    <0x10 0x10 0x10 0x10>
+    clock-names                    str@0xc0    "clkin0", "clkin1", "clkin2", "clkin3"
+    status                         str@0x28f   "okay"
+    phandle                        str@0xdd    <0x39>
+/pwm@c8100550
+    compatible                     str@0x14    "amlogic,gx-ao-pwm"
+    reg                            str@0x5a    <0x0 0xc8100550 0x0 0x1c>
+    #pwm-cells                     str@0x75a   <0x3>
+    clocks                         str@0xb9    <0x10 0x10 0x10 0x10>
+    clock-names                    str@0xc0    "clkin0", "clkin1", "clkin2", "clkin3"
+    status                         str@0x28f   "disabled"
+    phandle                        str@0xdd    <0xc1>
+/ddr_bandwidth
+    compatible                     str@0x14    "amlogic, ddr-bandwidth"
+    status                         str@0x28f   "okay"
+    reg                            str@0x5a    <0x0 0xc8838000 0x0 0x100 0x0 0xc8837000 0x0 0x100>
+    interrupts                     str@0x5e    <0x0 0x34 0x1>
+    interrupt-names                str@0x69    "ddr_bandwidth"
+/dmc_monitor
+    compatible                     str@0x14    "amlogic, dmc_monitor"
+    status                         str@0x28f   "okay"
+    reg_base                       str@0x765   <0xda838400>
+    interrupts                     str@0x5e    <0x0 0x33 0x1>
+/firmware/android
+    compatible                     str@0x14    "android,firmware"
+/firmware/android/vbmeta
+    compatible                     str@0x14    "android,vbmeta"
+    parts                          str@0x76e   "vbmeta,boot,system,vendor"
+    by_name_prefix                 str@0x774   "/dev/block"
+/firmware/android/fstab
+    compatible                     str@0x14    "android,fstab"
+/firmware/android/fstab/vendor
+    compatible                     str@0x14    "android,vendor"
+    dev                            str@0x783   "/dev/block/vendor"
+    type                           str@0x12b   "ext4"
+    mnt_flags                      str@0x787   "ro,barrier=1,inode_readahead_blks=8"
+    fsmgr_flags                    str@0x791   "wait,avb"
+/firmware/android/fstab/product
+    compatible                     str@0x14    "android,product"
+    dev                            str@0x783   "/dev/block/product"
+    type                           str@0x12b   "ext4"
+    mnt_flags                      str@0x787   "ro,barrier=1,inode_readahead_blks=8"
+    fsmgr_flags                    str@0x791   "wait"
+/firmware/android/fstab/odm
+    compatible                     str@0x14    "android,odm"
+    dev                            str@0x783   "/dev/block/odm"
+    type                           str@0x12b   "ext4"
+    mnt_flags                      str@0x787   "ro,barrier=1,inode_readahead_blks=8"
+    fsmgr_flags                    str@0x791   "wait"
+/partitions
+    parts                          str@0x76e   <0x11>
+    part-0                         str@0x79d   <0x25>
+    part-1                         str@0x7a4   <0x26>
+    part-2                         str@0x7ab   <0x27>
+    part-3                         str@0x7b2   <0x28>
+    part-4                         str@0x7b9   <0x29>
+    part-5                         str@0x7c0   <0x2a>
+    part-6                         str@0x7c7   <0x2b>
+    part-7                         str@0x7ce   <0x2c>
+    part-8                         str@0x7d5   <0x2d>
+    part-9                         str@0x7dc   <0x2e>
+    part-10                        str@0x7e3   <0x2f>
+    part-11                        str@0x7eb   <0x30>
+    part-12                        str@0x7f3   <0x31>
+    part-13                        str@0x7fb   <0x32>
+    part-14                        str@0x803   <0x33>
+    part-15                        str@0x80b   <0x34>
+    part-16                        str@0x813   <0x35>
+    phandle                        str@0xdd    <0xc2>
+/partitions/logo
+    pname                          str@0x6f7   "logo"
+    size                           str@0x2ea   <0x0 0x800000>
+    mask                           str@0x248   <0x1>
+    phandle                        str@0xdd    <0x25>
+/partitions/recovery
+    pname                          str@0x6f7   "recovery"
+    size                           str@0x2ea   <0x0 0x1800000>
+    mask                           str@0x248   <0x1>
+    phandle                        str@0xdd    <0x26>
+/partitions/misc
+    pname                          str@0x6f7   "misc"
+    size                           str@0x2ea   <0x0 0x800000>
+    mask                           str@0x248   <0x1>
+    phandle                        str@0xdd    <0x27>
+/partitions/dtbo
+    pname                          str@0x6f7   "dtbo"
+    size                           str@0x2ea   <0x0 0x800000>
+    mask                           str@0x248   <0x1>
+    phandle                        str@0xdd    <0x28>
+/partitions/cri_data
+    pname                          str@0x6f7   "cri_data"
+    size                           str@0x2ea   <0x0 0x800000>
+    mask                           str@0x248   <0x2>
+    phandle                        str@0xdd    <0x29>
+/partitions/rsv
+    pname                          str@0x6f7   "rsv"
+    size                           str@0x2ea   <0x0 0x1000000>
+    mask                           str@0x248   <0x1>
+    phandle                        str@0xdd    <0x2c>
+/partitions/metadata
+    pname                          str@0x6f7   "metadata"
+    size                           str@0x2ea   <0x0 0x1000000>
+    mask                           str@0x248   <0x1>
+    phandle                        str@0xdd    <0x30>
+/partitions/vbmeta
+    pname                          str@0x6f7   "vbmeta"
+    size                           str@0x2ea   <0x0 0x200000>
+    mask                           str@0x248   <0x1>
+    phandle                        str@0xdd    <0x31>
+/partitions/param
+    pname                          str@0x6f7   "param"
+    size                           str@0x2ea   <0x0 0x1000000>
+    mask                           str@0x248   <0x2>
+    phandle                        str@0xdd    <0x2a>
+/partitions/boot
+    pname                          str@0x6f7   "boot"
+    size                           str@0x2ea   <0x0 0x1000000>
+    mask                           str@0x248   <0x1>
+    phandle                        str@0xdd    <0x2b>
+/partitions/tee
+    pname                          str@0x6f7   "tee"
+    size                           str@0x2ea   <0x0 0x2000000>
+    mask                           str@0x248   <0x1>
+    phandle                        str@0xdd    <0x2d>
+/partitions/vendor
+    pname                          str@0x6f7   "vendor"
+    size                           str@0x2ea   <0x0 0x6400000>
+    mask                           str@0x248   <0x1>
+    phandle                        str@0xdd    <0x2e>
+/partitions/odm
+    pname                          str@0x6f7   "odm"
+    size                           str@0x2ea   <0x0 0x1400000>
+    mask                           str@0x248   <0x1>
+    phandle                        str@0xdd    <0x2f>
+/partitions/system
+    pname                          str@0x6f7   "system"
+    size                           str@0x2ea   <0x0 0x5ac00000>
+    mask                           str@0x248   <0x1>
+    phandle                        str@0xdd    <0x32>
+/partitions/product
+    pname                          str@0x6f7   "product"
+    size                           str@0x2ea   <0x0 0x6a00000>
+    mask                           str@0x248   <0x1>
+    phandle                        str@0xdd    <0x33>
+/partitions/cache
+    pname                          str@0x6f7   "cache"
+    size                           str@0x2ea   <0x0 0x10000000>
+    mask                           str@0x248   <0x2>
+    phandle                        str@0xdd    <0x34>
+/partitions/data
+    pname                          str@0x6f7   "data"
+    size                           str@0x2ea   <0xffffffff 0xffffffff>
+    mask                           str@0x248   <0x4>
+    phandle                        str@0xdd    <0x35>
+/aliases
+    serial0                        str@0x81b   "/serial@c81004c0"
+    serial1                        str@0x823   "/serial@c11084c0"
+    serial2                        str@0x82b   "/serial@c11084dc"
+    serial3                        str@0x833   "/serial@c1108700"
+    serial4                        str@0x83b   "/serial@c81004e0"
+/ion_dev
+    compatible                     str@0x14    "amlogic, ion_dev"
+    memory-region                  str@0x2b5   <0x36>
+/memory@00000000
+    device_type                    str@0x124   "memory"
+    linux,usable-memory            str@0x843   <0x0 0x100000 0x0 0x3ff00000>
+/reserved-memory
+    #address-cells                 str@0x30    <0x2>
+    #size-cells                    str@0x3f    <0x2>
+    ranges                         str@0x3e6   (present, zero length)
+/reserved-memory/ramoops@0x07400000
+    compatible                     str@0x14    "ramoops"
+    reg                            str@0x5a    <0x0 0x7400000 0x0 0x200000>
+    record-size                    str@0x857   <0x8000>
+    console-size                   str@0x863   <0x8000>
+    ftrace-size                    str@0x870   <0x20000>
+/reserved-memory/linux,secmon
+    compatible                     str@0x14    "shared-dma-pool"
+    reusable                       str@0x87c   (present, zero length)
+    size                           str@0x2ea   <0x0 0x400000>
+    alignment                      str@0x885   <0x0 0x400000>
+    alloc-ranges                   str@0x88f   <0x0 0x5000000 0x0 0x400000>
+    phandle                        str@0xdd    <0xf>
+/reserved-memory/linux,secos
+    status                         str@0x28f   "disable"
+    compatible                     str@0x14    "amlogic, aml_secos_memory"
+    reg                            str@0x5a    <0x0 0x5300000 0x0 0x2000000>
+    no-map                         str@0x89c   (present, zero length)
+    phandle                        str@0xdd    <0xc3>
+/reserved-memory/linux,meson-fb
+    compatible                     str@0x14    "shared-dma-pool"
+    reusable                       str@0x87c   (present, zero length)
+    size                           str@0x2ea   <0x0 0x800000>
+    alignment                      str@0x885   <0x0 0x400000>
+    alloc-ranges                   str@0x88f   <0x0 0x3f800000 0x0 0x800000>
+    phandle                        str@0xdd    <0x59>
+/reserved-memory/linux,di_cma
+    compatible                     str@0x14    "shared-dma-pool"
+    reusable                       str@0x87c   (present, zero length)
+    size                           str@0x2ea   <0x0 0x2000000>
+    alignment                      str@0x885   <0x0 0x400000>
+    phandle                        str@0xdd    <0x6e>
+/reserved-memory/linux,ion-dev
+    compatible                     str@0x14    "shared-dma-pool"
+    reusable                       str@0x87c   (present, zero length)
+    size                           str@0x2ea   <0x0 0x4c00000>
+    alignment                      str@0x885   <0x0 0x400000>
+    phandle                        str@0xdd    <0x36>
+/reserved-memory/linux,vdin1_cma
+    compatible                     str@0x14    "shared-dma-pool"
+    reusable                       str@0x87c   (present, zero length)
+    size                           str@0x2ea   <0x0 0x1000000>
+    alignment                      str@0x885   <0x0 0x400000>
+    phandle                        str@0xdd    <0x6f>
+/reserved-memory/linux,ppmgr
+    compatible                     str@0x14    "shared-dma-pool"
+    size                           str@0x2ea   <0x0 0x0>
+    phandle                        str@0xdd    <0x6d>
+/reserved-memory/linux,codec_mm_cma
+    compatible                     str@0x14    "shared-dma-pool"
+    reusable                       str@0x87c   (present, zero length)
+    size                           str@0x2ea   <0x0 0xd000000>
+    alignment                      str@0x885   <0x0 0x400000>
+    linux,contiguous-region        str@0x8a3   (present, zero length)
+    phandle                        str@0xdd    <0x57>
+/reserved-memory/linux,picdec
+    compatible                     str@0x14    "shared-dma-pool"
+    reusable                       str@0x87c   (present, zero length)
+    size                           str@0x2ea   <0x0 0x0>
+    alignment                      str@0x885   <0x0 0x0>
+    linux,contiguous-region        str@0x8a3   (present, zero length)
+    phandle                        str@0xdd    <0x6c>
+/reserved-memory/linux,codec_mm_reserved
+    compatible                     str@0x14    "amlogic, codec-mm-reserved"
+    size                           str@0x2ea   <0x0 0x0>
+    alignment                      str@0x885   <0x0 0x100000>
+    phandle                        str@0xdd    <0x58>
+/dummy-battery
+    compatible                     str@0x14    "amlogic, dummy-battery"
+    status                         str@0x28f   "disabled"
+    phandle                        str@0xdd    <0xc4>
+/dummy-charger
+    compatible                     str@0x14    "amlogic, dummy-charger"
+    status                         str@0x28f   "disabled"
+    phandle                        str@0xdd    <0xc5>
+/bt-dev
+    compatible                     str@0x14    "amlogic, bt-dev"
+    dev_name                       str@0x2ef   "bt-dev"
+    status                         str@0x28f   "okay"
+    gpio_reset                     str@0x8bb   <0x11 0x60 0x0>
+    gpio_en                        str@0x8c6   <0x11 0x55 0x0>
+/btwakecontrol
+    compatible                     str@0x14    "amlogic, btwakecontrol"
+    dev_name                       str@0x2ef   "btwakecontrol"
+    status                         str@0x28f   "okay"
+    irq_trigger_type               str@0x8ce   "GPIO_IRQ_RISING"
+    bt_host_wake                   str@0x8df   <0x11 0x61 0x0>
+/wifi
+    compatible                     str@0x14    "amlogic, aml_wifi"
+    dev_name                       str@0x2ef   "aml_wifi"
+    status                         str@0x28f   "okay"
+    interrupt_pin                  str@0x8ec   <0x11 0x56 0x0>
+    irq_trigger_type               str@0x8ce   "GPIO_IRQ_LOW"
+    dhd_static_buf                 str@0x8fa   (present, zero length)
+    power_on_pin                   str@0x909   <0x11 0x55 0x0>
+    pinctrl-names                  str@0x4f6   "default"
+    pinctrl-0                      str@0x504   <0x37>
+    pwm_config                     str@0x916   <0x38>
+/wifi_pwm_conf
+    phandle                        str@0xdd    <0x38>
+/wifi_pwm_conf/pwm_channel1_conf
+    pwms                           str@0x921   <0x39 0x0 0x774d 0x0>
+    duty-cycle                     str@0x926   <0x3ba6>
+    times                          str@0x931   <0x8>
+/wifi_pwm_conf/pwm_channel2_conf
+    pwms                           str@0x921   <0x39 0x2 0x7724 0x0>
+    duty-cycle                     str@0x926   <0x3b92>
+    times                          str@0x931   <0xc>
+/emmc@d0074000
+    status                         str@0x28f   "okay"
+    compatible                     str@0x14    "amlogic, meson-mmc-gxl"
+    reg                            str@0x5a    <0x0 0xd0074000 0x0 0x2000>
+    interrupts                     str@0x5e    <0x0 0xda 0x1>
+    pinctrl-names                  str@0x4f6   "emmc_clk_cmd_pins", "emmc_all_pins"
+    pinctrl-0                      str@0x504   <0x3a>
+    pinctrl-1                      str@0x50e   <0x3b 0x3c>
+    clocks                         str@0xb9    <0x8 0x2e 0x8 0x82 0x8 0x4>
+    clock-names                    str@0xc0    "core", "clkin0", "clkin1"
+    bus-width                      str@0x937   <0x8>
+    cap-sd-highspeed               str@0x941   (present, zero length)
+    cap-mmc-highspeed              str@0x952   (present, zero length)
+    mmc-ddr-1_8v                   str@0x964   (present, zero length)
+    mmc-hs200-1_8v                 str@0x971   (present, zero length)
+    max-frequency                  str@0x980   <0xbebc200>
+    non-removable                  str@0x98e   (present, zero length)
+    disable-wp                     str@0x99c   (present, zero length)
+    phandle                        str@0xdd    <0xc6>
+/emmc@d0074000/emmc
+    pinname                        str@0x9a7   "emmc"
+    ocr_avail                      str@0x9af   <0x200080>
+    caps                           str@0x9b9   "MMC_CAP_8_BIT_DATA", "MMC_CAP_MMC_HIGHSPEED", "MMC_CAP_SD_HIGHSPEED", "MMC_CAP_NONREMOVABLE", "MMC_CAP_1_8V_DDR", "MMC_CAP_HW_RESET", "MMC_CAP_ERASE", "MMC_CAP_CMD23"
+    caps2                          str@0x9be   "MMC_CAP2_HS200", "MMC_CAP2_HS400"
+    f_min                          str@0x9c4   <0x61a80>
+    f_max                          str@0x9ca   <0x5f5e100>
+    max_req_size                   str@0x9d0   <0x20000>
+    gpio_dat3                      str@0x9dd   <0x11 0x1d 0x0>
+    hw_reset                       str@0x9e7   <0x11 0x23 0x0>
+    card_type                      str@0x9f0   <0x1>
+/sd@d0072000
+    status                         str@0x28f   "okay"
+    compatible                     str@0x14    "amlogic, meson-mmc-gxl"
+    reg                            str@0x5a    <0x0 0xd0072000 0x0 0x2000>
+    interrupts                     str@0x5e    <0x0 0xd9 0x1>
+    pinctrl-names                  str@0x4f6   "sd_all_pins", "sd_clk_cmd_pins", "sd_1bit_pins", "sd_clk_cmd_uart_pins", "sd_1bit_uart_pins", "sd_to_ao_uart_pins", "ao_to_sd_uart_pins", "ao_to_sd_jtag_pins", "sd_to_ao_jtag_pins"
+    pinctrl-0                      str@0x504   <0x3d>
+    pinctrl-1                      str@0x50e   <0x3e>
+    pinctrl-2                      str@0x9fa   <0x3f>
+    pinctrl-3                      str@0xa04   <0x40 0x3e 0x41>
+    pinctrl-4                      str@0xa0e   <0x40 0x3f 0x41>
+    pinctrl-5                      str@0xa18   <0x3d 0x42>
+    pinctrl-6                      str@0xa22   <0x40 0x41>
+    pinctrl-7                      str@0xa2c   <0x40 0x41>
+    pinctrl-8                      str@0xa36   <0x3d 0x42>
+    clocks                         str@0xb9    <0x8 0x2d 0x8 0x7e 0x8 0x4>
+    clock-names                    str@0xc0    "core", "clkin0", "clkin1"
+    bus-width                      str@0x937   <0x4>
+    cap-sd-highspeed               str@0x941   (present, zero length)
+    max-frequency                  str@0x980   <0x5f5e100>
+    disable-wp                     str@0x99c   (present, zero length)
+    phandle                        str@0xdd    <0xc7>
+/sd@d0072000/sd
+    pinname                        str@0x9a7   "sd"
+    ocr_avail                      str@0x9af   <0x200080>
+    caps                           str@0x9b9   "MMC_CAP_4_BIT_DATA", "MMC_CAP_MMC_HIGHSPEED", "MMC_CAP_SD_HIGHSPEED"
+    f_min                          str@0x9c4   <0x61a80>
+    f_max                          str@0x9ca   <0x5f5e100>
+    max_req_size                   str@0x9d0   <0x20000>
+    gpio_dat3                      str@0x9dd   <0x11 0x2e 0x0>
+    jtag_pin                       str@0xa40   <0x11 0x2a 0x0>
+    gpio_cd                        str@0xa49   <0x11 0x30 0x0>
+    card_type                      str@0x9f0   <0x5>
+/sdio@d0070000
+    status                         str@0x28f   "okay"
+    compatible                     str@0x14    "amlogic, meson-mmc-gxl"
+    reg                            str@0x5a    <0x0 0xd0070000 0x0 0x2000>
+    interrupts                     str@0x5e    <0x0 0xd8 0x4>
+    pinctrl-names                  str@0x4f6   "sdio_clk_cmd_pins", "sdio_all_pins"
+    pinctrl-0                      str@0x504   <0x43>
+    pinctrl-1                      str@0x50e   <0x44>
+    clocks                         str@0xb9    <0x8 0x2c 0x8 0x7a 0x8 0x4>
+    clock-names                    str@0xc0    "core", "clkin0", "clkin1"
+    bus-width                      str@0x937   <0x4>
+    cap-sd-highspeed               str@0x941   (present, zero length)
+    cap-mmc-highspeed              str@0x952   (present, zero length)
+    max-frequency                  str@0x980   <0x5f5e100>
+    non-removable                  str@0x98e   (present, zero length)
+    disable-wp                     str@0x99c   (present, zero length)
+    phandle                        str@0xdd    <0xc8>
+/sdio@d0070000/sdio
+    pinname                        str@0x9a7   "sdio"
+    ocr_avail                      str@0x9af   <0x200080>
+    caps                           str@0x9b9   "MMC_CAP_4_BIT_DATA", "MMC_CAP_MMC_HIGHSPEED", "MMC_CAP_SD_HIGHSPEED", "MMC_CAP_NONREMOVABLE", "MMC_CAP_UHS_SDR12", "MMC_CAP_UHS_SDR25", "MMC_CAP_UHS_SDR50", "MMC_CAP_UHS_SDR104", "MMC_PM_KEEP_POWER", "MMC_CAP_SDIO_IRQ"
+    f_min                          str@0x9c4   <0x61a80>
+    f_max                          str@0x9ca   <0xbebc200>
+    max_req_size                   str@0x9d0   <0x20000>
+    card_type                      str@0x9f0   <0x3>
+/mtd_nand
+    compatible                     str@0x14    "amlogic, aml_mtd_nand"
+    dev_name                       str@0x2ef   "mtdnand"
+    status                         str@0x28f   "disabled"
+    reg                            str@0x5a    <0x0 0xd0074800 0x0 0x200>
+    interrupts                     str@0x5e    <0x0 0x22 0x1>
+    pinctrl-names                  str@0x4f6   "nand_rb_mod", "nand_norb_mod", "nand_cs_only"
+    pinctrl-0                      str@0x504   <0x45>
+    pinctrl-1                      str@0x50e   <0x45>
+    pinctrl-2                      str@0x9fa   <0x46>
+    device_id                      str@0x4ec   <0x0>
+    plat-names                     str@0xa51   "bootloader", "nandnormal"
+    plat-num                       str@0xa5c   <0x2>
+    plat-part-0                    str@0xa65   <0x47>
+    plat-part-1                    str@0xa71   <0x48>
+/mtd_nand/bootloader
+    enable_pad                     str@0xa7d   "ce0"
+    busy_pad                       str@0xa88   "rb0"
+    timming_mode                   str@0xa91   "mode5"
+    bch_mode                       str@0xa9e   "bch60_1k"
+    t_rea                          str@0xaa7   <0x14>
+    t_rhoh                         str@0xaad   <0xf>
+    chip_num                       str@0xab4   <0x1>
+    part_num                       str@0xabd   <0x0>
+    rb_detect                      str@0xac6   <0x1>
+    phandle                        str@0xdd    <0x47>
+/mtd_nand/nandnormal
+    enable_pad                     str@0xa7d   "ce0", "ce1"
+    busy_pad                       str@0xa88   "rb0", "rb1"
+    timming_mode                   str@0xa91   "mode5"
+    bch_mode                       str@0xa9e   "bch60_1k"
+    plane_mode                     str@0xad0   "twoplane"
+    t_rea                          str@0xaa7   <0x14>
+    t_rhoh                         str@0xaad   <0xf>
+    chip_num                       str@0xab4   <0x2>
+    part_num                       str@0xabd   <0x3>
+    partition                      str@0xadb   <0x49>
+    rb_detect                      str@0xac6   <0x1>
+    phandle                        str@0xdd    <0x48>
+/mtd_nand/nand_partition
+    phandle                        str@0xdd    <0x49>
+/mtd_nand/nand_partition/logo
+    offset                         str@0x22a   <0x0 0x0>
+    size                           str@0x2ea   <0x0 0x200000>
+/mtd_nand/nand_partition/recovery
+    offset                         str@0x22a   <0x0 0x0>
+    size                           str@0x2ea   <0x0 0x1000000>
+/mtd_nand/nand_partition/boot
+    offset                         str@0x22a   <0x0 0x0>
+    size                           str@0x2ea   <0x0 0xc00000>
+/mtd_nand/nand_partition/system
+    offset                         str@0x22a   <0x0 0x0>
+    size                           str@0x2ea   <0x0 0xdc40000>
+/mtd_nand/nand_partition/data
+    offset                         str@0x22a   <0xffffffff 0xffffffff>
+    size                           str@0x2ea   <0x0 0x0>
+/aml-sensor@0
+    compatible                     str@0x14    "amlogic, aml-thermal"
+    device_name                    str@0x296   "thermal"
+    #thermal-sensor-cells          str@0xae5   <0x1>
+    phandle                        str@0xdd    <0x4a>
+/aml-sensor@0/cooling_devices/cpufreq_cool_cluster0
+    min_state                      str@0xafb   <0xf4240>
+    dyn_coeff                      str@0xb05   <0x8c>
+    cluster_id                     str@0xb0f   <0x0>
+    node_name                      str@0xb1a   "cpufreq_cool0"
+    device_type                    str@0x124   "cpufreq"
+/aml-sensor@0/cooling_devices/cpucore_cool_cluster0
+    min_state                      str@0xafb   <0x3>
+    dyn_coeff                      str@0xb05   <0x0>
+    cluster_id                     str@0xb0f   <0x0>
+    node_name                      str@0xb1a   "cpucore_cool0"
+    device_type                    str@0x124   "cpucore"
+/aml-sensor@0/cooling_devices/gpufreq_cool
+    min_state                      str@0xafb   <0x1f4>
+    dyn_coeff                      str@0xb05   <0x1b5>
+    cluster_id                     str@0xb0f   <0x0>
+    node_name                      str@0xb1a   "gpufreq_cool0"
+    device_type                    str@0x124   "gpufreq"
+/aml-sensor@0/cooling_devices/gpucore_cool
+    min_state                      str@0xafb   <0x1>
+    dyn_coeff                      str@0xb05   <0x0>
+    cluster_id                     str@0xb0f   <0x0>
+    node_name                      str@0xb1a   "gpucore_cool0"
+    device_type                    str@0x124   "gpucore"
+/aml-sensor@0/cpufreq_cool0
+    #cooling-cells                 str@0x4b    <0x2>
+    phandle                        str@0xdd    <0x4c>
+/aml-sensor@0/cpucore_cool0
+    #cooling-cells                 str@0x4b    <0x2>
+    phandle                        str@0xdd    <0x4d>
+/aml-sensor@0/gpufreq_cool0
+    #cooling-cells                 str@0x4b    <0x2>
+    phandle                        str@0xdd    <0x4e>
+/aml-sensor@0/gpucore_cool0
+    #cooling-cells                 str@0x4b    <0x2>
+    phandle                        str@0xdd    <0x4f>
+/thermal-zones/soc_thermal
+    polling-delay                  str@0xb24   <0x3e8>
+    polling-delay-passive          str@0xb32   <0x64>
+    sustainable-power              str@0xb48   <0x866>
+    thermal-sensors                str@0xb5a   <0x4a 0x3>
+/thermal-zones/soc_thermal/trips/trip-point@0
+    temperature                    str@0xb6a   <0x15f90>
+    hysteresis                     str@0xb76   <0x3e8>
+    type                           str@0x12b   "passive"
+    phandle                        str@0xdd    <0xc9>
+/thermal-zones/soc_thermal/trips/trip-point@1
+    temperature                    str@0xb6a   <0x17318>
+    hysteresis                     str@0xb76   <0x3e8>
+    type                           str@0x12b   "passive"
+    phandle                        str@0xdd    <0x4b>
+/thermal-zones/soc_thermal/trips/trip-point@2
+    temperature                    str@0xb6a   <0x19a28>
+    hysteresis                     str@0xb76   <0x1388>
+    type                           str@0x12b   "hot"
+    phandle                        str@0xdd    <0xca>
+/thermal-zones/soc_thermal/trips/trip-point@3
+    temperature                    str@0xb6a   <0x1d4c0>
+    hysteresis                     str@0xb76   <0x3e8>
+    type                           str@0x12b   "critical"
+    phandle                        str@0xdd    <0xcb>
+/thermal-zones/soc_thermal/cooling-maps/cpufreq_cooling_map
+    trip                           str@0xb81   <0x4b>
+    cooling-device                 str@0xb86   <0x4c 0x0 0x4>
+    contribution                   str@0xb95   <0x400>
+/thermal-zones/soc_thermal/cooling-maps/cpucore_cooling_map
+    trip                           str@0xb81   <0x4b>
+    cooling-device                 str@0xb86   <0x4d 0x0 0x3>
+    contribution                   str@0xb95   <0x400>
+/thermal-zones/soc_thermal/cooling-maps/gpufreq_cooling_map
+    trip                           str@0xb81   <0x4b>
+    cooling-device                 str@0xb86   <0x4e 0x0 0x4>
+    contribution                   str@0xb95   <0x400>
+/thermal-zones/soc_thermal/cooling-maps/gpucore_cooling_map
+    trip                           str@0xb81   <0x4b>
+    cooling-device                 str@0xb86   <0x4f 0x0 0x2>
+    contribution                   str@0xb95   <0x400>
+/dwc3@c9000000
+    compatible                     str@0x14    "synopsys, dwc3"
+    reg                            str@0x5a    <0x0 0xc9000000 0x0 0x100000>
+    interrupts                     str@0x5e    <0x0 0x1e 0x4>
+    usb-phy                        str@0xba2   <0x50 0x51>
+    cpu-type                       str@0xbaa   "gxl"
+    clock-src                      str@0xbb3   "usb3.0"
+    phandle                        str@0xdd    <0xcc>
+/usb2phy@d0078000
+    compatible                     str@0x14    "amlogic, amlogic-new-usb2"
+    portnum                        str@0xbbd   <0x3>
+    reg                            str@0x5a    <0x0 0xd0078000 0x0 0x80 0x0 0xc1104408 0x0 0x4>
+    phandle                        str@0xdd    <0x50>
+/usb3phy@d0078080
+    compatible                     str@0x14    "amlogic, amlogic-new-usb3"
+    portnum                        str@0xbbd   <0x0>
+    reg                            str@0x5a    <0x0 0xd0078080 0x0 0x20>
+    phandle                        str@0xdd    <0x51>
+/dwc2_a
+    compatible                     str@0x14    "amlogic, dwc2"
+    device_name                    str@0x296   "dwc2_a"
+    reg                            str@0x5a    <0x0 0xc9100000 0x0 0x40000>
+    status                         str@0x28f   "okay"
+    interrupts                     str@0x5e    <0x0 0x1f 0x4>
+    pl-periph-id                   str@0xbc5   <0x0>
+    clock-src                      str@0xbb3   "usb0"
+    port-id                        str@0xbd2   <0x0>
+    port-type                      str@0xbda   <0x2>
+    port-speed                     str@0xbe4   <0x0>
+    port-config                    str@0xbef   <0x0>
+    port-dma                       str@0xbfb   <0x0>
+    port-id-mode                   str@0xc04   <0x0>
+    usb-fifo                       str@0xc11   <0x2d8>
+    cpu-type                       str@0xbaa   "gxl"
+    controller-type                str@0xc1a   <0x1>
+    phy-reg                        str@0xc2a   <0xd0078000>
+    phy-reg-size                   str@0xc32   <0xa0>
+    clocks                         str@0xb9    <0x8 0x47 0x8 0x52 0x8 0x43>
+    clock-names                    str@0xc0    "usb_general", "usb1", "usb1_to_ddr"
+/meson-amvideom
+    compatible                     str@0x14    "amlogic, amvideom"
+    dev_name                       str@0x2ef   "amvideom"
+    status                         str@0x28f   "okay"
+    interrupts                     str@0x5e    <0x0 0x3 0x1>
+    interrupt-names                str@0x69    "vsync"
+/vout
+    compatible                     str@0x14    "amlogic, vout"
+    dev_name                       str@0x2ef   "vout"
+    status                         str@0x28f   "okay"
+    fr_auto_policy                 str@0xc3f   <0x0>
+    tvout_monitor                  str@0xc4e   <0x1f4 0x32>
+/cvbsout
+    compatible                     str@0x14    "amlogic, cvbsout-gxl"
+    dev_name                       str@0x2ef   "cvbsout"
+    status                         str@0x28f   "disabled"
+    clocks                         str@0xb9    <0x8 0x65 0x8 0x5e 0x8 0x5f 0x8 0x67>
+    clock-names                    str@0xc0    "venci_top_gate", "venci_0_gate", "venci_1_gate", "vdac_clk_gate"
+    performance                    str@0xc5c   <0x1bf0 0x9 0x1b56 0x343 0x1b12 0x8080 0x1b05 0xfd 0x1c59 0xf752 0xffff 0x0>
+/amhdmitx
+    compatible                     str@0x14    "amlogic, amhdmitx"
+    dev_name                       str@0x2ef   "amhdmitx"
+    status                         str@0x28f   "okay"
+    vend-data                      str@0xc68   <0x52>
+    pinctrl-names                  str@0x4f6   "hdmitx_hpd", "hdmitx_ddc"
+    pinctrl-0                      str@0x504   <0x53>
+    pinctrl-1                      str@0x50e   <0x54>
+    interrupts                     str@0x5e    <0x0 0x39 0x1>
+    interrupt-names                str@0x69    "hdmitx_hpd"
+    ic_type                        str@0xc72   <0x3>
+    phandle                        str@0xdd    <0xcd>
+/amhdmitx/vend_data
+    vendor_name                    str@0xc7a   "Amlogic"
+    vendor_id                      str@0xc86   <0x0>
+    product_desc                   str@0xc90   "MBox Meson Ref"
+    phandle                        str@0xdd    <0x52>
+/aocec
+    compatible                     str@0x14    "amlogic, amlogic-aocec"
+    device_name                    str@0x296   "aocec"
+    status                         str@0x28f   "okay"
+    vendor_id                      str@0xc86   <0x0>
+    cec_osd_string                 str@0xc9d   "Mi TV Stick"
+    cec_version                    str@0xcac   <0x5>
+    port_num                       str@0xcb8   <0x1>
+    arc_port_mask                  str@0xcc1   <0x0>
+    interrupts                     str@0x5e    <0x0 0xc7 0x1>
+    interrupt-names                str@0x69    "hdmi_aocec"
+    pinctrl-names                  str@0x4f6   "default", "hdmitx_aocecb", "cec_pin_sleep"
+    pinctrl-0                      str@0x504   <0x55>
+    pinctrl-1                      str@0x50e   <0x56>
+    pinctrl-2                      str@0x9fa   <0x55>
+    reg                            str@0x5a    <0x0 0xc810023c 0x0 0x4 0x0 0xc8100000 0x0 0x200>
+    reg-names                      str@0x5c0   "ao_exit", "ao"
+    phandle                        str@0xdd    <0xce>
+/sysled
+    compatible                     str@0x14    "amlogic, sysled"
+    dev_name                       str@0x2ef   "sysled"
+    status                         str@0x28f   "disabled"
+    led_gpio                       str@0xccf   <0x11 0x49 0x0>
+    led_active_low                 str@0xcd8   <0x1>
+/codec_io
+    compatible                     str@0x14    "amlogic, codec_io"
+    #address-cells                 str@0x30    <0x2>
+    #size-cells                    str@0x3f    <0x2>
+    ranges                         str@0x3e6   (present, zero length)
+/codec_io/io_cbus_base
+    reg                            str@0x5a    <0x0 0xc1100000 0x0 0x100000>
+/codec_io/io_dos_base
+    reg                            str@0x5a    <0x0 0xc8820000 0x0 0x10000>
+/codec_io/io_hiubus_base
+    reg                            str@0x5a    <0x0 0xc883c000 0x0 0x2000>
+/codec_io/io_aobus_base
+    reg                            str@0x5a    <0x0 0xc8100000 0x0 0x100000>
+/codec_io/io_vcbus_base
+    reg                            str@0x5a    <0x0 0xd0100000 0x0 0x40000>
+/codec_io/io_dmc_base
+    reg                            str@0x5a    <0x0 0xc8838000 0x0 0x400>
+/codec_mm
+    compatible                     str@0x14    "amlogic, codec, mm"
+    memory-region                  str@0x2b5   <0x57 0x58>
+    dev_name                       str@0x2ef   "codec_mm"
+    status                         str@0x28f   "okay"
+/amremote_led
+    compatible                     str@0x14    "amlogic, amremote_led"
+    dev_name                       str@0x2ef   "amremote_led"
+    status                         str@0x28f   "okay"
+    pmu_control                    str@0xce7   <0x0>
+    control_gpio                   str@0xcf3   <0x11 0x49 0x0>
+    poweron_status                 str@0xd00   <0x1>
+/canvas
+    compatible                     str@0x14    "amlogic, meson, canvas"
+    dev_name                       str@0x2ef   "amlogic-canvas"
+    status                         str@0x28f   "ok"
+    reg                            str@0x5a    <0x0 0xc8838000 0x0 0x400>
+/mesonstream
+    compatible                     str@0x14    "amlogic, codec, streambuf"
+    dev_name                       str@0x2ef   "mesonstream"
+    status                         str@0x28f   "okay"
+    clocks                         str@0xb9    <0x8 0x46 0x8 0x35 0x8 0x1a 0x8 0xc 0x8 0xa0 0x8 0xa9 0x8 0xb2>
+    clock-names                    str@0xc0    "parser_top", "demux", "vdec", "clk_81", "clk_vdec_mux", "clk_hcodec_mux", "clk_hevc_mux"
+/vdec
+    compatible                     str@0x14    "amlogic, vdec"
+    dev_name                       str@0x2ef   "vdec.0"
+    status                         str@0x28f   "okay"
+    interrupts                     str@0x5e    <0x0 0x3 0x1 0x0 0x17 0x1 0x0 0x20 0x1 0x0 0x2b 0x1 0x0 0x2c 0x1 0x0 0x2d 0x1>
+    interrupt-names                str@0x69    "vsync", "demux", "parser", "mailbox_0", "mailbox_1", "mailbox_2"
+/meson-fb
+    compatible                     str@0x14    "amlogic, meson-gxl"
+    memory-region                  str@0x2b5   <0x59>
+    dev_name                       str@0x2ef   "meson-fb"
+    status                         str@0x28f   "okay"
+    interrupts                     str@0x5e    <0x0 0x3 0x1 0x0 0x59 0x1>
+    interrupt-names                str@0x69    "viu-vsync", "rdma"
+    mem_size                       str@0x2e6   <0x800000 0x1800000 0x100000>
+    display_mode_default           str@0xd0f   "1080p60hz"
+    scale_mode                     str@0xd24   <0x1>
+    display_size_default           str@0xd2f   <0x780 0x438 0x780 0xca8 0x20>
+    logo_addr                      str@0xd44   "0x3f800000"
+/ge2d
+    compatible                     str@0x14    "amlogic, ge2d-gxl"
+    dev_name                       str@0x2ef   "ge2d"
+    status                         str@0x28f   "okay"
+    interrupts                     str@0x5e    <0x0 0x96 0x1>
+    interrupt-names                str@0x69    "ge2d"
+    clocks                         str@0xb9    <0x8 0xc4 0x8 0x41 0x8 0xc5>
+    clock-names                    str@0xc0    "clk_vapb_0", "clk_ge2d", "clk_ge2d_gate"
+/I2S
+    #sound-dai-cells               str@0xd4e   <0x0>
+    compatible                     str@0x14    "amlogic, aml-i2s-dai"
+    clocks                         str@0xb9    <0x8 0xf 0x8 0xd1 0x8 0x36 0x8 0x37 0x8 0x38 0x8 0x39 0x8 0x3a 0x8 0x3b 0x8 0x3c 0x8 0x3d 0x8 0x3f 0x8 0x68 0x8 0x33>
+    clock-names                    str@0xc0    "mpll", "mclk", "top_glue", "aud_buf", "i2s_out", "amclk_measure", "aififo2", "aud_mixer", "mixer_reg", "adc", "top_level", "aoclk", "aud_in"
+    i2s_pos_sync                   str@0xd5f   <0x0>
+    phandle                        str@0xdd    <0x66>
+/snd_dmic
+    #sound-dai-cells               str@0xd4e   <0x0>
+    compatible                     str@0x14    "aml, aml_snd_dmic"
+    reg                            str@0x5a    <0x0 0xd0042000 0x0 0x2000>
+    status                         str@0x28f   "disabled"
+    resets                         str@0xd6c   <0x8 0xd4>
+    reset-names                    str@0xd73   "pdm"
+    pinctrl-names                  str@0x4f6   "audio_dmic"
+    pinctrl-0                      str@0x504   <0x5a>
+    clocks                         str@0xb9    <0x8 0xd5 0x8 0xd1>
+    clock-names                    str@0xc0    "pdm", "mclk"
+    phandle                        str@0xdd    <0xcf>
+/SPDIF
+    #sound-dai-cells               str@0xd4e   <0x0>
+    compatible                     str@0x14    "amlogic, aml-spdif-dai"
+    clocks                         str@0xb9    <0x8 0xe 0x8 0xd9 0x8 0xd1 0x8 0xe0 0x8 0xc 0x8 0x37 0x8 0x69>
+    clock-names                    str@0xc0    "mpll1", "i958", "mclk", "spdif", "clk_81", "iec958", "iec958_amclk"
+    phandle                        str@0xdd    <0x67>
+/PCM
+    #sound-dai-cells               str@0xd4e   <0x0>
+    compatible                     str@0x14    "amlogic, aml-pcm-dai"
+    pinctrl-names                  str@0x4f6   "audio_pcm"
+    pinctrl-0                      str@0x504   <0x5b>
+    clocks                         str@0xb9    <0x8 0xd 0x8 0xdd 0x8 0xdf>
+    clock-names                    str@0xc0    "mpll0", "pcm_mclk", "pcm_sclk"
+    pcm_mode                       str@0xd7f   <0x1>
+    phandle                        str@0xdd    <0x68>
+/i2s_platform
+    compatible                     str@0x14    "amlogic, aml-i2s"
+    interrupts                     str@0x5e    <0x0 0x1d 0x1>
+    phandle                        str@0xdd    <0x64>
+/pcm_platform
+    compatible                     str@0x14    "amlogic, aml-pcm"
+    phandle                        str@0xdd    <0x65>
+/spdif_codec
+    #sound-dai-cells               str@0xd4e   <0x0>
+    compatible                     str@0x14    "amlogic, aml-spdif-codec"
+    pinctrl-names                  str@0x4f6   "audio_spdif"
+    pinctrl-0                      str@0x504   <0x5c>
+    phandle                        str@0xdd    <0x6a>
+/pcm_codec
+    #sound-dai-cells               str@0xd4e   <0x0>
+    compatible                     str@0x14    "amlogic, pcm2BT-codec"
+    phandle                        str@0xdd    <0x6b>
+/dummy
+    #sound-dai-cells               str@0xd4e   <0x0>
+    compatible                     str@0x14    "amlogic, aml_dummy_codec"
+    status                         str@0x28f   "okay"
+    phandle                        str@0xdd    <0x69>
+/t9015
+    #sound-dai-cells               str@0xd4e   <0x0>
+    compatible                     str@0x14    "amlogic, aml_codec_T9015"
+    reg                            str@0x5a    <0x0 0xc8832000 0x0 0x14>
+    status                         str@0x28f   "disabled"
+    phandle                        str@0xdd    <0xd0>
+/aml_sound_meson
+    compatible                     str@0x14    "aml, meson-snd-card"
+    status                         str@0x28f   "okay"
+    aml-sound-card,format          str@0xd88   "i2s"
+    aml_sound_card,name            str@0xd9e   "AML-MESONAUDIO"
+    aml,audio-routing              str@0xdb2   "Ext Spk", "LOUTL", "Ext Spk", "LOUTR"
+    mute_gpio-gpios                str@0xdc4   <0x11 0x15 0x0>
+    mute_inv                       str@0xdd4   (present, zero length)
+    hp_disable                     str@0xddd   (present, zero length)
+    hp_paraments                   str@0xde8   <0x320 0x12c 0x0 0x5 0x1>
+    pinctrl-names                  str@0x4f6   "audio_i2s"
+    pinctrl-0                      str@0x504   <0x5d>
+    cpu_list                       str@0xdf5   <0x5e 0x5f 0x60>
+    codec_list                     str@0xdfe   <0x61 0x62 0x63>
+    plat_list                      str@0xe09   <0x64 0x64 0x65>
+/aml_sound_meson/cpudai0
+    sound-dai                      str@0xe13   <0x66>
+    phandle                        str@0xdd    <0x5e>
+/aml_sound_meson/cpudai1
+    sound-dai                      str@0xe13   <0x67>
+    phandle                        str@0xdd    <0x5f>
+/aml_sound_meson/cpudai2
+    sound-dai                      str@0xe13   <0x68>
+    phandle                        str@0xdd    <0x60>
+/aml_sound_meson/codec0
+    sound-dai                      str@0xe13   <0x69>
+    phandle                        str@0xdd    <0x61>
+/aml_sound_meson/codec1
+    sound-dai                      str@0xe13   <0x6a>
+    phandle                        str@0xdd    <0x62>
+/aml_sound_meson/codec2
+    sound-dai                      str@0xe13   <0x6b>
+    phandle                        str@0xdd    <0x63>
+/rdma
+    compatible                     str@0x14    "amlogic, meson, rdma"
+    dev_name                       str@0x2ef   "amlogic-rdma"
+    status                         str@0x28f   "ok"
+    interrupts                     str@0x5e    <0x0 0x59 0x1>
+    interrupt-names                str@0x69    "rdma"
+/amvenc_avc
+    compatible                     str@0x14    "amlogic, amvenc_avc"
+    dev_name                       str@0x2ef   "amvenc_avc"
+    status                         str@0x28f   "okay"
+    interrupts                     str@0x5e    <0x0 0x2d 0x1>
+    interrupt-names                str@0x69    "mailbox_2"
+/hevc_enc
+    compatible                     str@0x14    "cnm, HevcEnc"
+    dev_name                       str@0x2ef   "HevcEnc"
+    status                         str@0x28f   "okay"
+    interrupts                     str@0x5e    <0x0 0xbb 0x1>
+    interrupt-names                str@0x69    "wave420l_irq"
+    #address-cells                 str@0x30    <0x2>
+    #size-cells                    str@0x3f    <0x2>
+    ranges                         str@0x3e6   (present, zero length)
+/hevc_enc/io_reg_base
+    reg                            str@0x5a    <0x0 0xc8810000 0x0 0x4000>
+/picdec
+    compatible                     str@0x14    "amlogic, picdec"
+    memory-region                  str@0x2b5   <0x6c>
+    dev_name                       str@0x2ef   "picdec"
+    status                         str@0x28f   "okay"
+/ppmgr
+    compatible                     str@0x14    "amlogic, ppmgr"
+    memory-region                  str@0x2b5   <0x6d>
+    dev_name                       str@0x2ef   "ppmgr"
+    status                         str@0x28f   "okay"
+/deinterlace
+    compatible                     str@0x14    "amlogic, deinterlace"
+    status                         str@0x28f   "okay"
+    flag_cma                       str@0xe1d   <0x1>
+    memory-region                  str@0x2b5   <0x6e>
+    interrupts                     str@0x5e    <0x0 0x2e 0x1 0x0 0x6 0x1>
+    interrupt-names                str@0x69    "de_irq", "timerc"
+    buffer-size                    str@0xe26   <0x2fd000>
+    hw-version                     str@0xe32   <0x2>
+/ionvideo
+    compatible                     str@0x14    "amlogic, ionvideo"
+    dev_name                       str@0x2ef   "ionvideo"
+    status                         str@0x28f   "okay"
+/amlvideo
+    compatible                     str@0x14    "amlogic, amlvideo"
+    dev_name                       str@0x2ef   "amlvideo"
+    status                         str@0x28f   "okay"
+/amlvideo2_0
+    compatible                     str@0x14    "amlogic, amlvideo2"
+    dev_name                       str@0x2ef   "amlvideo2"
+    status                         str@0x28f   "okay"
+    amlvideo2_id                   str@0xe3d   <0x0>
+    cma_mode                       str@0xe4a   <0x1>
+/amlvideo2_1
+    compatible                     str@0x14    "amlogic, amlvideo2"
+    dev_name                       str@0x2ef   "amlvideo2"
+    status                         str@0x28f   "okay"
+    amlvideo2_id                   str@0xe3d   <0x1>
+    cma_mode                       str@0xe4a   <0x1>
+/vdin0
+    compatible                     str@0x14    "amlogic, vdin"
+    dev_name                       str@0x2ef   "vdin0"
+    status                         str@0x28f   "ok"
+    reserve-iomap                  str@0xe53   "true"
+    flag_cma                       str@0xe1d   <0x1>
+    cma_size                       str@0xe61   <0x10>
+    interrupts                     str@0x5e    <0x0 0x53 0x1>
+    rdma-irq                       str@0xe6a   <0x2>
+    vdin_id                        str@0xe73   <0x0>
+    tv_bit_mode                    str@0xe7b   <0x1>
+/vdin1
+    compatible                     str@0x14    "amlogic, vdin"
+    memory-region                  str@0x2b5   <0x6f>
+    dev_name                       str@0x2ef   "vdin1"
+    status                         str@0x28f   "ok"
+    reserve-iomap                  str@0xe53   "true"
+    flag_cma                       str@0xe1d   <0x0>
+    interrupts                     str@0x5e    <0x0 0x55 0x1>
+    rdma-irq                       str@0xe6a   <0x4>
+    vdin_id                        str@0xe73   <0x1>
+    tv_bit_mode                    str@0xe7b   <0x1>
+/amlvecm
+    compatible                     str@0x14    "amlogic, vecm"
+    dev_name                       str@0x2ef   "aml_vecm"
+    status                         str@0x28f   "okay"
+    gamma_en                       str@0xe87   <0x0>
+    wb_en                          str@0xe90   <0x0>
+    cm_en                          str@0xe96   <0x0>
+    cfg_en_osd_100                 str@0xe9c   <0x3>
+    tx_op_color_primary            str@0xeab   <0x1>
+/unifykey
+    compatible                     str@0x14    "amlogic, unifykey"
+    status                         str@0x28f   "ok"
+    unifykey-num                   str@0xebf   <0x13>
+    unifykey-index-0               str@0xecc   <0x70>
+    unifykey-index-1               str@0xedd   <0x71>
+    unifykey-index-2               str@0xeee   <0x72>
+    unifykey-index-3               str@0xeff   <0x73>
+    unifykey-index-4               str@0xf10   <0x74>
+    unifykey-index-5               str@0xf21   <0x75>
+    unifykey-index-6               str@0xf32   <0x76>
+    unifykey-index-7               str@0xf43   <0x77>
+    unifykey-index-8               str@0xf54   <0x78>
+    unifykey-index-9               str@0xf65   <0x79>
+    unifykey-index-10              str@0xf76   <0x7a>
+    unifykey-index-11              str@0xf88   <0x7b>
+    unifykey-index-12              str@0xf9a   <0x7c>
+    unifykey-index-13              str@0xfac   <0x7d>
+    unifykey-index-14              str@0xfbe   <0x7e>
+    unifykey-index-15              str@0xfd0   <0x7f>
+    unifykey-index-16              str@0xfe2   <0x80>
+    unifykey-index-17              str@0xff4   <0x81>
+    unifykey-index-18              str@0x1006  <0x82>
+/unifykey/key_0
+    key-name                       str@0x1018  "sn1"
+    key-device                     str@0x1021  "normal"
+    key-permit                     str@0x102c  "read", "write", "del"
+    phandle                        str@0xdd    <0x70>
+/unifykey/key_1
+    key-name                       str@0x1018  "sn2"
+    key-device                     str@0x1021  "normal"
+    key-permit                     str@0x102c  "read", "write", "del"
+    phandle                        str@0xdd    <0x71>
+/unifykey/key_2
+    key-name                       str@0x1018  "hdcp"
+    key-device                     str@0x1021  "secure"
+    key-type                       str@0x1037  "sha1"
+    key-permit                     str@0x102c  "read", "write", "del"
+    phandle                        str@0xdd    <0x72>
+/unifykey/key_3
+    key-name                       str@0x1018  "secure_boot_set"
+    key-device                     str@0x1021  "efuse"
+    key-permit                     str@0x102c  "write"
+    phandle                        str@0xdd    <0x73>
+/unifykey/key_4
+    key-name                       str@0x1018  "mn1"
+    key-device                     str@0x1021  "normal"
+    key-permit                     str@0x102c  "read", "write", "del"
+    phandle                        str@0xdd    <0x74>
+/unifykey/key_5
+    key-name                       str@0x1018  "mn2"
+    key-device                     str@0x1021  "normal"
+    key-permit                     str@0x102c  "read", "write", "del"
+    phandle                        str@0xdd    <0x75>
+/unifykey/key_6
+    key-name                       str@0x1018  "hdcp2_rx"
+    key-device                     str@0x1021  "normal"
+    key-permit                     str@0x102c  "read", "write", "del"
+    phandle                        str@0xdd    <0x76>
+/unifykey/key_7
+    key-name                       str@0x1018  "mac_bt"
+    key-device                     str@0x1021  "efuse"
+    key-permit                     str@0x102c  "read", "write"
+    key-type                       str@0x1037  "mac"
+    phandle                        str@0xdd    <0x77>
+/unifykey/key_8
+    key-name                       str@0x1018  "mac"
+    key-device                     str@0x1021  "efuse"
+    key-permit                     str@0x102c  "read", "write"
+    key-type                       str@0x1037  "mac"
+    phandle                        str@0xdd    <0x78>
+/unifykey/key_9
+    key-name                       str@0x1018  "mac_wifi"
+    key-device                     str@0x1021  "efuse"
+    key-permit                     str@0x102c  "read", "write"
+    key-type                       str@0x1037  "mac"
+    phandle                        str@0xdd    <0x79>
+/unifykey/key_10
+    key-name                       str@0x1018  "widevinekeybox"
+    key-device                     str@0x1021  "secure"
+    key-permit                     str@0x102c  "read", "write", "del"
+    phandle                        str@0xdd    <0x7a>
+/unifykey/key_11
+    key-name                       str@0x1018  "hdcp22_fw_private"
+    key-device                     str@0x1021  "secure"
+    key-permit                     str@0x102c  "read", "write", "del"
+    phandle                        str@0xdd    <0x7b>
+/unifykey/key_12
+    key-name                       str@0x1018  "PlayReadykeybox25"
+    key-device                     str@0x1021  "secure"
+    key-permit                     str@0x102c  "read", "write", "del"
+    phandle                        str@0xdd    <0x7c>
+/unifykey/key_13
+    key-name                       str@0x1018  "bt_rc_mac"
+    key-device                     str@0x1021  "normal"
+    key-permit                     str@0x102c  "read", "write", "del"
+    phandle                        str@0xdd    <0x7d>
+/unifykey/key_14
+    key-name                       str@0x1018  "prpubkeybox"
+    key-device                     str@0x1021  "secure"
+    key-permit                     str@0x102c  "read", "write", "del"
+    phandle                        str@0xdd    <0x7e>
+/unifykey/key_15
+    key-name                       str@0x1018  "prprivkeybox"
+    key-device                     str@0x1021  "secure"
+    key-permit                     str@0x102c  "read", "write", "del"
+    phandle                        str@0xdd    <0x7f>
+/unifykey/key_16
+    key-name                       str@0x1018  "attestationkeybox"
+    key-device                     str@0x1021  "secure"
+    key-permit                     str@0x102c  "read", "write", "del"
+    phandle                        str@0xdd    <0x80>
+/unifykey/key_17
+    key-name                       str@0x1018  "netflix_mgkid"
+    key-device                     str@0x1021  "normal"
+    key-permit                     str@0x102c  "read", "write", "del"
+    phandle                        str@0xdd    <0x81>
+/unifykey/key_18
+    key-name                       str@0x1018  "region"
+    key-device                     str@0x1021  "normal"
+    key-permit                     str@0x102c  "read", "write", "del"
+    phandle                        str@0xdd    <0x82>
+/__symbols__
+    gpu                            str@0x1040  "/mali@d00c0000"
+    clk125_cfg                     str@0x1044  "/mali@d00c0000/clk125_cfg"
+    clk250_cfg                     str@0x104f  "/mali@d00c0000/clk250_cfg"
+    clk285_cfg                     str@0x105a  "/mali@d00c0000/clk285_cfg"
+    clk400_cfg                     str@0x1065  "/mali@d00c0000/clk400_cfg"
+    clk500_cfg                     str@0x1070  "/mali@d00c0000/clk500_cfg"
+    clk666_cfg                     str@0x107b  "/mali@d00c0000/clk666_cfg"
+    clk750_cfg                     str@0x1086  "/mali@d00c0000/clk750_cfg"
+    clk800_cfg                     str@0x1091  "/mali@d00c0000/clk800_cfg"
+    cpus                           str@0x109c  "/cpus"
+    cluster0                       str@0x10a1  "/cpus/cpu-map/cluster0"
+    CPU0                           str@0x10aa  "/cpus/cpu@0"
+    CPU1                           str@0x10af  "/cpus/cpu@1"
+    CPU2                           str@0x10b4  "/cpus/cpu@2"
+    CPU3                           str@0x10b9  "/cpus/cpu@3"
+    SYSTEM_SLEEP_0                 str@0x10be  "/cpus/idle-states/system-sleep-0"
+    gic                            str@0x10cd  "/interrupt-controller@2c001000"
+    mailbox                        str@0x10d1  "/mhu@c883c400"
+    scpi_dvfs                      str@0x10d9  "/scpi_clocks/scpi_clocks@0"
+    xtal                           str@0x10e3  "/xtal-clk"
+    spicc                          str@0x10e8  "/@c1108d80"
+    uart_AO                        str@0x10ee  "/serial@c81004c0"
+    uart_A                         str@0x10f6  "/serial@c11084c0"
+    uart_B                         str@0x10fd  "/serial@c11084dc"
+    uart_C                         str@0x1104  "/serial@c1108700"
+    uart_AO_B                      str@0x110b  "/serial@c81004e0"
+    pinctrl_aobus                  str@0x1115  "/pinctrl@14"
+    gpio_ao                        str@0x1123  "/pinctrl@14/bank@14"
+    remote_pins                    str@0x112b  "/pinctrl@14/remote_pin"
+    sd_to_ao_uart_clr_pins         str@0x1137  "/pinctrl@14/sd_to_ao_uart_clr_pins"
+    sd_to_ao_uart_pins             str@0x114e  "/pinctrl@14/sd_to_ao_uart_pins"
+    ao_uart_pins                   str@0x1154  "/pinctrl@14/ao_uart"
+    ao_b_uart_pins                 str@0x1161  "/pinctrl@14/ao_b_uart"
+    ao_i2c_master                  str@0x1170  "/pinctrl@14/ao_i2c"
+    hdmitx_aocec                   str@0x117e  "/pinctrl@14/hdmitx_aocec"
+    hdmitx_eecec                   str@0x118b  "/pinctrl@14/hdmitx_eecec"
+    pinctrl_periphs                str@0x1198  "/pinctrl@4b0"
+    gpio                           str@0xcd3   "/pinctrl@4b0/bank@4b0"
+    external_eth_pins              str@0x11a8  "/pinctrl@4b0/external_eth_pins"
+    jtag_apao_pins                 str@0x11ba  "/pinctrl@4b0/jtag_apao_pin"
+    jtag_apee_pins                 str@0x11c9  "/pinctrl@4b0/jtag_apee_pin"
+    a_uart_pins                    str@0x11d8  "/pinctrl@4b0/a_uart"
+    b_uart_pins                    str@0x1164  "/pinctrl@4b0/b_uart"
+    c_uart_pins                    str@0x11e4  "/pinctrl@4b0/c_uart"
+    wifi_32k_pins                  str@0x11f0  "/pinctrl@4b0/wifi_32k_pins"
+    ao_to_sd_uart_clr_pins         str@0x11fe  "/pinctrl@4b0/ao_to_sd_uart_clr_pins"
+    sd_1bit_pins                   str@0x1215  "/pinctrl@4b0/sd_1bit_pins"
+    ao_to_sd_uart_pins             str@0x1222  "/pinctrl@4b0/ao_to_sd_uart_pins"
+    emmc_clk_cmd_pins              str@0x1235  "/pinctrl@4b0/emmc_clk_cmd_pins"
+    emmc_conf_pull_up              str@0x1247  "/pinctrl@4b0/emmc_conf_pull_up"
+    emmc_conf_pull_done            str@0x1259  "/pinctrl@4b0/emmc_conf_pull_done"
+    sd_clk_cmd_pins                str@0x126d  "/pinctrl@4b0/sd_clk_cmd_pins"
+    sd_all_pins                    str@0x127d  "/pinctrl@4b0/sd_all_pins"
+    sdio_clk_cmd_pins              str@0x1289  "/pinctrl@4b0/sdio_clk_cmd_pins"
+    sdio_all_pins                  str@0x129b  "/pinctrl@4b0/sdio_all_pins"
+    sd_iso7816_pins                str@0x12a9  "/pinctrl@4b0/sd_iso7816_pins"
+    nand_pulldown                  str@0x12b9  "/pinctrl@4b0/nand_pulldown"
+    nand_pullup                    str@0x12c7  "/pinctrl@4b0/nand_pullup"
+    all_nand_pins                  str@0x12d3  "/pinctrl@4b0/all_nand_pins"
+    nand_cs_pins                   str@0x12e1  "/pinctrl@4b0/nand_cs"
+    hdmitx_hpd                     str@0x12ee  "/pinctrl@4b0/hdmitx_hpd"
+    hdmitx_ddc                     str@0x12f9  "/pinctrl@4b0/hdmitx_ddc"
+    a_i2c_master                   str@0x1304  "/pinctrl@4b0/a_i2c"
+    b_i2c_master                   str@0x1311  "/pinctrl@4b0/b_i2c"
+    c_i2c_master                   str@0x131e  "/pinctrl@4b0/c_i2c"
+    c_i2c_master_pin1              str@0x132b  "/pinctrl@4b0/c_i2c_pin1"
+    d_i2c_master                   str@0x133d  "/pinctrl@4b0/d_i2c"
+    spicc_pulldown_z11z12z13       str@0x134a  "/pinctrl@4b0/spicc_pulldown_z11z12z13"
+    spicc_pullup_z11z12z13         str@0x1363  "/pinctrl@4b0/spicc_pullup_z11z12z13"
+    spicc_pulldown_x8x9x11         str@0x137a  "/pinctrl@4b0/spicc_pulldown_x8x9x11"
+    spicc_pullup_x8x9x11           str@0x1391  "/pinctrl@4b0/spicc_pullup_x8x9x11"
+    audio_i2s_pins                 str@0x13a6  "/pinctrl@4b0/audio_i2s"
+    audio_spdif_pins               str@0x13b5  "/pinctrl@4b0/audio_spdif"
+    audio_spdif_out_mute_pins      str@0x13c6  "/pinctrl@4b0/audio_spdif_out_mute_pins"
+    audio_spdif_in_pins            str@0x13e0  "/pinctrl@4b0/audio_spdif_in"
+    audio_spdif_in_1_pins          str@0x13f4  "/pinctrl@4b0/audio_spdif_in_1"
+    audio_pcm_pins                 str@0x140a  "/pinctrl@4b0/audio_pcm"
+    aml_dmic_pins                  str@0x1419  "/pinctrl@4b0/audio_dmic"
+    dvb_p_ts0_pins                 str@0x1427  "/pinctrl@4b0/dvb_p_ts0_pins"
+    dvb_s_ts0_pins                 str@0x1436  "/pinctrl@4b0/dvb_s_ts0_pins"
+    lcd_ttl_rgb_6bit_on_pins       str@0x1445  "/pinctrl@4b0/lcd_ttl_rgb_6bit_on"
+    lcd_ttl_rgb_6bit_off_pins      str@0x145e  "/pinctrl@4b0/lcd_ttl_rgb_6bit_off"
+    lcd_ttl_rgb_8bit_on_pins       str@0x1478  "/pinctrl@4b0/lcd_ttl_rgb_8bit_on"
+    lcd_ttl_rgb_8bit_off_pins      str@0x1491  "/pinctrl@4b0/lcd_ttl_rgb_8bit_off"
+    lcd_ttl_de_on_pins             str@0x14ab  "/pinctrl@4b0/lcd_ttl_de_on_pin"
+    lcd_ttl_hvsync_on_pins         str@0x14be  "/pinctrl@4b0/lcd_ttl_hvsync_on_pin"
+    lcd_ttl_de_hvsync_on_pins      str@0x14d5  "/pinctrl@4b0/lcd_ttl_de_hvsync_on_pin"
+    lcd_ttl_de_hvsync_off_pins     str@0x14ef  "/pinctrl@4b0/lcd_ttl_de_hvsync_off_pin"
+    cbus                           str@0x150a  "/soc/cbus@c1100000"
+    gpio_intc                      str@0x150f  "/soc/cbus@c1100000/interrupt-controller@9880"
+    i2c0                           str@0x1519  "/soc/cbus@c1100000/i2c@8500"
+    i2c1                           str@0x151e  "/soc/cbus@c1100000/i2c@87c0"
+    i2c2                           str@0x1523  "/soc/cbus@c1100000/i2c@87e0"
+    i2c3                           str@0x1528  "/soc/cbus@c1100000/i2c@8d20"
+    reset                          str@0x721   "/soc/cbus@c1100000/reset-controller@4404"
+    aobus                          str@0x111d  "/soc/aobus@c8100000"
+    i2c_AO                         str@0x152d  "/soc/aobus@c8100000/i2c@0500"
+    periphs                        str@0x11a0  "/soc/periphs@c8834000"
+    hiubus                         str@0x1534  "/soc/hiubus@c883c000"
+    clkc                           str@0x153b  "/soc/hiubus@c883c000/clock-controller@0"
+    apb                            str@0x1540  "/soc/apb@d0000000"
+    defendkey                      str@0x1544  "/defendkey"
+    audio_data                     str@0x154e  "/audio_data"
+    saradc                         str@0x1559  "/saradc"
+    efuse                          str@0x1560  "/efuse"
+    efusekey                       str@0x1566  "/efusekey"
+    key_0                          str@0x156f  "/efusekey/key_0"
+    key_1                          str@0x1575  "/efusekey/key_1"
+    key_2                          str@0x157b  "/efusekey/key_2"
+    key_3                          str@0x1581  "/efusekey/key_3"
+    remote                         str@0x1587  "/rc@c8100580"
+    custom_maps                    str@0x158e  "/custom_maps"
+    map_0                          str@0x159a  "/custom_maps/map_0"
+    map_1                          str@0x15a0  "/custom_maps/map_1"
+    map_2                          str@0x15a6  "/custom_maps/map_2"
+    map_3                          str@0x15ac  "/custom_maps/map_3"
+    map_4                          str@0x15b2  "/custom_maps/map_4"
+    pwm_ab                         str@0x15b8  "/pwm@c1108550"
+    pwm_cd                         str@0x15bf  "/pwm@c1108640"
+    pwm_ef                         str@0x15c6  "/pwm@c11086c0"
+    pwm_aoab                       str@0x15cd  "/pwm@c8100550"
+    partitions                     str@0x15d6  "/partitions"
+    logo                           str@0x15e1  "/partitions/logo"
+    recovery                       str@0x15e6  "/partitions/recovery"
+    misc                           str@0x15ef  "/partitions/misc"
+    dtbo                           str@0x15f4  "/partitions/dtbo"
+    cri_data                       str@0x15f9  "/partitions/cri_data"
+    rsv                            str@0x1602  "/partitions/rsv"
+    metadata                       str@0x1606  "/partitions/metadata"
+    vbmeta                         str@0x160f  "/partitions/vbmeta"
+    param                          str@0x16c   "/partitions/param"
+    boot                           str@0x1616  "/partitions/boot"
+    tee                            str@0x161b  "/partitions/tee"
+    vendor                         str@0x161f  "/partitions/vendor"
+    odm                            str@0x1626  "/partitions/odm"
+    system                         str@0x162a  "/partitions/system"
+    product                        str@0x1631  "/partitions/product"
+    cache                          str@0x1639  "/partitions/cache"
+    data                           str@0xc6d   "/partitions/data"
+    secmon_reserved                str@0x163f  "/reserved-memory/linux,secmon"
+    secos_reserved                 str@0x164f  "/reserved-memory/linux,secos"
+    logo_reserved                  str@0x165e  "/reserved-memory/linux,meson-fb"
+    di_cma_reserved                str@0x166c  "/reserved-memory/linux,di_cma"
+    ion_reserved                   str@0x167c  "/reserved-memory/linux,ion-dev"
+    vdin1_cma_reserved             str@0x1689  "/reserved-memory/linux,vdin1_cma"
+    ppmgr_reserved                 str@0x169c  "/reserved-memory/linux,ppmgr"
+    codec_mm_cma                   str@0x16ab  "/reserved-memory/linux,codec_mm_cma"
+    picdec_cma_reserved            str@0x16b8  "/reserved-memory/linux,picdec"
+    codec_mm_reserved              str@0x16cc  "/reserved-memory/linux,codec_mm_reserved"
+    amlogic_battery                str@0x16de  "/dummy-battery"
+    amlogic_charger                str@0x16ee  "/dummy-charger"
+    wifi_pwm_conf                  str@0x16fe  "/wifi_pwm_conf"
+    sd_emmc_c                      str@0x170c  "/emmc@d0074000"
+    sd_emmc_b                      str@0x1716  "/sd@d0072000"
+    sd_emmc_a                      str@0x1720  "/sdio@d0070000"
+    bootloader                     str@0x172a  "/mtd_nand/bootloader"
+    nandnormal                     str@0x1735  "/mtd_nand/nandnormal"
+    nand_partitions                str@0x1740  "/mtd_nand/nand_partition"
+    aml_sensor0                    str@0x1750  "/aml-sensor@0"
+    cpufreq_cool0                  str@0x175c  "/aml-sensor@0/cpufreq_cool0"
+    cpucore_cool0                  str@0x176a  "/aml-sensor@0/cpucore_cool0"
+    gpufreq_cool0                  str@0x1778  "/aml-sensor@0/gpufreq_cool0"
+    gpucore_cool0                  str@0x1786  "/aml-sensor@0/gpucore_cool0"
+    switch_on                      str@0x1794  "/thermal-zones/soc_thermal/trips/trip-point@0"
+    control                        str@0x58e   "/thermal-zones/soc_thermal/trips/trip-point@1"
+    hot                            str@0x179e  "/thermal-zones/soc_thermal/trips/trip-point@2"
+    critical                       str@0x17a2  "/thermal-zones/soc_thermal/trips/trip-point@3"
+    dwc3                           str@0x17ab  "/dwc3@c9000000"
+    usb2_phy                       str@0x17b0  "/usb2phy@d0078000"
+    usb3_phy                       str@0x17b9  "/usb3phy@d0078080"
+    amhdmitx                       str@0x17c2  "/amhdmitx"
+    vend_data                      str@0x17cb  "/amhdmitx/vend_data"
+    aocec                          str@0x1185  "/aocec"
+    i2s_dai                        str@0x17d5  "/I2S"
+    dmic                           str@0x17dd  "/snd_dmic"
+    spdif_dai                      str@0x17e2  "/SPDIF"
+    pcm_dai                        str@0x17ec  "/PCM"
+    i2s_plat                       str@0x17f4  "/i2s_platform"
+    pcm_plat                       str@0x17fd  "/pcm_platform"
+    spdif_codec                    str@0x1806  "/spdif_codec"
+    pcm_codec                      str@0x1812  "/pcm_codec"
+    dummy_codec                    str@0x181c  "/dummy"
+    amlogic_codec                  str@0x1828  "/t9015"
+    cpudai0                        str@0x1836  "/aml_sound_meson/cpudai0"
+    cpudai1                        str@0x183e  "/aml_sound_meson/cpudai1"
+    cpudai2                        str@0x1846  "/aml_sound_meson/cpudai2"
+    codec0                         str@0x184e  "/aml_sound_meson/codec0"
+    codec1                         str@0x1855  "/aml_sound_meson/codec1"
+    codec2                         str@0x185c  "/aml_sound_meson/codec2"
+    keysn_0                        str@0x1863  "/unifykey/key_0"
+    keysn_1                        str@0x186b  "/unifykey/key_1"
+    keysn_2                        str@0x1873  "/unifykey/key_2"
+    keysn_3                        str@0x187b  "/unifykey/key_3"
+    keysn_4                        str@0x1883  "/unifykey/key_4"
+    keysn_5                        str@0x188b  "/unifykey/key_5"
+    keysn_6                        str@0x1893  "/unifykey/key_6"
+    keysn_7                        str@0x189b  "/unifykey/key_7"
+    keysn_8                        str@0x18a3  "/unifykey/key_8"
+    keysn_9                        str@0x18ab  "/unifykey/key_9"
+    keysn_10                       str@0x18b3  "/unifykey/key_10"
+    keysn_11                       str@0x18bc  "/unifykey/key_11"
+    keysn_12                       str@0x18c5  "/unifykey/key_12"
+    keysn_13                       str@0x18ce  "/unifykey/key_13"
+    keysn_14                       str@0x18d7  "/unifykey/key_14"
+    keysn_15                       str@0x18e0  "/unifykey/key_15"
+    keysn_16                       str@0x18e9  "/unifykey/key_16"
+    keysn_17                       str@0x18f2  "/unifykey/key_17"
+    keysn_18                       str@0x18fb  "/unifykey/key_18"

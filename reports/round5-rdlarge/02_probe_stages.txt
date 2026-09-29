@@ -1,0 +1,19 @@
+[sudo] senha para erick: === step 1: identify ===
+  FAIL (USBError errno=75)
+  after reset: OK (00 07 00 10)
+
+=== step 2: 0x02 read 64B @ 0x20000000 ===
+  OK e3 95 62 04 ff ff ff ff ff ff ff ff ff ff ff ff
+  liveness: OK (00 07 00 10)
+
+=== step 3: 0x12 size=0 (arm ZLP, no DMA) ===
+  setup: bmRequestType=0x40 bRequest=0x12 wValue=0x1000 wIndex=0x0000 wLength=16
+  out  : 00 00 00 20 00 00 00 00 00 00 00 00 00 00 00 00
+  control stage completed in 0.000s
+  bulk IN FAIL errno=110 [Errno 110] Operation timed out
+  liveness: OK (00 07 00 10)
+
+=== step 4: 0x12 size=0x1000, interface claimed ===
+  interface 0 claimed
+  FAIL USBTimeoutError errno=110
+  liveness: FAIL (USBError errno=75)

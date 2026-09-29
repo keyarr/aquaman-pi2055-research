@@ -1,0 +1,3 @@
+=== bulkcmd echo hello ===
+=== bulkcmd upload mem 0x20000000 normal 0x1000 ===
+success

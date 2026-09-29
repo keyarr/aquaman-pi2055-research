@@ -1,0 +1,13 @@
+[sudo] senha para erick: 
+=== 0x20000000 size 0x200 ===
+  0x02 says: e3 95 62 04 ff ff ff ff ff ff ff ff ff ff ff ff
+  0x12 control OK
+  0x12 bulk IN FAIL errno=110
+
+=== 0x3f000000 size 0x200 ===
+  0x02 says: 0c 00 00 00 01 00 00 00 a8 aa ae d2 10 10 00 00
+  0x12 control OK
+  0x12 bulk IN FAIL errno=110
+
+=== control: 0x34 on the same endpoint ===
+  0x34 bulk IN 512 bytes b'success\x00\x00\x00\x00\x00\x00\x00\x00\x00'

@@ -1,0 +1,10 @@
+=== session 1790714918.315257106 : rdlarge 0x20000000 0x1000 ===
+error: no devices/emulators found
+1234567890	 Android Fastboot
+=== trigger 1790714918.416039596 ===
+FAILED (Status read failed (No such device))
+fastboot: error: Command failed
+=== optimus up 1790714918.795976668 ===
+[sudo] senha para erick: USBError: [Errno 110] Operation timed out
+=== done 1790714948.976036950 ===
+Bus 003 Device 051: ID 1b8e:c003 Amlogic, Inc. 

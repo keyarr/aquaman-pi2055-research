@@ -1,0 +1,16 @@
+[sudo] senha para erick: if 0 alt 0 class 0xff/00/00
+  ep 0x81 IN  1 mps 512
+  ep 0x02 OUT 2 mps 512
+raw     00 07 00 10
+version 0.7
+stage   16 (TPL/BL33-u-boot)
+
+=== 0x20000000 size=0x1000 block_len=0x1000 ===
+  param[0:16] = 00 00 00 20 00 10 00 00 00 00 00 00 00 00 00 00
+  USBError errno=110 [Errno 110] Operation timed out
+
+LADDER STOPPED after the first failure, session is done.
+
+=== summary ===
+addr      size     block_len  status  detail
+0x20000000 0x1000    0x1000     FAIL   usb error, no retry

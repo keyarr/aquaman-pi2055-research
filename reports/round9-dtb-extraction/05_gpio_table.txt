@@ -1,0 +1,41 @@
+every property in the aquaman tree whose first cell is a gpio bank phandle
+
+  phandle 0x11 = /pinctrl@4b0/bank@4b0  (amlogic,meson-gxl-periphs-pinctrl, the EE bank)
+  phandle 0x8f = /pinctrl@14/bank@14    (amlogic,meson-gxl-aobus-pinctrl, the AO bank)
+
+node                               property                 bank     pin/flags
+  /@c1108d80                       cs-gpios                 0x11     0x59/0x0
+  /aml_sound_meson                 mute_gpio-gpios          0x11     0x15/0x0
+  /amremote_led                    control_gpio             0x11     0x49/0x0
+  /bt-dev                          gpio_en                  0x11     0x55/0x0
+  /bt-dev                          gpio_reset               0x11     0x60/0x0
+  /btwakecontrol                   bt_host_wake             0x11     0x61/0x0
+  /emmc@d0074000/emmc              gpio_dat3                0x11     0x1d/0x0
+  /emmc@d0074000/emmc              hw_reset                 0x11     0x23/0x0
+  /jtag                            jtagao-gpios             0x11     0x16/0x0 0x17/0x0 0x18/0x0 0x19/0x0
+  /jtag                            jtagee-gpios             0x11     0x2a/0x0 0x2b/0x0 0x2c/0x0 0x2d/0x0
+  /sd@d0072000/sd                  gpio_cd                  0x11     0x30/0x0
+  /sd@d0072000/sd                  gpio_dat3                0x11     0x2e/0x0
+  /sd@d0072000/sd                  jtag_pin                 0x11     0x2a/0x0
+  /sysled                          led_gpio                 0x11     0x49/0x0
+  /wifi                            interrupt_pin            0x11     0x56/0x0
+  /wifi                            power_on_pin             0x11     0x55/0x0
+
+=== same scan on the p212 reference ===
+node                               property                 bank     pin/flags
+  /@c1108d80                       cs-gpios                 0x11     0x59/0x0
+  /aml_sound_meson                 mute_gpio-gpios          0x11     0x15/0x0
+  /bt-dev                          gpio_reset               0x11     0x60/0x0
+  /emmc@d0074000/emmc              gpio_dat3                0x11     0x1d/0x0
+  /emmc@d0074000/emmc              hw_reset                 0x11     0x23/0x0
+  /ethernet@0xc9410000             GPIOZ4_pin-gpios         0x11     0x4/0x0
+  /ethernet@0xc9410000             GPIOZ5_pin-gpios         0x11     0x5/0x0
+  /ethernet@0xc9410000             rst_pin-gpios            0x11     0xe/0x0
+  /jtag                            jtagao-gpios             0x11     0x16/0x0 0x17/0x0 0x18/0x0 0x19/0x0
+  /jtag                            jtagee-gpios             0x11     0x2a/0x0 0x2b/0x0 0x2c/0x0 0x2d/0x0
+  /sd@d0072000/sd                  gpio_cd                  0x11     0x30/0x0
+  /sd@d0072000/sd                  gpio_dat3                0x11     0x2e/0x0
+  /sd@d0072000/sd                  jtag_pin                 0x11     0x2a/0x0
+  /sysled                          led_gpio                 0x11     0x49/0x0
+  /wifi                            interrupt_pin            0x11     0x56/0x0
+  /wifi                            power_on_pin             0x11     0x55/0x0

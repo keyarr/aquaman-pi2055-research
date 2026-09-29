@@ -1,0 +1,61 @@
+=== session start 1790719481.989104095 ===
+--- fastboot devices before ---
+1234567890	 Android Fastboot
+--- trigger oem update 5000 1790719482.086078206 ---
+FAILED (Status read failed (No such device))
+fastboot: error: Command failed
+--- waiting for 1b8e:c003 1790719482.289866091 ---
+Bus 003 Device 055: ID 1b8e:c003 Amlogic, Inc. 
+--- optimus up 1790719482.475963564 ---
+raw     00 07 00 10
+version 0.7
+stage   16 (TPL/BL33-u-boot)
+gadget: alive, identify=00 07 00 10
+
+=== 0x02 read of 0x01000000, 64 bytes ===
+  sha256 7b095e976b615a25c332af1a94d1e8ea7ad6ff9519b7e9955b8274e8501f2890
+01000000  d0 0d fe ed 00 00 e3 a8 00 00 00 38 00 00 ca a4  |...........8....|
+01000010  00 00 00 28 00 00 00 11 00 00 00 10 00 00 00 00  |...(............|
+01000020  00 00 19 04 00 00 ca 6c 00 00 00 00 00 00 00 00  |.......l........|
+01000030  00 00 00 00 00 00 00 00 00 00 00 01 00 00 00 00  |................|
+
+=== mread mem 0x01000000 size=0x200 ===
+  got 512 bytes in 1 transfers, 0.021s (24.3 KiB/s)
+  sha256 14066b8b113927b9b1f218859aff1cb3e7d3845fc5aa9d5281fccfc67bd116cb
+  wrote reports/round8-bl33-read/mread_01000000_000200.bin
+  0x02 cross-check: MATCH (0.001s, 8 control reads of 64B)
+  gadget: alive, identify=00 07 00 10
+
+=== mread mem 0x01000000 size=0x1000 ===
+  got 4096 bytes in 1 transfers, 0.021s (193.9 KiB/s)
+  sha256 1809328aa1f729df7d5bfffce48270fce5f1f99b2aa14e28ba46cecf126fdd13
+  wrote reports/round8-bl33-read/mread_01000000_001000.bin
+  0x02 cross-check: MATCH (0.005s, 64 control reads of 64B)
+  gadget: alive, identify=00 07 00 10
+
+=== mread mem 0x01000000 size=0x10000 ===
+  got 65536 bytes in 1 transfers, 0.024s (2622.2 KiB/s)
+  sha256 083968ca586ada44f2e15ad4e54dc38ad795268a7ac517214015476abd2f3a72
+  wrote reports/round8-bl33-read/mread_01000000_010000.bin
+  0x02 cross-check: MATCH (0.075s, 1024 control reads of 64B)
+  gadget: alive, identify=00 07 00 10
+
+=== dump 0x01000000 size=0x01000000 ===
+  wrote reports/round8-bl33-read/mread_01000000_01000000.bin
+  address      0x01000000
+  size asked   0x01000000 (16777216)
+  size on file 16777216
+  chunks       256 upload transfers of 64 KiB
+  time         1.095s
+  throughput   14.61 MiB/s
+  sha256       f5e20c9e7952f73320819a13f474ac35d97882b46fbe0fc9d1d1d8d4830c3361
+  0x02 cross-check of the first 64 bytes: MATCH (0.000s, 1 control reads of 64B)
+  gadget: alive, identify=00 07 00 10
+
+=== summary ===
+size     status  detail
+0x200     OK     1 transfers, 8 reads, 24.3 KiB/s
+0x1000    OK     1 transfers, 64 reads, 193.9 KiB/s
+0x10000   OK     1 transfers, 1024 reads, 2622.2 KiB/s
+=== done 1790719484.967545357 ===
+Bus 003 Device 055: ID 1b8e:c003 Amlogic, Inc. 

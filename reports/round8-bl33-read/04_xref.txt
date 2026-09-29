@@ -1,0 +1,4 @@
+dump 0x01000000..0x01ffffff  (16384 KiB)
+  ADRP whose page is inside the dump: 57431
+  BL whose target is inside the dump:   131288
+  sample ADRP pages: 0xcd886000 0x02001000 0xcd087000 0x01002000 0x23420000 0x01004000 0x04005000 0x0125d000

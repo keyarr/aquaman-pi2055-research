@@ -1,0 +1,11 @@
+  ep 0x81 IN  2 mps 512
+  ep 0x02 OUT 2 mps 512
+raw     00 07 00 10
+version 0.7
+stage   16 (TPL/BL33-u-boot)
+
+=== mread mem 0x20000000 size=0x200 ===
+  got 512 bytes in 1 transfers, 0.021s (24.2 KiB/s)
+  sha256 54eda1c060b34a90cb588cecee203eeedbb59d79e36c1eea9dd4c4eee9ec6edb
+  wrote reports/round6-mread/mread_20000000_000200.bin
+USBError: errno=110 [Errno 110] Operation timed out

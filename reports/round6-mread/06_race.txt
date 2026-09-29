@@ -1,0 +1,14 @@
+version 0.7
+stage   16 (TPL/BL33-u-boot)
+trial 0: 0x02 FAIL [Errno 110] Operation timed out
+raw     00 07 00 10
+version 0.7
+stage   16 (TPL/BL33-u-boot)
+trial 1: 0x02 FAIL [Errno 110] Operation timed out
+raw     00 07 00 10
+version 0.7
+stage   16 (TPL/BL33-u-boot)
+trial 2: 0x02 FAIL [Errno 110] Operation timed out
+raw     00 07 00 10
+version 0.7
+stage   16 (TPL/BL33-u-boot)

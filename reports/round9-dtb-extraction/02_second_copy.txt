@@ -1,0 +1,16 @@
+source dump  reports/round8-bl33-read/mread_01000000_01000000.bin
+              16777216 bytes, sha256 f5e20c9e7952f73320819a13f474ac35d97882b46fbe0fc9d1d1d8d4830c3361
+
+copy 1  0x01000000  58280 bytes  sha256 b00adabab0585aa2b946dd8730aa8e701049f661ae3004c8a16224ef4a445468
+copy 2  0x01080000  58280 bytes  sha256 5cd819ff3f55df2b17b87630e7ca47df7859520684ce221c7c7b8a2543b55ce7
+identical: False
+differing bytes: 3543 of 58280, band 0x0000..0x1fff
+copy1[0x2000:0xe3a8] == copy2[0x2000:0xe3a8]: True
+
+=> the tail from file offset 0x2000 on is byte identical. the head, 0x0000..0x1fff,
+   is an AML_RES! image, not device tree data. fdtdump on the 58280 bytes at
+   0x01080000: FATAL ERROR: header is not valid.
+
+magic 0xd00dfeed occurrences in the whole 16 MiB dump: 1 (0x01000000)
+the 0x1904-byte strings block at 0x0108caa4 is byte identical to the one at 0x0100caa4
+the 0xca6c-byte struct block at 0x01080038 differs from 0x01000038 in 3516 of 51820 bytes

@@ -1,0 +1,9 @@
+version 0.7
+stage   16 (TPL/BL33-u-boot)
+--- 0x02 alone, no mread at all, first session after reset
+  len= 64 OK  e3 95 62 04 ff ff ff ff
+  len=128 FAIL [Errno 110] Operation timed out
+  len=256 FAIL [Errno 110] Operation timed out
+  len=512 FAIL [Errno 110] Operation timed out
+  len= 64 OK  e3 95 62 04 ff ff ff ff
+  len=512 FAIL [Errno 110] Operation timed out

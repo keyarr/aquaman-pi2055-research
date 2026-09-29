@@ -1,5 +1,11 @@
 # aquaman-dts-port — mainline 2025 → 4.9 downstream, node by node
 
+> **updated 2026-09-29 after the DTB was recovered from RAM.** the mapping
+> below is unchanged and was written before that, from `aquaman-config` and the
+> mainline DTS alone. it is now checkable against real device data, and the
+> check is in "what would finish it" at the bottom. where the two disagree,
+> the recovered DTB wins.
+
 sources, in the order they were used:
 
 1. `aquaman-config` (4447 options extracted from the device) — what drivers
@@ -186,22 +192,85 @@ a bootable DTS. it is a map.
 
 ## what would finish it
 
-1. the real aquaman DTB — sealed inside AMLSECU in `dt.img`
-   (`dts-analysis.md`: no `d00dfeed` magic, entropy 7.9965). this is the single
-   input that would settle every TODO above at once, and it is not available.
+**item 1 is DONE and item 3 is obsolete. read this before the list.**
+
+1. ~~the real aquaman DTB — sealed inside AMLSECU in `dt.img`~~ **the runtime
+   DTB was pulled out of DRAM at `0x01000000`** on 2026-09-29 and is
+   `artifacts/aquaman.dtb` / `artifacts/aquaman.dts`. it settles most of the
+   TODO column against real device data rather than against mainline guesses.
+   see `reports/aquaman-dtb-extraction.md`. what is still missing is the
+   vendor's **source** — `dt.img` remains encrypted — so the port question
+   changes from "guess the values" to "write a downstream .dts whose output
+   matches a known-good DTB".
 2. secondary sources that would help, none of them sufficient alone: the L1
    retail unit's UART log (banned here), mainline's git history for the
    rationale behind the derived pins, or a kernel built by Xiaomi that leaked
    (the MiBox GPL request #11, open since 2025-01).
-3. without (1), the remaining path is empirical: boot a kernel, read
-   `/proc/device-tree` off the stock device over adb, diff against the
-   reconstruction. `/proc/device-tree` is world-readable on most Android
-   builds. **that has not been tried and should be** — it is read-only, needs
-   no root on many kernels, and it would replace half the TODO column with
-   ground truth. recommend it as the next device session.
+3. ~~read `/proc/device-tree` over adb and diff against the reconstruction~~ **not
+   needed.** the FDT was read out of RAM directly, which is the same data with
+   one fewer permission in the way. `/proc/device-tree` would still confirm that
+   the running kernel got this exact blob, and that is cheap, but it is a
+   confirmation now, not the missing input.
 
-`reconstructed/aquaman.dts` was **not** created. with a dozen TODO nodes and
-no access to the sealed DTB, writing it would mean inventing pinctrl group
-names and clock ids, and a DTB that does not match the hardware is worse than
-no DTB: it fails at boot with no diagnostic. the mapping above is the
-deliverable.
+## the reconstructed DTS, and what it is not
+
+```text
+DTB runtime:
+    encontrado em 0x01000000
+    FDT válido
+    gxl_aquaman_1g
+    amlogic, Gxl
+    mali@d00c0000
+
+DTS:
+    primeiro esboço já reconstruído a partir do dump de RAM
+    parcialmente correlacionado com os nós/props observados no FDT
+    ainda não provado como source exato do vendor
+
+dt.img:
+    continua criptografado no artifact de firmware
+    não confundir o primeiro esboço extraído da RAM com o DTS original
+```
+
+`artifacts/aquaman.dts` is a first sketch, useful as an engineering baseline.
+it is **not** proven to be Xiaomi's source, it is a decompilation of a blob, so
+it has no `#include`, no `&label` structure and no comments. where the original
+differed from mainline in ways a decompilation cannot show — include layering,
+overrides, the shape of the pinctrl headers — it is silent.
+
+several nodes this report previously marked TODO are now checkable against real
+data in `aquaman-dtb-extraction.md`:
+
+| this report said | the recovered DTB says |
+|---|---|
+| `vend_data` product_desc unknown, TODO | `/amhdmitx/vend_data/product_desc = "MBox Meson Ref"`, `vendor_name = "Amlogic"`, `vendor_id = 0`, `ic_type = 0x3`. the generic string is what the device ships |
+| LED pin group unknown, TODO | `/sysled led_gpio` on EE pin `0x49`, node disabled; `/amremote_led control_gpio` on the same `0x49`, `okay` |
+| ADC no 4.9 template, TODO | `/saradc` exists, `amlogic, saradc`, gic0/73. the *template* is still missing from p241, but the device's own node is known |
+| `uart-has-rtscts` needs a pin group, TODO | `/pinctrl@4b0/a_uart` has `uart_tx_a`/`uart_rx_a` and deliberately **no** cts/rts group, so mainline's `rtscts` does not apply |
+| BT UART node, medium confidence | `serial1 = /serial@c11084c0`, gic0/26, and it is clocked from `<&xtal>` not `<&gxl_clkc 0x23>`, unlike p241 |
+| eMMC, high confidence | confirmed: `/emmc@d0074000` 8-bit, 200 MHz, HS200 + 1.8V, `non-removable`, `disable-wp` |
+
+and two things the recovered tree settles that no amount of mainline reading
+would have: there is **no ethernet node at all** on this board, and every
+single GPIO reference in the tree points at the periphs/EE bank, including the
+eMMC reset, including `/jtag/jtagao-gpios`. the p212 reference does the same, so
+that one is a family quirk, but anyone assuming the aobus bank will be wrong.
+
+the TODO rows that survive are the ones about **downstream driver structure**,
+not about hardware: sound stack shape, clock ids absent from the 4.9 tree, and
+the DVB/media module set. `aquaman-dts-port.md` §"the honest summary of
+coverage" is unchanged for those.
+
+## two TODO items that stay TODO and one that got worse
+
+- **sound** stays low. the recovered DTB gives the card
+  (`AML-MESONAUDIO`, `aml,audio-routing = "Ext Spk","LOUTL","Ext Spk","LOUTR"`,
+  cpu_dais `/I2S`,`/SPDIF`,`/PCM`, codec_dais `/dummy`,`/spdif_codec`,
+  `/pcm_codec`), which is real data, but the 4.9 `aiu`/`ao-i2s` binding is a
+  different shape and mainline's `amlogic,gx-sound-card` does not exist in it.
+- **`CONFIG_AMLOGIC_VIDEOSYNC=n` on the device but required to build** is
+  unchanged and still unexplained. the DTB does not mention videosync.
+- **`/reserved-memory/linux,secos` at `0x05300000`, `no-map`, overlaps the
+  `linux,secmon` pool at `0x05000000..0x05400000`** in the recovered tree. the
+  blob says it, p212 does the same, and `secos` is `status = "disable"` here.
+  recorded, not corrected.

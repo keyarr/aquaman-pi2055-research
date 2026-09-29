@@ -1,0 +1,61 @@
+version 0.7
+stage   16 (TPL/BL33-u-boot)
+scanning 0x00000000..0x04000000, 64 MiB
+  0x00000000 FAILED [Errno 19] No such device (it may have been disconnected), recovering
+Traceback (most recent call last):
+  File "/home/erick/Downloads/aquaman_9_PI_2055/tools/mread_scan.py", line 55, in scan
+    got, _ = mread_mem(dev, base, n)
+             ~~~~~~~~~^^^^^^^^^^^^^^
+  File "/home/erick/Downloads/aquaman_9_PI_2055/tools/optimus.py", line 186, in mread_mem
+    chunk = dev.read(BULK_IN_EP, min(want, BULK_CHUNK), BULK_TIMEOUT)
+  File "/usr/lib/python3.14/site-packages/usb/core.py", line 1043, in read
+    ret = fn(
+            self._ctx.handle,
+    ...<2 lines>...
+            buff,
+            self.__get_timeout(timeout))
+  File "/usr/lib/python3.14/site-packages/usb/backend/libusb1.py", line 850, in bulk_read
+    return self.__read(self.lib.libusb_bulk_transfer,
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                       dev_handle,
+                       ^^^^^^^^^^^
+    ...<2 lines>...
+                       buff,
+                       ^^^^^
+                       timeout)
+                       ^^^^^^^^
+  File "/usr/lib/python3.14/site-packages/usb/backend/libusb1.py", line 958, in __read
+    _check(retval)
+    ~~~~~~^^^^^^^^
+  File "/usr/lib/python3.14/site-packages/usb/backend/libusb1.py", line 604, in _check
+    raise USBError(_strerror(ret), ret, _libusb_errno[ret])
+usb.core.USBError: [Errno 19] No such device (it may have been disconnected)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/erick/Downloads/aquaman_9_PI_2055/tools/mread_scan.py", line 123, in <module>
+    sys.exit(main())
+             ~~~~^^
+  File "/home/erick/Downloads/aquaman_9_PI_2055/tools/mread_scan.py", line 111, in main
+    hits, done, dt = scan(dev, lo, hi, int(args.block, 0))
+                     ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/erick/Downloads/aquaman_9_PI_2055/tools/mread_scan.py", line 60, in scan
+    d.reset()
+    ~~~~~~~^^
+  File "/usr/lib/python3.14/site-packages/usb/core.py", line 973, in reset
+    self._ctx.managed_open()
+    ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/usr/lib/python3.14/site-packages/usb/core.py", line 113, in wrapper
+    return f(self, *args, **kwargs)
+  File "/usr/lib/python3.14/site-packages/usb/core.py", line 132, in managed_open
+    self.handle = self.backend.open_device(self.dev)
+                  ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "/usr/lib/python3.14/site-packages/usb/backend/libusb1.py", line 808, in open_device
+    return _DeviceHandle(dev)
+  File "/usr/lib/python3.14/site-packages/usb/backend/libusb1.py", line 656, in __init__
+    _check(_lib.libusb_open(self.devid, byref(self.handle)))
+    ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.14/site-packages/usb/backend/libusb1.py", line 604, in _check
+    raise USBError(_strerror(ret), ret, _libusb_errno[ret])
+usb.core.USBError: [Errno 19] No such device (it may have been disconnected)

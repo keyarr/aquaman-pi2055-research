@@ -152,7 +152,7 @@ cosmetic, and it can be matched with `KBUILD_BUILD_*` if it ever matters.
 | 13 | 31 `USB_*` + `KSM`, `HID_APPLE`, `NLS_UTF8`, `CRYPTO_LZ4`, `PSTORE_FTRACE` | known | TV profile absent from every defconfig |
 | 14 | 7 only-A (`AMLOGIC_DEBUG_ATRACE`, `AMLOGIC_WATCHPOINT`, …) | known | device-only debug features |
 | 15 | `uname -v` lacks build date/host | expected | cosmetic |
-| 16 | dtb is `gxl_p241_1g`, not aquaman | **blocking for a real boot** | the board DTB is sealed in `dt.img` |
+| 16 | dtb is `gxl_p241_1g`, not aquaman | **blocking for a real boot** | **OBSOLETE as stated.** the aquaman DTB was recovered from RAM at `0x01000000`, see `aquaman-dtb-extraction.md` and `artifacts/aquaman.dtb`. this row is now "we ship the wrong dtb and the right one exists", not "we have no way to get it". the vendor's .dts source is still unavailable and `dt.img` is still encrypted |
 
 ## 5. the VDEC built-ins are dead weight, and now provably so
 

@@ -1,0 +1,47 @@
+/dev/null: Warning (unit_address_vs_reg): /timer_bc: node has a reg or ranges property, but no unit name
+/dev/null: Warning (unit_address_vs_reg): /arm_pmu: node has a reg or ranges property, but no unit name
+/dev/null: Warning (unit_address_vs_reg): /cpu_iomap/io_cbus_base: node has a reg or ranges property, but no unit name
+/dev/null: Warning (unit_address_vs_reg): /cpu_iomap/io_apb_base: node has a reg or ranges property, but no unit name
+/dev/null: Warning (unit_address_vs_reg): /cpu_iomap/io_aobus_base: node has a reg or ranges property, but no unit name
+/dev/null: Warning (unit_address_vs_reg): /cpu_iomap/io_vapb_base: node has a reg or ranges property, but no unit name
+/dev/null: Warning (unit_address_vs_reg): /cpu_iomap/io_hiu_base: node has a reg or ranges property, but no unit name
+/dev/null: Warning (unit_address_vs_reg): /watchdog: node has a reg or ranges property, but no unit name
+/dev/null: Warning (unit_address_vs_reg): /scpi_clocks/scpi_clocks@0: node has a unit name, but no reg or ranges property
+/dev/null: Warning (unit_address_vs_reg): /pinctrl@14: node has a unit name, but no reg or ranges property
+/dev/null: Warning (unit_address_vs_reg): /pinctrl@4b0: node has a unit name, but no reg or ranges property
+/dev/null: Warning (unit_address_vs_reg): /soc/cbus@c1100000/meson_clk_msr: node has a reg or ranges property, but no unit name
+/dev/null: Warning (unit_address_vs_reg): /soc/aobus@c8100000/cpu_version: node has a reg or ranges property, but no unit name
+/dev/null: Warning (unit_address_vs_reg): /soc/periphs@c8834000/rng: node has a reg or ranges property, but no unit name
+/dev/null: Warning (unit_address_vs_reg): /defendkey: node has a reg or ranges property, but no unit name
+/dev/null: Warning (unit_address_vs_reg): /aml_dma: node has a reg or ranges property, but no unit name
+/dev/null: Warning (unit_address_vs_reg): /saradc: node has a reg or ranges property, but no unit name
+/dev/null: Warning (unit_address_vs_reg): /ddr_bandwidth: node has a reg or ranges property, but no unit name
+/dev/null: Warning (unit_address_vs_reg): /memory@00000000: node has a unit name, but no reg or ranges property
+/dev/null: Warning (unit_address_vs_reg): /reserved-memory/linux,secos: node has a reg or ranges property, but no unit name
+/dev/null: Warning (unit_address_vs_reg): /mtd_nand: node has a reg or ranges property, but no unit name
+/dev/null: Warning (unit_address_vs_reg): /aml-sensor@0: node has a unit name, but no reg or ranges property
+/dev/null: Warning (unit_address_vs_reg): /thermal-zones/soc_thermal/trips/trip-point@0: node has a unit name, but no reg or ranges property
+/dev/null: Warning (unit_address_vs_reg): /thermal-zones/soc_thermal/trips/trip-point@1: node has a unit name, but no reg or ranges property
+/dev/null: Warning (unit_address_vs_reg): /thermal-zones/soc_thermal/trips/trip-point@2: node has a unit name, but no reg or ranges property
+/dev/null: Warning (unit_address_vs_reg): /thermal-zones/soc_thermal/trips/trip-point@3: node has a unit name, but no reg or ranges property
+/dev/null: Warning (unit_address_vs_reg): /dwc2_a: node has a reg or ranges property, but no unit name
+/dev/null: Warning (unit_address_vs_reg): /aocec: node has a reg or ranges property, but no unit name
+/dev/null: Warning (unit_address_vs_reg): /codec_io/io_cbus_base: node has a reg or ranges property, but no unit name
+/dev/null: Warning (unit_address_vs_reg): /codec_io/io_dos_base: node has a reg or ranges property, but no unit name
+/dev/null: Warning (unit_address_vs_reg): /codec_io/io_hiubus_base: node has a reg or ranges property, but no unit name
+/dev/null: Warning (unit_address_vs_reg): /codec_io/io_aobus_base: node has a reg or ranges property, but no unit name
+/dev/null: Warning (unit_address_vs_reg): /codec_io/io_vcbus_base: node has a reg or ranges property, but no unit name
+/dev/null: Warning (unit_address_vs_reg): /codec_io/io_dmc_base: node has a reg or ranges property, but no unit name
+/dev/null: Warning (unit_address_vs_reg): /canvas: node has a reg or ranges property, but no unit name
+/dev/null: Warning (unit_address_vs_reg): /snd_dmic: node has a reg or ranges property, but no unit name
+/dev/null: Warning (unit_address_vs_reg): /t9015: node has a reg or ranges property, but no unit name
+/dev/null: Warning (unit_address_vs_reg): /hevc_enc/io_reg_base: node has a reg or ranges property, but no unit name
+/dev/null: Warning (unit_address_format): /memory@00000000: unit name should not have leading 0s
+/dev/null: Warning (unit_address_format): /reserved-memory/ramoops@0x07400000: unit name should not have leading "0x"
+/dev/null: Warning (unit_address_format): /reserved-memory/ramoops@0x07400000: unit name should not have leading 0s
+/dev/null: Warning (simple_bus_reg): /soc/cbus@c1100000/meson_clk_msr: simple-bus unit address format error, expected "875c"
+/dev/null: Warning (simple_bus_reg): /soc/aobus@c8100000/cpu_version: simple-bus unit address format error, expected "220"
+/dev/null: Warning (simple_bus_reg): /soc/aobus@c8100000/i2c@0500: simple-bus unit address format error, expected "500"
+/dev/null: Warning (simple_bus_reg): /soc/periphs@c8834000/rng: simple-bus unit address format error, expected "0"
+/dev/null: Warning (resets_property): /snd_dmic: Missing property '#reset-cells' in node /soc/hiubus@c883c000/clock-controller@0 or bad phandle (referred from resets[0])
+/dev/null: Warning (gpios_property): /__symbols__:gpio: property size (22) is invalid, expected multiple of 4

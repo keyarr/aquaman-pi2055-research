@@ -1,0 +1,12 @@
+version 0.7
+stage   16 (TPL/BL33-u-boot)
+=== region 0x20000000..0x21000000 (16 MiB) ===
+  scanned 16 MiB in 1.2s (13.5 MiB/s)
+  ddr                  121 hits, first: 0x20021267 0x2042b5fe 0x2042b62a 0x2042b65e 0x2042b694 0x2042ce23 0x2042ce33 0x207afad0
+=== region 0x3f000000..0x40000000 (16 MiB) ===
+  scanned 16 MiB in 1.2s (13.5 MiB/s)
+  ddr                  68 hits, first: 0x3f07d4e8 0x3f07d5d0 0x3f09c52f 0x3f09c6e6 0x3f09ca65 0x3f09d6cf 0x3f09dbb4 0x3f09df4c
+  aml_                 1 hits, first: 0x3f2420a8
+raw     00 07 00 10
+version 0.7
+stage   16 (TPL/BL33-u-boot)

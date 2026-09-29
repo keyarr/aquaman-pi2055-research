@@ -1,0 +1,33 @@
+  File "<string>", line 16, in <module>
+    got,n=mread_mem(d,0x20000000,0x200)
+          ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/home/erick/Downloads/aquaman_9_PI_2055/tools/optimus.py", line 170, in mread_mem
+    reply = bulkcmd(dev, "upload mem 0x%x normal 0x%x" % (addr, size))
+  File "/home/erick/Downloads/aquaman_9_PI_2055/tools/optimus.py", line 127, in bulkcmd
+    dev.ctrl_transfer(RT_OUT, REQ_BULKCMD, 0, 2,
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                      cmd.encode() + b"\0" * (BULKCMD_DATA - len(cmd)), timeout)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.14/site-packages/usb/core.py", line 1093, in ctrl_transfer
+    ret = self._ctx.backend.ctrl_transfer(
+                                self._ctx.handle,
+    ...<4 lines>...
+                                buff,
+                                self.__get_timeout(timeout))
+  File "/usr/lib/python3.14/site-packages/usb/backend/libusb1.py", line 897, in ctrl_transfer
+    ret = _check(self.lib.libusb_control_transfer(
+                                    dev_handle.handle,
+    ...<5 lines>...
+                                    length,
+                                    timeout))
+  File "/usr/lib/python3.14/site-packages/usb/backend/libusb1.py", line 602, in _check
+    raise USBTimeoutError(_strerror(ret), ret, _libusb_errno[ret])
+usb.core.USBTimeoutError: [Errno 110] Operation timed out
+raw     00 07 00 10
+version 0.7
+stage   16 (TPL/BL33-u-boot)
+EP0 attempt 0: FAIL [Errno 110] Operation timed out
+EP0 attempt 1: FAIL [Errno 110] Operation timed out
+EP0 attempt 2: FAIL [Errno 110] Operation timed out
+EP0 attempt 3: FAIL [Errno 110] Operation timed out
+--- now with a 200ms sleep before the first EP0

@@ -1,0 +1,16 @@
+reports/round6-mread/mread_20000000_000200.bin                   512  0x20000000..0x200001ff
+                                                            sha256 54eda1c060b34a90cb588cecee203eeedbb59d79e36c1eea9dd4c4eee9ec6edb
+reports/round6-mread/mread_20000000_001000.bin                  4096  0x20000000..0x20000fff
+                                                            sha256 e957a46b5e76afe711eb1b8d494074ba83c104ca049a1bdb8358092f814c96d8
+reports/round6-mread/mread_20000000_010000.bin                 65536  0x20000000..0x2000ffff
+                                                            sha256 7ceb4b6f00419e5a28cab9cb9eb4afda29bec0a187ff5974279a1f7e537ff05e
+reports/round6-mread/mread_20000000_100000.bin               1048576  0x20000000..0x200fffff
+                                                            sha256 0b1b76d138721ca9e640f899a3f85c713f08a9eb44730b6097e2edd326b18f75
+
+nesting (smaller file is a byte exact prefix of the bigger one):
+  mread_20000000_000200.bin (512) is a prefix of mread_20000000_001000.bin (4096)
+  mread_20000000_000200.bin (512) is a prefix of mread_20000000_010000.bin (65536)
+  mread_20000000_000200.bin (512) is a prefix of mread_20000000_100000.bin (1048576)
+  mread_20000000_001000.bin (4096) is a prefix of mread_20000000_010000.bin (65536)
+  mread_20000000_001000.bin (4096) is a prefix of mread_20000000_100000.bin (1048576)
+  mread_20000000_010000.bin (65536) is a prefix of mread_20000000_100000.bin (1048576)

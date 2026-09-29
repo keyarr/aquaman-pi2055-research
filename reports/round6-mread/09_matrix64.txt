@@ -1,0 +1,19 @@
+version 0.7
+stage   16 (TPL/BL33-u-boot)
+raw     00 07 00 10
+version 0.7
+stage   16 (TPL/BL33-u-boot)
+   [start] identify OK
+mread1 512 bytes
+raw     00 07 00 10
+version 0.7
+stage   16 (TPL/BL33-u-boot)
+   [after mread1] identify OK
+   0x02 #0 len=64 match=True
+   0x02 #1 len=64 match=True
+   0x02 #2 len=64 match=True
+   0x02 #3 len=64 match=True
+raw     00 07 00 10
+version 0.7
+stage   16 (TPL/BL33-u-boot)
+   [after 0x02 loop] identify OK

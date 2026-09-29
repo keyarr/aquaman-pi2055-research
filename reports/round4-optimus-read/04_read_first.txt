@@ -1,0 +1,42 @@
+=== read 0x0 len 64 (run 1) ===
+[sudo] senha para erick: Traceback (most recent call last):
+  File "/home/erick/Downloads/aquaman_9_PI_2055/tools/optimus.py", line 192, in <module>
+    sys.exit(main())
+             ~~~~^^
+  File "/home/erick/Downloads/aquaman_9_PI_2055/tools/optimus.py", line 171, in main
+    b = bytes(read_mem(dev, addr, length))
+              ~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "/home/erick/Downloads/aquaman_9_PI_2055/tools/optimus.py", line 77, in read_mem
+    return dev.ctrl_transfer(RT_IN, REQ_READ_MEM,
+           ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+                             (addr >> 16) & 0xFFFF, addr & 0xFFFF,
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                             length, 5000)
+                             ^^^^^^^^^^^^^
+  File "/usr/lib/python3.14/site-packages/usb/core.py", line 1093, in ctrl_transfer
+    ret = self._ctx.backend.ctrl_transfer(
+                                self._ctx.handle,
+    ...<4 lines>...
+                                buff,
+                                self.__get_timeout(timeout))
+  File "/usr/lib/python3.14/site-packages/usb/backend/libusb1.py", line 897, in ctrl_transfer
+    ret = _check(self.lib.libusb_control_transfer(
+                                    dev_handle.handle,
+    ...<5 lines>...
+                                    length,
+                                    timeout))
+  File "/usr/lib/python3.14/site-packages/usb/backend/libusb1.py", line 604, in _check
+    raise USBError(_strerror(ret), ret, _libusb_errno[ret])
+usb.core.USBError: [Errno 5] Input/Output Error
+=== read 0x0 len 64 (run 2, stability) ===
+no 1b8e:c003 on the bus
+
+=== read 0x20000000 len 64 (run 1) ===
+no 1b8e:c003 on the bus
+=== read 0x20000000 len 64 (run 2, stability) ===
+no 1b8e:c003 on the bus
+
+=== read 0x3ff00000 len 64 (run 1) ===
+no 1b8e:c003 on the bus
+=== read 0x3ff00000 len 64 (run 2, stability) ===
+no 1b8e:c003 on the bus

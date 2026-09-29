@@ -1,0 +1,26 @@
+[sudo] senha para erick: 
+=== size 0x200 ===
+  FAIL usb errno=110
+
+=== size 0x400 ===
+  FAIL usb errno=110
+
+=== size 0x800 ===
+  FAIL usb errno=110
+
+=== size 0x1000 ===
+  FAIL usb errno=110
+
+=== size 0x2000 ===
+  FAIL usb errno=110
+
+=== size 0x4000 ===
+  FAIL usb errno=110
+
+=== summary ===
+size 0x200    FAIL  usb errno=110
+size 0x400    FAIL  usb errno=110
+size 0x800    FAIL  usb errno=110
+size 0x1000   FAIL  usb errno=110
+size 0x2000   FAIL  usb errno=110
+size 0x4000   FAIL  usb errno=110

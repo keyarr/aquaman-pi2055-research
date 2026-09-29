@@ -115,11 +115,16 @@ in `ghostlock-risk.md`.
 not to answer a question nobody asked — this is the honest list of what is
 missing beyond the SMC:
 
-1. **a DTB.** the only one built is `gxl_p241_1g.dtb`, the wrong board. the
-   real one is sealed in `dt.img` (`dts-analysis.md`). this is a real blocker
-   independent of the SMC, and it is why `fastboot-kernel-path.md` §4.5
-   matters: U-Boot hands the kernel *its own* DTB, so a fastboot boot does not
-   need one — but a real boot does.
+1. **a DTB.** the only one built is `gxl_p241_1g.dtb`, the wrong board.
+   **OBSOLETE as a blocker: the aquaman DTB was recovered from DRAM at
+   `0x01000000` and is `artifacts/aquaman.dtb`** (`aquaman-dtb-extraction.md`,
+   58280 bytes, `fdtdump`-valid, `gxl_aquaman_1g`). what is still missing is
+   the vendor's .dts *source*: `dt.img` remains encrypted and the recovered
+   blob is a decompilation, so there is no `#include`/`&label` layer to port.
+   a real boot still needs a dtb that matches the hardware, and the recovered
+   blob is what that has to be validated against. it remains independent of
+   the SMC, and `fastboot-kernel-path.md` §4.5 still holds: U-Boot hands the
+   kernel *its own* DTB, so a fastboot boot does not need one at all.
 2. **media drivers.** the stock `.ko` set cannot be reused (190 CRC mismatches),
    so a custom kernel needs its own video decode, or ships without it.
 3. **Wi-Fi/BT.** `rtl8821cs` and `sdio_bt` are Realtek/vendor, and the W1 host

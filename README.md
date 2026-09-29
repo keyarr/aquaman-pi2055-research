@@ -23,6 +23,11 @@ aquaman PI.2055 kernel provenance research
  - aquaman-config : kernel config extracted from the device.
 
  current state, start here:
+ - reports/bl33-offline-round10.md : the U-Boot anchor. matched
+   securestorage.c + 13 BL31 ids at 0x01040000..0x0107ffff, pulled from a 16 MiB
+   RAM dump. first real code for BL33 instead of string hunting.
+ - reports/aquaman-dtb-extraction.md : the device tree, read out of DRAM at
+   0x01000000. valid FDT, 376 nodes, 1798 props. artifacts/aquaman.dtb + .dts.
  - reports/fastboot-memory-flow.md : where the payload goes. refutes the
    old "download != boot source" root cause.
  - reports/vendor-modules.md : the 28 stock .ko, extracted from the OTA dumps
@@ -38,12 +43,30 @@ aquaman PI.2055 kernel provenance research
  "CONFIRMED" in amlsecu-open-questions.md, `X = 0x10200000` in
  bootm-test-image.md / set-active-sink.md, "root is required" in
  vendor-module-compat.md, and the max-download-size root cause in
- fastboot-boot-verdict.md.
+ fastboot-boot-verdict.md. from the RAM dump rounds: the "second copy of the
+ DTB" in bl33-offline-round8.md §3.1, the "11 SMC sites" in §5 (wrong opcode
+ constant), the "unidentified ARM64, not U-Boot" verdict for 0x01040000 in §3.2,
+ and every "the board DTB is sealed in dt.img" line — that DTB is out of RAM now.
 
  short version: the kernel builds (Image + dtb + modules, reproducible with
- tools/build_aquaman_kernel.sh), the stock modules are extracted and mapped,
- and execution is BLOCKED at BL31, which is secure-fused and refuses unsigned
- images. not an address problem.
+ tools/build_aquaman_kernel.sh), the stock modules are extracted and mapped, the
+ device tree is out of the stick, and execution is BLOCKED at BL31, which is
+ secure-fused and refuses unsigned images. not an address problem. the U-Boot
+ fragment found in RAM does not change that: it is the secure-storage interface,
+ not the key, and AML_DATA_PROCESS is not in the dump.
+
+ what's actually true right now:
+
+   kernel exploit path : trigger/reachability known, primitive not demonstrated,
+                         oracle unstable, no root
+   BL31 path           : strong U-Boot/Amlogic anchor, secure-storage functions
+                         identified, call graph incomplete, secure-boot bypass
+                         NOT demonstrated
+   DTS/DTB             : runtime DTB recovered from RAM, first DTS sketch done,
+                         many nodes now checkable against real data, exact
+                         vendor source still unavailable
+   KernelSU/APatch     : plausible for a rebuilt kernel, still needs a path to
+                         run modified kernel code
 
  full writeup: reports/provenance.md
 

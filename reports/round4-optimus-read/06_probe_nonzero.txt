@@ -1,0 +1,23 @@
+=== session 1790714100.263496913 : probe 0x20000000 0x3f000000 ===
+1234567890	 Android Fastboot
+=== trigger 1790714104.906245303 ===
+FAILED (Status read failed (No such device))
+fastboot: error: Command failed
+=== optimus up 1790714105.337915670 ===
+[sudo] senha para erick: raw     00 07 00 10
+version 0.7
+stage   16 (TPL/BL33-u-boot)
+
+0x20000000:
+20000000  e3 95 62 04 ff ff ff ff ff ff ff ff ff ff ff ff  |..b.............|
+20000010  ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff  |................|
+20000020  ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff  |................|
+20000030  ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff  |................|
+
+0x3f000000:
+3f000000  fe 69 00 01 05 40 fe 69 00 01 04 29 fe 69 00 01  |.i...@.i...).i..|
+3f000010  05 2d fe 69 00 01 04 80 fe 69 00 01 02 e7 fe 69  |.-.i.....i.....i|
+3f000020  00 01 05 74 fe 69 00 01 04 9b fe 69 00 01 05 1e  |...t.i.....i....|
+3f000030  fe 69 00 01 04 56 fe 69 00 01 02 33 fe 69 00 01  |.i...V.i...3.i..|
+=== done 1790714105.471650550 ===
+Bus 003 Device 048: ID 1b8e:c003 Amlogic, Inc.

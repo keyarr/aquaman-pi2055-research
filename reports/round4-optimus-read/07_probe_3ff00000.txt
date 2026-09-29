@@ -1,0 +1,8 @@
+=== session 1790714223.800563368 : probe 0x3ff00000 ===
+error: no devices/emulators found
+=== trigger 1790714264.027030320 ===
+< waiting for any device >
+=== optimus up 1790714284.035606401 ===
+[sudo] senha para erick: USBError: [Errno 5] Input/Output Error
+=== done 1790714284.207987258 ===
+Bus 003 Device 048: ID 1b8e:c003 Amlogic, Inc.

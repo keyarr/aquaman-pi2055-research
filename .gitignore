@@ -15,3 +15,5 @@ test_boot*.img
 *.pyc
 /tmp/
 *.zip
+reports/round6-mread/*.bin
+reports/round8-bl33-read/*.bin

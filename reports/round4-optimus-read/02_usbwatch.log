@@ -1,0 +1,4 @@
+# usb bus transitions, 50ms poll, first and last sighting of each VID:PID
+# (raw 1500-line poll is compressed; empty state lines are dropped)
+1790713942.394286867 ID 1b8e:c003
+1790714019.543459805

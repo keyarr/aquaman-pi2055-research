@@ -1,0 +1,11 @@
+=== baseline getvars ===
+version-bootloader: U-Boot 2015.01-g7ac5df7677-dirty
+Finished. Total time: 0.000s
+product: aquaman
+Finished. Total time: 0.000s
+serialno: 1234567890
+Finished. Total time: 0.000s
+unlocked: yes
+Finished. Total time: 0.000s
+secure: no
+Finished. Total time: 0.000s

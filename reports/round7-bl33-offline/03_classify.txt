@@ -1,0 +1,16 @@
+0x20000000 ent  3.59 zero 0.36 nop    0 ret    0 brk   0 ptr2xx  113 ptr01x 1104
+0x20010000 ent  4.91 zero 0.15 nop    0 ret    0 brk   0 ptr2xx  139 ptr01x  428
+0x20020000 ent  1.37 zero 0.03 nop    0 ret    0 brk   0 ptr2xx   73 ptr01x   20
+0x20030000 ent  2.87 zero 0.30 nop    0 ret    0 brk   0 ptr2xx   65 ptr01x   47
+0x20040000 ent  0.18 zero 0.01 nop    0 ret    0 brk   0 ptr2xx    0 ptr01x   27
+0x20050000 ent  0.81 zero 0.03 nop    0 ret    0 brk   0 ptr2xx   16 ptr01x   33
+0x20060000 ent  0.80 zero 0.03 nop    0 ret    0 brk   0 ptr2xx   18 ptr01x   26
+0x20070000 ent  0.20 zero 0.01 nop    0 ret    0 brk   0 ptr2xx    0 ptr01x   30
+0x20080000 ent  0.81 zero 0.03 nop    0 ret    0 brk   0 ptr2xx   18 ptr01x   31
+0x20090000 ent  0.81 zero 0.03 nop    0 ret    0 brk   0 ptr2xx   19 ptr01x   29
+0x200a0000 ent  0.19 zero 0.01 nop    0 ret    0 brk   0 ptr2xx    0 ptr01x   28
+0x200b0000 ent  0.78 zero 0.03 nop    0 ret    0 brk   0 ptr2xx   18 ptr01x   22
+0x200c0000 ent  0.80 zero 0.03 nop    0 ret    0 brk   0 ptr2xx   19 ptr01x   27
+0x200d0000 ent  0.16 zero 0.01 nop    0 ret    0 brk   0 ptr2xx    0 ptr01x   22
+0x200e0000 ent  0.77 zero 0.03 nop    0 ret    0 brk   0 ptr2xx   17 ptr01x   14
+0x200f0000 ent  0.13 zero 0.01 nop    0 ret    0 brk   0 ptr2xx    0 ptr01x    9

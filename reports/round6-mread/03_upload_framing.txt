@@ -1,0 +1,9 @@
+  File "<string>", line 19, in <module>
+    print('   bulk IN %d bytes: %s' % (len(got), got[:16].hex(' ')))
+                                                 ^^^^^^^^^^^^
+AttributeError: 'array.array' object has no attribute 'hex'
+raw     00 07 00 10
+version 0.7
+stage   16 (TPL/BL33-u-boot)
+bulkcmd -> b'success\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+0x33 #0 -> 16 bytes e8 ef 00 00 00 10 00 00 00 00 00 00 00 00 00 00  magic=0xefe8 len=0x1000 seq=0

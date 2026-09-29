@@ -1,0 +1,91 @@
+dump reports/round8-bl33-read/mread_01000000_01000000.bin
+size 16777216, base 0x01000000
+
+window 0x01040000..0x0107ffff  65536 slots, 65535 decoded, 1 undecodable (0.00%)
+
+whole dump  0x01000000..0x01ffffff: 16 supervisor-call word(s)
+  0x0104b5a0  smc #0x0000   decode=ok
+  0x01073ba0  smc #0x0000   decode=ok
+  0x01073ba8  smc #0x0000   decode=ok
+  0x01073bb0  smc #0x0000   decode=ok
+  0x01074144  smc #0x0000   decode=ok
+  0x01719ab8  smc #0x966c   decode=ok
+  0x01726264  smc #0x0339   decode=ok
+  0x01734d70  hvc #0x4537   decode=ok
+  0x0173de74  smc #0x57b8   decode=ok
+  0x01769c38  hvc #0x27d3   decode=ok
+  0x017882bc  svc #0x8086   decode=ok
+  0x017af448  hvc #0xbe32   decode=ok
+  0x01dc7394  svc #0x0000   decode=ok
+  0x01dc7644  svc #0x0000   decode=ok
+  0x01dc768c  svc #0x0000   decode=ok
+  0x01dc76c4  svc #0x0000   decode=ok
+
+kernel region  0x0169e000..0x01ffffff: 11 supervisor-call word(s)
+  0x01719ab8  smc #0x966c   decode=ok
+  0x01726264  smc #0x0339   decode=ok
+  0x01734d70  hvc #0x4537   decode=ok
+  0x0173de74  smc #0x57b8   decode=ok
+  0x01769c38  hvc #0x27d3   decode=ok
+  0x017882bc  svc #0x8086   decode=ok
+  0x017af448  hvc #0xbe32   decode=ok
+  0x01dc7394  svc #0x0000   decode=ok
+  0x01dc7644  svc #0x0000   decode=ok
+  0x01dc768c  svc #0x0000   decode=ok
+  0x01dc76c4  svc #0x0000   decode=ok
+
+candidate window  0x01040000..0x0107ffff: 5 supervisor-call word(s)
+  0x0104b5a0  smc #0x0000   decode=ok
+  0x01073ba0  smc #0x0000   decode=ok
+  0x01073ba8  smc #0x0000   decode=ok
+  0x01073bb0  smc #0x0000   decode=ok
+  0x01074144  smc #0x0000   decode=ok
+
+BL callers of each supervisor-call stub, whole dump
+  0x0104b5a0  0 caller(s)  
+  0x01073ba0  11 caller(s)  0x01073bd0 0x01073bec 0x01073c08 0x01073c24 0x01073cc4 0x01073db0
+  0x01073ba8  1 caller(s)  0x01074160
+  0x01073bb0  0 caller(s)  
+  0x01074144  0 caller(s)  
+
+BL31 share-storage / secure-key ids built with movz+movk, whole dump
+id         name                           sites
+0x82000023  GET_SHARE_STORAGE_IN_BASE      0x01073bc0
+0x82000024  GET_SHARE_STORAGE_OUT_BASE     0x01073be4
+0x82000025  GET_SHARE_STORAGE_BLOCK_BASE   0x01073c00
+0x82000026  GET_SHARE_STORAGE_MESSAGE_BASE -
+0x82000027  GET_SHARE_STORAGE_BLOCK_SIZE   0x01073c1c 0x01073cbc
+0x82000028  SET_STORAGE_INFO               0x0107413c
+0x82000060  SECURITY_KEY_QUERY             0x01073f14
+0x82000061  SECURITY_KEY_READ              0x01073e54
+0x82000062  SECURITY_KEY_WRITE             0x01073da8
+0x82000063  SECURITY_KEY_TELL              0x0107405c
+0x82000064  SECURITY_KEY_VERIFY            0x01074100
+0x82000065  SECURITY_KEY_STATUS            0x01073fb8
+0x82000066  SECURITY_KEY_NOTIFY            -
+0x82000067  SECURITY_KEY_LIST              -
+0x82000068  SECURITY_KEY_REMOVE            -
+0x82000069  SECURITY_KEY_NOTIFY_EX         0x01073d04
+0x8200006a  SECURITY_KEY_SET_ENCTYPE       0x01074158
+0x8200006b  SECURITY_KEY_GET_ENCTYPE       -
+0x8200006c  SECURITY_KEY_VERSION           -
+0x820000ff  AML_DATA_PROCESS               -
+
+BL targets leaving the window, by 64 KiB bucket
+  0x01000000..  201
+  0x01010000..  40
+  0x01080000..  118
+  0x01090000..  1208
+
+constant delta that maps out-of-window BL targets back inside
+  best count 1326 of 1567, reached by 47413 different deltas 0x01b010..0x0494e0
+  NOT PROVEN: the count does not pick a unique delta, so this is a
+  relocation smell, not a measured reloc offset. see the report.
+
+longest byte-identical stretch 0x01010000+X vs 0x01090000+X
+  114688 bytes: 0x01010000..0x0102bfff == 0x01090000..0x010abfff
+  offset inside the AML_RES image: 0x10000, implied staging base 0x01000000
+
+d00dfeed occurrences in the whole dump
+  0x01000000
+  1 total. round 8 claimed two. see the report.

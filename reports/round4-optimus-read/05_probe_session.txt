@@ -1,0 +1,29 @@
+=== adb reboot fastboot ===
+1790714070.493409098
+1234567890	 Android Fastboot
+=== trigger oem update 5000 ===
+1790714075.750060460
+FAILED (Status read failed (No such device))
+fastboot: error: Command failed
+=== 1b8e seen at ===
+1790714076.123633023
+[sudo] senha para erick: raw     00 07 00 10
+version 0.7
+stage   16 (TPL/BL33-u-boot)
+
+0x00000000:
+  USBError [Errno 5] Input/Output Error
+
+0x00001000:
+  USBError [Errno 19] No such device (it may have been disconnected)
+
+0x20000000:
+  USBError [Errno 19] No such device (it may have been disconnected)
+
+0x3f000000:
+  USBError [Errno 19] No such device (it may have been disconnected)
+
+0x3ff00000:
+  USBError [Errno 19] No such device (it may have been disconnected)
+=== probe done at ===
+1790714076.465692034

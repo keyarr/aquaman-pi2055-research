@@ -1,0 +1,30 @@
+java package paths in 1 MiB: 16
+  android/icu/impl/data/icudt60b/curr/en
+  com/$rpc/goog
+  com/auth/youtube
+  com/complete/search
+  com/youtubei/
+  com/yt/2012/10/10
+  com/yuliskov/SmartTube/releases/download/latest/smarttube_stable
+  com/yuliskov/SmartTube/releases/download/latest/smarttube_stable_arm64
+  com/yuliskov/SmartTube/releases/download/latest/smarttube_stable_x86
+  com/yuliskov/SmartTubeNext/releases/download/latest/ATV_SYTV_Bridge
+  com/yuliskov/SmartTubeNext/releases/download/latest/Amazon_SYTV_Bridge
+  org/2001/XMLSchema
+  org/api/ip
+  org/codes
+  org/repository/browse/
+  org/v1/doc/features
+
+slf4j                0x200218a1
+dex
+                 absent
+classes.dex          absent
+META-INF             absent
+AndroidManifest      absent
+java/lang/String     absent
+Landroid             absent
+log_error            0x20006890
+ART                  0x2001282d
+oat
+                 absent

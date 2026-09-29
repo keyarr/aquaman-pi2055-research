@@ -1,0 +1,10 @@
+version 0.7
+stage   16 (TPL/BL33-u-boot)
+scanning 0x20000000..0x22000000, 32 MiB
+  ...16 MiB, 13.1 MiB/s
+  ...32 MiB, 13.2 MiB/s
+
+32 MiB in 2.4s (13.2 MiB/s)
+bootm                    1 hits  0x21ab7c99
+BL2                      1 hits  0x21cb17fa
+ddr                    210 hits  0x20021267 0x2042b5fe 0x2042b62a 0x2042b65e 0x2042b694 0x2042ce23 0x2042ce33 0x207afad0 0x207afad9 0x208204ca 0x208204d2 0x208204da

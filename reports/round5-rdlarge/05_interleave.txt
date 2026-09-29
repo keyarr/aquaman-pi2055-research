@@ -1,0 +1,17 @@
+[sudo] senha para erick: === A: 0x34 first (known good), then 0x12 ===
+  [A1] 0x34 bulk IN 512 bytes b'success\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+  [A] identify OK 00 07 00 10
+  [A2] 0x12 bulk IN FAIL errno=110 (control took 0.000s, got 0)
+  [A] identify FAIL errno=75
+
+=== B: 0x12 again right after, warm endpoint ===
+  [B1] 0x12 control FAIL errno=110
+  [B] identify FAIL errno=75
+
+=== C: 0x34 again, to see the endpoint still works ===
+  [C1] 0x34 control FAIL errno=110
+  [C] identify FAIL errno=75
+
+=== D: 0x12 with a 1s pause after the control stage ===
+  [D1] 0x12 control FAIL errno=110
+  [D] identify FAIL errno=75

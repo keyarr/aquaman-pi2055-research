@@ -1,0 +1,8 @@
+version 0.7
+stage   16 (TPL/BL33-u-boot)
+mread ok: 512 bytes 1 transfers
+raw     00 07 00 10
+version 0.7
+stage   16 (TPL/BL33-u-boot)
+0x02 ok: e3 95 62 04 ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+match: True

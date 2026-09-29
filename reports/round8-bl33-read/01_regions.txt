@@ -1,0 +1,35 @@
+dump 0x01000000..0x01ffffff (16 MiB), 4 occupied runs
+
+0x01000000..0x010affff     720896 bytes (0.69 MiB)
+  entropy 4.47 (first 64K 4.26)  nop     0 ret   969 brk    0 smc   8
+    01000000  d0 0d fe ed 00 00 e3 a8 00 00 00 38 00 00 ca a4 |...........8....|
+    01000010  00 00 00 28 00 00 00 11 00 00 00 10 00 00 00 00 |...(............|
+    01000020  00 00 19 04 00 00 ca 6c 00 00 00 00 00 00 00 00 |.......l........|
+    01000030  00 00 00 00 00 00 00 00 00 00 00 01 00 00 00 00 |................|
+    str 0x0100c508 b'/thermal-zones/soc_thermal/trips/trip-point@0'
+    str 0x0100c544 b'/thermal-zones/soc_thermal/trips/trip-point@1'
+    str 0x0100c580 b'/thermal-zones/soc_thermal/trips/trip-point@2'
+    str 0x0100c5bc b'/thermal-zones/soc_thermal/trips/trip-point@3'
+    str 0x0108c508 b'/thermal-zones/soc_thermal/trips/trip-point@0'
+    str 0x0108c544 b'/thermal-zones/soc_thermal/trips/trip-point@1'
+
+0x010f6000..0x01139fff     278528 bytes (0.27 MiB)
+  entropy 0.87 (first 64K 0.24)  nop     0 ret     0 brk    0 smc   0
+    str 0x01128467 b'IIIMMMMMMMMMMMMMMMMMMMMMMMM@@@888888888888888888888888GGGMMMMMMMMMMMMMMMMMMMMMMMMFFF8888'
+    str 0x01129ae7 b'IIIMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM'
+    str 0x0112b167 b'IIIMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM'
+    str 0x0112c7e7 b'IIIMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM'
+    str 0x0110a4be b'EEEIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII'
+    str 0x0110bb3e b'MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM'
+
+0x01392000..0x013e7fff     352256 bytes (0.34 MiB)
+  entropy 0.28 (first 64K 0.25)  nop     0 ret     0 brk    0 smc   0
+
+0x0169e000..0x01ffffff    9838592 bytes (9.38 MiB)
+  entropy 6.74 (first 64K 6.39)  nop 51827 ret 29782 brk    0 smc   3
+    str 0x01e06ab8 b'0010203040506070809001112131415161718191021222324252627282920313233343536373839304142434'
+    str 0x01dc0080 b'Linux version 4.9.113-g963f962d046a-dirty (jenkins@c5-mitv-cm-build06.bj) (gcc version 6'
+    str 0x01e86bc8 b'                                                                                        '
+    str 0x01de0dc0 b'rdwrexshmrmwmemsgdumpfdwuwloiosrrrdcde??acnrht??ar??dd??mmhgnhmg????????????????????????'
+    str 0x01dc0010 b'%s version %s (jenkins@c5-mitv-cm-build06.bj) (gcc version 6.3.1 20170109 (Linaro GCC 6.'
+    str 0x01df0230 b' !"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`ABCDEFGHIJKLMNOPQRSTUVW'
