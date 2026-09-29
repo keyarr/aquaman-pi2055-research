@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""dwarf_offsets.py — extrai offsets de structs do vmlinux via readelf DWARF.
+"""dwarf_offsets.py — extracts struct offsets from vmlinux via readelf DWARF.
 
-Uso: python3 tools/dwarf_offsets.py build-aq/vmlinux
-Le DW_TAG_structure_type / DW_TAG_member do --debug-dump=info em streaming
-(sem carregar o dump inteiro). Primeira ocorrencia vale; divergencias
-entre CUs sao contadas e reportadas.
+Usage: python3 tools/dwarf_offsets.py build-aq/vmlinux
+Streams DW_TAG_structure_type / DW_TAG_member from --debug-dump=info
+(without loading the whole dump). First occurrence wins; divergences
+between CUs are counted and reported.
 
-So cobre as structs listadas em WANT. Byte order / LP64 assumidos.
+Only covers the structs listed in WANT. Byte order / LP64 assumed.
 """
 import re
 import subprocess
@@ -56,8 +56,8 @@ ATTR = re.compile(r"^\s+<[0-9a-f]+>\s+(DW_AT_\w+)\s*:\s*(.*)$")
 LOC_UCONST = re.compile(r"DW_OP_plus_uconst:\s*(\d+)")
 
 def clean_name(val):
-    # readelf indireto: "(indirect string, offset: 0x...): nome"
-    # split no '): ' final, nao no ': ' do offset:
+    # readelf indirect string, i.e. "(indirect string, offset: 0x...): name"
+    # split on the trailing '): ', not on the offset's ': ':
     if val.startswith("(") and "): " in val:
         return val.split("): ", 1)[1].strip()
     return val.strip()
@@ -88,7 +88,7 @@ def main(path):
                 stack.append((depth, tag, "@pending"))
                 cur_struct, cur_member = "@pending", None
             elif tag == "DW_TAG_member":
-                # struct dono = struct mais proximo na pilha
+                # owner struct = closest struct on the stack
                 owner = next((s for d, t, s in reversed(stack)
                               if t == "DW_TAG_structure_type"), None)
                 cur_struct, cur_member = owner, "@pending"

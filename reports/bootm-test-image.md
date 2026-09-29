@@ -1,8 +1,19 @@
 # bootm-test-image — offline proof that m1_boot.img / m1b_boot.img reach the entrypoint
 
-reference source: /tmp/kernel-src/uboot-khadas (khadas/u-boot, branch
-khadas-vims-nougat), same 2015.01 Amlogic vintage as the device
-(`2015.01-g7ac5df7677-dirty`). board config closest to aquaman:
+> **X was refuted, 2026-09-29.** The `X = 0x10200000` in §0 came from the reference
+> tree header (khadas `include/g_dnl.h:18`) and **was never measured in this
+> build**. Experiment E5 vs E6 in `reports/buffer-equals-loadaddr-proof.md` showed
+> that the download lands where `bootm` reads, which refutes the premise that
+> "download != boot source". This file remains an accurate analysis **of the khadas
+> tree** — and `tools/inspect_test_image.py` remains useful for what it was always
+> intended to do, which is verifying the *format gates* of bootm. What it does
+> not do is predict the address or outcome on aquaman.
+> Current flow analysis: `reports/fastboot-memory-flow.md`.
+> `tools/inspect_test_image.py` already has its default corrected to 0x1080000.
+
+reference source: khadas/u-boot branch `khadas-vims-nougat` (2015.01), same
+vintage as the device (`2015.01-g7ac5df7677-dirty`). Cloned in
+`.src/u-boot-khadas`. Board config closest to aquaman:
 board/amlogic/configs/gxl_p241_v1.h (gxl, p241_1g DTB matches local build).
 
 tool: `tools/inspect_test_image.py` replicates every gate below.
@@ -11,15 +22,21 @@ prints INVALID (the trap the old test fell into).
 
 ## 0. addresses (why bootm needs an explicit X)
 
-X = 0x10200000 download buffer, CONFIG_USB_FASTBOOT_BUF_ADDR
-(include/g_dnl.h:18). cb_download memcpys there
+X = 0x10200000 download buffer in the REFERENCE tree,
+CONFIG_USB_FASTBOOT_BUF_ADDR (include/g_dnl.h:18). cb_download memcpys there
 (drivers/usb/gadget/f_fastboot.c:504), size gate vs ddr_size_usable
 (f_fastboot.c:556).
-Y = 0x1080000 stale addr, loadaddr env default
+Y = 0x1080000 loadaddr env default
 (board/amlogic/configs/gxl_p241_v1.h:90: "loadaddr=1080000").
 do_bootm_on_complete sprintfs load_addr (f_fastboot.c:576) and calls
-do_bootm (f_fastboot.c:577), so plain `fastboot boot` reads Y, not X.
-our test never uses `fastboot boot`; it calls `bootm X` explicitly.
+do_bootm (f_fastboot.c:577), so in the reference tree plain `fastboot boot`
+reads Y, not X.
+Our test never uses `fastboot boot`; it invokes `bootm X` explicitly.
+
+**On aquaman, X and Y overlap** (BUF ∩ Y ≠ ∅, proven in runtime by
+E5/E6). The exact value of BUF remains unknown and cannot be recovered
+from this dump: `bootloader.img` is encrypted and the constants in
+`ddr_size_usable` are board-specific. See `fastboot-memory-flow.md` §3-4.
 
 ## 1. exact bootm sequence for `bootm 0x10200000`
 
@@ -27,12 +44,12 @@ our test never uses `fastboot boot`; it calls `bootm X` explicitly.
    subcommand detour (:117-131). nLoadAddr defaults to GXB_IMG_LOAD_ADDR
    (:133) then is overridden by argv[0] → 0x10200000 (:135-140).
 2. aml_sec_boot_check(AML_D_P_IMG_DECRYPT, 0x10200000, GXB_IMG_SIZE,
-   GXB_IMG_DEC_ALL) (cmd_bootm.c:142). pure SMC wrapper
+   GXB_IMG_DEC_ALL) (cmd_bootm.c:142). Pure SMC wrapper
    (arch/arm/cpu/armv8/gxl/bl31_apis.c:255-308, x0=AML_DATA_PROCESS).
    GXB_IMG_SIZE = 24<<20, GXB_IMG_LOAD_ADDR = 0x1080000
    (arch/arm/include/asm/arch-gxl/bl31_apis.h:118-119).
-   nonzero → "aml log : Sig Check" + return (:143-147). our 4 KiB file
-   sits fully inside the 24 MiB window. plaintext passes iff the device
+   nonzero → "aml log : Sig Check" + return (:143-147). Our 4 KiB file
+   sits fully inside the 24 MiB window. Plaintext passes iff the device
    is not secure-fused (expected: getvar unlocked=yes, secure=no;
    confirm on device before sending).
 3. do_bootm_states(START|FINDOS|FINDOTHER|LOADOS|PREP|FAKE_GO|GO)
@@ -58,19 +75,19 @@ our test never uses `fastboot boot`; it calls `bootm X` explicitly.
      bootm_find_fdt wrapper preset dtb_mem_addr (bootm.c:231-244) +
      get_multi_dt_entry for MULTI_DTB (bootm.c:246-250).
      env dtb_mem_addr=0x1000000 (gxl_p241_v1.h env block),
-     CONFIG_MULTI_DTB=1 (gxl_p241_v1.h:470). no DTB must be packed.
+     CONFIG_MULTI_DTB=1 (gxl_p241_v1.h:470). No DTB must be packed.
    - LOADOS: bootm_load_os (bootm.c:415-471). decomp_image COMP_NONE =
      memmove load<-image_start (bootm.c:326-335), flush_cache (:437).
-     then the overlap gate (:442-468): no_overlap = (comp==NONE &&
-     load==image_start). ours: load=0x1080000, image_start=0x10200800,
+     Then the overlap gate (:442-468): no_overlap = (comp==NONE &&
+     load==image_start). Ours: load=0x1080000, image_start=0x10200800,
      blob=[0x10200000,0x10201000), load_end=0x1080070 → disjoint →
-     check SKIPPED, return 0. (if the same bytes are booted from
+     check SKIPPED, return 0. (If the same bytes are booted from
      Y=0x1080000, overlap=True and ep+0x38 IS checked: magic present,
      passes.)
    - PREP/GO: do_bootm_linux → boot_prep_linux (fdt setup) →
      boot_jump_linux (arch/arm/lib/bootm.c:262-283):
      announce_and_cleanup (MMU/caches off), do_nonsec_virt_switch,
-     kernel_entry(ft_addr, 0, 0, 0) at ep=0x1080000. no return.
+     kernel_entry(ft_addr, 0, 0, 0) at ep=0x1080000. No return.
 
 ## 2. field → validator → source line → expected result (m1/m1b)
 
@@ -89,7 +106,7 @@ our test never uses `fastboot boot`; it calls `bootm X` explicitly.
 | file size 4096 | download gate | f_fastboot.c:556 | << ddr_size_usable, pass |
 
 minimum viable size on this path: 2048 (one page header) + 60 (magic at
-+0x38 needs 60 bytes) = 2108 bytes. ours is 4096 (page-padded 112 B
++0x38 needs 60 bytes) = 2108 bytes. Ours is 4096 (page-padded 112 B
 kernel). kernel_addr may also be 0x10008000 (quirk remaps it).
 
 ## 3. why legacy/FIT were not chosen
@@ -97,21 +114,21 @@ kernel). kernel_addr may also be 0x10008000 (quirk remaps it).
 LEGACY uImage (64 B header + payload): needs IH_MAGIC 0x27051956,
 correct hcrc ALWAYS (image.c:754), arch==22 ARM64
 (IH_ARCH_DEFAULT, arch/arm/include/asm/u-boot.h:49), os==5, type
-KERNEL-family, comp NONE; dcrc only if verify=yes. in-place
+KERNEL-family, comp NONE; dcrc only if verify=yes. In-place
 (load==X+64) would also skip the ARM64 check, and the file would be
-~176 B. rejected anyway: checksums add failure modes, arch string must
+~176 B. Rejected anyway: checksums add failure modes, arch string must
 match exactly, and no existing tooling/images prove the path on this
-family — stock boots ANDROID, not legacy. smaller but riskier.
+family — stock boots ANDROID, not legacy. Smaller but riskier.
 FIT: needs valid FDT container + config node + kernel subimage with
 arch/os/type/load/entry (image-fit.c:1508-1698), then the SAME ep+0x38
-check (bootm.c:462, overlap branch). strictly more gates, ~57 KiB for
-m1b_fit.itb, zero benefit. rejected.
+check (bootm.c:462, overlap branch). Strictly more gates, ~57 KiB for
+m1b_fit.itb, zero benefit. Rejected.
 raw Image / raw stub: genimg_get_format → INVALID (image.c:748) →
 boot_get_kernel NULL → "Wrong Image Format"/"ERROR: can't get kernel
-image!" (bootm.c:896,92-94) → return 1 → reset. this is exactly why the
+image!" (bootm.c:896,92-94) → return 1 → reset. This is exactly why the
 old 4 KiB raw test proved nothing.
 
-verdict: ANDROID! v0 + ARM64 stub, COMP_NONE, kload 0x1080000. smallest
+verdict: ANDROID! v0 + ARM64 stub, COMP_NONE, kload 0x1080000. Smallest
 gate count (no CRC, no arch check, no packed DTB), deterministic copy to
 a fixed ep, tooling already reproducible (tools/mk_m1_boot.py).
 
@@ -122,8 +139,8 @@ Linux ARM64 header (b entry + zeros + magic 0x644d5241 at +0x38, the
 only field bootm ever reads) → nested delay loop
 (outer × 1M inner: m1 outer 0x0FA0=4000 ≈ seconds-scale, m1b outer
 0xEA60=60000 = 15×) → PSCI SYSTEM_RESET fid 0x84000009 via hvc #0
-(same fid as prior stub) → wfi park. no eMMC, no userdata, no env
+(same fid as prior stub) → wfi park. No eMMC, no userdata, no env
 writes, no partitions, no UART, no Linux dependency.
 rebuild: python3 tools/mk_m1_boot.py 0x0FA0 m1_boot.img (A),
-python3 tools/mk_m1_boot.py 0xEA60 m1b_boot.img (B). both verified
+python3 tools/mk_m1_boot.py 0xEA60 m1b_boot.img (B). Both verified
 byte-reproducible and inspector-clean (see §2 table, both rows pass).

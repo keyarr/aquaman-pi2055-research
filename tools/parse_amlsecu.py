@@ -37,10 +37,17 @@ def parse(path):
     if idx < 0:
         print("%s: no AMLSECU magic" % path)
         return 1
+    if len(d) < idx + 0x20 + 3 * DESC_SIZE:
+        print("%s: truncated, no room for the 3 block descriptors" % path)
+        return 1
     ver, nblk = struct.unpack("<II", d[idx + 8:idx + 16])
     ts = d[idx + 16:idx + 32]
     print("file: %s (len %d, magic at 0x%x)" % (path, len(d), idx))
-    print("  version: 0x%04x %s" % (ver, "OK" if ver == VERSION else "MISMATCH"))
+    if ver != VERSION:
+        # refuse rather than mis-read the block table with the wrong layout
+        print("  version: 0x%04x UNSUPPORTED (want 0x%04x)" % (ver, VERSION))
+        return 1
+    print("  version: 0x%04x OK" % ver)
     print("  nblk: %d" % nblk)
     try:
         print("  timestamp: %s" % ts.decode("ascii"))

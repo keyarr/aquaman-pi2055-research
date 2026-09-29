@@ -7,57 +7,57 @@ Baseline (Android):
 - getprop: gxl, PI.2055, MiTV-AESP0, secure=1
 - files: 01_adb_devices.txt 02_lsusb.txt 03_lsusb_xiaomi_verbose.txt 04_getprop.txt
 
-Teste decisivo executado: adb reboot update
-- comando realmente enviado, exit 0
-- disconnect: 07:59:30 device 8 (2717:4e40 some)
-- gap 12s sem nada no bus 3-5 (+1s a +12s polling vazio)
-- reenumera 07:59:42 device 9
-- resultado: 18d1:4e41 Google Nexus 7 (MTP), mfr droidlogic, product aquaman, serial real, bcd 2.23
+Decisive test executed: adb reboot update
+- command sent, exit 0
+- disconnect: 07:59:30 device 8 (2717:4e40 disappears)
+- 12s gap with nothing on bus 3-5 (+1s to +12s empty polling)
+- re-enumerates 07:59:42 device 9
+- result: 18d1:4e41 Google Nexus 7 (MTP), mfr droidlogic, product aquaman, serial real, bcd 2.23
 - config mtp, 1 iface MTP 255/255/0, 2 bulk + 1 interrupt
-- polling 90s: estavel em 4e41, nunca 1b8e:c003, nunca 18d1:0d02, nunca 2717:4e40
-- journal: zero strings Amlogic/WorldCup/burning/GX/GXL, zero 1b8e
-- fastboot devices: vazio (timeout waiting for device)
-- adb devices: vazio
-- driver: [none] em 3-5:1.0
+- 90s polling: stable on 4e41, never 1b8e:c003, never 18d1:0d02, never 2717:4e40
+- journal: zero Amlogic/WorldCup/burning/GX/GXL strings, zero 1b8e
+- fastboot devices: empty (timeout waiting for device)
+- adb devices: empty
+- driver: [none] on 3-5:1.0
 - files: 06_update_poll_90s.txt 07_update_18d1-4e41_verbose.txt 08_usb_journal.txt
 
-Gadgets - nao confundir:
-- 2717:4e40 = Android adb, xiaomi/aquaman, serial real
-- 18d1:0d02 = U-Boot BL33 fastboot, Product USB download gadget, mfr amlogic, serial 1234567890, bcd 99.99. Visto 07:53:07 apos adb reboot fastboot anterior. Nao e BootROM.
-- 18d1:4e41 = recovery/mtp, Product aquaman, mfr droidlogic, serial real, bcd 2.23. Visto 07:59:42 apos adb reboot update. Nao e BootROM, nao e fastboot.
-- 1b8e:c003 = WorldCup/BootROM GX, nunca observado nesta rodada. 0 ocorrencias em 90s poll + journal.
+Gadgets - do not confuse:
+- 2717:4e40 = Android adb, xiaomi/aquaman, real serial
+- 18d1:0d02 = U-Boot BL33 fastboot, Product USB download gadget, mfr amlogic, serial 1234567890, bcd 99.99. Seen 07:53:07 after previous adb reboot fastboot. Not BootROM.
+- 18d1:4e41 = recovery/mtp, Product aquaman, mfr droidlogic, real serial, bcd 2.23. Seen 07:59:42 after adb reboot update. Not BootROM, not fastboot.
+- 1b8e:c003 = WorldCup/BootROM GX, never observed in this round. 0 occurrences across 90s poll + journal.
 
-Se 1b8e:c003: nao executado porque nao apareceu. Nenhum write/erase/bulkcmd destrutivo enviado.
-Ferramentas mapeadas para quando aparecer (so read-only):
-- pyamlboot socid.py (nop 0x36 + identify 0x20, 8 bytes ROM x.y Stage z.w + password flag). readSimpleMemory 0x02 / readReg / tplStat 0x31 / getBootAMLC 0x50 sao proximo nivel read-only.
-- aml-usb-load-uboot update scan / update identify [7] / update chipid / update rreg 4 addr / update mread (so em TPL/U-Boot) / bulkcmd printenv-echo como probe.
-- evitar: write 0x01, writeLarge 0x11, run 0x05, bulkcmd destrutivo, cwr/write/run de run-uboot.sh, aml-flash --wipe/--destroy/--efuse, amlogic-usbdl inteiro (exploit G12/SM1 only, sem modo identify-only).
-- amlogic-usbdl upstream: so s905d2/s905d3, nao serve para GXL/S805Y nem como leitura.
-- reversing-gxbb-bl2: nao e ferramenta USB, mas tem log real S805Y GXL:BL1:9ac50e:bb16dc e mapa OTP 0xd9013c00 (secureboot bit, USB password hash 0x80-0x9f).
+If 1b8e:c003: not executed because it did not appear. No destructive write/erase/bulkcmd sent.
+Tools mapped for when it appears (read-only only):
+- pyamlboot socid.py (nop 0x36 + identify 0x20, 8 bytes ROM x.y Stage z.w + password flag). readSimpleMemory 0x02 / readReg / tplStat 0x31 / getBootAMLC 0x50 are next read-only level.
+- aml-usb-load-uboot update scan / update identify [7] / update chipid / update rreg 4 addr / update mread (only in TPL/U-Boot) / bulkcmd printenv-echo as probe.
+- avoid: write 0x01, writeLarge 0x11, run 0x05, destructive bulkcmd, cwr/write/run from run-uboot.sh, aml-flash --wipe/--destroy/--efuse, amlogic-usbdl entire suite (G12/SM1 exploit only, no identify-only mode).
+- upstream amlogic-usbdl: s905d2/s905d3 only, unusable for GXL/S805Y even for reading.
+- reversing-gxbb-bl2: not a USB tool, but contains real S805Y log GXL:BL1:9ac50e:bb16dc and OTP map 0xd9013c00 (secureboot bit, USB password hash 0x80-0x9f).
 
-BootROM caracterizacao: sem evidencia. Nenhum handshake, nenhuma versao BL1, nenhum GXL:BL1 via USB. Separar: observado = MTP droidlogic; documentado em outros GXL = 1b8e:c003 + GXL:BL1 via UART + pyamlboot boot.py DDR 0xd9000000; inferencia = S805Y provavelmente compartilha protocolo mas nao foi alcancado por reboot software.
+BootROM characterization: no evidence. No handshake, no BL1 version, no GXL:BL1 via USB. Distinguish: observed = MTP droidlogic; documented in other GXL = 1b8e:c003 + GXL:BL1 via UART + pyamlboot boot.py DDR 0xd9000000; inference = S805Y likely shares protocol but was not reached via software reboot.
 
-CVE-2021-0467: plausivel mas nao confirmado / sem evidencia suficiente em S805Y.
-- bug: BootROM BL1 WR_LARGE_MEM 0x11, check so em dldata.addr/size, wIndex sem check + ponteiro incrementado por wValue esperado. RCE pre-assinatura, auth bypass.
-- confirmado: S905D3 SM1 VIM3L + Chromecast S905D3G, depois s905d2. So G12/SM1 pelo autor.
-- forks dizem GXL GXBB s905/s905x/s905w funcionam trocando SRAM addr, mas sem audit, credibilidade media.
-- GXL tem mesmo protocolo 1b8e:c003 mas codebase BL1 diferente, SRAM layout diferente, precisa endereco S805Y que nao existe publicado.
-- pre-requisitos extras: entrada fisica em USB boot (stick sem botao, precisa short/HDMI dongle boot@USB; warm reboot retém ordem, so cold reset limpa - docs.u-boot.org), password USB em OTP se ligado trava tudo, Chromecast mitigou assim. Aquaman L1/Netflix => alta chance secureboot+password.
-- AMLSECU BL33 irrelevante para CVE (CVE e pre-BL2).
-- nao tentar CVE so por VID/PID. Primeiro precisa 1b8e:c003 + socid.py + dump BL1 + endereco.
+CVE-2021-0467: plausible but unconfirmed / insufficient evidence on S805Y.
+- bug: BootROM BL1 WR_LARGE_MEM 0x11, checks only dldata.addr/size, wIndex unchecked + pointer incremented by expected wValue. Pre-signature RCE, auth bypass.
+- confirmed: S905D3 SM1 VIM3L + Chromecast S905D3G, then s905d2. G12/SM1 only according to author.
+- forks claim GXL GXBB s905/s905x/s905w work by adjusting SRAM addr, but without audit, medium credibility.
+- GXL shares same 1b8e:c003 protocol but different BL1 codebase, different SRAM layout, requires S805Y address not published anywhere.
+- extra prerequisites: physical entry into USB boot (stick lacks button, requires short/HDMI dongle boot@USB; warm reboot retains order, only cold reset clears - docs.u-boot.org), USB password in OTP if enabled locks everything, Chromecast mitigated this way. Aquaman L1/Netflix => high probability of secureboot+password.
+- AMLSECU BL33 irrelevant for CVE (CVE is pre-BL2).
+- do not attempt CVE based solely on VID/PID. First requires 1b8e:c003 + socid.py + BL1 dump + address.
 
-U-Boot fluxo (retestado 08:07-08:08 apos reboot system do usuario):
-- adb reboot fastboot => disconnect, gap 3s, reenumera 18d1:0d02 em +4s. fastboot devices: 1234567890 Android Fastboot. verbose: bcd 99.99, mfr amlogic, USB download gadget, serial 1234567890, iface Android Fastboot 255/66/3. files 10_fastboot_entry.txt 11_fastboot_0d02_verbose.txt.
-- getvar aceitos (gadget fica): version-bootloader=U-Boot 2015.01-g7ac5df7677-dirty, product=aquaman, serialno=1234567890, unlocked=yes, secure=no.
-- getvar version => FAILED unknown status, mas fica no fastboot.
-- getvar current-slot => FAILED Status read failed, gadget cai na hora (08:08:16 disconnect), volta Android 2717:4e40 em 19s (08:08:35). Reproduz bug anterior. Prova tratamento incompleto, reboot controlado para Android, nao para burning.
-- apos queda, slot-count/max-download-size/variant so dao waiting for device. aliases reboot-recovery/update/fastboot nao fuzzados para nao travar de novo em MTP sem necessidade; upstream so tem reboot e reboot-bootloader mesmo.
-- bootloader.img 1.3M criptografado AMLSECU, strings ilegivel, sem analise estatica possivel.
+U-Boot flow (retested 08:07-08:08 after user system reboot):
+- adb reboot fastboot => disconnect, 3s gap, re-enumerates 18d1:0d02 at +4s. fastboot devices: 1234567890 Android Fastboot. verbose: bcd 99.99, mfr amlogic, USB download gadget, serial 1234567890, iface Android Fastboot 255/66/3. files 10_fastboot_entry.txt 11_fastboot_0d02_verbose.txt.
+- getvars accepted (gadget remains): version-bootloader=U-Boot 2015.01-g7ac5df7677-dirty, product=aquaman, serialno=1234567890, unlocked=yes, secure=no.
+- getvar version => FAILED unknown status, but remains in fastboot.
+- getvar current-slot => FAILED Status read failed, gadget drops immediately (08:08:16 disconnect), returns to Android 2717:4e40 in 19s (08:08:35). Reproduces previous bug. Proves incomplete handling, controlled reboot to Android, not burning mode.
+- after drop, slot-count/max-download-size/variant only report waiting for device. reboot-recovery/update/fastboot aliases not fuzzed to avoid unnecessary MTP lockups; upstream only has reboot and reboot-bootloader.
+- bootloader.img 1.3M encrypted with AMLSECU, unreadable strings, no static analysis possible.
 
-Estado atual: de volta em Android 2717:4e40 saudavel (device 12, transport 4). Aparelho entregue funcionando. Nenhum write/erase enviado em toda a rodada.
+Current state: back in healthy Android 2717:4e40 (device 12, transport 4). Device left fully functional. Zero write/erase commands sent throughout entire round.
 
-Conclusao 4 estados: 3 SÓ BL33/FASTBOOT ALCANÇADO
-- BL33 fastboot 18d1:0d02 re-provado agora com verbose, Android 2717:4e40 provado, recovery MTP 18d1:4e41 provado via adb reboot update. WorldCup/BootROM nao alcancado.
-- ROTA AINDA NÃO TESTADA para BootROM fisico (short/HDMI dongle boot@USB, so cold reset limpa), mas rota software via adb reboot update TESTADA e NEGATIVA para 1b8e:c003.
+4-state conclusion: 3 ONLY BL33/FASTBOOT REACHED
+- BL33 fastboot 18d1:0d02 re-proven with verbose, Android 2717:4e40 proven, recovery MTP 18d1:4e41 proven via adb reboot update. WorldCup/BootROM not reached.
+- ROUTE UNTESTED for physical BootROM (short/HDMI dongle boot@USB, only cold reset clears), but software route via adb reboot update TESTED and NEGATIVE for 1b8e:c003.
 
-CVE-2021-0467: plausivel mas nao confirmado (sem evidencia suficiente em S805Y).
+CVE-2021-0467: plausible but unconfirmed (insufficient evidence on S805Y).

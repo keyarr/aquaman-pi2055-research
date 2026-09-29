@@ -1,54 +1,54 @@
-# GhostLock reachability (Fase 10)
+# GhostLock reachability (Phase 10)
 
-Probe: tools/ghostlock_reachability.c. Benigno por construcao: so testa
-dispatch e validacao de argumentos, nunca monta par PI, nunca tenta
-deadlock, nunca toca waiter alheio.
+Probe: tools/ghostlock_reachability.c. Benign by construction: only tests
+dispatch and argument validation, never sets up a PI pair, never attempts
+deadlock, never touches another task's waiter.
 
-## O que cada check prova
+## What each check proves
 
-1. WAIT_REQUEUE_PI uaddr==uaddr2 -> EINVAL: handler existe (senao ENOSYS)
-   e barreira inicial de futex_wait_requeue_pi alcançada.
-2. CMP_REQUEUE_PI uaddr1==uaddr2 -> EINVAL: barreira requeue_pi de
-   futex_requeue alcançada.
-3. CMP_REQUEUE_PI cmpval mismatch -> EAGAIN: get_futex_key dos dois lados
-   + comparacao funcionam (caminho chega ate a fila hash).
-4. CMP_REQUEUE_PI uaddr invalido -> EFAULT: sem crash em fault.
-5. WAIT_REQUEUE_PI val mismatch -> EAGAIN: futex_wait_setup alcançado.
-6-7. LOCK_PI/UNLOCK_PI proprio -> 0: rt_mutex PI operacional.
+1. WAIT_REQUEUE_PI uaddr==uaddr2 -> EINVAL: handler exists (otherwise ENOSYS)
+   and initial barrier of futex_wait_requeue_pi reached.
+2. CMP_REQUEUE_PI uaddr1==uaddr2 -> EINVAL: requeue_pi barrier of
+   futex_requeue reached.
+3. CMP_REQUEUE_PI cmpval mismatch -> EAGAIN: get_futex_key on both sides
+   + comparison succeed (path reaches hash bucket).
+4. CMP_REQUEUE_PI invalid uaddr -> EFAULT: no crash on fault.
+5. WAIT_REQUEUE_PI val mismatch -> EAGAIN: futex_wait_setup reached.
+6-7. Self LOCK_PI/UNLOCK_PI -> 0: rt_mutex PI operational.
 
-## Validacao host
+## Host validation
 
-Compilado com gcc e rodado em kernel 7.0.9 x86_64 (ja com o fix):
-7/7 PASS. Esperado: esses checks sao pre-corrupcao, identicos em kernel
-vulneravel e corrigido. O probe NAO distingue vulneravel de corrigido —
-ele so diz "caminho alcançavel pelo shell". A distincao vem da Fase 1
-(source) + race EDEADLK abaixo.
+Compiled with gcc and run on kernel 7.0.9 x86_64 (patched):
+7/7 PASS. Expected: these checks are pre-corruption, identical on vulnerable
+and patched kernels. The probe DOES NOT distinguish vulnerable from patched —
+it merely confirms "path reachable from shell". The distinction derives from Phase 1
+(source analysis) + EDEADLK race test below.
 
-## Rodada no aparelho (2026-09-29, adb, static ARM64 API 28)
+## Device test run (2026-09-29, adb, static ARM64 API 28)
 
 Kernel: 4.9.113 #1 SMP PREEMPT Tue Sep 6 12:53:43 CST 2022 armv8l
 (gcc Linaro 6.3.1 20170109, jenkins@c5-mitv-cm-build06.bj).
-Resultado: 7/7 PASS, exit 0. Device segue vivo.
-Status: CAMINHO ALCANCAVEL — CONFIRMADO NO KERNEL AQUAMAN.
+Result: 7/7 PASS, exit 0. Device remains healthy.
+Status: PATH REACHABLE — CONFIRMED ON AQUAMAN KERNEL.
 
-## Race EDEADLK (tools/ghostlock_race_stats.c, passo 2 da escada)
+## Race EDEADLK (tools/ghostlock_race_stats.c, step 2 of progression)
 
-5 rounds, 5x errno=35 (EDEADLK). Todo round entrou em
-rt_mutex_start_proxy_lock via CMP_REQUEUE_PI e voltou pelo rollback
-remove_waiter com waiter->task != current. Device vivo, uptime
-contínuo, sem reboot. Equivale ao --race/--dry-run do dnlid.
-Status: ROLLBACK ATINGIVEL — CONFIRMADO NO KERNEL AQUAMAN.
-Proximo: lab offline (Fase 11) antes de qualquer trigger com reclaim.
+5 rounds, 5x errno=35 (EDEADLK). Every round entered
+rt_mutex_start_proxy_lock via CMP_REQUEUE_PI and returned through the
+remove_waiter rollback with waiter->task != current. Device healthy, uptime
+continuous, no reboot. Equivalent to --race/--dry-run in dnlid.
+Status: ROLLBACK REACHABLE — CONFIRMED ON AQUAMAN KERNEL.
+Next: offline lab (Phase 11) before any trigger with reclaim.
 
-## Risco
+## Risk
 
-Desprezivel. Nenhuma chamada cria waiter PI real (valores que nao casam,
-timeouts zero, futexes privados anonimos). Pode rodar via adb shell sem
-medo de panic. Nao deixa estado: sem threads persistentes, sem fds.
+Negligible. No call creates a real PI waiter (mismatched values,
+zero timeouts, anonymous private futexes). Can run via adb shell without
+panic risk. Leaves no persistent state: no lingering threads, no open fds.
 
-## Proximo passo no aparelho (quando autorizado)
+## Next step on device (when authorized)
 
-adb push + run, guardar saida. 7/7 PASS => CAMINHO ALCANCAVEL
-(CONFIRMADO NO KERNEL AQUAMAN para dispatch; vulnerabilidade em si segue
-INFERIDO ate Fase 12).
-Qualquer ENOSYS => CAMINHO INACESSIVEL, aborta tudo.
+adb push + run, capture output. 7/7 PASS => PATH REACHABLE
+(CONFIRMED ON AQUAMAN KERNEL for dispatch; vulnerability itself remains
+INFERRED until Phase 12).
+Any ENOSYS => PATH UNREACHABLE, abort everything.

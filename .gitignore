@@ -5,6 +5,9 @@
 *.patch.dat
 __pycache__/
 build-aq/
+/.src/
+out/build-logs/
+out/vendor/
 recovery*.img
 magisk*.img
 test_boot*.img

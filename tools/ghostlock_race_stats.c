@@ -1,13 +1,13 @@
 /*
- * ghostlock_race_stats.c — passo 2 da escada (equivale ao --race do dnlid).
+ * ghostlock_race_stats.c — step 2 of progression (equivalent to --race in dnlid).
  *
- * Monta o par PI real (waiter/owner) e dispara CMP_REQUEUE_PI para atingir
- * rt_mutex_start_proxy_lock + rollback com -EDEADLK. Conta quantas vezes o
- * rollback eh atingido. PARA ANTES de qualquer corrupcao: sem stack
- * stamper, sem reclaim, sem LOCK_PI pos-timeout, sem forged objects.
+ * Sets up real PI pair (waiter/owner) and triggers CMP_REQUEUE_PI to reach
+ * rt_mutex_start_proxy_lock + rollback with -EDEADLK. Counts how many times
+ * rollback is reached. STOPS BEFORE any corruption: no stack stamper,
+ * no reclaim, no post-timeout LOCK_PI, no forged objects.
  *
- * Risco: mesmo do uso normal de PI futex + um EDEADLK por tentativa. O
- * waiter tem timeout curto (2s), nunca trava. Nao ha escrita em kernel.
+ * Risk: same as normal PI futex usage + one EDEADLK per attempt. Waiter
+ * has short timeout (2s), never hangs. No kernel writes.
  *
  * Build: aarch64-linux-android28-clang -O2 -Wall -static -fPIE -pie
  *   ghostlock_race_stats.c -o ghostlock_race_stats
@@ -68,7 +68,7 @@ static void *owner_fn(void *u) {
     if (xfutex(&f_target, FLPI, 0, NULL, NULL, 0)) return NULL;
     while (!w_ready) usleep(1000);
     o_started = 1;
-    xfutex(&f_chain, FLPI, 0, NULL, NULL, 0); /* bloqueia: deadlock p/ design */
+    xfutex(&f_chain, FLPI, 0, NULL, NULL, 0); /* blocks: deadlock by design */
     return NULL;
 }
 
@@ -88,9 +88,8 @@ int main(int argc, char **argv) {
         errno = 0;
         xfutex(&f_wait, FCRQ, 1, (void *)(uintptr_t)1, &f_target, 0);
         int e = errno;
-        /* desfaz o deadlock: solta target p/ waiter sair limpo. Se o CMP
-         * falhou, o timeout de 2s do waiter desfaz sozinho; join eh
-         * limitado por esse timeout em todos os casos. */
+        /* unblock deadlock: release target so waiter exits cleanly. If CMP
+         * failed, 2s waiter timeout cleans up; join is bounded by timeout in all cases. */
         xfutex(&f_target, FUPI, 0, NULL, NULL, 0);
         pthread_join(w, NULL);
         pthread_join(o, NULL);

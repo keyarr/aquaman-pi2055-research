@@ -1,25 +1,25 @@
 #!/usr/bin/env python3
-"""mk_m1_boot.py - monta m1_boot.img: ANDROID! v0 + M1 delay stub como kernel.
-Uso: python3 tools/mk_m1_boot.py   (gera m1_boot.img, ~4 KB, RAM-only)
+"""mk_m1_boot.py - assemble m1_boot.img: ANDROID! v0 + M1 delay stub as kernel.
+Usage: python3 tools/mk_m1_boot.py   (generates m1_boot.img, ~4 KB, RAM-only)
 """
 import struct
 import subprocess
 import sys
 
-TC = "/tmp/kernel-src/MiTV_OpenSource/cross_compile_tool/bin/aarch64-linux-gnu-"
-# uso: mk_m1_boot.py [outer_hex] [saida.img]  (default: 0x0FA0 m1_boot.img)
+TC = ".src/MiTV_OpenSource/cross_compile_tool/bin/aarch64-linux-gnu-"
+# usage: mk_m1_boot.py [outer_hex] [out.img]  (default: 0x0FA0 m1_boot.img)
 outer = sys.argv[1] if len(sys.argv) > 1 else "0x0FA0"
 out = sys.argv[2] if len(sys.argv) > 2 else "m1_boot.img"
 
 subprocess.run([TC + "gcc", "-c", "-march=armv8-a", "-nostdlib",
                 "-DM1_OUTER=" + outer,
-                "tools/m1_delay_stub.S", "-o", "/tmp/kernel-src/m1_stub.o"],
+                "tools/m1_delay_stub.S", "-o", "/tmp/m1_stub.o"],
                check=True)
 subprocess.run([TC + "objcopy", "-O", "binary",
-                "/tmp/kernel-src/m1_stub.o", "/tmp/kernel-src/m1_kernel.bin"],
+                "/tmp/m1_stub.o", "/tmp/m1_kernel.bin"],
                check=True)
-kern = open("/tmp/kernel-src/m1_kernel.bin", "rb").read()
-assert struct.unpack("<I", kern[0x38:0x3C])[0] == 0x644D5241, "sem ARM64 magic"
+kern = open("/tmp/m1_kernel.bin", "rb").read()
+assert struct.unpack("<I", kern[0x38:0x3C])[0] == 0x644D5241, "no ARM64 magic"
 print("stub: %d bytes, magic ok" % len(kern))
 
 PAGE = 2048

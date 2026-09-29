@@ -1,5 +1,13 @@
 # fastboot-boot-verdict — payload never executes (M0 revoked, M1 failed)
 
+> **The verdict on this page is CORRECT. The root cause was INCORRECT and is
+> corrected below.** The payload never executed; this was confirmed across four
+> independent experiments. However, the "download ≠ boot source" explanation
+> does not hold: the `max-download-size` argument is mathematically void, and
+> E5/E6 show that download and boot source overlap. The real cause is the
+> **secure-fused BL31** rejecting images without an AMLSECU signature.
+> See `reports/fastboot-memory-flow.md` for the complete flow.
+
 date: test session, 4 `fastboot boot` cycles, all RAM-only, device
 always came back to Android on its own. no flash/erase/setenv/saveenv.
 
@@ -27,25 +35,50 @@ blocked on this build.
 ## root cause (best explanation; H1 favored)
 
 download goes to `CONFIG_USB_FASTBOOT_BUF_ADDR` (HIGH — `max-download-size`
-is only 128 MB: `0x08000000`, incompatible with a buffer at `0x1080000`,
+~~is only 128 MB: `0x08000000`, incompatible with a buffer at `0x1080000`,
 which would leave ~900 MB free), but `do_bootm_on_complete` boots from
 `load_addr` (0x1080000 tradition, LOW). it's the Sept 2016 fastboot bug
-(Chubb), never backported to this 2015.01 fork: download ≠ boot source.
-family evidence: `CONFIG_USB_FASTBOOT_BUF_ADDR == CONFIG_SYS_LOAD_ADDR`
-on ODROID-C2 (same SoC/vintage), but the env `loadaddr=0x20000000` diverts
-the boot — same likely pattern here, with no read primitive to confirm
-(oem is a stub: answers `AMLOGIC` to everything).
+(Chubb), never backported to this 2015.01 fork: download ≠ boot source.~~
 
-live but disfavored alternative (H3): `aml_sec_boot_check` on the `do_bootm`
-path rejects everything without `AMLSECU!` even with `secure=no`. FIT with
-its own DTB (E1) kills the "missing FDT in fastboot context" theory (H2):
-even with an embedded DTB, nothing changes — so the cutoff is before or at
-the read point, not at the DTB.
+**THIS ROOT CAUSE IS INCORRECT, IN TWO RESPECTS.**
+
+**(a) The `max-download-size` argument is mathematically void.**
+`ddr_size_usable` (f_fastboot.c:133-142) is
+`DRAM - 16M - addr - 64M - 128M`. With 1 GiB:
+
+| Assumed BUF | Implied max-download-size |
+|---|---|
+| 0x10200000 (khadas g_dnl.h:18) | 0x22E00000 (558 MiB) |
+| 0x01080000 (loadaddr) | 0x31F80000 (799 MiB) |
+| **Reported by device** | **0x08000000 (128 MiB)** |
+
+The reported number matches neither candidate. Inverting yields
+`BUF = 0x2B000000`, which is neither of the two. Thus, the value **does not
+discriminate** between the hypotheses it cited. Reproduce with
+`python3 tools/fastboot_addr.py`.
+
+**(b) The conclusion "download ≠ boot source" was refuted at runtime.**
+E5 vs E6 (see `reports/buffer-equals-loadaddr-proof.md`): `fastboot boot boot.img`
+with download passes and boots; the identical `bootm` at the same address
+**without** download fails instantly. Same Y, same `bootm`, the only variable
+is whether bytes were downloaded. The download altered what `bootm` read, therefore
+the two **overlap**. The Sept 2016 bug, if present in this tree, is inert here.
+
+Family evidence was `CONFIG_USB_FASTBOOT_BUF_ADDR == CONFIG_SYS_LOAD_ADDR`
+on ODROID-C2, but with `loadaddr=0x20000000` redirecting boot — which does not
+apply here, because `loadaddr` is precisely what the download covers.
+
+**H3 (the SMC) is the actual cause, previously labeled "live but disfavored".**
+`aml_sec_boot_check` rejects everything without `AMLSECU!`. E7 confirms: signed and
+plaintext at the **exact same** address, same rails, and only signed passes. E7b/E7c
+yield identical timings. The gate is the SMC, acting before any format checks.
+FIT with its own DTB (E1) eliminates theory H2, as noted earlier.
 
 note: there's a chance boot is consuming a *stale* image (decrypted, from
 the last normal boot, retained in DRAM after warm reboot) instead of zeroes
 — indistinguishable by timing and irrelevant to the verdict: either way,
-bytes via `fastboot boot` never enter the boot path.
+bytes via `fastboot boot` never enter the boot path. E6 confirms: without
+download, `bootm` fails at the exact same instant.
 
 ## what would unlock it (outside current rules)
 

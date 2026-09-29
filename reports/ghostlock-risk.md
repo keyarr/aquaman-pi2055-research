@@ -1,46 +1,46 @@
-# GhostLock risk + validacao offline (Fase 11 + Fase 12)
+# GhostLock risk + offline validation (Phase 11 + Phase 12)
 
-## Risco do teste no aparelho
+## Risk of on-device testing
 
-- GhostLock real = UAF de stack com reclaim probabilistico. Taxa de
-  falha limpa vs panic: no hazel, "pode falhar limpo ou panicar e
-  rebootar". Sem UART, panic = tela congelada ate power cycle fisico.
-- O que NAO corrompe: probe Fase 10 (sem waiter real), dnlid --dry-run
-  e --race (param ate EDEADLK, para antes da corrupcao).
-- O que PODE panicar: qualquer tentativa de completar o rollback com
-  waiter divergente (trigger real), mesmo sem reclaim.
-- Mitigacoes sem UART: pstore/last_kmsg para diagnostico post-mortem
-  (checar /sys/fs/pstore apos reboot); bootreason; manter janela de
-  observacao via adb (se adb morre = reboot ou hang).
+- Real GhostLock = stack UAF with probabilistic reclaim. Clean failure
+  rate vs panic: in hazel, "can fail cleanly or panic and reboot".
+  Without UART, panic = frozen display until physical power cycle.
+- What DOES NOT corrupt: Phase 10 probe (no real waiter), dnlid --dry-run
+  and --race (stop at EDEADLK, halting before corruption).
+- What CAN panic: any attempt to complete rollback with a divergent
+  waiter (real trigger), even without reclaim.
+- Mitigations without UART: pstore/last_kmsg for post-mortem diagnostics
+  (check /sys/fs/pstore after reboot); bootreason; maintain observation
+  window via adb (if adb disconnects = reboot or hang).
 
-## Escada de testes proposta (parar no primeiro vermelho)
+## Proposed testing progression (stop at first red light)
 
-1. reachability 7/7 (risco ~0). VERDE 2026-09-29 no aparelho.
-2. dnlid --dry-run/--race: estatistica EDEADLK (risco ~0, so prova que
-   o rollback eh atingido com frequencia). VERDE 2026-09-29:
-   tools/ghostlock_race_stats.c, 5/5 EDEADLK, device vivo, sem reboot.
-3. Trigger real sem reclaim (uma vez, sem pstore legivel p/ shell:
-   diagnostico = adb vivo/morto + uptime). PENDENTE, decisao com o dono
-   do hardware. Nota: pstore negado p/ shell reduz o post-mortem;
-   rechecar como root depois.
-4. Reclaim + read-only validation (ler de volta o proprio fake fops,
-   como o hazel faz) antes de qualquer write. PENDENTE de offsets.
-5. Write em cred so depois de 4 verde e repetivel.
+1. reachability 7/7 (risk ~0). GREEN on device 2026-09-29.
+2. dnlid --dry-run/--race: EDEADLK statistics (risk ~0, only proves
+   rollback is reached reliably). GREEN on device 2026-09-29:
+   tools/ghostlock_race_stats.c, 5/5 EDEADLK, device healthy, no reboot.
+3. Real trigger without reclaim (single run, without shell-readable pstore:
+   diagnostic = adb alive/dead + uptime). PENDING hardware owner decision.
+   Note: pstore denied to shell reduces post-mortem fidelity; recheck
+   as root later.
+4. Reclaim + read-only validation (reading back the fake fops itself,
+   as hazel does) prior to any write. PENDING offsets.
+5. Write to cred only after step 4 is green and repeatable.
 
-## Fase 11 (lab offline)
+## Phase 11 (offline lab)
 
-Nao executada aqui: sem QEMU ARM64 montado neste workspace. Opcoes,
-baratas primeiro:
-a) harness userspace do trio futex (waiter/owner/CMP) contra kernel
-   4.9.113 Amlogic compilado local com KASAN + DEBUG_RT_MUTEXES num
-   QEMU virt ARM64 — prova o UAF logico com report do sanitizer.
-b) compilacao do dangal com aquaman-config para pahole (tambem serve a
-   Fase 3 e o primeiro perfil).
-Nenhuma das duas exige o aparelho. Recomendado antes do passo 3 acima.
+Not executed here: no ARM64 QEMU configured in this workspace. Options,
+ordered by cost:
+a) Userspace harness for futex trio (waiter/owner/CMP) against a local
+   4.9.113 Amlogic kernel compiled with KASAN + DEBUG_RT_MUTEXES in an
+   ARM64 virt QEMU — proves logical UAF with sanitizer report.
+b) Compilation of dangal with aquaman-config for pahole (also serves
+   Phase 3 and initial profile construction).
+Neither requires the physical device. Recommended before step 3 above.
 
-## Classificacao desta fase
+## Classification for this phase
 
-- Reachability dispatch: PROVAVEL (pende so de rodar o binario).
-- EDEADLK race: INFERIDO (codigo confirma o caminho; taxa real so no hw).
-- Reclaim/stack-stamp no aquaman: NAO PROVADO.
-- Panic sem UART: risco real, mitigavel com escada + pstore.
+- Reachability dispatch: PROBABLE (confirmed by running the binary).
+- EDEADLK race: INFERRED (code confirms path; actual rate on hardware).
+- Reclaim/stack-stamp on aquaman: NOT PROVEN.
+- Panic without UART: real risk, mitigable via progression ladder + pstore.

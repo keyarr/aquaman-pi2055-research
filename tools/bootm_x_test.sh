@@ -23,7 +23,7 @@ RUN="${1:-A}"
 case "$RUN" in
   A) IMG="$IMG_A"; CMD_TIMEOUT=120 ;;
   B) IMG="$IMG_B"; CMD_TIMEOUT=300 ;;
-  control) IMG="/tmp/kernel-src/bootm_x_control.bin"; CMD_TIMEOUT=15
+  control) IMG="/tmp/bootm_x_control.bin"; CMD_TIMEOUT=15
     python3 -c "open('$IMG','wb').write(b'A'*4096)" ;;
   *) echo "usage: $0 [A|B|control]"; exit 2 ;;
 esac
@@ -70,7 +70,7 @@ if fastboot devices 2>/dev/null | grep -q .; then
     DT=$(python3 -c "print(round($T1 - $T0, 1))")
     log "device STILL in fastboot and answering getvar after ~${DT}s"
     log "meaning: bootm X returned (image rejected) or stub died without reset"
-    echo "RESULT run=$RUN img=$IMG delta_s=$DT outcome=stayed-in-fastboot" | tee -a /tmp/kernel-src/bootm_x_results.log
+    echo "RESULT run=$RUN img=$IMG delta_s=$DT outcome=stayed-in-fastboot" | tee -a /tmp/bootm_x_results.log
     exit 0
   fi
 fi
@@ -80,7 +80,7 @@ for i in $(seq 1 300); do
     T1=$(date +%s.%N)
     DT=$(python3 -c "print(round($T1 - $T0, 1))")
     log "device back in Android (adb) after ~${DT}s (poll #$i)"
-    echo "RESULT run=$RUN img=$IMG delta_s=$DT outcome=reboot-to-android" | tee -a /tmp/kernel-src/bootm_x_results.log
+    echo "RESULT run=$RUN img=$IMG delta_s=$DT outcome=reboot-to-android" | tee -a /tmp/bootm_x_results.log
     log "check afterwards: adb shell getprop sys.boot.reason"
     exit 0
   fi

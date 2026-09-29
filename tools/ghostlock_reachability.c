@@ -1,15 +1,15 @@
 /*
- * ghostlock_reachability.c — Fase 10, probe benigno.
+ * ghostlock_reachability.c — Phase 10, benign reachability probe.
  *
- * Testa APENAS que o caminho FUTEX_WAIT_REQUEUE_PI / FUTEX_CMP_REQUEUE_PI
- * existe e responde como o 4.9.113 stock deveria responder a parametros
- * invalidos. Nao cria par PI, nao tenta deadlock, nao toca em credenciais,
- * nao escreve em ponteiro de kernel, nao faz reclaim.
+ * Tests ONLY that the FUTEX_WAIT_REQUEUE_PI / FUTEX_CMP_REQUEUE_PI paths
+ * exist and respond as stock 4.9.113 should respond to invalid parameters.
+ * Does not create a PI pair, does not attempt deadlock, does not touch credentials,
+ * does not write to kernel pointers, does not perform reclaim.
  *
- * Risco: desprezivel. Todas as chamadas usam uaddrs invalidos ou iguais e
- * devem retornar -EINVAL antes de qualquer manipulacao de waiter. O unico
- * teste funcional (LOCK_PI/UNLOCK_PI no proprio futex privado) eh uso
- * normal de PI mutex, sem requeue.
+ * Risk: negligible. All calls use invalid or matching uaddrs and
+ * must return -EINVAL before any waiter manipulation. The only
+ * functional test (LOCK_PI/UNLOCK_PI on own private futex) is normal
+ * PI mutex usage, without requeue.
  *
  * Build (NDK, ARM64, Android 9+):
  *   $NDK/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android28-clang \
@@ -18,8 +18,8 @@
  *   adb push ghostlock_reachability /data/local/tmp/
  *   adb shell /data/local/tmp/ghostlock_reachability
  *
- * Saida esperada num kernel 4.9.113 com PI compilado:
- *   7 checks, 7 PASS. Qualquer FAIL vira INCOMPATIVEL no relatorio.
+ * Expected output on a 4.9.113 kernel with PI compiled in:
+ *   7 checks, 7 PASS. Any FAIL indicates INCOMPATIBLE in the report.
  */
 #define _GNU_SOURCE
 #include <errno.h>
@@ -68,9 +68,9 @@ int main(void) {
     if (!uname(&u))
         printf("[info] kernel %s %s %s\n", u.release, u.version, u.machine);
 
-    /* 1-2: uaddr1 == uaddr2 sempre retorna -EINVAL antes de tocar em waiter
-     * (futex.c: uaddr check no inicio de futex_wait_requeue_pi e
-     * futex_requeue requeue_pi). Se o comando nao existisse, veriamos
+    /* 1-2: uaddr1 == uaddr2 always returns -EINVAL before touching waiter
+     * (futex.c: uaddr check at start of futex_wait_requeue_pi and
+     * futex_requeue requeue_pi). If command were absent, we would see
      * -ENOSYS. */
     check("WAIT_REQUEUE_PI same uaddr -> EINVAL",
           EINVAL, xfutex(&a, FUTEX_WAIT_REQUEUE_PI | FUTEX_PRIVATE_FLAG,
@@ -79,38 +79,36 @@ int main(void) {
           EINVAL, xfutex(&a, FUTEX_CMP_REQUEUE_PI | FUTEX_PRIVATE_FLAG,
                          1, (void *)(uintptr_t)1, &a, 0));
 
-    /* 3: CMP_REQUEUE_PI com cmpval divergente deve retornar -EAGAIN apos
-     * resolver as keys (prova que get_futex_key + comparacao funcionam).
-     * Mapeamento: val=nr_wake(1), timeout=nr_requeue(1), uaddr2, val3=cmpval.
+    /* 3: CMP_REQUEUE_PI with divergent cmpval should return -EAGAIN after
+     * resolving keys (proves get_futex_key + comparison work).
+     * Mapping: val=nr_wake(1), timeout=nr_requeue(1), uaddr2, val3=cmpval.
      * a=0, cmpval=0xdeadbeef -> mismatch -> EAGAIN. */
     a = 0;
     check("CMP_REQUEUE_PI bad cmpval -> EAGAIN",
           EAGAIN, xfutex(&a, FUTEX_CMP_REQUEUE_PI | FUTEX_PRIVATE_FLAG,
                          1, (void *)(uintptr_t)1, &b, 0xdeadbeef));
 
-    /* 4: endereco de usuario invalido deve retornar -EFAULT, nao crash. */
+    /* 4: invalid user address should return -EFAULT, no crash. */
     check("CMP_REQUEUE_PI bad uaddr -> EFAULT",
           EFAULT, xfutex((void *)0xdead0000,
                          FUTEX_CMP_REQUEUE_PI | FUTEX_PRIVATE_FLAG,
                          1, (void *)(uintptr_t)0, &b, 0));
 
-    /* 5-6: bitset zero em WAIT_REQUEUE_PI retorna -EINVAL (prova que o
-     * handler entrou no parsing de argumentos). Nao ha bitset via
-     * syscall direta sem wrapper, entao este teste usa timeout NULL +
-     * val que nao casa: o caminho esperado eh EAGAIN/EINVAL, nunca
-     * bloqueio. Timeout zero evita qualquer espera. */
+    /* 5-6: zero bitset in WAIT_REQUEUE_PI returns -EINVAL (proves handler
+     * entered argument parsing). This test uses timeout NULL + mismatched val:
+     * expected path is EAGAIN/EINVAL, never blocking. Zero timeout avoids waiting. */
     {
         struct timespec ts = {0, 0};
         long r = xfutex(&a, FUTEX_WAIT_REQUEUE_PI | FUTEX_PRIVATE_FLAG,
                         0x12345678, &ts, &b, 0);
-        /* val nao casa com *uaddr (0): futex_wait_setup retorna -EAGAIN. */
+        /* val does not match *uaddr (0): futex_wait_setup returns -EAGAIN. */
         check("WAIT_REQUEUE_PI val mismatch -> EAGAIN",
               EAGAIN, r);
     }
 
-    /* 7-8: PI funcional basico, sem requeue: LOCK_PI num futex zerado
-     * privado adquire na hora (ret 0), UNLOCK_PI libera (ret 0). So prova
-     * que rt_mutex PI esta operacional para o chamador. */
+    /* 7-8: Basic functional PI, without requeue: LOCK_PI on zeroed private futex
+     * acquires immediately (ret 0), UNLOCK_PI releases (ret 0). Proves
+     * rt_mutex PI is operational for caller. */
     {
         uint32_t pi = 0;
         long r1 = xfutex(&pi, FUTEX_LOCK_PI | FUTEX_PRIVATE_FLAG, 0,

@@ -22,6 +22,29 @@ aquaman PI.2055 kernel provenance research
  - firmware/ : boot, dt, dtbo, vbmeta, bootloader imgs + SHA256SUMS.txt.
  - aquaman-config : kernel config extracted from the device.
 
+ current state, start here:
+ - reports/fastboot-memory-flow.md : where the payload goes. refutes the
+   old "download != boot source" root cause.
+ - reports/vendor-modules.md : the 28 stock .ko, extracted from the OTA dumps
+   in this repo. no root, no device needed.
+ - reports/rebuilt-kernel.md : the rebuild, and why it is not a reproduction.
+ - reports/custom-kernel-execution.md : execution paths and the blocker.
+ - reports/aquaman-dts-port.md : mainline 2025 -> 4.9, node by node.
+ - reports/repo-state.md : audit. what is proven, what is hypothesis, and
+   the list of contradictions found in the older reports.
+
+ stale claims in older reports carry a banner at the top saying which newer
+ file supersedes them. the wrong ones worth knowing about: the plaintext-boot
+ "CONFIRMED" in amlsecu-open-questions.md, `X = 0x10200000` in
+ bootm-test-image.md / set-active-sink.md, "root is required" in
+ vendor-module-compat.md, and the max-download-size root cause in
+ fastboot-boot-verdict.md.
+
+ short version: the kernel builds (Image + dtb + modules, reproducible with
+ tools/build_aquaman_kernel.sh), the stock modules are extracted and mapped,
+ and execution is BLOCKED at BL31, which is secure-fused and refuses unsigned
+ images. not an address problem.
+
  full writeup: reports/provenance.md
 
 how i unlocked the bootloader:

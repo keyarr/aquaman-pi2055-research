@@ -7,7 +7,7 @@
 	images {
 		kernel {
 			description = "m1 delay stub (ARM64 Image header)";
-			data = /incbin/("/tmp/kernel-src/m1_kernel.bin");
+			data = /incbin/("/tmp/m1_kernel.bin");
 			type = "kernel";
 			arch = "arm64";
 			os = "linux";

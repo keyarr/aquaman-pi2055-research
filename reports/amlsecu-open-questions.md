@@ -1,74 +1,42 @@
-# amlsecu-open-questions — o que falta e o proximo passo
+# amlsecu-open-questions — open questions and next steps
 
-## respostas diretas (11 perguntas)
+> **partially revoked, 2026-09-29.** Items 9 and 10 were incorrect and
+> were corrected in place (see their text). The remainder of this file remains
+> valid, including items 1-8, which cover the solid findings: container layout,
+> SMC, absence of public tooling — none of that changed.
+> Item 9 is the most expensive mistake in this repo because item 10 was built on
+> top of it. Full context in `reports/fastboot-memory-flow.md` §6 and
+> `reports/custom-kernel-execution.md`.
 
-1. formato `0x0905`: CONFIRMADO (structs publicas + parser local bate
-   nos dois dumps; tabela em amlsecu-structure.md).
-2. algoritmo: NAO PROVADO. AES e inferencia forte (engine + efuse
-   aeskey + `--aeskey enable`), modo/IV/derivacao desconhecidos.
-3. onde esta a chave: raiz em eFuse/OTP, uso exclusivo no secure world
-   via SMC (FORTE EVIDENCIA). `szSHA2KeyID` (`ef8996bd...`) identifica
-   a user-key do vendor.
-4. escopo da key: por produto/firmware e o palpite honesto (EVIDENCIA
-   FRACA); por dispositivo, NAO PROVADO.
-5. a chave sai do TEE? Nao em nenhum fluxo documentado. o TEE/BL31
-   executa o decrypt (opcao C).
-6. implementacao publica p/ reproduzir o encrypt? NAO. parser existe
-   (BMU, parse_amlsecu.py); packer `--imgsig` e fechado.
-7. ferramenta publica equivalente a `aml_encrypt --imgsig`? NAO
-   (`gxlimg`/`meson-tools` nao cobrem imgsig).
-8. caminho offline p/ imagem valida? NAO, sem a `aml-user-key.sig` do
-   aquaman (ou a kernel-AES key extraida via exploit).
-9. kernel custom que `fastboot boot` aceite sem a user-key? CONFIRMADO
-   (teste 2026-09-29, reboot autorizado): `boot.img` plaintext de 4096
-   bytes (header v1, kernel = stub ARM64 de 20 bytes sem magic AMLSECU,
-   sem ramdisk/second) foi aceito via `fastboot boot` — aparelho saiu
-   do fastboot, executou o stub (PSCI SYSTEM_RESET) e voltou ao Android
-   sozinho em ~30s, sem intervencao fisica. secure=no + unlocked =
-   path `secureKernelImgSz == 0` ativo; U-Boot nao exige AMLSECU em
-   imagem sem magic. stub: movz/movk x0 = 0x84000009, hvc #0, wfi loop.
-10. bloqueio real p/ KernelSU/APatch: nao e o packaging AMLSECU nem
-    o kernel em si — `fastboot boot` aceita plaintext (item 9), entao
-    um kernel rebuildado + DTB (ex. mainline
-    `meson-gxl-s805y-xiaomi-aquaman.dts`) pode bootar sem nenhuma key.
-    o que falta e o kernel/DTB funcional em si (DTS downstream, defconfig
-    exata, drivers TV), nao a criptografia. Magisk/APatch sobre o
-    `boot.img` stock continuam inviaveis (ramdisk ciphertext, #2555),
-    mas patch via rebuild proprio + `fastboot boot` nao precisa da
-    user-key. flash permanente (`fastboot flash`) continua nao testado
-    e arriscado: U-Boot pode exigir AMLSECU no boot da eMMC mesmo com
-    secure=no.
-11. o que elimina o bloqueio: (a) `aml-user-key.sig` do aquaman/PI.2055
-    vazada; (b) kernel-AES key extraida via exploit BootROM USBDL
-    (Raxone, fredericb) — exige reboot fisico, fora de escopo agora;
-    (c) prova de que `secure=no` + unlocked aceita plaintext no
-    `fastboot boot` — exige um boot de teste, tambem fora de escopo
-    agora.
+## direct answers (11 questions)
 
-## inferencia x desconhecido (resumo)
+1. `0x0905` format: CONFIRMED (public structs + local parser matches both dumps; table in amlsecu-structure.md).
+2. Algorithm: NOT PROVEN. AES is a strong inference (engine + eFuse aeskey + `--aeskey enable`), mode/IV/derivation unknown.
+3. Where the key lives: root in eFuse/OTP, exclusive use in secure world via SMC (STRONG EVIDENCE). `szSHA2KeyID` (`ef8996bd...`) identifies the vendor user-key.
+4. Key scope: per product/firmware is the honest assessment (WEAK EVIDENCE); per device, NOT PROVEN.
+5. Does the key leave the TEE? Not in any documented flow. TEE/BL31 performs the decryption (Option C).
+6. Public implementation to reproduce encrypt? NO. Parsers exist (BMU, parse_amlsecu.py); the `--imgsig` packer is closed.
+7. Public tool equivalent to `aml_encrypt --imgsig`? NO (`gxlimg`/`meson-tools` do not cover imgsig).
+8. Offline path to produce a valid image? NO, without aquaman's `aml-user-key.sig` (or the kernel-AES key extracted via exploit).
+9. ~~Custom kernel accepted by `fastboot boot` without user-key?~~ **REVOKED. INCORRECT.** The original reading of this item was wrong and represents the most costly error in the repo, as it became the premise for item 10. The 4096-byte plaintext DID NOT execute: the device returned to Android in 16-21 s, identical to the INVALID control, with an empty `bootreason`. That timing is the **rejection** duration (`do_bootm` fails -> `do_reset`), not execution duration. The decisive test is M1b: identical stub with a 15x delay loop, and reboot timing did not shift at all. An executing payload does not return in rejection time. See `reports/fastboot-boot-verdict.md` (M1/M1b/M2/E1, all revoked) and `reports/fastboot-memory-flow.md` §6 for the explanation.
+   What item 9 conflated: "U-Boot accepted download" and "bytes executed" are different. The download is accepted; execution is gated at BL31.
+10. Real blocker for KernelSU/APatch: **also incorrect, due to item 9.** The blocker is NOT AMLSECU packaging alone, but neither is it "lack of functional kernel/DTB". It is BL31: `do_bootm` calls `aml_sec_boot_check` (SMC) prior to any format validation, and BL31 is secure-fused on this device. An AMLSECU signature is what it requires. See `reports/custom-kernel-execution.md` for the full matrix. Magisk/APatch patching stock `boot.img` remains infeasible (ramdisk ciphertext, #2555) — that part of the original item remains correct.
+11. What lifts the blocker: (a) leaked `aml-user-key.sig` for aquaman/PI.2055; (b) kernel-AES key extracted via BootROM USBDL exploit (Raxone, fredericb) — requires physical reboot, currently out of scope; (c) proof that `secure=no` + unlocked accepts plaintext under `fastboot boot` — requires an authorized test boot, also out of scope currently.
 
-* provado: layout, semantica dos tamanhos, offsets, KeyID constante,
-  assinatura 512 B, fluxo imgread->SMC, ausencia de tooling publico.
-* inferencia: AES no payload, RSA-4096 na assinatura, key por produto.
-* desconhecido: modo AES, IV, key ladder exato, conteudo do BL31,
-  comportamento do `fastboot boot` com plaintext neste aparelho.
+## inference vs unknown (summary)
 
-## proximo passo offline de maior valor (sem tocar no aparelho)
+* Proven: layout, size semantics, offsets, constant KeyID, 512 B signature, imgread->SMC flow, absence of public tooling.
+* Inference: AES in payload, RSA-4096 in signature, key per product.
+* Unknown: AES mode, IV, exact key ladder, BL31 contents, exact behavior of `fastboot boot` with plaintext on this unit.
 
-1. extrair do `system/vendor/odm` (dumps `*.new.dat.br` ja locais) o
-   `build.prop` / TA/TEE userspace (`tee-supplicant`, keybox, widevine)
-   para ver se algum UUID/TA referencia a user-key — custo zero, so
-   descompactar.
-2. caçar `aml-user-key*.sig` / `SECURE_BOOT_SET` / `aml_encrypt_gxl`
-   em dumps/OTAs publicos do aquaman (XDA/yandex) — improvavel, mas
-   barato.
-3. montar um `boot.img` plaintext de teste (kernel mainline + ramdisk
-   minimo) e deixar pronto para um futuro `fastboot boot` autorizado —
-   sem executar agora.
+## highest-value offline next step (without touching device)
 
-## o que NAO fazer
+1. Extract `build.prop` / userspace TA/TEE (`tee-supplicant`, keybox, widevine) from `system/vendor/odm` (local `*.new.dat.br` dumps) to check if any UUID/TA references the user-key — zero cost, decompression only.
+2. Search for `aml-user-key*.sig` / `SECURE_BOOT_SET` / `aml_encrypt_gxl` in public aquaman dumps/OTAs (XDA/Yandex) — unlikely, but cheap.
+3. Construct a plaintext test `boot.img` (mainline kernel + minimal ramdisk) ready for future authorized `fastboot boot` — without executing now.
 
-* nenhum `fastboot boot/flash/erase/reboot`, `saveenv`, `setenv`,
-  fuzzing `oem`, `current-slot`: tudo reinicia ou altera estado.
-* nenhum brute force de key (sem oraculo, espaco inviavel).
-* nao compilar kernel nem gerar imagem de flash nesta etapa.
+## what NOT to do
+
+* No `fastboot boot/flash/erase/reboot`, `saveenv`, `setenv`, `oem` fuzzing, or `current-slot`: all reset or modify device state.
+* No brute force of key (no oracle, infeasible keyspace).
+* Do not compile kernel or build flash images in this phase.

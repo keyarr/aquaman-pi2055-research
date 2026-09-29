@@ -1,71 +1,68 @@
-# GhostLock source check — aquaman 4.9.113 (Fase 1)
+# GhostLock source check — aquaman 4.9.113 (Phase 1)
 
-Data: 2026-09-29. Analise offline, sem tocar no aparelho.
+Date: 2026-09-29. Offline analysis, without touching device.
 
-## Arvore analisada
+## Tree analyzed
 
-`/tmp/kernel-src/linux-amlogic` (McMCCRU/linux-amlogic, HEAD 3d4ab79e,
+`.src/linux-amlogic` (McMCCRU/linux-amlogic, HEAD 3d4ab79e,
 base 2019-06). Makefile: VERSION=4 PATCHLEVEL=9 SUBLEVEL=113.
 
-AVISO DE PROVENIENCIA: nao eh o source exato do aquaman. Ver
-reports/exact-source.txt: nenhum source exato foi encontrado; o mais
-proximo do oficial Xiaomi eh o dangal-p-oss (outro device, mesmo 4.9.113).
-Tudo abaixo vale para "kernel Amlogic 4.9.113 adjacente", nao para o
-binario PI.2055 byte-a-byte.
+PROVENANCE WARNING: Not the exact aquaman source. See
+`reports/exact-source.txt`: no exact source was found; the closest
+to official Xiaomi is dangal-p-oss (different device, same 4.9.113).
+Everything below applies to an "adjacent Amlogic 4.9.113 kernel", not
+to the exact PI.2055 binary byte-for-byte.
 
-## Perguntas da Fase 1
+## Phase 1 questions
 
-1. remove_waiter() usa current? SIM.
+1. Does remove_waiter() use current? YES.
    kernel/locking/rtmutex.c:1099-1111:
    raw_spin_lock(&current->pi_lock); rt_mutex_dequeue(lock, waiter);
    current->pi_blocked_on = NULL; raw_spin_unlock(&current->pi_lock);
-   E na cauda: rt_mutex_adjust_prio_chain(..., NULL, current) (linha 1146).
-   Eh exatamente o padrao que o patch 3bfdc63936dd troca por waiter->task.
+   And at the tail: rt_mutex_adjust_prio_chain(..., NULL, current) (line 1146).
+   This is the exact pattern replaced by waiter->task in patch 3bfdc63936dd.
 
-2. waiter->task existe? SIM. kernel/locking/rtmutex_common.h:28,
-   `struct task_struct *task`, preenchido em task_blocks_on_rt_mutex
+2. Does waiter->task exist? YES. kernel/locking/rtmutex_common.h:28,
+   `struct task_struct *task`, populated in task_blocks_on_rt_mutex
    (rtmutex.c:997, waiter->task = task).
 
-3. rt_mutex_start_proxy_lock() recebe task separado? SIM. rtmutex.c:1691,
-   (lock, waiter, task). Chama task_blocks_on_rt_mutex(lock, waiter, task,
-   FULL_CHAINWALK) e no erro faz remove_waiter(lock, waiter) (linha 1718).
-   Nesse caminho waiter->task (a vitima em espera) != current (o requeuer).
-   Condicao do CVE presente.
+3. Does rt_mutex_start_proxy_lock() receive a separate task? YES. rtmutex.c:1691,
+   (lock, waiter, task). Calls task_blocks_on_rt_mutex(lock, waiter, task,
+   FULL_CHAINWALK) and on error invokes remove_waiter(lock, waiter) (line 1718).
+   On this path, waiter->task (waiting victim) != current (requeuer).
+   CVE condition is present.
 
-4. Existe rollback com remove_waiter()? SIM, dois sitios:
-   rt_mutex_start_proxy_lock (1719) e rt_mutex_finish_proxy_lock (1777).
-   O primeiro eh o gatilho do GhostLock via futex_requeue().
+4. Does rollback with remove_waiter() exist? YES, two sites:
+   rt_mutex_start_proxy_lock (1719) and rt_mutex_finish_proxy_lock (1777).
+   The former is the GhostLock trigger via futex_requeue().
 
-5. FUTEX_CMP_REQUEUE_PI implementado? SIM. futex.c:3283-3284, dispatch para
-   futex_requeue(..., requeue_pi=1). futex_requeue faz proxy trylock +
-   rt_mutex_start_proxy_lock com this->task da vitima (linhas 1955-1957).
-   Cadeia requeue_pi completa presente.
+5. Is FUTEX_CMP_REQUEUE_PI implemented? YES. futex.c:3283-3284, dispatches to
+   futex_requeue(..., requeue_pi=1). futex_requeue executes proxy trylock +
+   rt_mutex_start_proxy_lock with this->task of the victim (lines 1955-1957).
+   Full requeue_pi chain present.
 
-6. FUTEX_WAIT_REQUEUE_PI implementado? SIM. futex.c:2853
-   futex_wait_requeue_pi(), waiter na stack do chamador (rt_waiter local,
-   linha 2858), caso classico de stack-UAF apos rollback errado.
+6. Is FUTEX_WAIT_REQUEUE_PI implemented? YES. futex.c:2853
+   futex_wait_requeue_pi(), waiter on caller's stack (local rt_waiter,
+   line 2858), classic stack-UAF scenario following corrupted rollback.
 
-7. CONFIG_FUTEX_PI habilitado no config real? SIM por construcao.
-   4.9 nao tem simbolo CONFIG_FUTEX_PI separado (só existe
-   CONFIG_HAVE_FUTEX_CMPXCHG); o suporte PI vem de
-   CONFIG_FUTEX=y + CONFIG_RT_MUTEXES=y, ambos =y no aquaman-config,
-   mais CONFIG_PREEMPT=y. init/Kconfig: FUTEX select RT_MUTEXES.
-   futex.c desta arvore nao tem nenhum #ifdef que excluiria o caminho PI.
+7. Is CONFIG_FUTEX_PI enabled in real config? YES by construction.
+   4.9 lacks a separate CONFIG_FUTEX_PI symbol (only CONFIG_HAVE_FUTEX_CMPXCHG exists);
+   PI support stems from CONFIG_FUTEX=y + CONFIG_RT_MUTEXES=y, both =y in
+   aquaman-config, plus CONFIG_PREEMPT=y. init/Kconfig: FUTEX select RT_MUTEXES.
+   futex.c in this tree contains no #ifdef excluding the PI path.
 
-8. Patches vendor alterando o caminho? NAO ENCONTRADO nesta arvore.
-   rtmutex.c e futex.c nao mostram hunks Amlogic/Xiaomi no caminho
-   PI (sem git history util aqui para diff contra upstream, mas o codigo
-   eh textualmente o 4.9.113 upstream nesse arquivo). O config traz
-   CONFIG_AMLOGIC_SLUB_DEBUG (unset), irrelevante para rtmutex.
-   Resta a ressalva: o binario PI.2055 pode conter patch vendor
-   invisivel sem o source exato ou sem vmlinux.
+8. Vendor patches modifying the path? NOT FOUND in this tree.
+   rtmutex.c and futex.c show no Amlogic/Xiaomi hunks in the PI path
+   (textually matches upstream 4.9.113 in this file). The config contains
+   CONFIG_AMLOGIC_SLUB_DEBUG (unset), irrelevant for rtmutex.
+   Caveat remains: exact PI.2055 binary may contain vendor patches invisible
+   without exact source or vmlinux.
 
-## Classificacao Fase 1
+## Phase 1 classification
 
-VULNERABILIDADE PRESENTE (na arvore 4.9.113 analisada; binario aquaman
-exato = INFERIDO, pendente de confirmacao por disassembly do kernel em
-execucao ou source oficial).
+VULNERABILITY PRESENT (in analyzed 4.9.113 tree; exact aquaman binary =
+INFERRED, pending confirmation via runtime kernel disassembly or official source).
 
-Nao se concluiu vulneravel so pela versao: foi lido o corpo de
-remove_waiter, do proxy lock e do requeue, e comparado com o diff do
-patch upstream (current -> waiter_task nos tres pontos).
+Conclusion not based on version string alone: bodies of remove_waiter,
+proxy lock, and requeue were read and compared with the upstream patch diff
+(current -> waiter_task across the three sites).
