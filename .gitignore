@@ -1,5 +1,7 @@
 *.img
+*.itb
 *.br
 *.dat
 *.patch.dat
 __pycache__/
+build-aq/

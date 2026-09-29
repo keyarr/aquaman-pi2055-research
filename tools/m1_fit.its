@@ -1,0 +1,36 @@
+/dts-v1/;
+
+/ {
+	description = "aquaman M1 FIT: delay stub + p241_1g dtb";
+	#address-cells = <1>;
+
+	images {
+		kernel {
+			description = "m1 delay stub (ARM64 Image header)";
+			data = /incbin/("/tmp/kernel-src/m1_kernel.bin");
+			type = "kernel";
+			arch = "arm64";
+			os = "linux";
+			compression = "none";
+			load = <0x1080000>;
+			entry = <0x1080000>;
+		};
+		fdt {
+			description = "gxl_p241_1g";
+			data = /incbin/("/home/erick/Downloads/aquaman_9_PI_2055/build-aq/arch/arm64/boot/dts/amlogic/gxl_p241_1g.dtb");
+			type = "flat_dt";
+			arch = "arm64";
+			compression = "none";
+			load = <0x1000000>;
+		};
+	};
+
+	configurations {
+		default = "conf";
+		conf {
+			description = "m1";
+			kernel = "kernel";
+			fdt = "fdt";
+		};
+	};
+};
