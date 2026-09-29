@@ -1,0 +1,6 @@
+closest: McMCCRU/linux-amlogic (ANCESTRAL, not exact) + MiCode/MiTV_OpenSource dangal-p-oss (closest official Xiaomi 4.9.113, wrong device)
+McMCCRU HEAD 3d4ab79ea3638850a736bf2f7f65e55cb47368c4 master 2019-06-27, root 17cef223 2019-06-04
+dangal-p-oss commit 2ecab23dd 2019-07-11
+kernel 4.9.113 both, aquaman build 2022-09-06 jenkins@c5-mitv-cm-build06.bj PI.2055
+NO exact source found. NO reports/EXACT_SOURCE_FOUND. issue MiBox_Kernel_OpenSource#11 (GPL request) open since 2025-01.
+mainline HW map only: torvalds/linux meson-gxl-s805y-xiaomi-aquaman.dts (2025-05)

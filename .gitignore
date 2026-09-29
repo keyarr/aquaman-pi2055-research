@@ -1,0 +1,9 @@
+*.br
+*.dat
+recovery*.img
+magisk*.img
+test_boot*.img
+*__pycache__/*
+*.pyc
+/tmp/
+*.zip
