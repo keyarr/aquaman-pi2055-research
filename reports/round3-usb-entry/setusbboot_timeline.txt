@@ -1,0 +1,28 @@
+set 29 17:10:49 erickpcl kernel: usb 3-5: USB disconnect, device number 36
+set 29 17:10:52 erickpcl kernel: usb 3-5: new high-speed USB device number 37 using xhci_hcd
+set 29 17:10:52 erickpcl kernel: usb 3-5: New USB device found, idVendor=18d1, idProduct=0d02, bcdDevice=99.99
+set 29 17:10:52 erickpcl kernel: usb 3-5: New USB device strings: Mfr=1, Product=2, SerialNumber=3
+set 29 17:10:52 erickpcl kernel: usb 3-5: Product: USB download gadget
+set 29 17:10:52 erickpcl kernel: usb 3-5: Manufacturer: amlogic
+set 29 17:10:52 erickpcl kernel: usb 3-5: SerialNumber: 1234567890
+set 29 17:11:10 erickpcl kernel: usb 3-5: USB disconnect, device number 37
+set 29 17:13:59 erickpcl kernel: usb 3-5: new high-speed USB device number 38 using xhci_hcd
+set 29 17:13:59 erickpcl kernel: usb 3-5: New USB device found, idVendor=2717, idProduct=4e40, bcdDevice= 2.23
+set 29 17:13:59 erickpcl kernel: usb 3-5: New USB device strings: Mfr=1, Product=2, SerialNumber=3
+set 29 17:13:59 erickpcl kernel: usb 3-5: Product: aquaman
+set 29 17:13:59 erickpcl kernel: usb 3-5: Manufacturer: xiaomi
+set 29 17:13:59 erickpcl kernel: usb 3-5: SerialNumber: 26919800005844922
+set 29 17:14:03 erickpcl kernel: usb 3-5: USB disconnect, device number 38
+set 29 17:14:06 erickpcl kernel: usb 3-5: new high-speed USB device number 39 using xhci_hcd
+set 29 17:14:06 erickpcl kernel: usb 3-5: New USB device found, idVendor=18d1, idProduct=0d02, bcdDevice=99.99
+set 29 17:14:06 erickpcl kernel: usb 3-5: New USB device strings: Mfr=1, Product=2, SerialNumber=3
+set 29 17:14:06 erickpcl kernel: usb 3-5: Product: USB download gadget
+set 29 17:14:06 erickpcl kernel: usb 3-5: Manufacturer: amlogic
+set 29 17:14:06 erickpcl kernel: usb 3-5: SerialNumber: 1234567890
+set 29 17:14:36 erickpcl kernel: usb 3-5: USB disconnect, device number 39
+set 29 17:15:16 erickpcl kernel: usb 3-5: new high-speed USB device number 40 using xhci_hcd
+set 29 17:15:17 erickpcl kernel: usb 3-5: New USB device found, idVendor=2717, idProduct=4e40, bcdDevice= 2.23
+set 29 17:15:17 erickpcl kernel: usb 3-5: New USB device strings: Mfr=1, Product=2, SerialNumber=3
+set 29 17:15:17 erickpcl kernel: usb 3-5: Product: aquaman
+set 29 17:15:17 erickpcl kernel: usb 3-5: Manufacturer: xiaomi
+set 29 17:15:17 erickpcl kernel: usb 3-5: SerialNumber: 26919800005844922
