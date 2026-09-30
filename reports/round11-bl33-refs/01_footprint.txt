@@ -1,0 +1,33 @@
+dump reports/round8-bl33-read/mread_01000000_01000000.bin  16777216 bytes, base 0x01000000
+window 0x01040000..0x0107ffff
+
+referenced address range: 0x0100130c .. 0x010cbf80  (811 KiB)
+  call targets  2763 distinct, 0x0100130c .. 0x0109b00c
+  data targets  1729 distinct, 0x01041de0 .. 0x010cbf80
+  lowest reference is 0x130c bytes above 0x01000000
+
+64 KiB  call-ref  data-ref zero now state
+01000000        43         0    45.4% overwritten
+01010000        21         0    48.3% overwritten
+01030000         1         0    48.0% overwritten
+01040000       729        18    15.2% overwritten
+01050000       651        46    16.3% overwritten
+01060000       607       514    15.0% overwritten
+01070000       633       485    15.7% overwritten
+01080000        27       435    50.2% overwritten
+01090000        51       122    48.3% overwritten
+010a0000         0        44    47.4% overwritten
+010b0000         0        30   100.0% CLEARED
+010c0000         0        35   100.0% CLEARED
+
+hottest call targets outside the window:
+  0x01092cac  251 call(s)
+  0x01092e84  152 call(s)
+  0x0109453c  124 call(s)
+  0x01092eec  121 call(s)
+  0x0109421c  120 call(s)
+  0x01092d30  107 call(s)
+  0x0100176c  99 call(s)
+  0x010931c8  73 call(s)
+  0x01092cd4  62 call(s)
+  0x01092c08  39 call(s)

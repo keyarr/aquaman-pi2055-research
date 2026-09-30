@@ -1,0 +1,327 @@
+dump reports/round13-reloc-verify/mread_37800000_00800000.bin
+size 8388608  base 0x37800000
+
+brief marker list over 0x37800000..0x37ffffff (8388608 bytes)
+
+b'U-Boot'              5 hit(s)
+      abs 0x37ebdcc0  in run 0x37e17cc0..0x37f4bcc0  align 0
+      abs 0x37ec2266  in run 0x37e17266..0x37f49266  align 2
+      abs 0x37ed0fe1  in run 0x37e17fe1..0x37f48fe1  align 1
+      abs 0x37ed5c05  in run 0x37e17c05..0x37f4bc05  align 1
+      abs 0x37edf2f4  in run 0x37e172f4..0x37f492f4  align 0
+b'2015.01'             2 hit(s)
+      abs 0x37ebdcc7  in run 0x37e17cc7..0x37f4bcc7  align 3
+      abs 0x37edf2fb  in run 0x37e172fb..0x37f492fb  align 3
+b'g7ac5df7677'         2 hit(s)
+      abs 0x37ebdccf  in run 0x37e17ccf..0x37f4bccf  align 3
+      abs 0x37edf303  in run 0x37e17303..0x37f49303  align 3
+b'aml log : Sig Check' 2 hit(s)
+      abs 0x37ec00d4  in run 0x37e170d4..0x37f490d4  align 0
+      abs 0x37ec6c0c  in run 0x37e17c0c..0x37f4bc0c  align 0
+b'aml_sec_boot_check'  ABSENT
+b'Optimus'             ABSENT
+b'fastboot'            24 hit(s)
+      abs 0x37eb4ff9  in run 0x37e17ff9..0x37f48ff9  align 1
+      abs 0x37eb5010  in run 0x37e17010..0x37f49010  align 0
+      abs 0x37eb5029  in run 0x37e17029..0x37f49029  align 1
+      abs 0x37eb5040  in run 0x37e17040..0x37f49040  align 0
+      abs 0x37eb716c  in run 0x37e1716c..0x37f4916c  align 0
+      abs 0x37eb71ab  in run 0x37e171ab..0x37f491ab  align 3
+      abs 0x37ec5668  in run 0x37e17668..0x37f49668  align 0
+      abs 0x37ec56f9  in run 0x37e176f9..0x37f496f9  align 1
+      abs 0x37ec5716  in run 0x37e17716..0x37f49716  align 2
+      abs 0x37ec5730  in run 0x37e17730..0x37f49730  align 0
+      abs 0x37ec573e  in run 0x37e1773e..0x37f4973e  align 2
+      abs 0x37ec8453  in run 0x37e17453..0x37f49453  align 3
+      ... 12 more
+b'do_bootm'            ABSENT
+b'bootm'               21 hit(s)
+      abs 0x37eb6669  in run 0x37e17669..0x37f49669  align 1
+      abs 0x37eb6aeb  in run 0x37e17aeb..0x37f4baeb  align 3
+      abs 0x37eb6eb2  in run 0x37e17eb2..0x37f48eb2  align 2
+      abs 0x37eb6ec1  in run 0x37e17ec1..0x37f48ec1  align 1
+      abs 0x37eb7448  in run 0x37e17448..0x37f49448  align 0
+      abs 0x37eb7798  in run 0x37e17798..0x37f49798  align 0
+      abs 0x37eb7969  in run 0x37e17969..0x37f49969  align 1
+      abs 0x37eb79d8  in run 0x37e179d8..0x37f499d8  align 0
+      abs 0x37eb7a8f  in run 0x37e17a8f..0x37f4ca8f  align 3
+      abs 0x37eb7abc  in run 0x37e17abc..0x37f4cabc  align 0
+      abs 0x37ebf8f3  in run 0x37e178f3..0x37f498f3  align 3
+      abs 0x37ec01fe  in run 0x37e171fe..0x37f491fe  align 2
+      ... 9 more
+b'set_usb_boot'        1 hit(s)
+      abs 0x37ed260d  in run 0x37e1760d..0x37f4960d  align 1
+b'usb_pcd'             1 hit(s)
+      abs 0x37ed8021  in run 0x37e17021..0x37f49021  align 1
+b'Wrong Image Format'  1 hit(s)
+      abs 0x37ec05b6  in run 0x37e175b6..0x37f495b6  align 2
+b'reset'               20 hit(s)
+      abs 0x37eb6604  in run 0x37e17604..0x37f49604  align 0
+      abs 0x37eb6eeb  in run 0x37e17eeb..0x37f48eeb  align 3
+      abs 0x37eb7472  in run 0x37e17472..0x37f49472  align 2
+      abs 0x37ebf353  in run 0x37e17353..0x37f49353  align 3
+      abs 0x37ebf612  in run 0x37e17612..0x37f49612  align 2
+      abs 0x37ec01bd  in run 0x37e171bd..0x37f491bd  align 1
+      abs 0x37ec47ff  in run 0x37e177ff..0x37f497ff  align 3
+      abs 0x37ec7adc  in run 0x37e17adc..0x37f4badc  align 0
+      abs 0x37ec7ae4  in run 0x37e17ae4..0x37f4bae4  align 0
+      abs 0x37ec7ec9  in run 0x37e17ec9..0x37f48ec9  align 1
+      abs 0x37ec822c  in run 0x37e1722c..0x37f4922c  align 0
+      abs 0x37ecabb0  in run 0x37e17bb0..0x37f4bbb0  align 0
+      ... 8 more
+b'reboot'              62 hit(s)
+      abs 0x37eb65af  in run 0x37e175af..0x37f495af  align 3
+      abs 0x37eb65d3  in run 0x37e175d3..0x37f495d3  align 3
+      abs 0x37eb6947  in run 0x37e17947..0x37f49947  align 3
+      abs 0x37eb6ae9  in run 0x37e17ae9..0x37f4bae9  align 1
+      abs 0x37eb6b1b  in run 0x37e17b1b..0x37f4bb1b  align 3
+      abs 0x37eb6b31  in run 0x37e17b31..0x37f4bb31  align 1
+      abs 0x37eb6df4  in run 0x37e17df4..0x37f48df4  align 0
+      abs 0x37eb6e02  in run 0x37e17e02..0x37f48e02  align 2
+      abs 0x37eb6ebf  in run 0x37e17ebf..0x37f48ebf  align 3
+      abs 0x37eb6ed4  in run 0x37e17ed4..0x37f48ed4  align 0
+      abs 0x37eb6efe  in run 0x37e17efe..0x37f48efe  align 2
+      abs 0x37eb6f4e  in run 0x37e17f4e..0x37f48f4e  align 2
+      ... 50 more
+
+opcode census per 64 KiB  (b/bl/adrp are unaligned-word counts)
+
+addr            b     bl    ret    brk   adrp ldrlit    stp
+0x37800000      0      0      0      0      0      0      0
+0x37810000      0      0      0      0      0      0      0
+0x37820000      0      0      0      0      0      0      0
+0x37830000      0      0      0      0      0      0      0
+0x37840000      0      0      0      0      0      0      0
+0x37850000      0      0      0      0      0      0      0
+0x37860000      0      0      0      0      0      0      0
+0x37870000      0      0      0      0      0      0      0
+0x37880000      0      0      0      0      0      0      0
+0x37890000      0      0      0      0      0      0      0
+0x378a0000      0      0      0      0      0      0      0
+0x378b0000      0      0      0      0      0      0      0
+0x378c0000      0      0      0      0      0      0      0
+0x378d0000      0      0      0      0      0      0      0
+0x378e0000      0      0      0      0      0      0      0
+0x378f0000      0      0      0      0      0      0      0
+0x37900000      0      0      0      0      0      0      0
+0x37910000      0      0      0      0      0      0      0
+0x37920000      0      0      0      0      0      0      0
+0x37930000      0      0      0      0      0      0      0
+0x37940000      0      0      0      0      0      0      0
+0x37950000      0      0      0      0      0      0      0
+0x37960000      0      0      0      0      0      0      0
+0x37970000      0      0      0      0      0      0      0
+0x37980000      0      0      0      0      0      0      0
+0x37990000      0      0      0      0      0      0      0
+0x379a0000      0      0      0      0      0      0      0
+0x379b0000      0      0      0      0      0      0      0
+0x379c0000      0      0      0      0      0      0      0
+0x379d0000      0      0      0      0      0      0      0
+0x379e0000      0      0      0      0      0      0      0
+0x379f0000      0      0      0      0      0      0      0
+0x37a00000      0      0      0      0      0      0      0
+0x37a10000      0      0      0      0      0      0      0
+0x37a20000      0      0      0      0      0      0      0
+0x37a30000      0      0      0      0      0      0      0
+0x37a40000      0      0      0      0      0      0      0
+0x37a50000      0      0      0      0      0      0      0
+0x37a60000      0      0      0      0      0      0      0
+0x37a70000      0      0      0      0      0      0      0
+0x37a80000      0      0      0      0      0      0      0
+0x37a90000      0      0      0      0      0      0      0
+0x37aa0000      0      0      0      0      0      0      0
+0x37ab0000      0      0      0      0      0      0      0
+0x37ac0000      0      0      0      0      0      0      0
+0x37ad0000      0      0      0      0      0      0      0
+0x37ae0000      0      0      0      0      0      0      0
+0x37af0000      0      0      0      0      0      0      0
+0x37b00000      0      0      0      0      0      0      0
+0x37b10000      0      0      0      0      0      0      0
+0x37b20000      0      0      0      0      0      0      0
+0x37b30000      0      0      0      0      0      0      0
+0x37b40000      0      0      0      0      0      0      0
+0x37b50000      0      0      0      0      0      0      0
+0x37b60000      0      0      0      0      0      0      0
+0x37b70000      0      0      0      0      0      0      0
+0x37b80000      0      0      0      0      0      0      0
+0x37b90000      0      0      0      0      0      0      0
+0x37ba0000      0      0      0      0      0      0      0
+0x37bb0000      0      0      0      0      0      0      0
+0x37bc0000      0      0      0      0      0      0      0
+0x37bd0000      0      0      0      0      0      0      0
+0x37be0000      0      0      0      0      0      0      0
+0x37bf0000      0      0      0      0      0      0      0
+0x37c00000      0      0      0      0      0      0      0
+0x37c10000      0      0      0      0      0      0      0
+0x37c20000      0      0      0      0      0      0      0
+0x37c30000      0      0      0      0      0      0      0
+0x37c40000      0      0      0      0      0      0      0
+0x37c50000      0      0      0      0      0      0      0
+0x37c60000      0      0      0      0      0      0      0
+0x37c70000      0      0      0      0      0      0      0
+0x37c80000      0      0      0      0      0      0      0
+0x37c90000      0      0      0      0      0      0      0
+0x37ca0000      0      0      0      0      0      0      0
+0x37cb0000      0      0      0      0      0      0      0
+0x37cc0000      0      0      0      0      0      0      0
+0x37cd0000      0      0      0      0      0      0      0
+0x37ce0000      0      0      0      0      0      0      0
+0x37cf0000      0      0      0      0      0      0      0
+0x37d00000      0      0      0      0      0      0      0
+0x37d10000      0      0      0      0      0      0      0
+0x37d20000      0      0      0      0      0      0      0
+0x37d30000      0      0      0      0      0      0      0
+0x37d40000      0      0      0      0      0      0      0
+0x37d50000      0      0      0      0      0      0      0
+0x37d60000      0      0      0      0      0      0      0
+0x37d70000      0      0      0      0      0      0      0
+0x37d80000      0      0      0      0      0      0      0
+0x37d90000      0      0      0      0      0      0      0
+0x37da0000      0      0      0      0      0      0      0
+0x37db0000      0      0      0      0      0      0      0
+0x37dc0000      0      0      0      0      0      0      0
+0x37dd0000      0      0      0      0      0      0      0
+0x37de0000      0      0      0      0      0      0      0
+0x37df0000      0      0      0      0      0      0      0
+0x37e00000      0      0      0      0      0      0      0
+0x37e10000     60    909     61      0     98      2      0
+0x37e20000    184   1806    290      0   1123      8      0
+0x37e30000    197   1436    172      0   1011      0      0
+0x37e40000    118   1759     32      0   1236      0      0
+0x37e50000    169   1528    179      0   1176     10      0
+0x37e60000    147   1240    269      0    836      0      0
+0x37e70000    202   1475    183      0   1499     12      0
+0x37e80000    165   1373    233      0   1313      0      0
+0x37e90000    167   1162    238      0    921      0      0
+0x37ea0000    145    631    179      0    447     20      0
+0x37eb0000     46    285     26      0   1310     59      0
+0x37ec0000      0      0      0      0      0     20      0
+0x37ed0000      0      0      0      0      0      6      0
+0x37ee0000      9    132      0      0    300    227      0
+0x37ef0000     28    403      0      0    450    594      0
+0x37f00000     61    729      0      1    157    262      0
+0x37f10000     68    663      0      2    115    223      0
+0x37f20000     94    738      0      0    130    163      0
+0x37f30000     59    543      0      0    119    157      0
+0x37f40000     41    391      0      0     99    128      0
+0x37f50000     12      0      0      0      0     15      0
+0x37f60000      0     25      0      0    939    202      0
+0x37f70000      0      4      0      0     83     17      0
+0x37f80000      0      0      0      0      0      0      0
+0x37f90000      0      0      0      0      0      0      0
+0x37fa0000      0      0      0      0      0      0      0
+0x37fb0000      0      0      0      0      0      0      0
+0x37fc0000      0      0      0      0      0      0      0
+0x37fd0000      0      0      0      0      0      0      0
+0x37fe0000      0      0      0      0      0      0      0
+0x37ff0000      0      0      0      0      0      0      0
+
+_start fingerprint, every 8 bytes
+
+0x37e18000  b+0x28  quad=0x0000000001000000  QUAD==CONFIG_SYS_TEXT_BASE STRONG; QUAD=0x1000000 plausible _end/_bss offset
+0x37ebdc90  b+0x5204a0  quad=0x000000000400200c  QUAD=0x400200c plausible _end/_bss offset
+  2 candidate(s)
+
+
+secure-storage stub triple (`smc #0 ; ret`), 8 hit(s)
+  cluster 0x37e19d68..0x37e1a164  4 stub(s): 0x37e19d68 0x37e19f08 0x37e1a148 0x37e1a164
+  cluster 0x37e8bba0..0x37e8c144  4 stub(s): 0x37e8bba0 0x37e8bba8 0x37e8bbb0 0x37e8c144
+materialisation of constants by movz/movk (any order) or literal
+
+0x01080000  GXB_IMG_LOAD_ADDR               19: 37e24ce0..37e24ce0 37e24f80..37e24f80 37e25c14..37e25c14 37e2a0b4..37e2a0b4 37e2dbcc..37e2dbcc 37e2dc5c..37e2dc5c 37e2dca4..37e2dca4 37e2dcd0..37e2dcd0
+           ... 11 more
+0x82000023  GET_SHARE_STORAGE_IN_BASE       1: 37e8bbc0..37e8bbc4
+0x82000024  GET_SHARE_STORAGE_OUT_BASE      1: 37e8bbe4..37e8bbe8
+0x82000025  GET_SHARE_STORAGE_BLOCK_BASE    1: 37e8bc00..37e8bc04
+0x82000026  GET_SHARE_STORAGE_MESSAGE_BASE  ABSENT
+0x82000027  GET_SHARE_STORAGE_BLOCK_SIZE    2: 37e8bc1c..37e8bc20 37e8bcbc..37e8bcc0
+0x82000028  SET_STORAGE_INFO                1: 37e8c13c..37e8c140
+0x82000060  SECURITY_KEY_QUERY              1: 37e8bf14..37e8bf18
+0x82000061  SECURITY_KEY_READ               1: 37e8be54..37e8be58
+0x82000062  SECURITY_KEY_WRITE              1: 37e8bda8..37e8bdac
+0x82000063  SECURITY_KEY_TELL               1: 37e8c05c..37e8c060
+0x82000064  SECURITY_KEY_VERIFY             1: 37e8c100..37e8c104
+0x82000065  SECURITY_KEY_STATUS             1: 37e8bfb8..37e8bfbc
+0x82000066  SECURITY_KEY_NOTIFY             ABSENT
+0x82000067  SECURITY_KEY_LIST               ABSENT
+0x82000068  SECURITY_KEY_REMOVE             ABSENT
+0x82000069  SECURITY_KEY_NOTIFY_EX          1: 37e8bd04..37e8bd08
+0x8200006a  SECURITY_KEY_SET_ENCTYPE        1: 37e8c158..37e8c15c
+0x8200006b  SECURITY_KEY_GET_ENCTYPE        ABSENT
+0x8200006c  SECURITY_KEY_VERSION            ABSENT
+0x820000ff  AML_DATA_PROCESS                1: 37e19ec4..37e19ec8
+
+  slot 0x37eb5370  name='ffu_status'   cmd=0x37edacdf usage=0x37edae76 help=0x37edaeae
+  slot 0x37eb7f50  name='FDT_ERR_BADPATH' cmd=0x37ee0860 usage=0x37ee0871 help=0x37ee0883
+  slot 0x37eb97c8  name='-lt'          cmd=0x37ec1b12 usage=- help=0x37ec29ce
+  slot 0x37eb97e8  name='-gt'          cmd=0x37ec29e1 usage=- help=0x37ec29d2
+  slot 0x37eb9808  name='-eq'          cmd=0x37ec29d6 usage=- help=0x37ec29d9
+  slot 0x37eb9858  name='-ge'          cmd=0x37ec29e7 usage=- help=0x37ec29ea
+  slot 0x37eba5a8  name='8bit'         cmd=0x37ed2f91 usage=- help=0x37ed298f
+  slot 0x37eba5b8  name='10bit'        cmd=0x37ed298f usage=- help=0x37ed2995
+  slot 0x37eba5c8  name='12bit'        cmd=0x37ed2995 usage=- help=0x37ed2978
+  slot 0x37eba5d8  name='16bit'        cmd=0x37ed2978 usage=- help=0x37ed297e
+  slot 0x37eba5e8  name='limit'        cmd=0x37ed297e usage=- help=0x37ed2983
+  slot 0x37eba5f8  name='full'         cmd=0x37ed2983 usage=- help=0x37ed2987
+  slot 0x37eba608  name='rgb'          cmd=0x37ed2987 usage=- help=0x37ed298b
+  slot 0x37eba618  name='444'          cmd=0x37ed298b usage=- help=0x37ebf2ac
+  slot 0x37ebd6d0  name='Invalid ARCH' cmd=0x37ed1005 usage=0x37ed100b help=-
+  slot 0x37ebd6e8  name='Alpha'        cmd=0x37ed1011 usage=0x37ed1015 help=-
+  slot 0x37ebd700  name='ARM'          cmd=0x37ed101f usage=0x37ed1019 help=-
+  slot 0x37ebd718  name='Intel x86'    cmd=0x37ed1023 usage=0x37ed1028 help=-
+  slot 0x37ebd760  name='MicroBlaze'   cmd=0x37ed104d usage=0x37ed1052 help=-
+  slot 0x37ebd778  name='MIPS'         cmd=0x37ed1057 usage=0x37ed105e help=-
+  slot 0x37ebd7a8  name='NIOS II'      cmd=0x37ed1078 usage=0x37ed1080 help=-
+  slot 0x37ebd7c0  name='PowerPC'      cmd=0x37ed1088 usage=0x37ed1080 help=-
+  slot 0x37ebd928  name='uncompressed' cmd=0x37ed0d1a usage=0x37ed0d20 help=-
+  slot 0x37ebd940  name='bzip2 compressed' cmd=0x37ed0d31 usage=0x37ed0d36 help=-
+  slot 0x37ebd958  name='gzip compressed' cmd=0x37ed0d46 usage=0x37ed0d4b help=-
+  25 cmd_tbl-shaped slot(s)
+
+opcode-exact supervisor calls over the whole dump
+
+0x37e19d68  smc #0x0000   run 0x37e17d68..0x37f48d68
+        add x0,x0,#0xa6 | add x0,x0,#0x478
+0x37e19e28  smc #0x0000   run 0x37e17e28..0x37f48e28
+        add x24,x24,#0x480
+0x37e19e88  smc #0x0000   run 0x37e17e88..0x37f48e88
+        movz x0,#0x33 | movk x0,#0x8200,lsl#16
+0x37e19e9c  smc #0x0000   run 0x37e17e9c..0x37f48e9c
+        movz x0,#0x33 | movk x0,#0x8200,lsl#16
+0x37e19ed8  smc #0x0000   run 0x37e17ed8..0x37f48ed8
+        movz x0,#0xff | movk x0,#0x8200,lsl#16
+0x37e19f08  smc #0x0000   run 0x37e17f08..0x37f48f08
+        movz x0,#0x43 | movk x0,#0x8200,lsl#16
+0x37e19fac  smc #0x0000   run 0x37e17fac..0x37f48fac
+        add x0,x20,#0x488 | movz x0,#0x44 | movk x0,#0x8200,lsl#16 | movz x1,#0x2
+0x37e1a148  smc #0x0000   run 0x37e17148..0x37f49148
+        movz x0,#0x18 | movk x0,#0x8200,lsl#16
+0x37e1a164  smc #0x0000   run 0x37e17164..0x37f49164
+        movk x0,#0x8200,lsl#16 | movz x0,#0x19 | movk x0,#0x8200,lsl#16
+0x37e1c7d4  smc #0x0000   run 0x37e177d4..0x37f497d4
+        movz x0,#0x12 | movk x0,#0x8200,lsl#16
+0x37e635a0  smc #0x0000   run 0x37e175a0..0x37f495a0
+        add x0,x0,#0x1
+0x37e8bba0  smc #0x0000   run 0x37e17ba0..0x37f4bba0
+0x37e8bba8  smc #0x0000   run 0x37e17ba8..0x37f4bba8
+0x37e8bbb0  smc #0x0000   run 0x37e17bb0..0x37f4bbb0
+0x37e8c144  smc #0x0000   run 0x37e17144..0x37f49144
+        movz x0,#0x28 | movk x0,#0x8200,lsl#16
+0x37eed340  hvc #0x2360   run 0x37e17340..0x37f49340
+0x37eef9bc  svc #0xc4ca   run 0x37e179bc..0x37f499bc
+0x37eefa14  svc #0x7368   run 0x37e17a14..0x37f49a14
+0x37eefb74  smc #0xe398   run 0x37e17b74..0x37f4bb74
+0x37ef05f4  hvc #0x6504   run 0x37e175f4..0x37f495f4
+0x37ef133c  smc #0x2360   run 0x37e1733c..0x37f4933c
+0x37ef56b4  svc #0xe378   run 0x37e176b4..0x37f496b4
+0x37ef58a0  svc #0x2360   run 0x37e178a0..0x37f498a0
+0x37ef70fc  hvc #0x2360   run 0x37e170fc..0x37f490fc
+        movk x24,#0x563,lsl#48
+0x37efdb7c  smc #0x3e7f   run 0x37e17b7c..0x37f4bb7c
+0x37efe724  svc #0x100a   run 0x37e17724..0x37f49724
+0x37efec38  smc #0x213c   run 0x37e17c38..0x37f4bc38
+0x37f022f0  hvc #0x1cbc   run 0x37e172f0..0x37f492f0
+0x37f1c7e4  smc #0x541f   run 0x37e177e4..0x37f497e4
+0x37f38028  hvc #0x1690   run 0x37e17028..0x37f49028
+  30 total
+

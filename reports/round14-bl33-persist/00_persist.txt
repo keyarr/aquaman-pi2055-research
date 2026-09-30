@@ -1,0 +1,104 @@
+band      reports/round13-reloc-verify/mread_37800000_00800000.bin
+band size 0x800000   base 0x37800000
+band sha256 3d2eca1d7c4030250fef733272878c0ca0f3b798b9ae4ba54a110b7e1012b04e
+
+image     reports/round14-bl33-persist/bl33-37e18000.bin
+image     load 0x01000000  base 0x37e18000  size 0x1d8000 (1933312 bytes)
+image sha256 664fb34a9c6d92cdcd576659fb5359bd5218841612dbf38c01426c5d3c1b7818
+reloc_off 0x36e18000   (= 0x37e18000 - 0x01000000)
+mon_len   0x1d8000   (derived, see the docstring)
+
+page table 0x37ff0000..0x38000000: 8192 descriptor-shaped words
+
+page map (4 KiB pages, contiguous runs)
+
+range            kind            pages
+0x37e18000..0x37e18fff data               1
+0x37e19000..0x37e1ffff code               7
+0x37e20000..0x37e20fff data               1
+0x37e21000..0x37e69fff code              73
+0x37e6a000..0x37e6afff rodata/strings     1
+0x37e6b000..0x37e6ffff code               5
+0x37e70000..0x37e71fff data               2
+0x37e72000..0x37e83fff code              18
+0x37e84000..0x37e84fff data               1
+0x37e85000..0x37e96fff code              18
+0x37e97000..0x37e97fff data               1
+0x37e98000..0x37e9efff code               7
+0x37e9f000..0x37e9ffff data               1
+0x37ea0000..0x37ea3fff code               4
+0x37ea4000..0x37ea4fff rodata/strings     1
+0x37ea5000..0x37ea9fff data               5
+0x37eaa000..0x37eb2fff code               9
+0x37eb3000..0x37eb7fff rodata/strings     5
+0x37eb8000..0x37ebdfff data               6
+0x37ebe000..0x37ee2fff rodata/strings    37
+0x37ee3000..0x37efafff data              24
+0x37efb000..0x37efffff code               5
+0x37f00000..0x37f01fff data               2
+0x37f02000..0x37f06fff code               5
+0x37f07000..0x37f08fff data               2
+0x37f09000..0x37f09fff code               1
+0x37f0a000..0x37f0afff data               1
+0x37f0b000..0x37f0cfff code               2
+0x37f0d000..0x37f0efff data               2
+0x37f0f000..0x37f10fff code               2
+0x37f11000..0x37f16fff data               6
+0x37f17000..0x37f1cfff code               6
+0x37f1d000..0x37f1dfff data               1
+0x37f1e000..0x37f20fff code               3
+0x37f21000..0x37f21fff data               1
+0x37f22000..0x37f22fff code               1
+0x37f23000..0x37f23fff data               1
+0x37f24000..0x37f28fff code               5
+0x37f29000..0x37f29fff data               1
+0x37f2a000..0x37f2bfff code               2
+0x37f2c000..0x37f2cfff data               1
+0x37f2d000..0x37f2dfff code               1
+0x37f2e000..0x37f2efff data               1
+0x37f2f000..0x37f36fff code               8
+0x37f37000..0x37f37fff data               1
+0x37f38000..0x37f38fff code               1
+0x37f39000..0x37f3bfff data               3
+0x37f3c000..0x37f3dfff code               2
+0x37f3e000..0x37f3efff data               1
+0x37f3f000..0x37f44fff code               6
+0x37f45000..0x37f45fff data               1
+0x37f46000..0x37f47fff code               2
+0x37f48000..0x37f48fff data               1
+0x37f49000..0x37f49fff zero               1
+0x37f4a000..0x37f4bfff data               2
+0x37f4c000..0x37f54fff zero               9
+0x37f55000..0x37f55fff data               1
+0x37f56000..0x37f59fff zero               4
+0x37f5a000..0x37f5ffff data               6
+0x37f60000..0x37f60fff rodata/strings     1
+0x37f61000..0x37f72fff data              18
+0x37f73000..0x37f86fff zero              20
+0x37f87000..0x37f89fff data               3
+0x37f8a000..0x37f8afff rodata/strings     1
+0x37f8b000..0x37fbafff zero              48
+0x37fbb000..0x37fbefff data               4
+0x37fbf000..0x37feefff zero              48
+0x37fef000..0x37feffff data               1
+
+highest non-zero byte inside the image: 0x37feffff
+tail from there to 0x37ff0000 is zero: the relocated .bss
+
+first 16 descriptors at 0x37ff0000:
+  0x37ff0000 0x0000000000000411
+  0x37ff0008 0x0000000020000411
+  0x37ff0010 0x0000000040000401
+  0x37ff0018 0x0000000060000401
+  0x37ff0020 0x0000000080000401
+  0x37ff0028 0x00000000a0000401
+  0x37ff0030 0x00000000c0000401
+  0x37ff0038 0x00000000e0000401
+  0x37ff0040 0x0000000100000401
+  0x37ff0048 0x0000000120000401
+  0x37ff0050 0x0000000140000401
+  0x37ff0058 0x0000000160000401
+  0x37ff0060 0x0000000180000401
+  0x37ff0068 0x00000001a0000401
+  0x37ff0070 0x00000001c0000401
+  0x37ff0078 0x00000001e0000401

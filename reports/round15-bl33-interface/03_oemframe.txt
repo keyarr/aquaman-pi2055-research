@@ -1,0 +1,61 @@
+== cb_oem 0x37e95630 frame/copy analysis ==
+  0x37e95630  stp        x29, x30, [sp, #-0x50]!
+  0x37e95634  mov        x29, sp
+  0x37e95638  ldr        x1, [x1]
+  0x37e9563c  adrp       x0, #0x37ede000
+  0x37e95640  add        x0, x0, #0xf15
+  0x37e95644  str        x19, [sp, #0x10]
+  0x37e95648  str        x1, [x29, #0x48]
+  0x37e9564c  bl         #0x37e593c8
+  0x37e95650  ldr        x19, [x29, #0x48]
+  0x37e95654  mov        x1, #0x20
+  0x37e95658  mov        x0, x19
+  0x37e9565c  bl         #0x37eaada0
+  0x37e95660  add        x2, x0, #1
+  0x37e95664  mov        x1, x19
+  0x37e95668  add        x0, x29, #0x20
+  0x37e9566c  bl         #0x37eaaeec
+  0x37e95670  add        x0, x29, #0x20
+  0x37e95674  adrp       x1, #0x37ecb000
+  0x37e95678  str        x0, [x29, #0x48]
+  0x37e9567c  add        x1, x1, #0xa0d
+  0x37e95680  add        x0, x29, #0x48
+  0x37e95684  bl         #0x37eaae44
+  0x37e95688  ldr        x1, [x29, #0x48]
+  0x37e9568c  adrp       x0, #0x37ede000
+  0x37e95690  add        x0, x0, #0xf22
+  0x37e95694  bl         #0x37e593c8
+  0x37e95698  ldr        x0, [x29, #0x48]
+  0x37e9569c  mov        w1, #0
+  0x37e956a0  bl         #0x37e5e968
+  0x37e956a4  adrp       x1, #0x37fbd000
+  0x37e956a8  add        x1, x1, #0xf88
+  0x37e956ac  ldr        w0, [x1]
+  0x37e956b0  add        w0, w0, #1
+  0x37e956b4  cmp        w0, #3
+  0x37e956b8  csel       w0, w0, wzr, le
+  0x37e956bc  str        w0, [x1]
+  0x37e956c0  cbz        w0, #0x37e956d4
+  0x37e956c4  adrp       x0, #0x37ede000
+  0x37e956c8  add        x0, x0, #0xd0f
+  0x37e956cc  bl         #0x37e955dc
+  0x37e956d0  b          #0x37e956dc
+  0x37e956d4  add        x0, x29, #0x20
+  0x37e956d8  bl         #0x37e95588
+  0x37e956dc  adrp       x0, #0x37fbd000
+  0x37e956e0  add        x0, x0, #0xf98
+  0x37e956e4  bl         #0x37e94d04
+  0x37e956e8  ldr        x19, [sp, #0x10]
+  0x37e956ec  ldp        x29, x30, [sp], #0x50
+  0x37e956f0  ret        
+
+frame: stp x29,x30,[sp,#-0x50]! => 0x50 = 80 bytes; x29=sp.
+x19 spill at [sp,#0x10]; cmd ptr saved at [x29,#0x48].
+local buffer = x29+0x20; bytes from x29+0x20 to frame end (x29+0x50) = 0x30 = 48.
+copy: strnlen(cmd,32)->x0; x2=x0+1 (n=1..33); memcpy(x29+0x20, cmd, n).
+max copy 33 bytes into 48-byte area: no linear overflow of the frame.
+unterminated case: len>=32 => n=33, byte[32]=cmd[32]; if cmd[32]!=0 no NUL in 33 copied bytes.
+strsep(&p at x29+0x48, ' ') then scans from x29+0x20 for ' ' or NUL.
+scan bound: nearest NUL or space in stack garbage after the 33 bytes; stays inside the 48-byte
+frame only if a NUL/space lands within bytes 33..47, else reads past frame into caller stack.
+write effect: none (memcpy length clamped, destination fixed).

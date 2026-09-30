@@ -1,0 +1,98 @@
+round 11: where the relocated BL33 must be, derived offline from the reference tree
+==============================================================================
+
+everything below is read out of .src/u-boot-khadas (U-Boot 2015.01, Amlogic GXL).
+it is FAMILY evidence, not measured on the aquaman. the aquaman runs
+2015.01-g7ac5df7677-dirty; the tree is khadas-vims-nougat. treat the exact
+numbers as a band, not a fact.
+
+1. the load / link base
+-----------------------
+arch/arm/include/asm/arch-gxl/cpu.h
+    #define PHYS_SDRAM_1_BASE    0x00000000UL
+    #define CONFIG_SYS_SDRAM_BASE PHYS_SDRAM_1_BASE
+    #define CONFIG_SYS_TEXT_BASE 0x01000000 /*16MB rsv*/
+    #define CONFIG_DTB_MEM_ADDR   0x1000000
+
+the fragment in the dump self-computes addresses from 0x0100130c upward
+(report section 4), and the DTB is staged at 0x01000000 = CONFIG_DTB_MEM_ADDR.
+so CONFIG_SYS_TEXT_BASE = 0x01000000 is the load base and is where the stale
+copy sits. the DTB at 0x01000000 is U-Boot's own staging buffer, written after
+relocation, on top of the dead load copy.
+
+2. usable ram top
+-----------------
+board/amlogic/configs/gxl_p241_v1.h
+    #define CONFIG_SYS_MEM_TOP_HIDE 0x08000000   // hide 128MB for kernel reserve
+
+board/amlogic/gxl_p241_v1/gxl_p241_v1.c
+    phys_size_t get_effective_memsize(void)
+    {
+        // >>16 -> MB, <<20 -> real size, so >>16<<20 = <<4
+        return (((readl(AO_SEC_GP_CFG0)) & 0xFFFF0000) << 4) - CONFIG_SYS_MEM_TOP_HIDE;
+    }
+
+AO_SEC_GP_CFG0[31:16] is the DDR size in MiB. for a 1 GiB board it is 0x0400:
+    (0x0400 << 16) << 4 = 0x40000000 = 1 GiB
+    0x40000000 - 0x08000000 = 0x38000000
+=> get_effective_memsize() = usable ram top = 0x38000000
+
+common/board_f.c setup_dest_addr():
+    gd->ram_size -= CONFIG_SYS_MEM_TOP_HIDE;
+    gd->ram_top   = CONFIG_SYS_SDRAM_BASE + get_effective_memsize();
+    gd->ram_top   = board_get_usable_ram_top(gd->mon_len);   /* weak: return gd->ram_top */
+    gd->relocaddr = gd->ram_top;
+=> gd->relocaddr starts at 0x38000000
+
+3. what is subtracted before the copy is placed
+-----------------------------------------------
+init_sequence_f order, common/board_f.c:944..980:
+    setup_dest_addr
+    [reserve_logbuffer]         if CONFIG_LOGBUFFER   (LOGBUFF_LEN, small)
+    reserve_round_4k            & ~0xfff
+    reserve_mmu                 relocaddr -= PGTABLE_SIZE; relocaddr &= ~0xffff
+    reserve_trace               if CONFIG_TRACE
+    reserve_uboot               relocaddr -= gd->mon_len; relocaddr &= ~0xfff
+    reserve_malloc              (start_addr_sp -= TOTAL_MALLOC_LEN, not relocaddr)
+
+include/asm/system.h (arm64):  PGTABLE_SIZE = 0x10000
+arch/arm/include/asm/arch-gxl/cpu.h: CONFIG_SYS_MALLOC_LEN = 64 MiB
+
+so, for GXL:
+    gd->relocaddr = 0x38000000
+                    - 0x10000        (PGTABLE)
+                    - gd->mon_len
+                    (rounded to 64 KiB then 4 KiB, ± LOGBUFF)
+
+4. gd->mon_len, bounded from the dump
+-------------------------------------
+gd->mon_len = (_end - _start) of the U-Boot image. the dump bounds it from
+below: the fragment's own instructions reference addresses out to 0x011d7000,
+so text+rodata+data is at least 0x011d7000 - 0x01000000 = 0x1d7000 (1.84 MiB).
+plus bss, call it 0x1e0000 .. 0x260000 (1.9 .. 2.4 MiB).
+
+=> gd->relocaddr ~= 0x37ff0000 - (0x1e0000 .. 0x260000)
+               ~= 0x37d90000 .. 0x37e10000
+
+5. the band to read next
+------------------------
+    gd->relocaddr            ~ 0x37d90000 .. 0x37e10000   (low-medium confidence)
+    relocated U-Boot spans   [relocaddr, relocaddr + mon_len)
+                          ~  0x37d90000 .. 0x37ff0000
+    the relocated secure-storage fragment is at relocaddr + 0x40000
+    the relocated rodata (where "U-Boot" / "aml log : Sig Check" must live)
+        is at relocaddr + (0x01090000 - 0x01000000) = relocaddr + 0x90000
+
+    recommended read:  0x37c00000 .. 0x38000000  (4 MiB, one or two windows)
+    that band has NEVER been read. round 6 read 0x20000000..0x22000000 and
+    0x3f000000..0x40000000, both in android, neither is this.
+
+    this is DERIVED, not measured. it is the top of usable RAM minus
+    PGTABLE_SIZE and the monitor length, nothing else. if reserve_lcd or a
+    board reserve runs too, relocaddr drops further; widen downward, not up.
+
+6. sanity check against the hidden region
+-----------------------------------------
+0x38000000..0x40000000 is the 128 MiB CONFIG_SYS_MEM_TOP_HIDE region, hidden
+from both U-Boot and Linux. U-Boot will not relocate into it. the band above
+it (0x40000000+) does not exist on a 1 GiB part.

@@ -1,0 +1,31 @@
+== 0xb2000016 tee_log_level (short audit) ==
+  0x37e63534  stp        x29, x30, [sp, #-0x20]!
+  0x37e63538  mov        x29, sp
+  0x37e6353c  str        x19, [sp, #0x10]
+  0x37e63540  cmp        w2, #2
+  0x37e63544  b.eq       #0x37e63558
+  0x37e63548  adrp       x0, #0x37ed4000
+  0x37e6354c  add        x0, x0, #0x855
+  0x37e63550  bl         #0x37e593c8
+  0x37e63554  b          #0x37e635e0
+  0x37e63558  ldr        x0, [x3, #8]
+  0x37e6355c  cbz        x0, #0x37e6358c
+  0x37e63560  mov        w1, #0
+  0x37e63564  mov        w3, #0xa
+  0x37e63568  ldrb       w2, [x0]
+  0x37e6356c  cbz        w2, #0x37e63598
+  0x37e63570  sub        w2, w2, #0x30
+  0x37e63574  uxtb       w4, w2
+  0x37e63578  cmp        w4, #9
+  0x37e6357c  b.hi       #0x37e63594
+  0x37e63580  add        x0, x0, #1
+  0x37e63584  madd       w1, w1, w3, w2
+  0x37e63588  b          #0x37e63568
+  0x37e6358c  mov        w1, w0
+  0x37e63590  b          #0x37e63598
+  0x37e63594  mov        w1, #0
+  0x37e63598  mov        w0, #0x16
+  0x37e6359c  movk       w0, #0xb200, lsl #16
+  0x37e635a0  smc        #0
+argv[1] decimal parse -> w1; smc X0=0xb2000016 X1=level; compare/print only.
+no run_command/secure-boot/image-verify link. REFUTED AS RELEVANT.

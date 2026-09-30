@@ -1,0 +1,70 @@
+ids materialised in the image: movz(+movk) chains of both widths, and raw 32-bit literals
+(the literal column in this build is the compressed/other data above the image, not code)
+
+  0x82000012  movz+movk: 2   literal: 0   0x37e1c7d0 0x37e1c7d0
+  0x82000018  movz+movk: 2   literal: 0   0x37e1a144 0x37e1a144
+  0x82000020  movz+movk: 10  literal: 0   0x37e19da8 0x37e19da8 0x37e565ac 0x37e565ac 0x37e5662c
+  0x82000021  movz+movk: 4   literal: 0   0x37e19dcc 0x37e19dcc 0x37e19f88 0x37e19f88
+  0x82000023  movz+movk: 2   literal: 0   0x37e8bbc4 0x37e8bbc4
+  0x82000024  movz+movk: 2   literal: 0   0x37e8bbe8 0x37e8bbe8
+  0x82000025  movz+movk: 2   literal: 0   0x37e8bc04 0x37e8bc04
+  0x82000027  movz+movk: 4   literal: 0   0x37e8bc20 0x37e8bc20 0x37e8bcc0 0x37e8bcc0
+  0x82000028  movz+movk: 2   literal: 0   0x37e8c140 0x37e8c140
+  0x82000033  movz+movk: 2   literal: 0   0x37e19e84 0x37e19e84
+  0x82000043  movz+movk: 2   literal: 0   0x37e19f04 0x37e19f04
+  0x82000044  movz+movk: 2   literal: 0   0x37e19fa4 0x37e19fa4
+  0x82000060  movz+movk: 2   literal: 0   0x37e8bf18 0x37e8bf18
+  0x82000061  movz+movk: 2   literal: 0   0x37e8be58 0x37e8be58
+  0x82000062  movz+movk: 2   literal: 0   0x37e8bdac 0x37e8bdac
+  0x82000063  movz+movk: 2   literal: 0   0x37e8c060 0x37e8c060
+  0x82000064  movz+movk: 2   literal: 0   0x37e8c104 0x37e8c104
+  0x82000065  movz+movk: 2   literal: 0   0x37e8bfbc 0x37e8bfbc
+  0x82000069  movz+movk: 2   literal: 0   0x37e8bd08 0x37e8bd08
+  0x8200006a  movz+movk: 2   literal: 0   0x37e8c15c 0x37e8c15c
+  0x820000ff  movz+movk: 2   literal: 0   0x37e19ec8 0x37e19ec8
+  0xb2000016  movz+movk: 1   literal: 0   0x37e6359c
+
+22 distinct
+
+ids from arch/arm/include/asm/arch-gxl/bl31_apis.h that are NOT materialised anywhere in the image:
+  0x82000022 GET_REBOOT_REASON            ABSENT
+  0x82000026 GET_SHARE_STORAGE_MESSAGE_BASE ABSENT
+  0x82000030 EFUSE_READ                   ABSENT
+  0x82000031 EFUSE_WRITE                  ABSENT
+  0x82000032 EFUSE_WRITE_PATTERN          ABSENT
+  0x82000040 JTAG_ON                      ABSENT
+  0x82000041 JTAG_OFF                     ABSENT
+  0x82000066 SECURITY_KEY_NOTIFY          ABSENT
+  0x82000067 SECURITY_KEY_LIST            ABSENT
+  0x82000068 SECURITY_KEY_REMOVE          ABSENT
+  0x8200006b SECURITY_KEY_GET_ENCTYPE     ABSENT
+  0x8200006c SECURITY_KEY_VERSION         ABSENT
+  0x820000f0 DEBUG_EFUSE_WRITE_PATTERN    ABSENT
+  0x820000f1 DEBUG_EFUSE_READ_PATTERN     ABSENT
+  0x00000005 CALL_TRUSTZONE_HAL_API       ABSENT
+
+windowed search (movz .. up to 6 instructions .. movk #0x8200,lsl#16), same register:
+  0x82000012  1 site(s)  0x37e1c7d0
+  0x82000018  1 site(s)  0x37e1a144
+  0x82000019  1 site(s)  0x37e1a15c
+  0x82000020  5 site(s)  0x37e19da8 0x37e565ac 0x37e5662c 0x37e566bc 0x37e5673c
+  0x82000021  2 site(s)  0x37e19dcc 0x37e19f88
+  0x82000023  1 site(s)  0x37e8bbc4
+  0x82000024  1 site(s)  0x37e8bbe8
+  0x82000025  1 site(s)  0x37e8bc04
+  0x82000027  2 site(s)  0x37e8bc20 0x37e8bcc0
+  0x82000028  1 site(s)  0x37e8c140
+  0x82000032  1 site(s)  0x37e19df8
+  0x82000033  1 site(s)  0x37e19e84
+  0x82000042  1 site(s)  0x37e19f28
+  0x82000043  1 site(s)  0x37e19f04
+  0x82000044  1 site(s)  0x37e19fa4
+  0x82000060  1 site(s)  0x37e8bf18
+  0x82000061  1 site(s)  0x37e8be58
+  0x82000062  1 site(s)  0x37e8bdac
+  0x82000063  1 site(s)  0x37e8c060
+  0x82000064  1 site(s)  0x37e8c104
+  0x82000065  1 site(s)  0x37e8bfbc
+  0x82000069  1 site(s)  0x37e8bd08
+  0x8200006a  1 site(s)  0x37e8c15c
+  0x820000ff  1 site(s)  0x37e19ec8

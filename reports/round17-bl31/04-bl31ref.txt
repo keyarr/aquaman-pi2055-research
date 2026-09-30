@@ -1,0 +1,19 @@
+== reference BL31 (comparative only, not aquaman proof) ==
+  .src/u-boot-khadas/fip/gxl/bl31.bin size 0x2c3a8: 0x820000ff literals=[] smc#0=0
+    b'AMLSECU'                       at 0x2587c,0x2598c
+    b'secureboot'                    at 0x2595c
+    b'fail to load internal RSA key' at 0x2590c
+    b'flash size is too large'       at 0x25972
+    b'storage size is larger than flash' at 0x259a1
+  .src/u-boot-khadas/fip/gxb/bl31.bin size 0x16120: 0x820000ff literals=[] smc#0=0
+    b'AMLSECU'                       at 0x10929,0x109f3
+    b'secureboot'                    at 0x109bf
+    b'fail to load internal RSA key' at 0x1096e
+    b'exceed max DMA'                at 0x103dc,0x10948
+    b'flash size is too large'       at 0x109d9
+    b'storage size is larger than flash' at 0x10a08
+dispatcher: BL31 receives SMC via vector, executes no smc #0;
+no movz/movk 0x8200/0x00ff pair and no 0x820000ff word found,
+so the 0x820000ff handler was NOT isolated to a function.
+neighbor size checks (DMA/flash/storage) exist on other paths;
+none is linked to AML_DATA_PROCESS. do not cite them as validation.

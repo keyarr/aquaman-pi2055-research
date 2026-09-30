@@ -1,0 +1,20 @@
+== E3: 15 aml_sec_boot_check sites -> SMC X0..X4 ==
+wrapper 0x37e19ea8: (x0,x1,x2,x3)=(type,buf,len,opt)
+  -> SMC X0=0x820000ff X1=type X2=buf X3=len X4=opt (x4 untouched)
+  0x37e24cf0 in 0x37e24c00  BL(x0=0x40,x1=argv[1] hex else 0x1080000,x2=0x1800000,x3=7)  SMC(X1=0x40,X2=argv[1] hex else 0x1080000,X3=0x1800000,X4=7)  [argv/host else immediate]
+  0x37e24f90 in 0x37e24c00  BL(x0=0x100,x1=0x1080000,x2=0x500,x3=7)  SMC(X1=0x100,X2=0x1080000,X3=0x500,X4=7)  [immediate]
+  0x37e2a088 in 0x37e2a030  BL(x0=0x40,x1=x20 (env/partition buf),x2=0x3fe00,x3=0)  SMC(X1=0x40,X2=x20 (env/partition buf),X3=0x3fe00,X4=0)  [global/env heap]
+  0x37e2a0c4 in 0x37e2a030  BL(x0=0x100,x1=0x1080000,x2=0x500,x3=7)  SMC(X1=0x100,X2=0x1080000,X3=0x500,X4=7)  [immediate]
+  0x37e33e94 in 0x37e33e00  BL(x0=0x40,x1=x20 (argv hex, gated),x2=0x3fe00,x3=0)  SMC(X1=0x40,X2=x20 (argv hex, gated),X3=0x3fe00,X4=0)  [argv/host gated by 0x37ea14e0]
+  0x37e33ec8 in 0x37e33e00  BL(x0=0x100,x1=0x1080000,x2=0x500,x3=7)  SMC(X1=0x100,X2=0x1080000,X3=0x500,X4=7)  [immediate]
+  0x37e34084 in 0x37e33e00  BL(x0=0x40,x1=x21 (argv hex, gated),x2=0x3fe00,x3=0)  SMC(X1=0x40,X2=x21 (argv hex, gated),X3=0x3fe00,X4=0)  [argv/host gated]
+  0x37e340d4 in 0x37e33e00  BL(x0=0x100,x1=0x1080000,x2=0x500,x3=7)  SMC(X1=0x100,X2=0x1080000,X3=0x500,X4=7)  [immediate]
+  0x37e35ec4 in 0x37e35e7c  BL(x0=0x100,x1=0x1080000,x2=0x500,x3=7)  SMC(X1=0x100,X2=0x1080000,X3=0x500,X4=7)  [immediate]
+  0x37e3623c in 0x37e3601c  BL(x0=0x40,x1=x19 (argv/env, gated),x2=0x1800000,x3=4)  SMC(X1=0x40,X2=x19 (argv/env, gated),X3=0x1800000,X4=4)  [argv hex or env default, gated by image-parse 0x37e351f8]
+  0x37e36340 in 0x37e362e0  BL(x0=0x100,x1=0x1080000,x2=0x500,x3=7)  SMC(X1=0x100,X2=0x1080000,X3=0x500,X4=7)  [immediate]
+  0x37e565e4 in 0x37e562e8  BL(x0=0x10,x1=x19 (sharemem in base),x2=0x500,x3=0)  SMC(X1=0x10,X2=x19 (sharemem in base),X3=0x500,X4=0)  [global/sharemem from BL31]
+  0x37e56664 in 0x37e562e8  BL(x0=0x20,x1=x19 (sharemem in base),x2=0x500,x3=0)  SMC(X1=0x20,X2=x19 (sharemem in base),X3=0x500,X4=0)  [global/sharemem from BL31]
+  0x37e566f4 in 0x37e562e8  BL(x0=0x11,x1=x19 (sharemem in base),x2=0x500,x3=0)  SMC(X1=0x11,X2=x19 (sharemem in base),X3=0x500,X4=0)  [global/sharemem from BL31]
+  0x37e56774 in 0x37e562e8  BL(x0=0x12,x1=x19 (sharemem in base),x2=0x500,x3=0)  SMC(X1=0x12,X2=x19 (sharemem in base),X3=0x500,X4=0)  [global/sharemem from BL31]
+only 0x37e24cf0 takes a raw host address; the rest are
+immediates, gated argv, image buffers, or sharemem bases.

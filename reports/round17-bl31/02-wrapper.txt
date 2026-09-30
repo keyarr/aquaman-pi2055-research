@@ -1,0 +1,23 @@
+== wrapper 0x37e19ea8 (mov shuffle + smc + flush) ==
+  0x37e19ea8  stp        x29, x30, [sp, #-0x20]!
+  0x37e19eac  mov        x29, sp
+  0x37e19eb0  str        x19, [sp, #0x10]
+  0x37e19eb4  mov        x7, x0
+  0x37e19eb8  mov        x6, x1
+  0x37e19ebc  mov        x5, x2
+  0x37e19ec0  mov        x4, x3
+  0x37e19ec4  mov        x0, #0xff
+  0x37e19ec8  movk       x0, #0x8200, lsl #16
+  0x37e19ecc  mov        x1, x7
+  0x37e19ed0  mov        x2, x6
+  0x37e19ed4  mov        x3, x5
+  0x37e19ed8  smc        #0
+  0x37e19edc  mov        x19, x0
+  0x37e19ee0  add        x1, x6, x5
+  0x37e19ee4  mov        x0, x6
+  0x37e19ee8  bl         #0x37e19310
+  0x37e19eec  mov        x0, x19
+  0x37e19ef0  ldr        x19, [sp, #0x10]
+  0x37e19ef4  ldp        x29, x30, [sp], #0x20
+  0x37e19ef8  ret        
+post-SMC: add x1,x6,x5 (buf+len, wraps, no check); bl flush;

@@ -1,0 +1,223 @@
+image reports/round14-bl33-persist/bl33-37e18000.bin  base 0x37e18000  size 0x1d8000
+
+=== function 0x37e76aa4 (?) 0x37e76aa4..0x37e76d47
+    0x37f8a638 'upload mem 0x37800000 normal 0x800000'
+    0x37ed7e9c 'USBErr:%d'
+
+=== function 0x37e77cf8 (?) 0x37e77cf8..0x37e780a7
+    0x37f8a638 'upload mem 0x37800000 normal 0x800000'
+    0x37ec01fe 'bootm'
+    0x37ed7e9c 'USBErr:%d'
+
+=== function 0x37e771b8 (?) 0x37e771b8..0x37e7720f
+    0x37f8a638 'upload mem 0x37800000 normal 0x800000'
+
+=== image-wide literals that name the burning protocol endpoints
+
+-- b'upload': 3 distinct
+   0x37ed868f 'upload'
+   0x37f8a638 'upload mem 0x37800000 normal 0x800000'
+   0x37f8a838 'upload'
+
+-- b'download': 9 distinct
+   0x37eb4ac0 'optimus_download_dtb_image'
+   0x37eb4f98 'download_data'
+   0x37eba640 'USB download gadget'
+   0x37ed8686 'download'
+   0x37ed87e5 '../drivers/usb/gadget/v2_burning/v2_common/optimus_download.c'
+   0x37edb4f2 '../drivers/usb/gadget/v2_burning/v2_common/optimus_download_key.c'
+   0x37edf378 'downloadsize'
+   0x37edf385 'max-download-size'
+   0x37edf7c8 'download:'
+
+-- b'identify': 1 distinct
+   0x37ed7ec1 'identifyWaitTime'
+
+-- b'burn': 39 distinct
+   0x37eb4498 '_burn_key_in_type_mac'
+   0x37eb4598 '_burn_key_in_type_sha1'
+   0x37eb46e8 '_burn_key_in_type_hdcp2'
+   0x37eb67df 'usb_burning=echo  security mode'
+   0x37eb6821 'sdcburncfg=aml_sdc_burn.ini'
+   0x37eb683d 'sdc_burning=sdc_burn ${sdcburncfg}'
+   0x37ec677f '[burnup]Err:%s,L%d:'
+   0x37ed7de1 'sdcburncfg'
+   0x37ed7dec 'aml_sdc_burn.ini'
+   0x37ed7dfd 'fatsize mmc 0 ${sdcburncfg}'
+   0x37ed7e25 '../drivers/usb/gadget/v2_burning/aml_v2_burning.c'
+   0x37ed7ff4 '../drivers/usb/gadget/v2_burning/v2_usb_tool/usb_pcd.c'
+   0x37ed8298 'Enter v2 usbburning mode'
+   0x37ed82b1 'usbburning timeout'
+
+-- b'Burning': 5 distinct
+   0x37eda199 'Burning a partition with image file in sdmmc card'
+   0x37edaa1c 'Burning with amlogic format package in sdmmc '
+   0x37edb200 'Burning with amlogic format package in usb '
+   0x37edb2b3 'Burning a partition with image file in usb host'
+   0x37edbed5 'Burning with amlogic format package from partition sysrecovery'
+
+-- b'USB': 10 distinct
+   0x37eba640 'USB download gadget'
+   0x37ec7983 'USB read: device %d block # %ld, count %ld ... '
+   0x37ec79c9 'USB write: device %d block # %ld, count %ld ... '
+   0x37ec7a11 'USB device %d: '
+   0x37ec7a7e 'boot from USB device'
+   0x37ec7aa5 'USB sub-system'
+   0x37ec8172 'USB%d:   '
+   0x37ec845c 'use USB Fastboot protocol'
+   0x37ed58a8 'USB'
+   0x37ed7e9c 'USBErr:%d'
+
+-- b'optimus': 15 distinct
+   0x37eb4ac0 'optimus_download_dtb_image'
+   0x37ed835b '../drivers/usb/gadget/v2_burning/v2_usb_tool/optimus_transform.c'
+   0x37ed87e5 '../drivers/usb/gadget/v2_burning/v2_common/optimus_download.c'
+   0x37ed91e5 '../drivers/usb/gadget/v2_burning/v2_common/optimus_buffer_manager.c'
+   0x37ed948d '../drivers/usb/gadget/v2_burning/v2_common/optimus_simg2img.c'
+   0x37ed96e6 '../drivers/usb/gadget/v2_burning/v2_common/optimus_progress.c'
+   0x37ed9740 '../drivers/usb/gadget/v2_burning/v2_common/optimus_img_decoder.c'
+   0x37ed9b4a '../drivers/usb/gadget/v2_burning/v2_common/optimus_fat.c'
+   0x37ed9e7d '../drivers/usb/gadget/v2_burning/v2_sdc_burn/optimus_sdc_update.c'
+   0x37eda3b8 '../drivers/usb/gadget/v2_burning/v2_sdc_burn/optimus_sdc_burn.c'
+   0x37edaa9a '../drivers/usb/gadget/v2_burning/v2_sdc_burn/optimus_ini_parser.c'
+   0x37edb147 '../drivers/usb/gadget/v2_burning/v2_usb_burn/optimus_usb_burn.c'
+   0x37edb240 '../drivers/usb/gadget/v2_burning/v2_usb_burn/optimus_usb_update.c'
+   0x37edb4f2 '../drivers/usb/gadget/v2_burning/v2_common/optimus_download_key.c'
+
+-- b'mem': 28 distinct
+   0x37eb3f38 'fdt_fixup_memory_banks'
+   0x37eb6785 'dtb_mem_addr=0x1000000'
+   0x37ebf4f0 '/memory'
+   0x37ebf9e6 'store dtb read $dtb_mem_addr'
+   0x37ec0204 'boot application image from memory'
+   0x37ec031a 'setenv dtbo_mem_addr 0x%p'
+   0x37ec0334 'dtbo_mem_addr'
+   0x37ec04a9 'store dtb decrypt ${dtb_mem_addr}'
+   0x37ec0898 'rsvmem check'
+   0x37ec7d81 "    from memory address `addr'"
+   0x37ed4254 'fdt get value env_compatible /reserved-memory/linux,secmon compatible;'
+   0x37ed42d7 'amlogic, aml_secmon_memory'
+   0x37ed42f2 'fdt set /reserved-memory/linux,secmon reg <0x%x 0x%x>;'
+   0x37ed4329 'fdt set /reserved-memory/linux,secmon reg <0x0 0x%x 0x0 0x%x>;'
+
+-- b'TPL': 0 distinct
+
+-- b'tpl': 0 distinct
+
+-- b'step': 16 distinct
+   0x37eb6697 'upgrade_step=0'
+   0x37ec017b 'upgrade_step'
+   0x37eca16e 'ddr_tune_dqs_step  a 0 0x%08x %d'
+   0x37eca1b1 'ddr_tune_dqs_step  b 0 0x%08x %d'
+   0x37eca59e 'ddr_tune_dqs_step  a 0 0x%08x %d %d'
+   0x37eca652 'ddr_tune_aclcdlr_step  a 0 0x%08x %d %d'
+   0x37ecbfc5 'soc_iovref_test_step'
+   0x37ecca8a 'ddr_feq_test_step'
+   0x37ecdafa 'ddr_tune_dqs_step  a 0 0x%08x %d %d 1'
+   0x37ecdb20 'ddr_tune_aclcdlr_step  a 0 0x%08x %d %d 1'
+   0x37ecdb4a 'ddr_tune_dqs_step  b 0 0x%08x %d 1'
+   0x37ecf676 'ddr_dqs_window_step'
+   0x37ecf6e3 'ddr_tune_aclcdlr_step'
+   0x37ecf6f9 'ddr_tune_aclcdlr_step function'
+
+-- b'verify': 6 distinct
+   0x37eb4320 'unifykey_item_verify_check'
+   0x37eb48d0 'gpt_verify_headers'
+   0x37eb4ef0 '_verify_dtb_checksum'
+   0x37ed854a 'SHA1 for %s %p,verify_len:0x%llx ==>'
+   0x37ee15cf '../lib/libavb/avb_slot_verify.c'
+   0x37ee192c ': Error verifying vbmeta image: '
+
+-- b'reboot': 13 distinct
+   0x37eb65a0 'bootcmd=run storeboot'
+   0x37eb6947 'reboot_mode_android=normal'
+   0x37ebfd1a 'preboot'
+   0x37ec016f 'reboot_mode'
+   0x37ed2504 'shutdown_reboot'
+   0x37ed252c 'watchdog_reboot'
+   0x37ed26d6 'set reboot mode and reboot system'
+   0x37ed27f2 'get_rebootmode'
+   0x37ed2801 'get reboot mode'
+   0x37ed90ee 'reboot %s'
+   0x37edecf4 'reboot fastboot'
+   0x37eded29 'run storeboot'
+   0x37edf7ec 'reboot-bootloader'
+
+-- b'reset': 2 distinct
+   0x37ec01b5 'factory_reset'
+   0x37ecea43 ' setenv env_ddrtest_data_lane  0x22;save;reset'
+
+-- b'partition': 42 distinct
+   0x37eb46d0 'get_partition_from_dts'
+   0x37eb4860 'get_partition_info_efi'
+   0x37eb48e8 'write_mbr_and_gpt_partitions'
+   0x37eb4a18 '_find_partition_by_name'
+   0x37eb4c00 '_cmp_partition'
+   0x37eb4d38 'find_virtual_partition_by_name'
+   0x37eb4d98 'aml_get_partition_by_name'
+   0x37eb4db8 'aml_get_virtual_partition_by_name'
+   0x37ebf8bc 'store erase partition rsv'
+   0x37ec0bf0 '/partitions'
+   0x37ec3eb4 'hwpartition'
+   0x37ed1bd8 'Request would exceed partition size!'
+   0x37ed1e6a 'invalid GPT partition'
+   0x37ed1ea3 'writing GPT partitions failed'
+
+-- b'erase': 23 distinct
+   0x37eb4700 'fb_mmc_erase_write'
+   0x37eb4d28 'do_store_erase'
+   0x37eb4d58 'amlmmc_erase_bootloader'
+   0x37eb4e68 'mmc_key_erase'
+   0x37eb4eb8 'cb_erase'
+   0x37ebf8bc 'store erase partition rsv'
+   0x37ec3799 'MMC erase: dev # %d, block # %d, count %d ... '
+   0x37ec3e90 'erase'
+   0x37ec5efc 'sf erase  0 0x%x'
+   0x37ec5f0d 'amlmmc erase whole'
+   0x37ec5f52 '[store]amlmmc erase 1'
+   0x37ec602f 'sf  erase  0x%llx  0x%llx '
+   0x37ec6253 'amlmmc erase non_cache'
+   0x37ec6288 '[store]amlmmc erase %d'
+
+-- b'flash': 9 distinct
+   0x37eb4680 'fb_mmc_flash_write'
+   0x37eb4e88 'cb_flash'
+   0x37eb4ea8 'cb_flashall'
+   0x37ec2b29 'run recovery_from_flash'
+   0x37ec6d3b 'Read the image from internal flash with actual size'
+   0x37ed1c13 'flash write failure'
+   0x37ed8991 'spiflash'
+   0x37edae7d 'erase_flash'
+   0x37edf7db 'flashall'
+
+-- b'read': 70 distinct
+   0x37eb3f68 'i2c_read'
+   0x37eb4158 'dtb_read'
+   0x37eb4200 'efuse_usr_api_read_key'
+   0x37eb42a8 'amlkey_read'
+   0x37eb42e0 'store_read_ops'
+   0x37eb4468 'keymanage_secukey_read'
+   0x37eb44b0 'ext4fs_devread'
+   0x37eb4528 '_read_key_in_type_mac'
+   0x37eb45e0 'key_unify_read'
+   0x37eb4748 'keymanage_efuse_read'
+   0x37eb4760 '_read_key_in_type_hdcp2'
+   0x37eb4790 'key_manage_read'
+   0x37eb4820 'do_keyman_read'
+   0x37eb4930 'alloc_read_gpt_entries'
+
+-- b'write': 51 distinct
+   0x37eb3f78 'i2c_write'
+   0x37eb41d0 'write_sparse_image'
+   0x37eb41e8 'efuse_usr_api_write_key'
+   0x37eb42d0 'amlkey_write'
+   0x37eb42f0 'store_write_ops'
+   0x37eb43e0 'keymanage_secukey_write'
+   0x37eb4588 'key_unify_write'
+   0x37eb45c0 'write_raw_image'
+   0x37eb4680 'fb_mmc_flash_write'
+   0x37eb4700 'fb_mmc_erase_write'
+   0x37eb4778 'key_manage_write'
+   0x37eb4830 'do_write_trim'
+   0x37eb4850 'do_keyman_write'
+   0x37eb48e8 'write_mbr_and_gpt_partitions'

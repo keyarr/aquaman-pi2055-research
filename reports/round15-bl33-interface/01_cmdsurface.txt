@@ -1,0 +1,83 @@
+image base 0x37e18000 size 0x1d8000  cmds 80
+
+handler      command          bl_count  calls_run  calls_secboot  calls_smc_wrap  indirect  strings_n  top_strings/callees
+0x37e2f064  amlmmc            1      0          0             0              1         0        find_cmd? | 
+0x37e63a64  avb               2      0          0             0              1         0        find_cmd?,run_command_flag? | 
+0x37e2b3e8  bcb               0      0          0             0              0         0         | 
+0x37e277f0  bmp               1      0          0             0              1         0        find_cmd? | 
+0x37e56860  boot_cooling      0      0          0             0              0         0         | 
+0x37e24c00  bootm            45      1          1             2              0         13        simple_strtoul?,find_cmd?,0x37e255c8,simple_strtoul?,aml_sec_boot_check,printf?,getenv?,run_command | avb2;get_avb_mode;;androidboot.verifiedbootstate=orange
+0x37e634bc  chipid            4      0          0             0              0         1        printf?,0x37e197a0,printf?,printf? | %02x
+0x37e57ac8  clkmsr            2      0          0             0              0         0        simple_strtoul?,0x37e1999c | 
+0x37e62b44  cvbs              1      0          0             0              1         0        find_cmd? | 
+0x37e3a9e8  d2pll             6      0          0             0              0         0        simple_strtoul?,printf?,simple_strtoul?,printf?,0x37e1a058,run_command_flag? | 
+0x37e27ba4  dcache            6      0          0             0              0         0        0x37e27ab4,0x37e19584,0x37e19314,0x37e192f8,0x37e1960c,printf? | 
+0x37e3e098  ddr_spec_test    17      0          0             0              0         0        printf?,printf?,strcmp?,strcmp?,0x37e3cbb0,0x37e3cbb0,0x37e3cbb0,0x37e3cbb0 | 
+0x37e3aaf4  ddr_sram_tune     6      0          0             0              0         0        simple_strtoul?,printf?,simple_strtoul?,printf?,0x37e1a058,run_command_flag? | 
+0x37e56170  ddr_test_cmd      5      0          0             0              0         0        printf?,printf?,strcmp?,0x37e558dc,run_command_flag? | 
+0x37e3d1b0  ddr_test_copy    17      0          0             0              0         0        printf?,printf?,0x37e3cbb0,0x37e3cbb0,0x37e3cbb0,0x37e3cbb0,0x37e3cbb0,0x37e3aea0 | 
+0x37e40148  ddr_tune_dqs      0      0          0             0              0         0         | 
+0x37e40c08  ddr_tune_dqs_step   58      1          0             0              0         3        printf?,printf?,strcmp?,strcmp?,strcmp?,strcmp?,run_command_flag?,strcmp? | lcdlr_temp_count;0x%08x;save
+0x37e3d540  ddrtest         141      0          0             0              0         0        printf?,printf?,strcmp?,strcmp?,0x37e3cbb0,printf?,0x37e3acf4,printf? | 
+0x37e36508  dtimg             1      0          0             0              1         0        find_cmd? | 
+0x37e28000  echo              7      0          0             0              0         0        0x37e59580,0x37eaafdc,0x37e59378,0x37eaafdc,0x37e59378,0x37e59378,0x37e59580 | 
+0x37e56804  efuse             0      0          0             0              0         0         | 
+0x37e72ef0  efuse_user       40      0          0             0              0         10        strcmp?,getenv?,0x37eac674,setenv_backend?,simple_strtoul?,0x37e7287c,strcmp?,simple_strtoul? | init;dtb_mem_addr;size
+0x37e2f0ec  emmc              1      0          0             0              1         0        find_cmd? | 
+0x37e57d6c  env               1      0          0             0              1         0        find_cmd? | 
+0x37e280e4  exit              1      0          0             0              0         0        simple_strtoul? | 
+0x37e2811c  ext4size          0      0          0             0              0         0         | 
+0x37e36764  false             0      0          0             0              0         0         | 
+0x37e3a840  fastboot          7      0          0             0              0         1        0x37e94a04,0x37e94a10,0x37e949f8,0x37e59760,0x37e975b8,0x37e94a94,0x37e94a04 | usb_dnl_fastboot
+0x37e2814c  fatinfo           5      0          0             0              0         0        printf?,0x37e69528,0x37e9dbf4,printf?,0x37e9e800 | 
+0x37e2b820  get_avb_mode      4      0          0             0              0         1        0x37eaac08,printf?,strcmp?,setenv_backend? | avb2
+0x37e60478  get_rebootmode    6      1          0             0              1         18        getenv?,setenv_backend?,setenv_backend?,setenv_backend?,setenv_backend?,run_command | cold_boot;normal;factory_reset
+0x37e2bb7c  get_valid_slot    0      0          0             0              0         0         | 
+0x37e2a204  gpio             21      0          0             0              0         2        strcmp?,strcmp?,0x37e6cb9c,0x37e8d088,0x37eaad30,0x37eaacd4,simple_strtoul?,0x37e2a138 | status;cmd_gpio
+0x37e2e9b8  gpt              78      0          0             0              0         7        simple_strtoul?,printf?,0x37e8ec2c,strcmp?,printf?,0x37e2e4f4,printf?,printf? | write;Writing GPT: ;verify
+0x37e6141c  hdmitx            1      0          0             0              1         0        find_cmd? | 
+0x37e26644  help              0      0          0             0              0         0         | 
+0x37e2a4e4  i2c               1      0          0             0              1         0        find_cmd? | 
+0x37e27b18  icache            6      0          0             0              0         0        0x37e27ab4,0x37e196b4,0x37e19640,0x37e1974c,0x37e19718,printf? | 
+0x37e6225c  img_osd           1      0          0             0              1         0        find_cmd? | 
+0x37e27c30  irblaster         1      0          0             0              1         0        find_cmd? | 
+0x37e2b348  itest             3      0          0             0              1         0        0x37e5f5f8,0x37e2b1ac,0x37e59378 | 
+0x37e74290  keyman            1      0          0             0              1         0        find_cmd? | 
+0x37e73c84  keyunify         37      0          0             0              0         10        strcmp?,0x37e73694,strcmp?,simple_strtoul?,simple_strtoul?,0x37e73880,printf?,printf? | init;write;[KM]Error:f[%s]L%d:
+0x37e2ca3c  mmc               3      0          0             0              1         0        find_cmd?,0x37e90b68,0x37e59378 | 
+0x37e2cbf0  mmcinfo          15      0          0             0              0         2        0x37e90b68,0x37e59378,0x37e2cb0c,printf?,printf?,printf?,printf?,printf? | Capacity: ; DDR
+0x37e63e44  monitor_bt_cmdline   41      0          0             0              6         1        printf?,0x37e64e5c,0x37e64264,0x37e64f3c,0x37e64314,0x37e64f38,0x37e642b4,0x37e64f3c | Error: do_monitor_bt_cmdline
+0x37e60864  open_scp_log      6      0          0             0              0         0        strcmp?,0x37e201d8,printf?,printf?,printf?,printf? | 
+0x37e61da0  osd               1      0          0             0              1         0        find_cmd? | 
+0x37e57ea8  printenv          4      0          0             0              0         0        0x37e57ddc,printf?,0x37e57ddc,printf? | 
+0x37e56224  query             2      0          0             0              0         0        memcpy?,strcmp? | 
+0x37e571f8  read_temp        17      0          0             0              1         4        setenv_backend?,0x37e56868,0x37e56be8,0x37e56e6c,0x37eab1c8,printf?,0x37e1976c,printf? | temp:%d, adc:%d, tsc:%d, dout:%d;This chip is not trimmed;read calibrated data failed
+0x37e60654  reboot           15      0          0             1              0         12        printf?,strcmp?,strcmp?,strcmp?,strcmp?,strcmp?,strcmp?,strcmp? | cold_boot;normal;recovery
+0x37e21684  reset             5      0          0             0              0         0        0x37e59378,0x37eab1c8,0x37e2147c,0x37e21680,0x37e1a0c0 | 
+0x37e57afc  ringmsr           2      0          0             0              0         0        simple_strtoul?,printf? | 
+0x37e57b4c  rpmb_state       12      0          0             0              0         3        getenv?,0x37eaad30,malloc?,0x37eaad30,strncpy/strnlen2?,0x37eaac08,0x37eaafdc,sprintf/snprintf? | androidboot.rpmb_state;%s androidboot.rpmb_state=%d;rpmb_state
+0x37e62e84  rsvmem            1      0          0             0              1         0        find_cmd? | 
+0x37e5ea04  run               3      1          0             0              0         0        getenv?,printf?,run_command | 
+0x37e2bd60  set_active_slot    0      0          0             0              0         0         | 
+0x37e56d40  set_trim_base     2      0          0             0              0         0        simple_strtoul?,printf? | 
+0x37e607e8  set_usb_boot      4      0          0             1              0         0        printf?,simple_strtoul?,printf?,set_usb_boot_function | 
+0x37e58470  setenv            0      0          0             0              0         0         | 
+0x37e219f0  setkeys          17      0          0             0              0         9        strncpy/strnlen2?,0x37e2176c,strncpy/strnlen2?,0x37e2176c,setenv_backend?,strncpy/strnlen2?,0x37e2176c,setenv_backend? | mac_bt;btmac;mac_wifi
+0x37e22aa8  showvar           7      0          0             0              0         0        printf?,0x37e59760,0x37e59378,strcmp?,printf?,0x37e59760,printf? | 
+0x37e59300  silent            2      0          0             0              0         0        0x37eaacd4,0x37eaacd4 | 
+0x37e2c9b8  sleep             5      0          0             0              0         0        0x37eab128,simple_strtoul?,0x37eab128,0x37e59760,0x37eab1c8 | 
+0x37e33900  store             1      0          0             0              1         0        find_cmd? | 
+0x37e6084c  systemoff         1      0          0             0              0         0        0x37e19f10 | 
+0x37e63534  tee_log_level     3      0          0             0              0         0        printf?,printf?,printf? | 
+0x37e56d80  temp_triming      9      1          0             0              0         3        simple_strtoul?,printf?,0x37e1976c,run_command,printf?,run_command,printf?,run_command | write_trim;write_version 0xc0;read_temp
+0x37e36774  test             20      0          0             0              1         0        strcmp?,0x37eaad30,0x37eaad30,strcmp?,strcmp?,strcmp?,strcmp?,0x37eac374 | 
+0x37e3676c  true              0      0          0             0              0         0         | 
+0x37e62580  ui                1      0          0             0              1         0        find_cmd? | 
+0x37e358e0  unpackimg        13      0          0             0              0         3        getenv?,simple_strtoul?,0x37e35748,printf?,printf?,printf?,printf?,sprintf/snprintf? | loadaddr_misc;Err imgread(L%d):;0x%x
+0x37e78ff8  update            4      0          0             0              0         1        simple_strtoul?,simple_strtoul?,0x37e7b8e4,setenv_backend? | identifyWaitTime
+0x37e37310  usb              72      0          0             0              2         16        0x37eaacd4,0x37e22324,0x37e37b58,printf?,0x37e38a28,0x37e3a620,0x37eaacd4,0x37eaacd4 | reset;start;tree
+0x37e62d0c  vout              1      0          0             0              1         0        find_cmd? | 
+0x37e602cc  vpp               2      0          0             0              1         0        find_cmd?,run_command_flag? | 
+0x37e3a88c  vpu               2      0          0             0              1         0        find_cmd?,run_command_flag? | 
+0x37e57518  write_trim       34      0          0             0              2         1        printf?,strncpy/strnlen2?,0x37e56868,0x37e56be8,printf?,0x37eab1c8,0x37e56e6c,printf? | do_write_trim
+0x37e56d18  write_version     1      0          0             0              0         0        simple_strtoul? | 

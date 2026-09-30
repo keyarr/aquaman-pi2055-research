@@ -1,0 +1,8 @@
+== BL31 artifact inventory (repo walk, static) ==
+  .src/u-boot-khadas/fip/gxl/bl31.bin                      181160 B  FAMILY REFERENCE  AMLSECU=yes
+  .src/u-boot-khadas/fip/gxb/bl31.bin                       90400 B  FAMILY REFERENCE  AMLSECU=yes
+  .src/u-boot-khadas/fip/gxl/bl31.img                      181672 B  FAMILY REFERENCE (FIP wrapper)  AMLSECU=yes
+  bootloader.img                                          1344000 B  EXACT AQUAMAN image, but no BL31/AMLSECU found inside  AMLSECU=no
+  reports/round13-reloc-verify/mread_37800000_00800000.bin 8388608 B  EXACT AQUAMAN DRAM band (BL33; AMLSECU string there is BL33-side)  AMLSECU=yes
+no EXACT AQUAMAN BL31 binary/dump/symbol/map/log/disassembly exists.
+docs reports/amlsecu-*.md are GENERIC/FAMILY REFERENCE, not proof.

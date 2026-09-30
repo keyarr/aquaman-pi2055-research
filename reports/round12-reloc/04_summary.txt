@@ -1,0 +1,52 @@
+relocated image: self-computed address extent
+  min 0x37801efc  max 0x37ffc000   (image base R = 0x37e18000)
+  min - R = 0x-616104
+
+area below relocaddr at 0x37e10000 (not part of the copy):
+  0x37e10000  udf      #0
+  0x37e10004  udf      #0
+  0x37e10008  udf      #0
+  0x37e1000c  udf      #0
+  0x37e10010  udf      #0
+  0x37e10014  udf      #0
+  0x37e10018  udf      #0
+  0x37e1001c  udf      #0
+  0x37e10020  udf      #0
+  0x37e10024  udf      #0
+  0x37e10028  udf      #0
+  0x37e1002c  udf      #0
+
+=== do_bootm: nearest prologue before the secure-boot call ===
+  function entry candidate 0x00000000
+
+=== the secure-boot check sequence (matches common/cmd_bootm.c:133-147) ===
+  0x37e24cd0  mov      w2, #0x10                       
+  0x37e24cd4  bl       #0x37eac21c                     
+  0x37e24cd8  mov      w1, w0                          
+  0x37e24cdc  b        #0x37e24ce4                     
+  0x37e24ce0  mov      x1, #0x1080000                  
+  0x37e24ce4  mov      x0, #0x40                       
+  0x37e24ce8  mov      x2, #0x1800000                  
+  0x37e24cec  mov      x3, #7                          
+  0x37e24cf0  bl       #0x37e19ea8                     
+  0x37e24cf4  mov      x20, x0                         
+  0x37e24cf8  cbz      w0, #0x37e24d10                 
+  0x37e24cfc  adrp     x0, #0x37ec0000                 
+  0x37e24d00  mov      w1, w20                         
+  0x37e24d04  add      x0, x0, #0xd3                   
+  0x37e24d08  bl       #0x37e593c8                     
+  0x37e24d0c  b        #0x37e24db0                     
+  0x37e24d10  adrp     x22, #0x37ec0000                
+  0x37e24d14  add      x22, x22, #0xec                 
+  0x37e24d18  mov      x0, x22                         
+  0x37e24d1c  bl       #0x37e58920                     
+
+=== cmd_tbl: hunt the `bootm` command entry ===
+  slot 0x37eb5bf8  name='boot'     maxargs=938036656 cmd=0x37edf7d2 usage=None
+  slot 0x37eb5c28  name='update'   maxargs=938038280 cmd=0x37edf7db usage=None
+  slot 0x37ee4e58  name='go'       maxargs=0 cmd=0x00000400 usage=None
+  slot 0x37ee9cf0  name='update'   maxargs=2 cmd=0x37e626e0 usage=None
+  slot 0x37f60fd0  name='bootm'    maxargs=64 cmd=0x37e24c00 usage='boot application image from memory'
+  slot 0x37f616f0  name='fastboot' maxargs=1 cmd=0x37e3a840 usage='use USB Fastboot protocol'
+  slot 0x37f61a50  name='imgread'  maxargs=5 cmd=0x37e356d0 usage='Read the image from internal flash with actual size'
+  slot 0x37f62230  name='update'   maxargs=3 cmd=0x37e78ff8 usage='Enter v2 usbburning mode'

@@ -1,0 +1,92 @@
+image reports/round14-bl33-persist/bl33-37e18000.bin  base 0x37e18000  size 0x1d8000
+smc #0 census over 0x37e18000..0x37feffff (1933312 bytes, 483328 instructions)
+
+
+site 0x37e19d68   wrapper 0x37e19d68 (no cmd_tbl name)
+  x0 = {?}   [1 non-id constant(s)]
+  x0 is a wrapper argument; what each caller passes:
+    0x37e19dac in 0x37e19d70                  x0 = {0x82000020 (=GET_SHARE_MEM_INPUT_BASE), ...}   [1 non-id constant(s)]
+    0x37e19dd0 in 0x37e19d70                  x0 = {0x82000020 (=GET_SHARE_MEM_INPUT_BASE), 0x82000021 (=GET_SHARE_MEM_OUTPUT_BASE), ...}   [2 non-id constant(s)]
+    0x37e19f8c in 0x37e19f4c                  x0 = {0x82000021 (=GET_SHARE_MEM_OUTPUT_BASE), ...}   [1 non-id constant(s), 1 memory load(s)]
+    0x37e565b4 in 0x37e562e8                  x0 = {0x82000020 (=GET_SHARE_MEM_INPUT_BASE), ...}   [17 non-id constant(s)]
+    0x37e56634 in 0x37e562e8                  x0 = {0x82000020 (=GET_SHARE_MEM_INPUT_BASE), ...}   [15 non-id constant(s)]
+    0x37e566c4 in 0x37e562e8                  x0 = {0x82000020 (=GET_SHARE_MEM_INPUT_BASE), ...}   [15 non-id constant(s)]
+    0x37e56744 in 0x37e562e8                  x0 = {0x82000020 (=GET_SHARE_MEM_INPUT_BASE), ...}   [15 non-id constant(s)]
+
+site 0x37e19e28   wrapper 0x37e19d70 (no cmd_tbl name)
+  x0 = {0x82000020 (=GET_SHARE_MEM_INPUT_BASE), 0x82000021 (=GET_SHARE_MEM_OUTPUT_BASE), 0x820004a8, ...}   [4 non-id constant(s), 2 memory load(s)]
+  x1 = {?}   [1 non-id constant(s), 3 memory load(s)]
+  bl callers of the wrapper: 0x37e7258c 0x37e72610
+
+site 0x37e19e88   wrapper 0x37e19e80 (no cmd_tbl name)
+  x0 = {0x82000033 (=EFUSE_USER_MAX)}
+  bl callers of the wrapper: 0x37e72770
+
+site 0x37e19e9c   wrapper 0x37e19e98 (no cmd_tbl name)
+  x0 = {?}   [1 non-id constant(s)]
+  x0 is a wrapper argument; what each caller passes:
+    0x37e19f2c in 0x37e19f10                  x0 = {0x82000042}
+    0x37e607d4 in 0x37e60654 reboot           x0 = {0x84000009 (=PSCI_SYS_REBOOT), ...}   [3 non-id constant(s)]
+
+site 0x37e19ed8   wrapper 0x37e19ea8 (no cmd_tbl name)
+  x0 = {0x820000ff (=AML_DATA_PROCESS)}
+  bl callers of the wrapper: 0x37e24cf0 0x37e24f90 0x37e2a088 0x37e2a0c4 0x37e33e94 0x37e33ec8 0x37e34084 0x37e340d4 0x37e35ec4 0x37e3623c 0x37e36340 0x37e565e4
+
+site 0x37e19f08   wrapper 0x37e19efc (no cmd_tbl name)
+  x0 = {0x82000043 (=SET_USB_BOOT_FUNC)}
+  bl callers of the wrapper: 0x37e60838 0x37e76594
+
+site 0x37e19fac   wrapper 0x37e19f4c (no cmd_tbl name)
+  x0 = {0x82000021 (=GET_SHARE_MEM_OUTPUT_BASE), 0x82000044 (=GET_CHIP_ID), ...}   [2 non-id constant(s), 2 memory load(s)]
+  x1 = {0x2}   [1 non-id constant(s)]
+  bl callers of the wrapper: 0x37e197e0
+
+site 0x37e1a148   wrapper 0x37e1a0e0 (no cmd_tbl name)
+  x0 = {0x82000018, ...}   [1 non-id constant(s)]
+  x3 = {0x1, ?}   [2 non-id constant(s)]
+  bl callers of the wrapper: 0x37e1a5fc 0x37e1a62c 0x37e1a65c 0x37e1a6dc 0x37e1a6f4 0x37e1a70c 0x37e1a724 0x37e1a73c 0x37e1a754 0x37e1a76c 0x37e1a784 0x37e1a820
+
+site 0x37e1a164   wrapper 0x37e1a150 (no cmd_tbl name)
+  x0 = {0x82000019}
+  bl callers of the wrapper: 0x37e1a498 0x37e1a4a8 0x37e1a4b8 0x37e1a4c8 0x37e1a790 0x37e1a7a4 0x37e1a7b4 0x37e1a878 0x37e1a888 0x37e1a898 0x37e1a8a8 0x37e1a8b8
+
+site 0x37e1c7d4   wrapper 0x37e1ab44 (no cmd_tbl name)
+  x0 = {0x82000012, ...}   [2 non-id constant(s)]
+  x1 = {0x0, 0x3, 0x40, ?}   [4 non-id constant(s)]
+  x2 = {0x0, ?}   [2 non-id constant(s)]
+  x3 = {0x4}   [1 non-id constant(s)]
+  bl callers of the wrapper: 0x37e61798 0x37e61938
+
+site 0x37e635a0   wrapper 0x37e63534 tee_log_level
+  x0 = {0xb2000016, ...}   [5 non-id constant(s)]
+  x1 = {0x0, 0x37e7f000, 0x37e7f001, 0x37e7f855}   [6 non-id constant(s)]
+  x3 = {0xa, ?}   [2 non-id constant(s)]
+
+site 0x37e8bba0   wrapper 0x37e8bba0 (no cmd_tbl name)
+  x0 = {?}   [1 non-id constant(s)]
+  x0 is a wrapper argument; what each caller passes:
+    0x37e8bbd0 in 0x37e8bbb8                  x0 = {0x82000023 (=GET_SHARE_STORAGE_IN_BASE)}
+    0x37e8bbec in 0x37e8bbb8                  x0 = {0x82000023 (=GET_SHARE_STORAGE_IN_BASE), 0x82000024 (=GET_SHARE_STORAGE_OUT_BASE), 0x82000e83, ...}   [2 non-id constant(s)]
+    0x37e8bc08 in 0x37e8bbb8                  x0 = {0x82000023 (=GET_SHARE_STORAGE_IN_BASE), 0x82000024 (=GET_SHARE_STORAGE_OUT_BASE), 0x82000025 (=GET_SHARE_STORAGE_BLOCK_BASE), 0x82000e7b, 0x82000e7c, 0x82000e83, 0x82001cdb, ...}   [4 non-id constant(s)]
+    0x37e8bc24 in 0x37e8bbb8                  x0 = {0x82000023 (=GET_SHARE_STORAGE_IN_BASE), 0x82000024 (=GET_SHARE_STORAGE_OUT_BASE), 0x82000025 (=GET_SHARE_STORAGE_BLOCK_BASE), 0x82000027 (=GET_SHARE_STORAGE_BLOCK_SIZE), 0x82000e7b, 0x82000e7c, 0x82000e83, 0x82001cdb, ... 3 more ids, ...}   [6 non-id constant(s)]
+    0x37e8bcc4 in 0x37e8bc84                  x0 = {0x82000027 (=GET_SHARE_STORAGE_BLOCK_SIZE), ...}   [1 non-id constant(s), 2 memory load(s)]
+    0x37e8bdb0 in 0x37e8bd10                  x0 = {0x82000062 (=SECURITY_KEY_WRITE), ...}   [6 non-id constant(s), 2 memory load(s)]
+    0x37e8be5c in 0x37e8bdc8                  x0 = {0x82000061 (=SECURITY_KEY_READ), ...}   [10 non-id constant(s), 4 memory load(s)]
+    0x37e8bf1c in 0x37e8be98                  x0 = {0x82000060 (=SECURITY_KEY_QUERY), ...}   [5 non-id constant(s), 2 memory load(s)]
+    0x37e8bfc0 in 0x37e8bf3c                  x0 = {0x82000065 (=SECURITY_KEY_STATUS), ...}   [5 non-id constant(s), 2 memory load(s)]
+    0x37e8c064 in 0x37e8bfe0                  x0 = {0x82000063 (=SECURITY_KEY_TELL), ...}   [9 non-id constant(s), 4 memory load(s)]
+    0x37e8c108 in 0x37e8c084                  x0 = {0x82000064 (=SECURITY_KEY_VERIFY), ...}   [9 non-id constant(s), 4 memory load(s)]
+
+site 0x37e8bba8   wrapper 0x37e8bba8 (no cmd_tbl name)
+  x0 = {?}   [1 non-id constant(s)]
+  x0 is a wrapper argument; what each caller passes:
+    0x37e8c160 in 0x37e8c14c                  x0 = {0x8200006a (=SECURITY_KEY_SET_ENCTYPE)}
+
+site 0x37e8bbb0   wrapper 0x37e8bbb0 (no cmd_tbl name)
+  x0 = {?}   [1 non-id constant(s)]
+
+site 0x37e8c144   wrapper 0x37e8c138 (no cmd_tbl name)
+  x0 = {0x82000028 (=SET_STORAGE_INFO)}
+  bl callers of the wrapper: 0x37e90614
+
+15 opcode-exact `smc #0` site(s)

@@ -1,0 +1,13 @@
+== ddr_test_copy end state (loop=1; loop>1 extends fill) ==
+copy  0x37e3aea0: N=size>>2 iters x 16 B at dst (same dst each loop iter)
+fill  0x37e3d3bc..: N iters x 16 B of 0x12345678, dst+=N*16 per outer iter
+read  0x37e3d49c..: stride src, keep last words in w1/w0
+tail  0x37e3d4b8 str w1,[x23,x27]; [x24,#4/#8/#0xc] (x24=dst+L, x27=L)
+L = (clamped>>2)*16*loop; min L=0x4000 (clamp 0x1000, 4x factor)
+dst            dst+L
+ |              |
+ +--------------+-----------+
+ | 0x12345678 x L | 16B src |
+ +--------------+-----------+
+verdict: pattern + controlled-tail (tail src-derived iff src host-reachable);
+arbitrary payload write REFUTED (copy destroyed before return).

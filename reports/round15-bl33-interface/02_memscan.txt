@@ -1,0 +1,354 @@
+== string absence probes ==
+  b'memory display'        absent
+  b'memory write'          absent
+  b'memory copy'           absent
+  b'memory compare'        absent
+  b'checksum calculation'  absent
+  b'print or set address offset' absent
+  b'->run_cmd'             absent
+  b'go - start'            absent
+  b'booti -'               absent
+  b'source -'              absent
+== command-name string probes (null-terminated words) ==
+  b'\x00md\x00'  absent
+  b'\x00mw\x00'  FOUND
+  b'\x00cp\x00'  absent
+  b'\x00go\x00'  absent
+  b'\x00source\x00' absent
+  b'\x00booti\x00' absent
+  b'\x00crc32\x00' FOUND
+  b'\x00base\x00' absent
+  b'\x00loadb\x00' FOUND
+== handlers with br/blr (non-ret) ==
+  0x37e2f064 amlmmc         0x37e2f0d0 blr x4
+  0x37e63a64 avb            0x37e63ab8 blr x4
+  0x37e277f0 bmp            0x37e2783c blr x4
+  0x37e62b44 cvbs           0x37e62b98 blr x4
+  0x37e36508 dtimg          0x37e36574 blr x4
+  0x37e2f0ec emmc           0x37e2f158 blr x4
+  0x37e57d6c env            0x37e57dc8 blr x4
+  0x37e60478 get_rebootmode 0x37e604d0 br x1
+  0x37e6141c hdmitx         0x37e61470 blr x4
+  0x37e2a4e4 i2c            0x37e2a540 blr x4
+  0x37e6225c img_osd        0x37e622a8 blr x4
+  0x37e27c30 irblaster      0x37e27c8c blr x4
+  0x37e2b348 itest          0x37e2b390 br x2
+  0x37e74290 keyman         0x37e742f0 blr x4
+  0x37e2ca3c mmc            0x37e2caf0 blr x4
+  0x37e63e44 monitor_bt_cmdline 0x37e63fa8 blr x1; 0x37e63fc0 blr x1; 0x37e63fd8 blr x1; 0x37e64014 blr x1; 0x37e64030 blr x0; 0x37e64210 blr x1
+  0x37e61da0 osd            0x37e61dec blr x4
+  0x37e571f8 read_temp      0x37e57304 br x3
+  0x37e62e84 rsvmem         0x37e62ed0 blr x4
+  0x37e33900 store          0x37e3395c blr x4
+  0x37e36774 test           0x37e36838 br x0
+  0x37e62580 ui             0x37e625cc blr x4
+  0x37e37310 usb            0x37e378a0 blr x4; 0x37e3796c blr x4
+  0x37e62d0c vout           0x37e62d60 blr x4
+  0x37e602cc vpp            0x37e60320 blr x4
+  0x37e3a88c vpu            0x37e3a8e0 blr x4
+  0x37e57518 write_trim     0x37e576d0 br x5; 0x37e5798c br x4
+== handlers calling run_command 0x37e5e968 ==
+  0x37e218b4 in 0x37e21864               
+  0x37e21d34 in 0x37e21cdc               
+  0x37e220bc in 0x37e22094               
+  0x37e220e8 in 0x37e22094               
+  0x37e220f8 in 0x37e22094               
+  0x37e22108 in 0x37e22094               
+  0x37e22118 in 0x37e22094               
+  0x37e22128 in 0x37e22094               
+  0x37e2214c in 0x37e22094               
+  0x37e22198 in 0x37e22094               
+  0x37e221c8 in 0x37e22094               
+  0x37e221d8 in 0x37e22094               
+  0x37e24d34 in 0x37e24c00 bootm         
+  0x37e24f10 in 0x37e24c00 bootm         
+  0x37e25110 in 0x37e250a0               
+  0x37e2515c in 0x37e250a0               
+  0x37e251c4 in 0x37e250a0               
+  0x37e2533c in 0x37e250a0               
+  0x37e2537c in 0x37e250a0               
+  0x37e25528 in 0x37e250a0               
+  0x37e25560 in 0x37e250a0               
+  0x37e256b4 in 0x37e255c8               
+  0x37e26014 in 0x37e255c8               
+  0x37e2b69c in 0x37e2b3ec               
+  0x37e2b6fc in 0x37e2b3ec               
+  0x37e2d450 in 0x37e2d390               
+  0x37e33ba8 in 0x37e33a38               
+  0x37e33c1c in 0x37e33bbc               
+  0x37e33c44 in 0x37e33bbc               
+  0x37e33c68 in 0x37e33bbc               
+  0x37e33c9c in 0x37e33bbc               
+  0x37e33cac in 0x37e33bbc               
+  0x37e33ce4 in 0x37e33bbc               
+  0x37e33d00 in 0x37e33bbc               
+  0x37e33dbc in 0x37e33d10               
+  0x37e34038 in 0x37e33e00               
+  0x37e34350 in 0x37e342b8               
+  0x37e34378 in 0x37e342b8               
+  0x37e343a4 in 0x37e342b8               
+  0x37e343f8 in 0x37e342b8               
+  0x37e34440 in 0x37e342b8               
+  0x37e34480 in 0x37e342b8               
+  0x37e344c0 in 0x37e342b8               
+  0x37e3458c in 0x37e344e8               
+  0x37e345b8 in 0x37e344e8               
+  0x37e3460c in 0x37e344e8               
+  0x37e34648 in 0x37e344e8               
+  0x37e34688 in 0x37e344e8               
+  0x37e346c8 in 0x37e344e8               
+  0x37e347a4 in 0x37e346f0               
+  0x37e34860 in 0x37e347ec               
+  0x37e348b8 in 0x37e347ec               
+  0x37e349dc in 0x37e34900               
+  0x37e349ec in 0x37e34900               
+  0x37e34a4c in 0x37e34900               
+  0x37e34a7c in 0x37e34900               
+  0x37e34a98 in 0x37e34900               
+  0x37e34ae4 in 0x37e34900               
+  0x37e34b00 in 0x37e34900               
+  0x37e34b1c in 0x37e34900               
+  0x37e34b3c in 0x37e34900               
+  0x37e34c1c in 0x37e34b78               
+  0x37e34c44 in 0x37e34b78               
+  0x37e34c80 in 0x37e34b78               
+  0x37e34cf8 in 0x37e34b78               
+  0x37e34d20 in 0x37e34b78               
+  0x37e34d60 in 0x37e34b78               
+  0x37e34dbc in 0x37e34b78               
+  0x37e34de0 in 0x37e34b78               
+  0x37e34e6c in 0x37e34b78               
+  0x37e35264 in 0x37e351f8               
+  0x37e35300 in 0x37e352b0               
+  0x37e35374 in 0x37e35344               
+  0x37e35400 in 0x37e353b8               
+  0x37e3544c in 0x37e353b8               
+  0x37e35480 in 0x37e353b8               
+  0x37e354f8 in 0x37e354a8               
+  0x37e35578 in 0x37e35528               
+  0x37e355d4 in 0x37e355a8               
+  0x37e35640 in 0x37e35600               
+  0x37e356c4 in 0x37e35670               
+  0x37e41100 in 0x37e40c08 ddr_tune_dqs_step
+  0x37e41238 in 0x37e40c08 ddr_tune_dqs_step
+  0x37e43538 in 0x37e432ec               
+  0x37e43594 in 0x37e432ec               
+  0x37e43b14 in 0x37e436c4               
+  0x37e4409c in 0x37e436c4               
+  0x37e44160 in 0x37e436c4               
+  0x37e441a4 in 0x37e436c4               
+  0x37e444c8 in 0x37e436c4               
+  0x37e44508 in 0x37e436c4               
+  0x37e4454c in 0x37e436c4               
+  0x37e4462c in 0x37e436c4               
+  0x37e44670 in 0x37e436c4               
+  0x37e4467c in 0x37e436c4               
+  0x37e446f0 in 0x37e436c4               
+  0x37e4472c in 0x37e436c4               
+  0x37e44770 in 0x37e436c4               
+  0x37e44850 in 0x37e436c4               
+  0x37e44894 in 0x37e436c4               
+  0x37e448a0 in 0x37e436c4               
+  0x37e44928 in 0x37e436c4               
+  0x37e44968 in 0x37e436c4               
+  0x37e449b0 in 0x37e436c4               
+  0x37e44a90 in 0x37e436c4               
+  0x37e44ad4 in 0x37e436c4               
+  0x37e44ae0 in 0x37e436c4               
+  0x37e44b54 in 0x37e436c4               
+  0x37e44b90 in 0x37e436c4               
+  0x37e44bd8 in 0x37e436c4               
+  0x37e44cb8 in 0x37e436c4               
+  0x37e44cfc in 0x37e436c4               
+  0x37e44d08 in 0x37e436c4               
+  0x37e44e18 in 0x37e436c4               
+  0x37e44e68 in 0x37e436c4               
+  0x37e44ec8 in 0x37e436c4               
+  0x37e44f58 in 0x37e436c4               
+  0x37e44f90 in 0x37e436c4               
+  0x37e44fa0 in 0x37e436c4               
+  0x37e450f4 in 0x37e436c4               
+  0x37e453fc in 0x37e436c4               
+  0x37e45440 in 0x37e436c4               
+  0x37e45484 in 0x37e436c4               
+  0x37e45550 in 0x37e436c4               
+  0x37e45588 in 0x37e436c4               
+  0x37e45598 in 0x37e436c4               
+  0x37e455f8 in 0x37e436c4               
+  0x37e45638 in 0x37e436c4               
+  0x37e4567c in 0x37e436c4               
+  0x37e45750 in 0x37e436c4               
+  0x37e45788 in 0x37e436c4               
+  0x37e45798 in 0x37e436c4               
+  0x37e457f8 in 0x37e436c4               
+  0x37e4583c in 0x37e436c4               
+  0x37e45880 in 0x37e436c4               
+  0x37e45948 in 0x37e436c4               
+  0x37e45980 in 0x37e436c4               
+  0x37e45990 in 0x37e436c4               
+  0x37e46e90 in 0x37e46964               
+  0x37e46fc0 in 0x37e46964               
+  0x37e49950 in 0x37e49738               
+  0x37e49980 in 0x37e49738               
+  0x37e49dc0 in 0x37e49a44               
+  0x37e49df0 in 0x37e49a44               
+  0x37e4a044 in 0x37e49f1c               
+  0x37e4a098 in 0x37e49f1c               
+  0x37e4a0f8 in 0x37e49f1c               
+  0x37e4a918 in 0x37e49f1c               
+  0x37e4a958 in 0x37e49f1c               
+  0x37e4a998 in 0x37e49f1c               
+  0x37e4aad0 in 0x37e49f1c               
+  0x37e4b0a4 in 0x37e49f1c               
+  0x37e4b0e0 in 0x37e49f1c               
+  0x37e4b0f0 in 0x37e49f1c               
+  0x37e4b304 in 0x37e49f1c               
+  0x37e4b8e4 in 0x37e49f1c               
+  0x37e4b924 in 0x37e49f1c               
+  0x37e4bc08 in 0x37e49f1c               
+  0x37e4bc40 in 0x37e49f1c               
+  0x37e4bc78 in 0x37e49f1c               
+  0x37e4c2a4 in 0x37e4bcf8               
+  0x37e4c2f4 in 0x37e4bcf8               
+  0x37e4ce68 in 0x37e4bcf8               
+  0x37e4cfd0 in 0x37e4bcf8               
+  0x37e4d008 in 0x37e4bcf8               
+  0x37e4d040 in 0x37e4bcf8               
+  0x37e4d078 in 0x37e4bcf8               
+  0x37e4e600 in 0x37e4e15c               
+  0x37e4e7b4 in 0x37e4e15c               
+  0x37e4e820 in 0x37e4e15c               
+  0x37e4e870 in 0x37e4e15c               
+  0x37e4e8ec in 0x37e4e15c               
+  0x37e4e93c in 0x37e4e15c               
+  0x37e4e978 in 0x37e4e15c               
+  0x37e524ec in 0x37e52018               
+  0x37e52ec8 in 0x37e52018               
+  0x37e52fc0 in 0x37e52018               
+  0x37e530cc in 0x37e52018               
+  0x37e531e8 in 0x37e52018               
+  0x37e53324 in 0x37e52018               
+  0x37e5341c in 0x37e52018               
+  0x37e5352c in 0x37e52018               
+  0x37e53648 in 0x37e52018               
+  0x37e537f8 in 0x37e52018               
+  0x37e538bc in 0x37e52018               
+  0x37e539b0 in 0x37e52018               
+  0x37e53a78 in 0x37e52018               
+  0x37e53b8c in 0x37e52018               
+  0x37e53ee8 in 0x37e52018               
+  0x37e53fcc in 0x37e52018               
+  0x37e540d8 in 0x37e52018               
+  0x37e541b4 in 0x37e52018               
+  0x37e54850 in 0x37e541e4               
+  0x37e54984 in 0x37e541e4               
+  0x37e56df0 in 0x37e56d80 temp_triming  
+  0x37e56e18 in 0x37e56d80 temp_triming  
+  0x37e56e48 in 0x37e56d80 temp_triming  
+  0x37e58c6c in 0x37e58c10               
+  0x37e5ea50 in 0x37e5ea04 run           
+  0x37e60630 in 0x37e60478 get_rebootmode
+  0x37e61bb4 in 0x37e619c8               
+  0x37e61bc0 in 0x37e619c8               
+  0x37e61bd0 in 0x37e619c8               
+  0x37e61d08 in 0x37e61bf0               
+  0x37e61d50 in 0x37e61bf0               
+  0x37e62e54 in 0x37e62ddc               
+  0x37e63014 in 0x37e62f78               
+  0x37e63050 in 0x37e62f78               
+  0x37e630b4 in 0x37e62f78               
+  0x37e63124 in 0x37e62f78               
+  0x37e63174 in 0x37e62f78               
+  0x37e631c4 in 0x37e62f78               
+  0x37e63234 in 0x37e62f78               
+  0x37e6328c in 0x37e62f78               
+  0x37e632cc in 0x37e62f78               
+  0x37e63308 in 0x37e62f78               
+  0x37e63344 in 0x37e62f78               
+  0x37e633a8 in 0x37e62f78               
+  0x37e633fc in 0x37e62f78               
+  0x37e63450 in 0x37e62f78               
+  0x37e63490 in 0x37e62f78               
+  0x37e636bc in 0x37e63680               
+  0x37e63be0 in 0x37e63b88               
+  0x37e64bb8 in 0x37e64af8               
+  0x37e76248 in 0x37e761f0               
+  0x37e764ac in 0x37e76494               
+  0x37e764f8 in 0x37e76494               
+  0x37e7722c in 0x37e77210               
+  0x37e79da4 in 0x37e79988               
+  0x37e79ebc in 0x37e79988               
+  0x37e7a9f4 in 0x37e7a8e4               
+  0x37e7aa48 in 0x37e7a8e4               
+  0x37e7b994 in 0x37e7b8f8               
+  0x37e7ba28 in 0x37e7b9dc               
+  0x37e7bb00 in 0x37e7ba7c               
+  0x37e7f11c in 0x37e7f0a8               
+  0x37e7f554 in 0x37e7f508               
+  0x37e7f5a8 in 0x37e7f508               
+  0x37e7f998 in 0x37e7f90c               
+  0x37e80bac in 0x37e80b74               
+  0x37e81e2c in 0x37e81e04               
+  0x37e8200c in 0x37e81f68               
+  0x37e82a84 in 0x37e824a8               
+  0x37e82be4 in 0x37e82ba0               
+  0x37e82c18 in 0x37e82ba0               
+  0x37e82c3c in 0x37e82ba0               
+  0x37e82da0 in 0x37e82ba0               
+  0x37e82ea0 in 0x37e82df0               
+  0x37e82fb0 in 0x37e82f3c               
+  0x37e832cc in 0x37e831d8               
+  0x37e83408 in 0x37e83324               
+  0x37e8b074 in 0x37e8b014               
+  0x37e8b890 in 0x37e8b83c               
+  0x37e94e40 in 0x37e94e20               
+  0x37e94f70 in 0x37e94e70               
+  0x37e956a0 in 0x37e95630               
+  0x37e95ae0 in 0x37e95a14               
+  0x37e95ef8 in 0x37e95ecc               
+  0x37e968e0 in 0x37e95ecc               
+  0x37e96984 in 0x37e95ecc               
+  0x37e96a3c in 0x37e95ecc               
+== callers of aml_sec_boot_check 0x37e19ea8 ==
+  0x37e24cf0 in 0x37e24c00 bootm         
+  0x37e24f90 in 0x37e24c00 bootm         
+  0x37e2a088 in 0x37e2a030               
+  0x37e2a0c4 in 0x37e2a030               
+  0x37e33e94 in 0x37e33e00               
+  0x37e33ec8 in 0x37e33e00               
+  0x37e34084 in 0x37e33e00               
+  0x37e340d4 in 0x37e33e00               
+  0x37e35ec4 in 0x37e35e7c               
+  0x37e3623c in 0x37e3601c               
+  0x37e36340 in 0x37e362e0               
+  0x37e565e4 in 0x37e562e8               
+  0x37e56664 in 0x37e562e8               
+  0x37e566f4 in 0x37e562e8               
+  0x37e56774 in 0x37e562e8               
+== per-handler env/mmc/store/memcpy-ish callees ==
+  0x37e24c00 bootm          0x37e24c44->simple_strtoul? 0x37e24cd4->simple_strtoul? 0x37e24cf0->aml_sec_boot_check 0x37e24d1c->getenv? 0x37e24d34->run_command 0x37e24d3c->getenv? 0x37e24dc0->getenv? 0x37e24e70->setenv_backend? 0x37e24e8c->getenv? 0x37e24ebc->getenv? 0x37e24ecc->getenv? 0x37e24f10->run_command 0x37e24f90->aml_sec_boot_check
+  0x37e57ac8 clkmsr         0x37e57ae8->simple_strtoul?
+  0x37e3a9e8 d2pll          0x37e3aa14->simple_strtoul? 0x37e3aa5c->simple_strtoul?
+  0x37e3aaf4 ddr_sram_tune  0x37e3ab20->simple_strtoul? 0x37e3ab68->simple_strtoul?
+  0x37e40c08 ddr_tune_dqs_step 0x37e40f64->getenv? 0x37e410f0->setenv_backend? 0x37e41100->run_command 0x37e41228->setenv_backend? 0x37e41238->run_command
+  0x37e72ef0 efuse_user     0x37e72f5c->getenv? 0x37e72f78->setenv_backend? 0x37e72f88->simple_strtoul? 0x37e72fc4->simple_strtoul? 0x37e73028->simple_strtoul? 0x37e73044->simple_strtoul? 0x37e73140->simple_strtoul? 0x37e731b0->simple_strtoul? 0x37e732c8->simple_strtoul?
+  0x37e280e4 exit           0x37e28100->simple_strtoul?
+  0x37e2b820 get_avb_mode   0x37e2b87c->setenv_backend?
+  0x37e60478 get_rebootmode 0x37e604d8->getenv? 0x37e60530->setenv_backend? 0x37e60544->setenv_backend? 0x37e605e8->setenv_backend? 0x37e60620->setenv_backend? 0x37e60630->run_command
+  0x37e2a204 gpio           0x37e2a340->simple_strtoul?
+  0x37e2e9b8 gpt            0x37e2e9f4->simple_strtoul? 0x37e2ec4c->setenv_backend?
+  0x37e73c84 keyunify       0x37e73d1c->simple_strtoul? 0x37e73d38->simple_strtoul? 0x37e73eec->simple_strtoul?
+  0x37e56224 query          0x37e56258->memcpy?
+  0x37e571f8 read_temp      0x37e57238->setenv_backend? 0x37e57398->setenv_backend? 0x37e57434->setenv_backend?
+  0x37e57afc ringmsr        0x37e57b24->simple_strtoul?
+  0x37e57b4c rpmb_state     0x37e57b64->getenv? 0x37e57c34->setenv_backend? 0x37e57c40->setenv_backend?
+  0x37e5ea04 run            0x37e5ea30->getenv? 0x37e5ea50->run_command
+  0x37e56d40 set_trim_base  0x37e56d54->simple_strtoul?
+  0x37e607e8 set_usb_boot   0x37e6081c->simple_strtoul?
+  0x37e219f0 setkeys        0x37e21a60->setenv_backend? 0x37e21a94->setenv_backend? 0x37e21b44->setenv_backend? 0x37e21b8c->setenv_backend? 0x37e21bb0->setenv_backend?
+  0x37e2c9b8 sleep          0x37e2c9fc->simple_strtoul?
+  0x37e56d80 temp_triming   0x37e56d9c->simple_strtoul? 0x37e56df0->run_command 0x37e56e18->run_command 0x37e56e48->run_command
+  0x37e358e0 unpackimg      0x37e35914->getenv? 0x37e35920->simple_strtoul? 0x37e35a44->setenv_backend? 0x37e35a8c->setenv_backend?
+  0x37e78ff8 update         0x37e79024->simple_strtoul? 0x37e79044->simple_strtoul? 0x37e7907c->setenv_backend?
+  0x37e37310 usb            0x37e374d8->simple_strtoul? 0x37e3755c->simple_strtoul? 0x37e37588->simple_strtoul? 0x37e377c4->simple_strtoul? 0x37e3783c->simple_strtoul? 0x37e37850->simple_strtoul? 0x37e37864->simple_strtoul? 0x37e37908->simple_strtoul? 0x37e3791c->simple_strtoul? 0x37e37930->simple_strtoul? 0x37e379e0->simple_strtoul?
+  0x37e56d18 write_version  0x37e56d2c->simple_strtoul?

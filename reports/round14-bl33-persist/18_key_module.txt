@@ -1,0 +1,65 @@
+=== keyman+keyunify module 0x37e73380..0x37e74304: every transfer target
+  0x37e58920           
+  0x37e593c8           
+  0x37e59cd4           
+  0x37e59f28           
+  0x37e5eddc           
+  0x37e73380           
+  0x37e733bc           
+  0x37e733f8           
+  0x37e73404           
+  0x37e734e4           
+  0x37e73530           
+  0x37e735b4           
+  0x37e735c8           
+  0x37e73608           
+  0x37e73658           
+  0x37e7367c           
+  0x37e73694           
+  0x37e73790           
+  0x37e737c8           
+  0x37e737d8           
+  0x37e73880           
+  0x37e73940           
+  0x37e7394c           
+  0x37e73a8c           
+  0x37e73aa0           
+  0x37e73b48           
+  0x37e73b58           
+  0x37e73bb8           
+  0x37e73bc4           
+  0x37e73c74           
+  0x37e73d88           
+  0x37e73e50           
+  0x37e73e58           
+  0x37e73e60           
+  0x37e73eb0           
+  0x37e74058           
+  0x37e740cc           
+  0x37e74110           
+  0x37e7413c           
+  0x37e741c8           
+  0x37e74268           
+  0x37e7427c           
+  0x37e742f4           
+  0x37e75590           
+  0x37e756e4           
+  0x37e757ec           
+  0x37eaacac           
+  0x37eaad30           
+  0x37eac21c           
+  0x37eac3a4           
+  0x37eac53c           
+
+=== callers of 0x37e9593c (the helper used by the lock-gated fastboot callbacks)
+  0x37e95a7c in 0x37e95a14 
+  0x37e95b84 in 0x37e95b20 
+  0x37e95cb0 in 0x37e95c90 
+  0x37e95db4 in 0x37e95d50 
+  0x37e96828 in 0x37e95ecc 
+  0x37e96848 in 0x37e95ecc 
+
+=== callers of 0x37e905d8 (calls secure_storage_set_info / mmc_init)
+
+=== callers of the secure_storage_set_info wrapper 0x37e8c138
+  0x37e90614 in 0x37e904ac 

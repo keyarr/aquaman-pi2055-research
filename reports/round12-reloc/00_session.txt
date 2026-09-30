@@ -1,0 +1,56 @@
+=== session 1790728509.975943823 : reports/round12-reloc 0x37800000 0x800000 ===
+1234567890	 Android Fastboot
+=== trigger 1790728515.401488975 ===
+FAILED (Status read failed (No such device))
+fastboot: error: Command failed
+=== optimus up 1790728515.780606040 ===
+raw     00 07 00 10
+version 0.7
+stage   16 (TPL/BL33-u-boot)
+gadget: alive, identify=00 07 00 10
+
+=== 0x02 read of 0x37800000, 64 bytes ===
+  sha256 f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b
+37800000  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  |................|
+37800010  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  |................|
+37800020  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  |................|
+37800030  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  |................|
+
+=== mread 0x37800000 size=0x200 ===
+  got 512 bytes in 1 transfers, 0.020s (24.6 KiB/s)
+  sha256 076a27c79e5ace2a3d47f9dd2e83e4ff6ea8872b3c2218f66c92b89b55f36560
+  wrote reports/round12-reloc/mread_37800000_000200.bin
+  0x02 cross-check: MATCH (0.001s, 8 control reads of 64B)
+  gadget: alive, identify=00 07 00 10
+
+=== mread 0x37800000 size=0x1000 ===
+  got 4096 bytes in 1 transfers, 0.021s (194.1 KiB/s)
+  sha256 ad7facb2586fc6e966c004d7d1d16b024f5805ff7cb47c7a85dabd8b48892ca7
+  wrote reports/round12-reloc/mread_37800000_001000.bin
+  0x02 cross-check: MATCH (0.005s, 64 control reads of 64B)
+  gadget: alive, identify=00 07 00 10
+
+=== mread 0x37800000 size=0x10000 ===
+  got 65536 bytes in 1 transfers, 0.024s (2622.6 KiB/s)
+  sha256 de2f256064a0af797747c2b97505dc0b9f3df0de4f489eac731c23ae9ca9cc31
+  wrote reports/round12-reloc/mread_37800000_010000.bin
+  0x02 cross-check: MATCH (0.004s, 64 control reads of 64B)
+  gadget: alive, identify=00 07 00 10
+
+=== dump 0x37800000 size=0x00800000 ===
+  address      0x37800000
+  size asked   0x00800000 (8388608)
+  size on file 8388608
+  chunks       128 upload transfers of 64 KiB
+  time         0.561s
+  throughput   14.26 MiB/s
+  sha256       3d2eca1d7c4030250fef733272878c0ca0f3b798b9ae4ba54a110b7e1012b04e
+  0x02 cross-check of the first 64 bytes: MATCH (0.000s, 1 control reads of 64B)
+  gadget: alive, identify=00 07 00 10
+
+=== summary ===
+0x200     OK     1 transfers, 8 reads, 24.6 KiB/s
+0x1000    OK     1 transfers, 64 reads, 194.1 KiB/s
+0x10000   OK     1 transfers, 64 reads, 2622.6 KiB/s
+=== done 1790728516.525738619 ===
+Bus 003 Device 061: ID 1b8e:c003 Amlogic, Inc. 

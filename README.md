@@ -26,6 +26,30 @@ aquaman PI.2055 kernel provenance research
  - reports/bl33-offline-round10.md : the U-Boot anchor. matched
    securestorage.c + 13 BL31 ids at 0x01040000..0x0107ffff, pulled from a 16 MiB
    RAM dump. first real code for BL33 instead of string hunting.
+ - reports/bl33-offline-round11.md : the base. that 256 KiB is the middle of a
+   ~1.8 MiB image based at 0x01000000 — a stale load copy the kernel DTB was
+   later staged over. do_bootm / aml_sec_boot_check / the boot-path SMC are
+   not in the dump; the live copy is derived to ~0x37d90000..0x37e10000.
+   fresh 16 MiB read, byte identical to round 8.
+ - reports/bl33-offline-round12.md : **BL33 located.** read 0x37800000..0x38000000,
+   found the executing copy at 0x37e18000 (`_start` + banner + cmd_tbl). full
+   boot path mapped: do_bootm=0x37e24c00 -> aml_sec_boot_check=0x37e19ea8 ->
+   smc #0 @0x37e19ed8 (x0=0x820000ff). this supersedes the "not in the dump"
+   lines in rounds 10/11 — they were true of the stale load copy only.
+ - reports/bl33-offline-round13.md : the relocation re-read on a fresh boot is
+   byte-identical to round 12 (sha256 3d2eca1d…, cmp 0 diffs). base 0x37e18000,
+   do_bootm, aml_sec_boot_check and the SMC site all reproduce — deterministic,
+   not a one-session artifact.
+ - reports/bl33-bl31-interface-round14.md : the BL33 image is a file now
+   (0x37e18000..0x37ff0000, 0x1d8000, sha256 664fb34a…), carved offline out of
+   the round-13 band. the whole SMC surface is enumerated (15 `smc #0` sites,
+   22 ids) and the answer to "is there a privileged path besides
+   aml_sec_boot_check" is yes: the fastboot `oem` command is a host-driven
+   run_command (0x37e95630) and, unlike flash/erase/flashall/set_active, it
+   never checks the lock state; `update` enters the v2 usbburning protocol; the
+   secure-storage key interface is present but has no callers in this build.
+   findings are classified informational/suspicious/strong candidate, no
+   exploit, secure boot untouched.
  - reports/aquaman-dtb-extraction.md : the device tree, read out of DRAM at
    0x01000000. valid FDT, 376 nodes, 1798 props. artifacts/aquaman.dtb + .dts.
  - reports/fastboot-memory-flow.md : where the payload goes. refutes the
@@ -67,6 +91,15 @@ aquaman PI.2055 kernel provenance research
                          vendor source still unavailable
    KernelSU/APatch     : plausible for a rebuilt kernel, still needs a path to
                          run modified kernel code
+
+ bootloader crypto status (rounds 28-30): the whole aml_encrypt_gxl pipeline
+ is reconstructed and test-pinned (reports/round29-bootloader-crypto.md); the
+ single missing input is the 32-byte aeskey tail of the OEM aml-user-key.sig.
+ round 30 exhausted public provenance for it: no public copy of the PI.2055
+ build, no aquaman key package anywhere, the one public production key
+ (superbird) tested oracle-negative, and the pipeline was reproduced
+ end-to-end offline with that public key. verdict:
+ reports/round30-firmware-provenance.md — CRYPTOGRAPHICALLY CLOSED.
 
  full writeup: reports/provenance.md
 

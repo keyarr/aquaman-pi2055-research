@@ -1,0 +1,34 @@
+
+== .src/u-boot-khadas/fip/gxl/bl31.bin size 0x2c3a8 ==
+  movz-ff-shaped words: 0 (first 10: [])
+  b'AMLSECU'     at 0x2587c,0x2598c
+  b'secureboot'  at 0x2595c
+  b'R%d'         at 0x25894
+  str: b'aml_efuse_read'
+  str: b'[BL31]: tee size: %d'
+  str: b'aml log : R%d'
+  str: b'aml log: no key found ...'
+  str: b'aml log : fail with %d'
+  str: b'aml log : R-%d'
+  str: b'aml log : fail to load internal RSA key!'
+  str: b'ERROR:   flash size is too large!'
+  str: b'ERROR:   storage size is larger than flash!'
+  smc #0 count: 0 offsets []
+
+== .src/u-boot-khadas/fip/gxb/bl31.bin size 0x16120 ==
+  movz-ff-shaped words: 0 (first 10: [])
+  b'AMLSECU'     at 0x10929,0x109f3
+  b'secureboot'  at 0x109bf
+  str: b'[BL31]: tee size: %d'
+  str: b'aml log : ERROR! exceed max DMA SHA2 length!'
+  str: b'aml log : ERROR! exceed max DMA AES length!'
+  str: b'aml log : fail to load internal RSA key!'
+  str: b'ERROR:   flash size is too large!'
+  str: b'ERROR:   storage size is larger than flash!'
+  str: b'aml log : TDES internal error!'
+  str: b'aml log : ChipID TDES...'
+  str: b'aml log : ID.sktID   = %d'
+  str: b'aml log : ID.siteID  = %d'
+  str: b'aml log : ID.MacAddr = %d:%d:%d:%d:%d:%d'
+  str: b'aml log : nTime=0x%x%x'
+  smc #0 count: 0 offsets []

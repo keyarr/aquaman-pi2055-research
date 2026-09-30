@@ -1,0 +1,48 @@
+
+=== cb reboot             0x37e95204..0x37e95273
+  transfers: 0x37e593c8 0x37eaae44 0x37e95260 0x37e94d04
+  strings: none
+
+=== cb getvar:            0x37e95ecc..0x37e96ad7
+  transfers: 0x37e5e968 0x37eaac08 0x37eaad30 0x37eaada0 0x37eaaeec 0x37eaae44 0x37e593c8 0x37e96ac0 0x37eaacd4 0x37e96000 0x37e96038 0x37e955dc 0x37eaac6c 0x37e94aa0 0x37e960c0 0x37e96abc 0x37e962a4 0x37e953e4 0x37eac53c 0x37e966a8 0x37e94838 0x37e96304 0x37e58920 0x37eaacac 0x37e962fc 0x37e964e4 0x37e969a4 0x37e96388 0x37e969b0 0x37e96ab0 0x37e91d80 0x37e9666c 0x37e91ca0 0x37e966a4 0x37e96670 0x37e966e8 0x37e96794 0x37e9593c 0x37e96858 0x37e96ab8 0x37e94d04
+  strings: get_valid_slot | ../drivers/usb/gadget/f_fastboot.c | cb_getvar | FAILmissing var | version-baseband | version-bootloader | U-Boot 2015.01-g7ac5df7677-dirty | hw-revision | version | bootloader-version | off-mode-charge | variant | battery-soc-ok | battery-voltage
+
+=== cb download:          0x37e95408..0x37e95533
+  transfers: 0x37e593c8 0x37eaae44 0x37eac21c 0x37e954c0 0x37e953e4 0x37eac53c 0x37e9551c 0x37e95508 0x37e94d04
+  strings: FAILdata invalid size | FAILdata too large | DATA%08x
+
+=== cb boot               0x37e94db0..0x37e94de7
+  transfers: 0x37e94d04 0x37e5e968
+  strings: reboot fastboot
+
+=== cb continue           0x37e94d88..0x37e94de7
+  transfers: 0x37e94d04 0x37e5e968
+  strings: reboot fastboot
+
+=== cb flash              0x37e95d50..0x37e95ecb
+  transfers: 0x37e593c8 0x37eaae44 0x37e95ebc 0x37e9593c 0x37eaacac 0x37eaac08 0x37e5e298 0x37e95eb4 0x37e95eb0 0x37e95534 0x37e94d04
+  strings: ../drivers/usb/gadget/f_fastboot.c | cb_flash | FAILmissing partition name | FAILlocked device | userdata
+
+=== cb flashall           0x37e95c90..0x37e95d4f
+  transfers: 0x37e593c8 0x37e9593c 0x37e95d44 0x37e5e298 0x37e95d3c 0x37e95d38 0x37e95534 0x37e94d04
+  strings: ../drivers/usb/gadget/f_fastboot.c | cb_flashall | FAILlocked device
+
+=== cb erase              0x37e95b20..0x37e95c8f
+  transfers: 0x37e593c8 0x37eaae44 0x37e95c80 0x37e9593c 0x37eaacac 0x37eaac08 0x37e5e678 0x37e95c78 0x37e95c74 0x37e95534 0x37e94d04
+  strings: ../drivers/usb/gadget/f_fastboot.c | cb_erase | FAILmissing partition name | FAILlocked device | userdata
+
+=== cb devices            0x37e94de8..0x37e94e1f
+  transfers: 0x37e593c8 0x37eaac08 0x37e94d04
+  strings: AMLOGIC
+
+=== cb reboot-bootloader  0x37e95204..0x37e95273
+  transfers: 0x37e593c8 0x37eaae44 0x37e95260 0x37e94d04
+  strings: none
+
+=== cb set_active         0x37e95a14..0x37e95b1f
+  transfers: 0x37e593c8 0x37eaae44 0x37e95b10 0x37e9593c 0x37eac53c 0x37e5e968 0x37e94d04
+  strings: ../drivers/usb/gadget/f_fastboot.c | cb_set_active | FAILmissing slot name | FAILlocked device | set_active_slot %s | FAILset slot error
+
+=== cb oem                0x37e95630..0x37e956f3
+  transfers: 0x37e593c8 0x37eaada0 0x37eaaeec 0x37eaae44 0x37e5e968 0x37e955dc 0x37e956dc 0x37e95588 0x37e94d04
+  strings: AMLOGIC

@@ -334,6 +334,63 @@ int main(void)
               aq_virt_in_linear(aq_phys_to_virt(last_phys)), msg);
     }
 
+    /* i) candidate record: slab valid + one of 19 slots + no reserve cross.
+     * Also proves the enumerator emits only slab+offset+n*0x340
+     * with slab%0x4000==0, n in [0,18], virt via PAGE_OFFSET after validation. */
+    {
+        struct aq_candidate c = { 0 }, back = { 0 };
+        struct aq_enum e;
+        uint64_t walked = 0;
+        CHECK(aq_candidate_make(0x01000000ULL, 0, &c) &&
+              c.phys_slab == 0x01000000ULL && c.phys_mm == 0x01000000ULL &&
+              c.slot == 0 && c.virt_mm == AQ_PAGE_OFFSET + 0x01000000ULL,
+              "candidate slot0 prints phys_slab/phys_mm/slot/virt_mm");
+        CHECK(aq_candidate_make(0x01000000ULL, 18, &c) &&
+              c.phys_mm == 0x01000000ULL + 18 * AQ_MM_STRIDE,
+              "candidate slot18 at slab+18*0x340");
+        CHECK(aq_candidate_valid(&c), "candidate_valid accepts grid member");
+        CHECK(aq_candidate_from_virt(c.virt_mm, &back) &&
+              back.phys_slab == c.phys_slab && back.phys_mm == c.phys_mm &&
+              back.slot == c.slot,
+              "candidate_from_virt round-trips");
+        CHECK(!aq_candidate_make(0x01000001ULL, 0, NULL),
+              "unaligned slab_base rejected");
+        CHECK(!aq_candidate_make(0x01000000ULL, 19, NULL),
+              "slot 19 rejected by candidate_make");
+        CHECK(!aq_candidate_make(0x07400000ULL, 0, NULL),
+              "reserved slab rejected by candidate_make");
+        c.phys_mm += 4;
+        CHECK(!aq_candidate_valid(&c), "off-grid phys_mm rejected");
+        /* Reserve crossing half a slab: synthetic unaligned reserve
+         * overlapping the second half of the slab. */
+        CHECK(aq_ranges_overlap(0x07400000ULL, AQ_MM_SLAB_SIZE,
+                                0x07402000ULL, AQ_MM_SLAB_SIZE),
+              "half-slab crossing ramoops start detected");
+        CHECK(!aq_slab_excluded(0x073FC000ULL),
+              "slab ending exactly at reserve kept");
+        CHECK(aq_slab_excluded(0x07400000ULL),
+              "reserve starting exactly at slab excluded");
+        CHECK(!aq_slab_excluded(0x07600000ULL),
+              "reserve ending exactly at slab: next slab kept");
+        CHECK(aq_ranges_overlap(0x075FE000ULL, AQ_MM_SLAB_SIZE,
+                                0x07600000ULL - 0x2000, AQ_MM_SLAB_SIZE),
+              "half-slab crossing ramoops end detected");
+        /* Enumerator yields only grid members and matches the walk count. */
+        aq_enum_init(&e);
+        while (aq_enum_next(&e, &c)) {
+            if (c.phys_slab % AQ_MM_SLAB_SIZE != 0 || c.slot >= AQ_MM_OBJS ||
+                c.phys_mm != c.phys_slab + AQ_MM_OFFSET +
+                             (uint64_t)c.slot * AQ_MM_STRIDE ||
+                c.virt_mm != AQ_PAGE_OFFSET + c.phys_mm ||
+                !aq_candidate_valid(&c)) {
+                CHECK(0, "enumerator emits only valid grid members");
+                break;
+            }
+            walked++;
+        }
+        CHECK(walked == candidates, "enumerator count matches derived total");
+    }
+
     if (fails) {
         printf("[summary] FAILS=%d\n", fails);
         return 1;

@@ -1,0 +1,9 @@
+positive control: planted a byte identical copy at 0x01140000
+               and an ADR/ADRP-shifted copy at 0x01180000 (+0x100000)
+  matcher: 0x01140000  262108 bytes
+  matcher: 0x01180000  262108 bytes
+
+real search over reports/round8-bl33-read/mread_01000000_01000000.bin
+  invariant runs >=12 words: 1319, anchors 10479, raw hits 10830
+  copies of the window (>=128 B matched): 0
+    none. no relocated copy of this window inside the dump.

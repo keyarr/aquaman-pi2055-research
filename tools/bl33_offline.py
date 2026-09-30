@@ -224,9 +224,12 @@ def xref(data, base):
     for i, w in enumerate(words):
         pc = base + i * 4
         if (w & 0x9F000000) == 0x90000000:  # ADRP
-            imm = (w >> 5) & 0x7FFFF
-            if imm & 0x40000:
-                imm -= 0x80000
+            # imm = immhi:immlo, 21-bit signed page offset. dropping immlo
+            # (bits 30:29) is only correct when immlo == 0; that bug under-counted
+            # the in-dump ADRP targets in round 8 by pointing them one page off.
+            imm = (((w >> 5) & 0x7FFFF) << 2) | ((w >> 29) & 3)
+            if imm & 0x100000:
+                imm -= 0x200000
             page = (pc & ~0xFFF) + (imm << 12)
             adrp[pc] = page
             if base <= page < img_end:

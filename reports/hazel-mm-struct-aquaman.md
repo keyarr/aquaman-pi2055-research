@@ -677,7 +677,7 @@ Status table:
 | `hash_futex` == upstream 4.9.113, 4 words, LP64 | `CONF` (source) + `LAB` (asm) |
 | `ks_hash` from Hazel is directly reusable | **NO**, `CONF` mismatch |
 | `mm` must be recovered as a 64-bit value | `CONF` |
-| timing side channel works on this SoC | `UNK` |
+| timing side channel works on this SoC | **NO**, `REFUTED (measured)`: one `futex_q` node in the woken bucket costs 0-2 ns, see the experimental section |
 | `futex_hashsize == 1024` | `LAB`, plausible, boot-time |
 
 ---
@@ -812,7 +812,7 @@ the least evidence in the repo, so most entries are marked as such.
 | # | classification | verdict | evidence |
 |---|---|---|---|
 | 1 | bug in the experiment | **partly** | `tools/ghostlock_oracle_v2.c` was rewritten 3x mid-flight and each rewrite changed the geometry. The gate/rate/stop-rule churn is visible in `reports/ghostlock-oracle-v2-*.md`. Not a single-variable experiment. |
-| 2 | wrong offset | **plausible, unproven** | `GL_MM_SIZE 0x338` should be `0x340` (§3.2). Does not affect the current oracle (which never reached the consumer), so this is a latent bug, not a proven cause. |
+| 2 | wrong offset | **plausible, unproven** | Stride is `0x340` (`GL_MM_STRIDE`), while `GL_MM_SIZE 0x338` stays as `sizeof` (§3.2). Does not affect the current oracle (which never reached the consumer), so this is a latent note, not a proven cause. |
 | 3 | wrong frame | **likely, and the strongest static finding** | §2.3: the oracle drives `rt_mutex_get_effective_prio`, which reads `task->pi_waiters` (the *owner's* tree). The dangling object is the *victim's* `pi_blocked_on`, read by `rt_mutex_adjust_pi` (`core.c:4401`) or the chain walk (`rtmutex.c:548`). These are different code paths. The oracle was pointed at a path that may never touch the freed frame. |
 | 4 | wrong timing | **ruled out for the observed deaths** | `ghostlock-oracle-v2-hold.md:29-35`: holdB died before the first heartbeat at `+0 ms` with a 250 ms settle, so the actor is faster than the settle. "Shorten the settle" was already tried. |
 | 5 | correct UAF, wrong primitive | **not excluded** | The reboot is consistent with a UAF read, but no log names the faulting path. A wrong-but-live consumer is as plausible as a stamp failure. |
@@ -920,7 +920,7 @@ depths. This is a computation, not an experiment.
 | H1 | `mm_struct` stock size is `0x338` like the lab | PLAUS (all size-affecting config guards agree; stock source unknown) |
 | H2 | slab order 2, 19 objects, 16384 B | INFERRED: closed derivation from ancestral tree + device config/DTB/cmdline; stock binary sealed |
 | H3 | `futex_hashsize == 1024` | LAB, plausible, boot-time value |
-| H4 | hash timing is measurable on a quad A53 | UNK |
+| H4 | hash timing is measurable on a quad A53 | **REFUTED (measured)**: 0-2 ns per node, below resolution; see the experimental section |
 | H5 | 16 KiB unix send reclaims the released order-2 slab | UNK |
 | H6 | the orphan `pi_blocked_on` is what the reboot faults on | UNK |
 | H7 | the 40 B MCAST window covers the fields that matter | UNK (§8) |
@@ -1024,8 +1024,6 @@ attribute, so `s->offset` is not directly observable.
 
 - Whether the stock 2022 kernel's `mm_struct` is still `0x338` (H1). The
   source is not public and the boot image is sealed.
-- Whether a hash-collision timing side channel is measurable on a quad A53 at
-  this clock, and at what pile size (H4).
 - Whether the 40-byte MCAST window covers `waiter->task`/`waiter->lock` (H7).
   Deliberately not answered; §8 has the open computation.
 - Which code path actually faults in the 6 observed reboots (H6).
@@ -1033,3 +1031,446 @@ attribute, so `s->offset` is not directly observable.
 - Whether configfs tolerates an ashmem `f_op` swap on this build (H8), and
   whether the `copy_from_user` boundary trick behaves the same on arm64.
 - The stock kernel's `futex_hashsize` (H3) and its KASLR window behaviour.
+
+---
+
+## MM leak feasibility
+
+Host-only gate for the first link of the new path
+(`CVE -> mm inference -> slab -> cross-cache -> controlled object -> R/W`).
+No device run. No reboot. No write.
+
+### Hash model (Aquaman)
+
+`hash_futex` is upstream 4.9.113 (`kernel/futex.c:391-397`), LP64:
+
+```c
+u32 hash = jhash2((u32*)&key->both.word,
+                  (sizeof(key->both.word)+sizeof(key->both.ptr))/4,
+                  key->both.offset);
+```
+
+| item | Aquaman | Hazel `ks_hash` |
+|---|---|---|
+| key bytes | 16 (`word` 8 + `ptr` 8) | 12 assumed |
+| words | 4 | 3 |
+| `k[0]` | `both.word` lo = user address lo | `mm` |
+| `k[1]` | `both.word` hi = user address hi | pad |
+| `k[2]` | `both.ptr` lo = `mm` lo (private) / `pgoff` lo or `inode` lo (shared) | address page |
+| `k[3]` | `both.ptr` hi = `mm` hi | - |
+| initval | `both.offset` = `uaddr % PAGE_SIZE` (+ `FUT_OFF_*` bits for shared) | page offset |
+| mix/final | `jhash2` (`__jhash_mix` 4,6,8,16,19,4; `__jhash_final` 14,11,25,16,4,14,24) | same final, wrong length |
+| init constant | `0xdeadbeef + (4<<2) + off = 0xdeadbeff + off` | `0xdeadbeef + 12 + off` |
+| bucket | `hash & (futex_hashsize-1)`, hashsize 1024, mask `0x3ff` | mask `KS_HASH-1` (1024) |
+
+`tools/test_aq_hash.c` checks an independent `jhash.h` transcription
+against `aq_hash_private()` on fixed plus 2000 pseudo-random vectors,
+and proves swap sensitivity: `mm<->address`, `offset` bit-flip,
+`mm` hi-lo and `word` hi-lo swaps all change the hash, and 4-word
+result differs from 3-word over the same prefix. Hazel `ks_hash` is
+not copied and not reusable.
+
+Key origin (`get_futex_key`, `kernel/futex.c:498-633`):
+
+- private (`fshared=0`, fast path): `private.address = uaddr - offset`,
+  `private.mm = current->mm`, `offset = uaddr % PAGE_SIZE`. No page lookup.
+  This is the Hazel-applicable variant: the unknown is `current->mm`.
+- shared anon on private mapping (`PageAnon`): same address/mm pair but
+  `offset |= FUT_OFF_MMSHARED` (bit 1). Different bucket from the private
+  key for the same address.
+- shared file-backed: `shared.pgoff = basepage_index(tail)`,
+  `shared.inode`, `offset |= FUT_OFF_INODE` (bit 0). The `mm` does not
+  appear at all.
+
+Private and shared keys are not interchangeable. The solver must use
+the private layout (`word` = aligned uaddr, `ptr` = `mm`).
+
+### Physical geometry
+
+Derived in §3, recorded here as output:
+
+```text
+sizeof 0x338, align 0x40, object_size 0x338, inuse 0x338
+offset 0, stride 0x340, order 2, slab 0x4000, objs/slab 19
+min_objects 16 (nr_cpu_ids=4, fls(4)=3), max_order 3, rem 576
+```
+
+`order=1 REFUTED`: it needs `slub_max_order=1` on the cmdline, which the
+stock `boot.img` header does not carry. `order=2 DERIVED`: it falls out
+of `max_order=3` + `min_objects=16` with `get_order(16*832)=2` and
+`576 <= 16384/16` at the first fraction tried. Sensitivity branches
+(order 0 / order 3 / `nr_cpu_ids=8`) are ruled out by cmdline,
+`CONFIG_DEBUG_PAGEALLOC=n`, and the 4-CPU DTB.
+
+### Candidate universe
+
+Physical walk only, `PAGE_OFFSET` excluded from the walk:
+
+```text
+slab_base in [0x00100000, 0x40000000) step 0x4000
+n in [0,18], phys_mm = slab_base + 0x0 + n * 0x340
+```
+
+Fixed exclusions (address-known): ramoops 128 slabs, secmon 256 slabs,
+framebuffer 512 slabs. Floating CMA (di 32 MiB, ion 76 MiB, vdin 16 MiB,
+codec_mm 208 MiB; total 332 MiB) has size but no base and cannot be
+address-excluded.
+
+Derived counts (computed by the walk, never hard-coded):
+
+```text
+65472 total slabs, 896 excluded, 64576 eligible, 1226944 candidates
+```
+
+`tools/ghostlock_mm_enum.h` now exposes `struct aq_candidate`
+(`phys_slab`, `phys_mm`, `slot`, `virt_mm`), `aq_candidate_make`,
+`aq_candidate_from_virt`, `aq_candidate_valid`, and `struct aq_enum`
+(`aq_enum_init`/`aq_enum_next`). `tools/test_mm_enum.c` proves every
+emitted member satisfies slab valid, slot in 19, no reserve crossing,
+plus half-slab crossing, exact-start, exact-end, `phys->virt`, and
+4-word hash cases. `tools/aq_hash_dist.c` hashes the full universe
+against one target and prints total, per-bucket min/max/mean/std.
+
+Measured distribution for target `0x12345000`, hashsize 1024:
+
+```text
+total 1226944, min 1089, max 1314, mean 1198.19, std 34.16
+```
+
+Uniformity check only. Not a side-channel proof.
+
+### Virtual conversion
+
+Only entry point using `PAGE_OFFSET`:
+
+```text
+mm = 0xffffff8000000000 + phys_mm
+```
+
+`aq_phys_to_virt` / `aq_virt_in_linear` are the sole converters.
+No continuous virtual search is performed.
+
+### Cost (host only)
+
+Universe is `64576 * 19 = 1226944` candidates. Per candidate the solver
+needs 1 hash (single collision test), 4 hashes (Hazel-style 4-observation
+consistency), or 8 hashes (wider filter). Measured on host
+(`gcc -O2`, 1.2M candidates):
+
+```text
+1 hash/cand: 1.2M hashes, ~0.012 s
+4 hashes/cand: 4.9M hashes, ~0.020 s
+8 hashes/cand: 9.8M hashes, ~0.036 s
+```
+
+Host brute force is trivial. No device timing is extrapolated.
+
+### KASLR
+
+`CONFIG_RANDOMIZE_BASE=y` in `aquaman-config:496`, but
+`kaslr_early_init` returns 0 when `get_kaslr_seed` finds no
+`/chosen/kaslr-seed` (`arch/arm64/kernel/kaslr.c:27-49`). The
+reconstructed DTS (`artifacts/aquaman.dts`) has no `/chosen` node at
+all, and the dumped U-Boot shows no seed evidence. Image slide
+(`kimage_vaddr` offset) does not move the linear map; only the
+`memstart_offset_seed` path (`arch/arm64/mm/init.c`, gated on
+`seed != 0` and `range >= ALIGN`) could shift `PHYS_OFFSET` and hence
+`__phys_to_virt`. Default `memstart_addr` rounds DRAM start to 0, so
+`__phys_to_virt(phys) = phys | PAGE_OFFSET = PAGE_OFFSET + phys`
+for the whole `0x00100000..0x40000000` window.
+
+Classification: `STRONG INFERENCE: N=0` for the analyzed boot
+(no seed, no slide); `UNKNOWN` for stock U-Boot if it differs exactly
+from the dump. Stated as inference, not as "KASLR disabled" fact.
+
+### What Hazel needs after the leak (data-flow)
+
+```text
+leaked_mm -> slab_base = mm & ~0x3fff
+          -> slot = (mm - slab_base - 0x0) / 0x340
+          -> free the 19-slot cache window (pre/leak/post shaping)
+          -> reclaim the order-2 page with 16 KiB unit
+```
+
+| item | source |
+|---|---|
+| `virt_mm` known | timing collision consistency over the 1.2M universe |
+| `slab_base` inferred | `mm & ~0x3fff` (order-2 alignment) |
+| `slot` inferred | `(mm - slab_base) / 0x340`, must be `< 19` |
+| alignment needed | slab `0x4000`, objects `0x340`, reclaim unit 16384 |
+| timing gives | bucket equality only, no address bits directly |
+| reclaim gives | controlled bytes at the freed slab page |
+
+### Cross-cache, Hazel vs Aquaman (conceptual only)
+
+| item | Hazel (ARM32) | Aquaman (ARM64, `build-aq` DWARF) |
+|---|---|---|
+| mm object size | `0x1c0` | `0x338`, stride `0x340` |
+| slab order | 1 | 2 |
+| slab size | 8192 | 16384 |
+| objects/slab | 18 | 19 |
+| payload size | 2764 B used of 8192 | 4288 B packed of 16384 (64 B aligned) |
+| spray unit | 8 KiB send | 16 KiB send |
+| reclaim unit | 8 KiB unix buffer | 16 KiB unix buffer |
+| fake lock size | ARM32 `rt_mutex` (not reused) | `0x20` |
+| fake waiter size | ARM32 `rt_mutex_waiter` (not reused) | `0x50` |
+| fake task size | up to `+0x6c8` region (not reused) | `0xdc0` (`prio 0x68`, `pi_waiters 0x7e0`, `leftmost 0x7e8`, `blocked_on 0x7f0`) |
+| fops size | ARM32 (not reused) | `0xf0` |
+
+No ARM32 offset is copied. `configfs_buffer` mutex is at `+0x20`
+here, not Hazel `+0x18`.
+
+### Fake task placement
+
+Relevant derefs (`rt_mutex_get_effective_prio`, `rt_mutex_adjust_pi`,
+chain walk at `rtmutex.c:548`) are direct `ldr` chains, not
+`copy_from_user`. They accept any mapped VA unless PAN traps it.
+Here `CONFIG_ARM64_PAN=y` is compiled in but inert: the SoC is
+4x Cortex-A53 (part `0xd03`, no `pan`/`uas` in cpuinfo) so
+`ARM64_HAS_PAN` never enables `cpu_enable_pan`, and
+`CONFIG_ARM64_SW_TTBR0_PAN` is not set, so `system_uses_ttbr0_pan()`
+is false. PAN does not block a userspace pointer on this device.
+
+Verdict: PAN is `GO` (no trap), but userspace placement stays `NO-GO`
+by design. The 16 KiB reclaim unit already holds the 4288 B packing,
+so the fake task stays inside reclaim-controlled memory. No device
+experiment was used for this.
+
+### First non-destructive validation (A/B/C/D)
+
+- A (hash model correct): `/tmp/test_aq_hash` host-only. Pass means the
+  4-word LP64 model matches `jhash.h` and detects every word swap.
+- B (collision detection usable): timing-only `EAGAIN` calibrator
+  (`ghostlock_leak_cal.c` test A) plus spray timing (test B).
+  Observational only. Usability on A53 stays `UNKNOWN` until measured.
+- C (enumeration correct): `/tmp/test_mm_enum` plus
+  `/tmp/aq_hash_dist 0x12345000 1024` host-only. Pass means grid,
+  reserves, conversion, and distribution are self-consistent.
+- D (reclaim geometry correct): single 16 KiB `AF_UNIX` `MSG_PEEK`
+  sentinel test from §11 (`0x5A5A5A5A` at `0x3FFC`). No UAF, no write,
+  clean exit on failure.
+
+No reboot, panic, cred overwrite, kernel write, root chain, or SELinux
+change in any of A/B/C/D.
+
+### GO / NO-GO / UNKNOWN for the mm leak step
+
+- `GO`: hash model (4-word LP64), candidate enumeration (1.2M derived),
+  physical geometry (order 2, 19 x `0x340`), virtual conversion
+  (`PAGE_OFFSET + phys`), host brute-force cost (ms), KASLR N=0
+  inference for the analyzed boot, reclaim-contained fake task packing.
+- `NO-GO`: Hazel `ks_hash` reuse, old `0xc0000000..0xf0000000` brute
+  force, order-1 grid (REFUTED), 8 KiB reclaim unit, ARM32 offsets,
+  userspace fake task, **the `FUTEX_WAKE_PRIVATE` bucket timing oracle**
+  (H4, REFUTED by measurement: 0-2 ns per node against a 1.5 us positive
+  control, host and ARM64; see the experimental section).
+- `UNKNOWN`: `futex_hashsize`
+  boot value (H3, expect 1024), stock `mm_struct` size if the 2022 tree
+  diverged (H1), floating CMA bases, stock U-Boot seed behavior,
+  16 KiB reclaim reliability (H5).
+
+---
+
+## Experimental results: the futex bucket timing oracle
+
+`NO SIGNAL` on the host, `NO STEP` on both ARM64 machines tested, and the
+labelled MATCH/MISMATCH arms are `INVALID TEST` by their own null controls.
+H4 moves from `UNKNOWN` to `REFUTED (measured)`. Split into `STATIC` and
+`DEVICE OBSERVATION` below.
+
+### STATIC
+
+Nothing here changes the static model. It is all `kernel/futex.c` in the
+`.src/linux-amlogic` tree, which is the 4.9.113 code, and it is why the
+experiment is shaped this way.
+
+The whole budget of a bucket oracle is one branch and one plist walk.
+`futex_wake` (futex.c:1424-1441):
+
+```c
+        hb = hash_futex(&key);        /* jhash2, 4 words, initval = offset */
+        if (!hb_waiters_pending(hb))  /* ONE load of hb->waiters */
+                goto out_put_key;      /* empty bucket: no lock, no walk */
+        spin_lock(&hb->lock);
+        plist_for_each_entry_safe(this, next, &hb->chain, list)
+                if (match_futex(&this->key, &key)) { ... }
+        spin_unlock(&hb->lock);
+```
+
+The only work a bucket-sharing wake does that an empty-bucket wake does not
+is take the bucket spinlock and walk `N` `futex_q` nodes comparing keys.
+`futex_q` is `0x58` bytes (futex.c:237-247) and the walk reads `+0x20`
+(`plist_node.node_list.next`), `+0x28..+0x37` (`key`), `+0x38` (`pi_state`),
+`+0x40` (`rt_waiter`), `+0x50` (`bitset`): one or two cache lines per node,
+plus one uncontended lock acquisition.
+
+The structural consequence that matters: **what costs anything is the number
+of `futex_q` NODES, not the number of waiters.** Threads blocked on the same
+address share one `futex_q` (`queue_me` reuses it), so Hazel's `KS_PILE =
+2048` threads on one futex address put exactly one node in exactly one bucket.
+A pile of waiters cannot amplify this walk. Amplifying it needs many
+*distinct* addresses in one bucket, which needs to know which addresses
+collide, which is the `mm`.
+
+Second consequence: the private key contains `mm` (`get_futex_key`,
+futex.c:520-528: `key->private.address`, `key->private.mm`,
+`key->both.offset`), so the bucket of a userspace address is not computable
+from userspace. Every "these two addresses collide" claim is a claim about a
+specific `mm`.
+
+### DEVICE OBSERVATION
+
+Tool: `tools/test_aq_futex_timing.c`, NDK r29, same recipe as the other tools
+here. Private futexes only, one process, one `mm`,
+`FUTEX_WAKE_PRIVATE(uaddr, 1, NULL, NULL, 0)`, no PI, no rtmutex, no
+`mm_struct`, no reclaim, no kernel write, no UAF, no reboot. Every timed
+address has no waiter of its own, so every wake matches nothing, returns 0 and
+mutates nothing: the measurement is idempotent and cannot pollute the next
+sample. The end-of-run check confirms the parked `futex_q` is reachable
+(`wake(PILE) == 4`).
+
+#### The decisive measurement, which needs no mm
+
+The `[calib]` phase. Park 512 waiter threads, one per page, over 2048 spread
+pages. A timed cell's bucket then holds one node with probability
+`1-(1-1/1024)^512` = 39%, and the other 61% sit in provably empty buckets.
+Both populations are timed in the same pass, same process state, same
+schedule, so there is no phase-to-phase difference to confound anything. If a
+node in the woken bucket costs `C`, the per-cell cost distribution has a step
+of `C` in it with ~39% of the cells above it. If the distribution is one mode,
+`C` is below the noise.
+
+| machine | per-cell MIN wake: min / p50 / p90 / p99 | step found |
+|---|---|---|
+| host, x86-64, 12 cpu, 7.0.9 | 131-204 / 169-293 / 193-344 / 207-386 ns | **none**, 6 runs of 6 |
+| host, standalone cross-check | cost of one node: p50 0, p90 1, p99 1-2, max **2 ns** | none, 3 runs of 3 |
+| ARM64, `mt8696`, 4 cpu, Android 9 | 230-307 / 384-461 / 692 / 923-2770 ns | **none**, 3 runs of 3 |
+
+The host cross-check is the same experiment written as a separate program, to
+rule out the tool being wrong about its own arithmetic: 512 threads spread
+over 2048 pages in one phase, all 512 on one address in the other, same thread
+count both phases, so the only difference in the wake path is `~1` node versus
+`0`. Per-cell cost of one node: p50 `0 ns`, p90 `1 ns`, p99 `1-2 ns`, max
+`2 ns`, three consecutive runs, against a per-cell timer resolution of `0.5 ns`
+(the host wake p50 is `~95 ns`).
+
+**One `futex_q` node in the woken bucket costs 0 ns at the median and at most
+2 ns. That is the entire budget a bucket oracle can spend on this code, and it
+is below the per-cell timing resolution.** No address search beats a
+guaranteed collision, so no MATCH/MISMATCH comparison over addresses can
+produce a real result.
+
+The instrument is not the limitation. A real match is enormous next to this:
+waking 4 actual waiters costs `2314 ns` on the host and `37461 ns` on the
+device, against no-match p50 of `91 ns` and `~385 ns`. The positive control
+resolves a 1.5 us effect; the effect being hunted is 0-2 ns.
+
+#### The labelled arms, and why they are INVALID
+
+Host, `n = 3000` per condition, 3 passes, 3 pairs, one offset class per pair,
+pairs on adjacent pages, matched on the pre-parking median:
+
+```text
+[stats] MATCH_vs_MISMATCH pooled n=9000/9000 auc=0.4995 u=161827230.0 z_mwu=-0.18
+[stats] CONTROL_vs_MISMATCH pooled auc=0.4971 z_mwu=-0.70 z_paired=-0.21
+[stats] SELFPAIR_vs_MISMATCH1 auc=0.4968 z_mwu=-0.51 z_paired=0.92 dmed=0
+[verdict] MATCH1/MATCH2/MATCH3 separated in 0/3 passes
+[verdict] NULL control separated in 0/3 passes
+```
+
+Pooled `AUC 0.4995` against a null control at `0.4971`: no separation, and the
+null control is where it belongs. `SELFPAIR` is the same address as
+`MISMATCH1` under a second name, so it is the resolution floor: `|z| < 1.3` on
+the host. Samples per condition 3000, warm-up 2000 discarded, 3 passes, plus a
+16384-cell x 15-rep pre-parking baseline sweep. p50/p95/p99/mad printed for
+every condition, trimmed and untrimmed.
+
+On the device the labelled arms are `INVALID TEST`, and their own null
+controls say so: `NULL_MISMATCH1_vs_MISMATCH2_1 z_mwu=-5.4`, `SELFPAIR
+z_mwu=-16.3` on two *identical* addresses with `dmed=0`. A harness whose null
+control separates cannot report a treatment, so the device labelled numbers
+are discarded rather than quoted. The device is much noisier: per-cell median
+`mad` is `76 ns` against a `385 ns` wake, with a tail to `2.8 us`.
+
+Two traps the null controls caught, recorded because both would otherwise have
+been reported as signal:
+
+- **Same-page pairs are confounded by the page offset.** Within one page the
+  four offset classes have systematically different wake medians: spread 0-3 ns
+  on 3700 of 4096 pages but up to 8 ns on the rest, and `offset 0x000` is the
+  slow one on 2640 of 4096 pages. Same size as the effect being hunted. Across
+  pages at fixed offset it is only 1-2 ns.
+- **A plain rotation of the sampling order aliases.** With `nc` conditions the
+  visit pattern has period `nc`, so any disturbance whose period divides `nc`
+  lands on a fixed subset of conditions. Measured: 8 ns deltas with `|z|` up
+  to 88, flagged as bogus by the null control. The order is now re-randomised
+  every round with a step coprime to `nc`.
+
+#### What was not tried, and why
+
+`LOCK_PI`, `WAIT_REQUEUE_PI`, `CMP_REQUEUE_PI` and `sched_setattr` on the
+waiter are deliberately unused. They route through `rt_mutex`,
+`pi_blocked_on` and `rt_mutex_adjust_pi`: a different code path with its own
+and much larger timing signature. Mixing that in would measure the rtmutex path
+and call it a bucket result. The second measurement, if a bucket signal were
+ever found, would have to re-introduce the PI consumer and vary *only* the
+bucket relationship while holding PI state fixed. Since the benign
+measurement found no bucket signal to amplify, that step is not worth running.
+
+`hashsize boot = UNKNOWN` is unchanged. Nothing here reads `__futex_data` and
+the device runs do not establish the stock value. The tool's mixture
+arithmetic assumes 1024 because that is the derived expectation; a different
+`hashsize` would change the predicted split but not the conclusion, since the
+step is absent at every split.
+
+### Classification
+
+| condition | result |
+|---|---|
+| cost of one node in the woken bucket, host | p50 0 ns, max 2 ns |
+| cost of one node in the woken bucket, ARM64 | below the 1 ns per-cell resolution, 3 runs |
+| labelled MATCH vs MISMATCH, host | `AUC 0.4995`, null control `0.4971`, 0/3 pairs separate |
+| labelled MATCH vs MISMATCH, ARM64 | `INVALID TEST`, null controls abs z 5-63 |
+| mm-free scan, 16243 cells | no cluster: bulk p99 `14 ns`, top-15 p50 `40 ns`, gap to bulk max `6 ns` |
+| instrument positive control | real match of 4 waiters `2314 ns` host / `37461 ns` device |
+
+**Verdict: `NO SIGNAL`.** Not `WEAK SIGNAL`, and specifically not the "MATCH
+was slower once" pattern: the runs where a MATCH arm separated also produced
+null-control separation, and the runs where every control was clean produced
+`delta_median = 0` on every pair.
+
+The stronger statement is the calibration one. A bucket oracle needs a bucket
+collision to cost something measurable. Measured, it costs 0-2 ns against a
+positive control that resolves 1.5 us. The oracle is not hard to use on this
+kernel, it has no budget.
+
+### Effect on the mm leak step
+
+**No change to the status of the step: it stays blocked, now for a measured
+reason rather than an unknown one.**
+
+- The `mm` was to be recovered by collision consistency over the 1.2M
+  candidates. That needed a bucket collision to be observable in
+  `FUTEX_WAKE_PRIVATE` latency. It is not, at 0-2 ns per node against a 1.5 us
+  positive control, on the host or on ARM64.
+- H4 (`timing measurability on quad A53`) moves `UNKNOWN` -> `REFUTED
+  (measured)`, for the wake path, at 1 to 512 distinct addresses per bucket
+  with the thread count held constant.
+- Host brute force over the 1.2M candidates still costs ~12 ms per hash
+  (`§Cost`). Unchanged, and still irrelevant: that is the cost of *asking* the
+  hash a question, not the cost of *answering* it. With no observable side
+  channel the enumeration has nothing to filter with, and the 1.2M candidates
+  cannot be reduced by timing.
+- `hashsize boot = UNKNOWN` stays `UNKNOWN`. The oracle question and the
+  `hashsize` question are now separate: a known `hashsize` would not create a
+  signal that is not there.
+
+What would have to change this: a mechanism that makes the `futex_q` walk cost
+something. All candidates are different experiments. Far more distinct
+`futex_q` nodes in one bucket (thousands rather than 512, which needs a
+`hashsize` small enough that thousands of addresses can be forced into one
+bucket). A bucket spinlock contended by *concurrently* blocking threads rather
+than parked ones. Or a consumer that reads `futex_q` contents instead of only
+comparing keys. The second is what Hazel's `KS_PILE` is really reaching for,
+and it is not what this benchmark measured. Each needs a new experiment with a
+new positive control, not a re-run of this one.

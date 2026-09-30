@@ -75,3 +75,71 @@ seven 8 B `0x02` reads of 0x37f71480/0x37f71488/0x37fbde60/0x37fbde58/
 step promotes or kills the whole table. nothing else in this round earns
 a live probe: no new BL31 reason was found, and C1 gave no dispatcher,
 no handler, no 0x820000ff edge.
+
+## Runtime global probe
+
+executed 2026-09-30T12:11:39Z. entry `fastboot oem update 5000` from
+fastboot (product aquaman). FAILED / Status read failed, expected.
+1b8e:c003 up ~200 ms later. identify raw `00 07 00 10`, version 0.7,
+stage 16 (TPL/BL33-u-boot). single process, identify + seven 8 B
+AM_REQ_READ_MEM (0x02) reads, nothing else. no mread, no adjacent pages.
+
+raw (8 B LE each):
+
+```text
+address       raw bytes              value
+0x37f71480    00 e0 0f 05 00 00 00 00  0x00000000050fe000
+0x37f71488    00 f0 0f 05 00 00 00 00  0x00000000050ff000
+0x37fbde60    00 00 00 05 00 00 00 00  0x0000000005000000
+0x37fbde58    00 00 04 05 00 00 00 00  0x0000000005040000
+0x37fbde68    00 00 08 05 00 00 00 00  0x0000000005080000
+0x37fbde48    00 00 04 00 00 00 00 00  0x0000000000040000
+0x37fbde50    01 00 00 00 00 00 00 00  0x0000000000000001
+```
+
+compare: 0x05000000 exact at [0x37fbde60]. 0x05040000, 0x05080000,
+0x050fe000, 0x050ff000 all exact at their slots. size = 0x40000,
+flag = 1 (init OK, none == 0xffffffff). every stale snapshot value is
+now the live value. no base+offset/pointer/size ambiguity: these are
+the bases themselves, plus one size and one flag.
+
+mapping (XREFs from round20 01/02/04, values now runtime):
+
+```text
+0x82000020 -> [0x37f71480] -> 0x050fe000 -> secmon in / efuse staging base
+0x82000021 -> [0x37f71488] -> 0x050ff000 -> secmon out base
+0x82000023 -> [0x37fbde60] -> 0x05000000 -> storage in base == C1
+0x82000024 -> [0x37fbde58] -> 0x05040000 -> storage out base
+0x82000025 -> [0x37fbde68] -> 0x05080000 -> storage block base
+0x82000027 -> [0x37fbde48] -> 0x00040000 -> storage block size
+flag [0x37fbde50] = 1 -> gates SMC 0x60/61/62/63/64/65 consumers
+```
+
+consumers unchanged: 6 fns stage requests into [[0x37fbde60]]
+(0x37e8bd10/0x37e8bdc8/0x37e8be98/0x37e8bf3c/0x37e8bfe0/0x37e8c084),
+5 fns read responses from [[0x37fbde58]], getbuffer 0x37e8bc84 returns
+[[0x37fbde68]] + fresh 0x27 size. 0x28/0x6a stay scalar-only.
+
+decision: CONFIRMED. [0x37fbde60] == 0x05000000 in runtime, via the
+proven 0x82000023 -> global dataflow, with the proven stage->SMC
+0x60-65 discipline. C1 is the storage/sharemem in-buffer. live C1 bytes
+not parsing as a plaintext request does not refute this: the buffer
+holds whatever the last op left (request remnant or BL31 scratch).
+
+scope:
+
+```text
+writes = 0
+SMCs issued by host = 0
+RUN_IN_ADDR = 0
+ADB reads = 0
+```
+
+transport note: `adb reboot fastboot` used once to reach fastboot from
+Android; no ADB read of memory. no C1/C2/C3 dump, no RAM scan, no new
+BL31 analysis, no fuzzing, no U-Boot command. probe session left the
+device in 1b8e:c003; operator then rebooted to fastboot (18d1:0d02,
+product aquaman, 2026-09-30T12:13:42Z).
+
+final: yes. the globals return in runtime the storage/sharemem
+addresses that explain C1.

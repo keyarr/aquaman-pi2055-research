@@ -1,0 +1,61 @@
+== E3: do_bootm -> aml_sec_boot_check -> SMC register flow ==
+source: .src/u-boot-khadas/common/cmd_bootm.c + arch/arm/cpu/armv8/gxl/bl31_apis.c
+  nLoadAddr default GXB_IMG_LOAD_ADDR 0x1080000; len GXB_IMG_SIZE (24<<20)=0x1800000; opt GXB_IMG_DEC_ALL=7
+
+-- image call site 1: 0x37e24cf0 in do_bootm 0x37e24c00 --
+  0x37e24cc8  ldr        x0, [x19, #8]
+  0x37e24ccc  add        x1, x29, #0x60
+  0x37e24cd0  mov        w2, #0x10
+  0x37e24cd4  bl         #0x37eac21c
+  0x37e24cd8  mov        w1, w0
+  0x37e24cdc  b          #0x37e24ce4
+  0x37e24ce0  mov        x1, #0x1080000
+  0x37e24ce4  mov        x0, #0x40
+  0x37e24ce8  mov        x2, #0x1800000
+  0x37e24cec  mov        x3, #7
+  0x37e24cf0  bl         #0x37e19ea8
+  0x37e24cf4  mov        x20, x0
+-- image call site 2: 0x37e24f90 (second check, nType 0x100) --
+  0x37e24f64  cmp        w21, wzr
+  0x37e24f68  b.le       #0x37e24f74
+  0x37e24f6c  ldr        x0, [x19, #8]
+  0x37e24f70  b          #0x37e24f78
+  0x37e24f74  mov        x0, #0
+  0x37e24f78  bl         #0x37e5b2f0
+  0x37e24f7c  mov        x19, x0
+  0x37e24f80  mov        x1, #0x1080000
+  0x37e24f84  mov        x2, #0x500
+  0x37e24f88  mov        x3, #7
+  0x37e24f8c  mov        x0, #0x100
+  0x37e24f90  bl         #0x37e19ea8
+  0x37e24f94  and        x1, x0, #0xffff
+-- wrapper aml_sec_boot_check 0x37e19ea8 --
+  0x37e19ea8  stp        x29, x30, [sp, #-0x20]!
+  0x37e19eac  mov        x29, sp
+  0x37e19eb0  str        x19, [sp, #0x10]
+  0x37e19eb4  mov        x7, x0
+  0x37e19eb8  mov        x6, x1
+  0x37e19ebc  mov        x5, x2
+  0x37e19ec0  mov        x4, x3
+  0x37e19ec4  mov        x0, #0xff
+  0x37e19ec8  movk       x0, #0x8200, lsl #16
+  0x37e19ecc  mov        x1, x7
+  0x37e19ed0  mov        x2, x6
+  0x37e19ed4  mov        x3, x5
+  0x37e19ed8  smc        #0
+  0x37e19edc  mov        x19, x0
+  0x37e19ee0  add        x1, x6, x5
+  0x37e19ee4  mov        x0, x6
+  0x37e19ee8  bl         #0x37e19310
+  0x37e19eec  mov        x0, x19
+  0x37e19ef0  ldr        x19, [sp, #0x10]
+  0x37e19ef4  ldp        x29, x30, [sp], #0x20
+  0x37e19ef8  ret        
+
+mapping (System V AArch64 at BL, SMC per gxl/bl31_apis.c aml_sec_boot_check):
+  do_bootm: x0=nType(0x40), x1=pBuffer(user addr or 0x1080000), x2=nLength(0x1800000), x3=nOption(7)
+  wrapper: x7=x0(nType), x6=x1(pBuffer), x5=x2(nLength), x4=x3(nOption preserved);
+           x0=0x820000ff; x1=x7; x2=x6; x3=x5; (x4 untouched); smc #0
+  => SMC: X0=0x820000ff X1=0x40 X2=user_addr X3=0x1800000 X4=7
+  post-SMC: wrapper does flush_dcache_range(pBuffer, pBuffer+nLength) then returns SMC X0.
+  BL33 validation of addr: none found (no compare against RAM top/DTB/header before 0x37e24cf0).

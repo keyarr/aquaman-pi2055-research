@@ -1,0 +1,109 @@
+=== relocation evidence, corrected ADRP math (immlo included) ===
+dump reports/round11-bl33-read/mread_01000000_01000000.bin
+
+=== disassembly across the lower window boundary 0x0103ff80..0x01040060 ===
+  0x0103ff80  .byte    0xff, 0xff, 0xff, 0xff  
+  0x0103ff84  .byte    0xff, 0xff, 0xff, 0xff  
+  0x0103ff88  .byte    0xff, 0xef, 0xff, 0xff  
+  0x0103ff8c  .byte    0xff, 0xff, 0xff, 0xff  
+  0x0103ff90  .byte    0xff, 0xff, 0xff, 0xff  
+  0x0103ff94  .byte    0xff, 0xff, 0xff, 0xff  
+  0x0103ff98  .byte    0xff, 0xff, 0xff, 0xff  
+  0x0103ff9c  .byte    0xff, 0xff, 0xff, 0xff  
+  0x0103ffa0  udf      #0x20                   
+  0x0103ffa4  udf      #0                      
+  0x0103ffa8  udf      #0                      
+  0x0103ffac  udf      #0                      
+  0x0103ffb0  udf      #0                      
+  0x0103ffb4  udf      #0                      
+  0x0103ffb8  udf      #0                      
+  0x0103ffbc  udf      #0x4000                 
+  0x0103ffc0  .byte    0xff, 0xff, 0xff, 0xff  
+  0x0103ffc4  .byte    0xff, 0xff, 0xff, 0xff  
+  0x0103ffc8  .byte    0xff, 0xff, 0xff, 0xff  
+  0x0103ffcc  .byte    0xff, 0xff, 0xff, 0xff  
+  0x0103ffd0  .byte    0xff, 0xff, 0xff, 0xff  
+  0x0103ffd4  .byte    0xff, 0xff, 0xff, 0xff  
+  0x0103ffd8  .byte    0xff, 0xff, 0xff, 0xff  
+  0x0103ffdc  .byte    0xff, 0xff, 0xff, 0xff  
+  0x0103ffe0  udf      #0x200                   <-- loop-back target, overwritten
+  0x0103ffe4  udf      #0                      
+  0x0103ffe8  udf      #0                      
+  0x0103ffec  udf      #0                      
+  0x0103fff0  .byte    0x41, 0x7e, 0x44, 0x00  
+  0x0103fff4  udf      #1                      
+  0x0103fff8  udf      #1                      
+  0x0103fffc  .byte    0x01, 0x38, 0xb4, 0xdb  
+  0x01040000  b.eq     #0x1040030               <-- fragment starts
+  0x01040004  b        #0x1040074              
+  0x01040008  cmp      w5, #0x72               
+  0x0104000c  b.eq     #0x104001c              
+  0x01040010  cmp      w5, #0x74               
+  0x01040014  b.eq     #0x1040044              
+  0x01040018  b        #0x1040074              
+  0x0104001c  mov      w19, #1                 
+  0x01040020  b        #0x1040058              
+  0x01040024  cbnz     w0, #0x1040060          
+  0x01040028  mov      w0, #1                  
+  0x0104002c  b        #0x104003c              
+  0x01040030  cbnz     w0, #0x1040060          
+  0x01040034  mov      w0, #1                  
+  0x01040038  mov      w24, w0                 
+  0x0104003c  mov      w22, #0                 
+  0x01040040  b        #0x1040058              
+  0x01040044  cbnz     w0, #0x1040060          
+  0x01040048  mov      w0, #1                  
+  0x0104004c  mov      w22, #0xa               
+  0x01040050  b        #0x1040058              
+  0x01040054  mov      w25, #1                 
+  0x01040058  add      x2, x2, #1              
+  0x0104005c  b        #0x103ffe0              
+
+=== B/BL targets outside the fragment (correct) ===
+  backward (calls into .text below, now overwritten):
+    -> 0x01000000..  209
+    -> 0x01010000..  44
+    -> 0x01030000..  1
+  min backward target 0x0100130c
+  forward (calls into .text above):
+    -> 0x01080000..  119
+    -> 0x01090000..  1238
+
+=== ADRP+ADD data targets, corrected, by 64K (n=2413) ===
+    0x01040000..  18
+    0x01070000..  19
+    0x01090000..  178
+    0x010a0000..  217
+    0x010b0000..  669
+    0x010c0000..  922
+    0x010d0000..  16
+    0x010e0000..  1
+    0x01130000..  1
+    0x01140000..  101
+    0x01150000..  3
+    0x01160000..  29
+    0x01170000..  106
+    0x01180000..  1
+    0x01190000..  4
+    0x011a0000..  128
+  samples:
+    0x01040060 -> 0x010b83ec
+    0x01040080 -> 0x010b82f4
+    0x010400d8 -> 0x010b831b
+    0x0104010c -> 0x010b841b
+    0x01040120 -> 0x010b834e
+    0x0104016c -> 0x010b8376
+    0x0104017c -> 0x010cf278
+    0x01040258 -> 0x010b8450
+    0x01040318 -> 0x010cf0f0
+    0x01040494 -> 0x010a7d03
+
+=== extent of all self-computed addresses (corrected) ===
+  min 0x0100130c   max 0x011d7000   n=4414
+  -> the image's own address space, as the fragment sees it, is 0x0100130c..0x011d7000
+
+=== referenced page 0x0105e000 (was a bogus target) ===
+  0105e3c0  e0 03 13 aa a9 ff ff 97 f5 03 00 aa d7 8e ff 97 |................|
+  0105e3d0  f4 03 00 aa a0 01 00 b5 00 03 00 90 e1 01 00 d0 |................|
+  0105e3e0  21 e0 1a 91 c2 0d 80 52 00 30 3c 91 f7 8b ff 97 |!......R.0<.....|
+  0105e3f0  00 03 00 b0 e1 03 15 2a e2 03 13 aa 00 40 36 91 |.......*.....@6.|

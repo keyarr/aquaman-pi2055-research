@@ -1,0 +1,23 @@
+movz+movk pairs building 0x82xxxxxx, whole dump
+  0x82000023  1 site(s)  0x01073bc4
+  0x82000024  1 site(s)  0x01073be8
+  0x82000025  1 site(s)  0x01073c04
+  0x82000027  2 site(s)  0x01073c20 0x01073cc0
+  0x82000028  1 site(s)  0x01074140
+  0x82000040  2 site(s)  0x01a1f590 0x01a59dc0
+  0x82000042  1 site(s)  0x01a59804
+  0x82000060  1 site(s)  0x01073f18
+  0x82000061  1 site(s)  0x01073e58
+  0x82000062  1 site(s)  0x01073dac
+  0x82000063  1 site(s)  0x01074060
+  0x82000064  1 site(s)  0x01074104
+  0x82000065  1 site(s)  0x01073fbc
+  0x82000069  1 site(s)  0x01073d08
+  0x8200006a  1 site(s)  0x0107415c
+  0x82000083  1 site(s)  0x018f9028
+  0x82000084  1 site(s)  0x018f8f04
+
+AML_DATA_PROCESS 0x820000ff
+  as a movz+movk pair: none
+  as a packed literal: none
+  => NOT in this dump

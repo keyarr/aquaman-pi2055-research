@@ -1,0 +1,21 @@
+image reports/round14-bl33-persist/bl33-37e18000.bin  base 0x37e18000  size 0x1d8000
+
+=== references to 0x37edef15
+  0x37e9563c  adrp+add   in 0x37e95630           
+
+=== references to 0x37edeea3
+  0x37e95424  adrp+add   in 0x37e95408           
+
+=== references to 0x37edf250
+  0x37e95d5c  adrp+add   in 0x37e95d50           
+
+=== references to 0x37edf264
+
+=== references to 0x37edf073
+  0x37e95a20  adrp+add   in 0x37e95a14           
+
+=== references to 0x37edf183
+  0x37e95b2c  adrp+add   in 0x37e95b20           
+
+=== references to 0x37edf239
+  0x37e95ca0  adrp+add   in 0x37e95c90           

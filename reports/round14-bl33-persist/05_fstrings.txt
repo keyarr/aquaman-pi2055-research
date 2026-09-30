@@ -1,0 +1,47 @@
+image reports/round14-bl33-persist/bl33-37e18000.bin  base 0x37e18000  size 0x1d8000
+
+=== function 0x37e2a030 (?) 0x37e2a030..0x37e2a137
+    0x37ebf84c 'loadaddr'
+    0x37eb45d0 'check_valid_dts'
+
+=== function 0x37e33e00 (?) 0x37e33e00..0x37e34113
+    0x37ec5fa9 'decrypt'
+    0x37ec55e7 'write'
+    0x37ec6006 'iread'
+    0x37ec5e09 '[store]Err:%s,L%d:'
+    0x37eb4c30 'do_store_dtb_ops'
+    0x37ec55e3 'dtb_write'
+    0x37ec55da 'dtb_read'
+    0x37ec5e70 'amlnf'
+    0x37ec5ea8 '%s %s %s 0x%x'
+
+=== function 0x37e35e7c (?) 0x37e35e7c..0x37e3601b
+    0x37ec6af6 'AMLSECU!'
+    0x37ec69be 'Err imgread(L%d):'
+
+=== function 0x37e3601c (?) 0x37e3601c..0x37e362df
+    0x37ebf84c 'loadaddr'
+    0x37ec69be 'Err imgread(L%d):'
+
+=== function 0x37e362e0 (?) 0x37e362e0..0x37e36507
+    0x37ebf84c 'loadaddr'
+    0x37ec69be 'Err imgread(L%d):'
+
+=== function 0x37e562e8 (?) 0x37e562e8..0x37e56803
+    0x37ec55e7 'write'
+    0x37ecfa08 'secure_boot_set'
+    0x37ecfa18 'password_set'
+    0x37ecfa25 'customer_id_set'
+    0x37ecfa35 'amlogic_set'
+    0x37eb4380 'cmd_efuse'
+    0x37ecfb9b 'efuse read data'
+    0x37ebf6b7 ':%02x'
+
+=== function 0x37e63534 (tee_log_level) 0x37e63534..0x37e635ef
+    (no string references)
+
+=== function 0x37e76588 (?) 0x37e76588..0x37e765b3
+    (no string references)
+
+=== function 0x37e62958 (?) 0x37e62958..0x37e629af
+    (no string references)

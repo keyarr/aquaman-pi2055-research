@@ -1,0 +1,17 @@
+image reports/round14-bl33-persist/bl33-37e18000.bin  base 0x37e18000  size 0x1d8000
+16-byte {cmd, cb} table at 0x37eb5bc8
+
+  slot 0x37eb5bc8  cmd='reboot'         cb=0x37e95204 
+  slot 0x37eb5bd8  cmd='getvar:'        cb=0x37e95ecc 
+  slot 0x37eb5be8  cmd='download:'      cb=0x37e95408 
+  slot 0x37eb5bf8  cmd='boot'           cb=0x37e94db0 
+  slot 0x37eb5c08  cmd='continue'       cb=0x37e94d88 
+  slot 0x37eb5c18  cmd='flash'          cb=0x37e95d50 
+  slot 0x37eb5c28  cmd='update'         cb=0x37e95408 
+  slot 0x37eb5c38  cmd='flashall'       cb=0x37e95c90 
+  slot 0x37eb5c48  cmd='erase'          cb=0x37e95b20 
+  slot 0x37eb5c58  cmd='devices'        cb=0x37e94de8 
+  slot 0x37eb5c68  cmd='reboot-bootloader' cb=0x37e95204 
+  slot 0x37eb5c78  cmd='set_active'     cb=0x37e95a14 
+  slot 0x37eb5c88  cmd='oem'            cb=0x37e95630 
+  +0x0d0  (0x3063204210210000, 0x70e760c650a54084)  -- table ends

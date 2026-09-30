@@ -104,7 +104,9 @@ int main(void) {
     }
     printf("[check] EAGAIN anomalies=%d (want 0)\n", anomalies);
 
-    /* Test B: AF_UNIX 8K spray timing, without forging any object. */
+    /* Test B: AF_UNIX 8K spray timing, without forging any object.
+     * Timing probe only. Reclaim of the order-2 mm slab needs 16 KiB
+     * sends (see hazel-mm-struct-aquaman.md MM leak feasibility). */
     {
         int sv[2];
         if (socketpair(AF_UNIX, SOCK_STREAM, 0, sv)) {

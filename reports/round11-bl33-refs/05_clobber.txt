@@ -1,0 +1,28 @@
+what is at the addresses the surviving code calls
+
+0x0100a324  6f 6b 00 00 00 00 00 03 00 00 00 05 00 00 0e 53 74 72 75 65 00 00 00 00 00 00 00 03 00 00 00 04 00 00 0e 1d 00 00 00 00 00 00 00 03 00 00 00 0c 00 00 00 5e 00 00 00 00 00 00 00 55 00 00 00 01
+           |ok.............Strue...............................^.......U....| hottest call target below the window (24 calls): inside the FDT struct block
+0x01092cac  00 01 00 00 00 00 40 00 00 00 00 00 00 00 00 00 00 00 00 00 ff ff ff ff ff ff ff ff ff ff ff ff ff bf ff ff fd ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 00 20 00 00 00 00 00 00 00 00 00 00
+           |......@.............................................. ..........| hottest call target above the window (251 calls): a bitmap pixel run
+0x0109453c  00 00 00 00 ff ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff ff ff ff ff fd ff ff ff ff ff ff ff ff ff ff bf 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+           |................................................................| 124 calls, same region
+
+what is at the addresses the surviving code loads from
+0x010b0000  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+           |................................................................| rodata page: now CLEARED, all zero
+0x010cb000  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+           |................................................................| highest ADRP+ADD target is 0x010cbf80, inside this 64K page
+
+all-zero pages: 0x010b0000..0x010cffff (128 KiB)
+highest data reference from the window: 0x010cbf80
+
+reference tree constants (.src/u-boot-khadas/arch/arm/include/asm/arch-gxl/cpu.h)
+  38  CONFIG_SYS_SDRAM_BASE     PHYS_SDRAM_1_BASE
+  41  CONFIG_SYS_TEXT_BASE      0x01000000 /*16MB rsv*/
+  57  CONFIG_DTB_MEM_ADDR       0x1000000
+reference tree constants (.../arch-gxl/bl31_apis.h:108-121)
+  108 AML_DATA_PROCESS          (0x820000FF)
+  110 AML_D_P_IMG_DECRYPT       (0x40)
+  115 GXB_IMG_SIZE              (24<<20)   = 0x01800000
+  116 GXB_IMG_LOAD_ADDR         (0x1080000)
+  118 GXB_IMG_DEC_ALL           7

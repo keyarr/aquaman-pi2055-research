@@ -1,0 +1,76 @@
+
+=== cmd keyman         handler 0x37e74290..0x37e74303
+  transfers: 0x37e742f4 0x37e5eddc
+  strings:   none
+
+=== cmd keyunify       handler 0x37e73c84..0x37e7406f
+  transfers: 0x37eaacac 0x37e73694 0x37e74058 0x37eac21c 0x37e73880 0x37e593c8 0x37e59cd4 0x37e73aa0 0x37e73e60 0x37e73bc4 0x37e73e50 0x37e73b58 0x37e73eb0 0x37e73e58 0x37e7394c 0x37e73d88 0x37e735c8 0x37e737d8 0x37eaad30 0x37e59f28 0x37e73404
+  strings:   [KM]Error:f[%s]L%d: | do_keyunify | secure | uninit
+
+=== cmd update         handler 0x37e78ff8..0x37e79093
+  transfers: 0x37eac21c 0x37e79058 0x37e7b8e4 0x37e79074 0x37e5848c 0x37e78f94
+  strings:   identifyWaitTime
+
+=== cmd set_usb_boot   handler 0x37e607e8..0x37e6084b
+  transfers: 0x37e593c8 0x37e60824 0x37eac21c 0x37e19efc
+  strings:   none
+
+=== cmd systemoff      handler 0x37e6084c..0x37e60863
+  transfers: 0x37e19f10
+  strings:   none
+
+=== cmd reboot         handler 0x37e60654..0x37e607e7
+  transfers: 0x37e607b8 0x37e593c8 0x37eaacac 0x37e607c0 0x37e19e98
+  strings:   cold_boot | normal | recovery | factory_reset | update | fastboot | bootloader | suspend_off | hibernate | crash_dump | kernel_panic
+
+=== cmd efuse          handler 0x37e56804..0x37e56807
+  transfers: none
+  strings:   none
+
+=== cmd efuse_user     handler 0x37e72ef0..0x37e7337f
+  transfers: 0x37e73368 0x37eaacac 0x37e72f88 0x37e58920 0x37eac674 0x37e5848c 0x37eac21c 0x37e7287c 0x37e73334 0x37e72c40 0x37e593c8 0x37e72d98 0x37e730cc 0x37eaad30 0x37e59f28 0x37e73340 0x37e7330c 0x37e732fc 0x37e73244 0x37e73300 0x37e73298 0x37e72ca4 0x37e59cd4
+  strings:   dtb_mem_addr | [EFUSE_ERR]f(%s)L%d: | do_usr_efuse_api | efuse read data | hex_ascii_to_buf
+
+=== cmd setkeys        handler 0x37e219f0..0x37e21bc7
+  transfers: 0x37eaae84 0x37e2176c 0x37e5848c 0x37e21864 0x37eaad30 0x37e21af4 0x37e21ad0 0x37e21b44 0x37e21b8c 0x37eac674
+  strings:   mac_bt | mac_wifi | wifimac | serialno | 0123456789ABCDEF | region | boardid
+
+=== cmd setenv         handler 0x37e58470..0x37e5848b
+  transfers: 0x37e58294
+  strings:   none
+
+=== cmd env            handler 0x37e57d6c..0x37e57ddb
+  transfers: 0x37e57dcc 0x37e5eddc
+  strings:   none
+
+=== cmd run            handler 0x37e5ea04..0x37e5ea87
+  transfers: 0x37e58920 0x37e593c8 0x37e5ea74 0x37e5e968 0x37e5ea78
+  strings:   none
+
+=== cmd store          handler 0x37e33900..0x37e3396f
+  transfers: 0x37e33960 0x37e5eddc
+  strings:   none
+
+=== cmd unpackimg      handler 0x37e358e0..0x37e35abb
+  transfers: 0x37e35918 0x37e58920 0x37eac21c 0x37e35748 0x37e593c8 0x37e35a9c 0x37eac53c 0x37e5848c 0x37e35978
+  strings:   loadaddr_misc | Err imgread(L%d):
+
+=== cmd imgread?       handler 0x37e356d0..0x37e35747
+  transfers: 0x37e5eddc 0x37e35738 0x37e5eec4
+  strings:   none
+
+=== cmd query          handler 0x37e56224..0x37e562e7
+  transfers: 0x37e562d8 0x37eaaeec 0x37eaacac 0x37e56264
+  strings:   none
+
+=== cmd read_temp      handler 0x37e571f8..0x37e5744b
+  transfers: 0x37e5848c 0x37e56868 0x37e56be8 0x37e57294 0x37e56e6c 0x37eab1c8 0x37e593c8 0x37e1976c 0x37e57364 0x37eac53c 0x37eaae84 0x37e57428 0x37e57438 0x37e57424
+  strings:   temp:%d, adc:%d, tsc:%d, dout:%d | This chip is not trimmed | read calibrated data failed | err_info_tempa
+
+=== cmd temp_triming   handler 0x37e56d80..0x37e56e6b
+  transfers: 0x37eac21c 0x37e593c8 0x37e1976c 0x37e5e968 0x37e56e3c 0x37e56e5c 0x37e56e64
+  strings:   write_trim | write_version 0xc0 | read_temp
+
+=== cmd rsvmem         handler 0x37e62e84..0x37e62eeb
+  transfers: 0x37e5eddc 0x37e62edc
+  strings:   none

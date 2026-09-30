@@ -1,0 +1,65 @@
+dump base 0x37800000   relocaddr R = 0x37e18000   link base L = 0x01000000   reloc_off = 0x36e18000
+
+=== secure-storage module: load copy vs relocated copy, byte for byte ===
+  load  0x01073ba0..0x0107439f   reloc 0x37e8bba0..0x37e8c39f
+  identical: True   diffs: 0
+
+=== the strings (now indexed right) ===
+  0x37ebdcc0  version banner       b'U-Boot 2015.01-g7ac5df7677-dirty (Sep 06 2022 - 12:48:55)'
+  0x37ec00d4  aml log : Sig Check  b'aml log : Sig Check %d\n'
+  0x37ec05b6  Wrong Image Format   b'Wrong Image Format for %s comman'
+  0x37ed260d  set_usb_boot         b'set_usb_boot'
+  0x37ed8021  usb_pcd              b'usb_pcd.c'
+  0x37ed2600  Optimus?             b' '
+
+=== who references the boot strings (ADRP+ADD) ===
+  aml log : Sig Check %d   0x37ec00d4  refs: none
+  Wrong Image Format       0x37ec05b6  refs: none
+  g7ac5df7677 banner       0x37ebdcc7  refs: none
+  set_usb_boot             0x37ed260d  refs: none
+
+=== aml_sec_boot_check: disassembly around the 0x820000ff SMC ===
+  0x37e19e60  cbz      w2, #0x37e19e68               
+  0x37e19e64  mov      w0, #0                        
+  0x37e19e68  ldp      x19, x20, [sp, #0x10]         
+  0x37e19e6c  ldp      x21, x22, [sp, #0x20]         
+  0x37e19e70  ldp      x23, x24, [sp, #0x30]         
+  0x37e19e74  ldr      x25, [sp, #0x40]              
+  0x37e19e78  ldp      x29, x30, [sp], #0x50         
+  0x37e19e7c  ret                                    
+  0x37e19e80  mov      x0, #0x33                     
+  0x37e19e84  movk     x0, #0x8200, lsl #16          
+  0x37e19e88  smc      #0                            
+  0x37e19e8c  cmp      w0, wzr                       
+  0x37e19e90  csinv    w0, w0, wzr, ne               
+  0x37e19e94  ret                                    
+  0x37e19e98  mov      x4, x0                        
+  0x37e19e9c  smc      #0                            
+  0x37e19ea0  mov      w0, w4                        
+  0x37e19ea4  ret                                    
+  0x37e19ea8  stp      x29, x30, [sp, #-0x20]!       
+  0x37e19eac  mov      x29, sp                       
+  0x37e19eb0  str      x19, [sp, #0x10]              
+  0x37e19eb4  mov      x7, x0                        
+  0x37e19eb8  mov      x6, x1                        
+  0x37e19ebc  mov      x5, x2                        
+  0x37e19ec0  mov      x4, x3                        
+  0x37e19ec4  mov      x0, #0xff                     
+  0x37e19ec8  movk     x0, #0x8200, lsl #16          
+  0x37e19ecc  mov      x1, x7                        
+  0x37e19ed0  mov      x2, x6                        
+  0x37e19ed4  mov      x3, x5                        
+  0x37e19ed8  smc      #0                             <-- smc, x0=0x820000ff
+  0x37e19edc  mov      x19, x0                       
+  0x37e19ee0  add      x1, x6, x5                    
+  0x37e19ee4  mov      x0, x6                        
+  0x37e19ee8  bl       #0x37e19310                   
+  0x37e19eec  mov      x0, x19                       
+  0x37e19ef0  ldr      x19, [sp, #0x10]              
+  0x37e19ef4  ldp      x29, x30, [sp], #0x20         
+  0x37e19ef8  ret                                    
+  0x37e19efc  mov      x1, x0                        
+  0x37e19f00  mov      x0, #0x43                     
+  0x37e19f04  movk     x0, #0x8200, lsl #16          
+  0x37e19f08  smc      #0                            
+  0x37e19f0c  ret                                    

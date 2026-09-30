@@ -1,0 +1,122 @@
+every `bl aml_sec_boot_check` (0x37e19ea8): the five instructions before it
+
+--- site 0x37e24cf0  in function 0x37e24c00 bootm
+    0x37e24cd8  mov      w1, w0
+    0x37e24cdc  b        #0x37e24ce4
+    0x37e24ce0  mov      x1, #0x1080000
+    0x37e24ce4  mov      x0, #0x40
+    0x37e24ce8  mov      x2, #0x1800000
+    0x37e24cf0  bl       #0x37e19ea8   <-- aml_sec_boot_check
+    x0 = {0x7, 0x40, 0xb0, 0x37e4b000}   [6 non-id constant(s)]
+--- site 0x37e24f90  in function 0x37e24c00 bootm
+    0x37e24f78  bl       #0x37e5b2f0
+    0x37e24f7c  mov      x19, x0
+    0x37e24f80  mov      x1, #0x1080000
+    0x37e24f84  mov      x2, #0x500
+    0x37e24f88  mov      x3, #7
+    0x37e24f90  bl       #0x37e19ea8   <-- aml_sec_boot_check
+    x0 = {0x100, 0x37e4b000, 0x37e4b16f, 0x37e4b17b}   [6 non-id constant(s)]
+--- site 0x37e2a088  in function 0x37e2a030 
+    0x37e2a070  mov      x1, #0x3fe00
+    0x37e2a074  bl       #0x37e19764
+    0x37e2a078  mov      x3, #0
+    0x37e2a07c  mov      x0, #0x40
+    0x37e2a080  mov      x1, x20
+    0x37e2a088  bl       #0x37e19ea8   <-- aml_sec_boot_check
+    x0 = {0x40, 0x37e4f000, 0x37e4f84c, ?}   [4 non-id constant(s)]
+--- site 0x37e2a0c4  in function 0x37e2a030 
+    0x37e2a0ac  mov      w19, #-0xfb
+    0x37e2a0b0  b        #0x37e2a128
+    0x37e2a0b4  mov      x1, #0x1080000
+    0x37e2a0b8  mov      x2, #0x500
+    0x37e2a0bc  mov      x0, #0x100
+    0x37e2a0c4  bl       #0x37e19ea8   <-- aml_sec_boot_check
+    x0 = {0x40, 0x100, 0x729, 0x37e4f000}   [10 non-id constant(s)]
+--- site 0x37e33e94  in function 0x37e33e00 
+    0x37e33e7c  mov      x1, #0x3fe00
+    0x37e33e80  bl       #0x37e19764
+    0x37e33e84  mov      x0, #0x40
+    0x37e33e88  mov      x1, x20
+    0x37e33e8c  mov      x2, #0x3fe00
+    0x37e33e94  bl       #0x37e19ea8   <-- aml_sec_boot_check
+    x0 = {0x40, 0x37e57000, 0x37e57fa9, 0x37e57fb1}   [6 non-id constant(s)]
+--- site 0x37e33ec8  in function 0x37e33e00 
+    0x37e33eb0  mov      w19, w21
+    0x37e33eb4  b        #0x37e340fc
+    0x37e33eb8  mov      x1, #0x1080000
+    0x37e33ebc  mov      x0, #0x100
+    0x37e33ec0  mov      x2, #0x500
+    0x37e33ec8  bl       #0x37e19ea8   <-- aml_sec_boot_check
+    x0 = {0x40, 0x100, 0x1024, 0x37e57000}   [12 non-id constant(s)]
+--- site 0x37e34084  in function 0x37e33e00 
+    0x37e3406c  mov      x1, #0x3fe00
+    0x37e34070  bl       #0x37e19764
+    0x37e34074  mov      x0, #0x40
+    0x37e34078  mov      x1, x21
+    0x37e3407c  mov      x2, #0x3fe00
+    0x37e34084  bl       #0x37e19ea8   <-- aml_sec_boot_check
+    x0 = {0x40, 0x37e57000, 0x37e575de, 0x37e57e09}   [16 non-id constant(s), 1 memory load(s)]
+--- site 0x37e340d4  in function 0x37e33e00 
+    0x37e340bc  bl       #0x37eaacac
+    0x37e340c0  cbz      w0, #0x37e340fc
+    0x37e340c4  mov      x1, #0x1080000
+    0x37e340c8  mov      x0, #0x100
+    0x37e340cc  mov      x2, #0x500
+    0x37e340d4  bl       #0x37e19ea8   <-- aml_sec_boot_check
+    x0 = {0x40, 0x100, 0x37e57000, 0x37e575de}   [17 non-id constant(s)]
+--- site 0x37e35ec4  in function 0x37e35e7c 
+    0x37e35eac  cbnz     w22, #0x37e35ff8
+    0x37e35eb0  cbz      w0, #0x37e35ef4
+    0x37e35eb4  mov      x1, #0x1080000
+    0x37e35eb8  mov      x0, #0x100
+    0x37e35ebc  mov      x2, #0x500
+    0x37e35ec4  bl       #0x37e19ea8   <-- aml_sec_boot_check
+    x0 = {0x100, ?}   [2 non-id constant(s)]
+--- site 0x37e3623c  in function 0x37e3601c 
+    0x37e36224  mov      x1, x24
+    0x37e36228  bl       #0x37e19764
+    0x37e3622c  mov      x0, #0x40
+    0x37e36230  mov      x1, x19
+    0x37e36234  mov      x2, #0x1800000
+    0x37e3623c  bl       #0x37e19ea8   <-- aml_sec_boot_check
+    x0 = {0x40, 0xe3, 0xf1, 0xf7}   [18 non-id constant(s)]
+--- site 0x37e36340  in function 0x37e362e0 
+    0x37e36328  bl       #0x37eac21c
+    0x37e3632c  mov      x1, #0x1080000
+    0x37e36330  mov      x19, x0
+    0x37e36334  mov      x2, #0x500
+    0x37e36338  mov      x0, #0x100
+    0x37e36340  bl       #0x37e19ea8   <-- aml_sec_boot_check
+    x0 = {0x100, 0x37e58000, 0x37e5884c, ?}   [4 non-id constant(s)]
+--- site 0x37e565e4  in function 0x37e562e8 
+    0x37e565cc  mov      x1, #0x500
+    0x37e565d0  bl       #0x37e19764
+    0x37e565d4  mov      x1, x19
+    0x37e565d8  mov      x0, #0x10
+    0x37e565dc  mov      x2, #0x500
+    0x37e565e4  bl       #0x37e19ea8   <-- aml_sec_boot_check
+    x0 = {0x82000020 (=GET_SHARE_MEM_INPUT_BASE), ...}   [18 non-id constant(s)]
+--- site 0x37e56664  in function 0x37e562e8 
+    0x37e5664c  mov      x1, #0x500
+    0x37e56650  bl       #0x37e19764
+    0x37e56654  mov      x1, x19
+    0x37e56658  mov      x0, #0x20
+    0x37e5665c  mov      x2, #0x500
+    0x37e56664  bl       #0x37e19ea8   <-- aml_sec_boot_check
+    x0 = {0x82000020 (=GET_SHARE_MEM_INPUT_BASE), 0x82000c08, 0x82000c44, ...}   [14 non-id constant(s)]
+--- site 0x37e566f4  in function 0x37e562e8 
+    0x37e566dc  mov      x1, #0x500
+    0x37e566e0  bl       #0x37e19764
+    0x37e566e4  mov      x1, x19
+    0x37e566e8  mov      x0, #0x11
+    0x37e566ec  mov      x2, #0x500
+    0x37e566f4  bl       #0x37e19ea8   <-- aml_sec_boot_check
+    x0 = {0x82000020 (=GET_SHARE_MEM_INPUT_BASE), 0x82000c7e, 0x82000cb6, 0x82001914, ...}   [13 non-id constant(s)]
+--- site 0x37e56774  in function 0x37e562e8 
+    0x37e5675c  mov      x1, #0x500
+    0x37e56760  bl       #0x37e19764
+    0x37e56764  mov      x1, x19
+    0x37e56768  mov      x0, #0x12
+    0x37e5676c  mov      x2, #0x500
+    0x37e56774  bl       #0x37e19ea8   <-- aml_sec_boot_check
+    x0 = {0x82000020 (=GET_SHARE_MEM_INPUT_BASE), 0x82000cec, 0x82000d25, 0x820019f1, ...}   [13 non-id constant(s)]

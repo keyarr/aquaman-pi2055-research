@@ -1,0 +1,20 @@
+=== round 13: re-read 0x37800000..0x38000000, fresh boot, read-only ===
+device: 1b8e:c003 (optimus v2 gadget already alive after power-cycle)
+identify: 00 07 00 10  version 0.7  stage 16 (TPL/BL33-u-boot)
+
+address 0x37800000  size 0x00800000 (8388608)
+chunks  128 upload transfers of 64 KiB
+time    0.570 s   throughput 14.04 MiB/s
+sha256  3d2eca1d7c4030250fef733272878c0ca0f3b798b9ae4ba54a110b7e1012b04e
+0x02 cross-check: MATCH on every ladder step and on the dump head
+
+ladder
+0x200     OK     1 transfer,  8 reads, 24.5 KiB/s
+0x1000    OK     1 transfer, 64 reads, 194.5 KiB/s
+0x10000   OK     1 transfer, 64 reads, 2622.7 KiB/s
+
+=== determinism vs round 12 ===
+cmp round12/mread_37800000_00800000.bin round13/mread_37800000_00800000.bin
+  -> IDENTICAL (0 differing bytes over 8 MiB)
+sha256 round12 = 3d2eca1d7c4030250fef733272878c0ca0f3b798b9ae4ba54a110b7e1012b04e
+sha256 round13 = 3d2eca1d7c4030250fef733272878c0ca0f3b798b9ae4ba54a110b7e1012b04e

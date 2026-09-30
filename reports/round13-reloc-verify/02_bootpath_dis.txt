@@ -1,0 +1,111 @@
+file   reports/round13-reloc-verify/mread_37800000_00800000.bin
+size   8388608 bytes (0x800000)
+base   0x37800000   top 0x38000000
+sha256 3d2eca1d7c4030250fef733272878c0ca0f3b798b9ae4ba54a110b7e1012b04e
+
+compare vs reports/round12-reloc/mread_37800000_00800000.bin
+  sha256 3d2eca1d7c4030250fef733272878c0ca0f3b798b9ae4ba54a110b7e1012b04e
+  identical: True   differing bytes: 0
+
+=== _start  0x37e18000  (32 bytes) ===
+  0x37e18000  b+0x28  quad=0x0000000001000000
+  0x37e18000  b        #0x37e18028
+  0x37e18004  nop      
+
+=== do_bootm  0x37e24c00  (288 bytes) ===
+  0x37e24c00  stp      x29, x30, [sp, #-0x100]!
+  0x37e24c04  mov      x29, sp
+  0x37e24c08  stp      x21, x22, [sp, #0x20]
+  0x37e24c0c  sub      w21, w2, #1
+  0x37e24c10  stp      x19, x20, [sp, #0x10]
+  0x37e24c14  stp      x23, x24, [sp, #0x30]
+  0x37e24c18  stp      x25, x26, [sp, #0x40]
+  0x37e24c1c  str      x27, [sp, #0x50]
+  0x37e24c20  cmp      w21, wzr
+  0x37e24c24  mov      x25, x0
+  0x37e24c28  mov      w24, w1
+  0x37e24c2c  mov      w20, w2
+  0x37e24c30  mov      x19, x3
+  0x37e24c34  b.le     #0x37e24ce0
+  0x37e24c38  ldr      x0, [x3, #8]
+  0x37e24c3c  add      x1, x29, #0x60
+  0x37e24c40  mov      w2, #0x10
+  0x37e24c44  bl       #0x37eac21c
+  0x37e24c48  ldr      x0, [x29, #0x60]
+  0x37e24c4c  ldrb     w3, [x0]
+  0x37e24c50  cbz      w3, #0x37e24cc8
+  0x37e24c54  cmp      w3, #0x3a
+  0x37e24c58  b.eq     #0x37e24cc8
+  0x37e24c5c  cmp      w3, #0x23
+  0x37e24c60  b.eq     #0x37e24cc8
+  0x37e24c64  ldr      x0, [x19, #8]
+  0x37e24c68  adrp     x1, #0x37ee4000
+  0x37e24c6c  mov      w2, #9
+  0x37e24c70  add      x1, x1, #0xcd8
+  0x37e24c74  bl       #0x37e5eddc
+  0x37e24c78  sub      w2, w20, #2
+  0x37e24c7c  add      x3, x19, #0x10
+  0x37e24c80  cbz      x0, #0x37e24e44
+  0x37e24c84  ldr      x4, [x0, #0x10]
+  0x37e24c88  adrp     x5, #0x37f72000
+  0x37e24c8c  cmp      x4, #1
+  0x37e24c90  mov      x0, #7
+  0x37e24c94  add      x5, x5, #0x3e8
+  0x37e24c98  csel     x4, x4, x0, ne
+  0x37e24c9c  ldrsw    x0, [x5, #0x13c]
+  0x37e24ca0  cmp      x0, x4
+  0x37e24ca4  b.lt     #0x37e24cb4
+  0x37e24ca8  adrp     x0, #0x37ec0000
+  0x37e24cac  add      x0, x0, #0xa9
+  0x37e24cb0  b        #0x37e24e40
+  0x37e24cb4  mov      x0, x25
+  0x37e24cb8  mov      w1, w24
+  0x37e24cbc  mov      w6, #0
+  0x37e24cc0  bl       #0x37e255c8
+  0x37e24cc4  b        #0x37e25000
+  0x37e24cc8  ldr      x0, [x19, #8]
+  0x37e24ccc  add      x1, x29, #0x60
+  0x37e24cd0  mov      w2, #0x10
+  0x37e24cd4  bl       #0x37eac21c
+  0x37e24cd8  mov      w1, w0
+  0x37e24cdc  b        #0x37e24ce4
+  0x37e24ce0  mov      x1, #0x1080000
+  0x37e24ce4  mov      x0, #0x40
+  0x37e24ce8  mov      x2, #0x1800000
+  0x37e24cec  mov      x3, #7
+  0x37e24cf0  bl       #0x37e19ea8
+  0x37e24cf4  mov      x20, x0
+  0x37e24cf8  cbz      w0, #0x37e24d10
+  0x37e24cfc  adrp     x0, #0x37ec0000
+  0x37e24d00  mov      w1, w20
+  0x37e24d04  add      x0, x0, #0xd3
+  0x37e24d08  bl       #0x37e593c8
+  0x37e24d0c  b        #0x37e24db0
+  0x37e24d10  adrp     x22, #0x37ec0000
+  0x37e24d14  add      x22, x22, #0xec
+  0x37e24d18  mov      x0, x22
+  0x37e24d1c  bl       #0x37e58920
+
+=== aml_sec_boot_check  0x37e19ea8  (88 bytes) ===
+  0x37e19ea8  stp      x29, x30, [sp, #-0x20]!
+  0x37e19eac  mov      x29, sp
+  0x37e19eb0  str      x19, [sp, #0x10]
+  0x37e19eb4  mov      x7, x0
+  0x37e19eb8  mov      x6, x1
+  0x37e19ebc  mov      x5, x2
+  0x37e19ec0  mov      x4, x3
+  0x37e19ec4  mov      x0, #0xff
+  0x37e19ec8  movk     x0, #0x8200, lsl #16
+  0x37e19ecc  mov      x1, x7
+  0x37e19ed0  mov      x2, x6
+  0x37e19ed4  mov      x3, x5
+  0x37e19ed8  smc      #0
+  0x37e19edc  mov      x19, x0
+  0x37e19ee0  add      x1, x6, x5
+  0x37e19ee4  mov      x0, x6
+  0x37e19ee8  bl       #0x37e19310
+  0x37e19eec  mov      x0, x19
+  0x37e19ef0  ldr      x19, [sp, #0x10]
+  0x37e19ef4  ldp      x29, x30, [sp], #0x20
+  0x37e19ef8  ret      
+  0x37e19efc  mov      x1, x0

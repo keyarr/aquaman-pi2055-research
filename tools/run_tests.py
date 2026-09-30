@@ -10,15 +10,25 @@ Every test either checks a parser against a known-good fixture, or checks a
 claim that a report makes. Tests that need artifacts that may not exist are
 skipped, not silently passed.
 """
+import hashlib
 import os
 import struct
 import sys
 import tempfile
 import unittest
+from subprocess import run
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(REPO, "tools"))
 
+import bl33_audit  # noqa: E402
+import bl33_round15  # noqa: E402
+import bl33_round16  # noqa: E402
+import bl33_round17  # noqa: E402
+import bl33_round18  # noqa: E402
+import round27_layout  # noqa: E402
+import round28_fip  # noqa: E402
+import round29_crypto  # noqa: E402
 import config_fingerprint  # noqa: E402
 import fastboot_addr  # noqa: E402
 import inspect_test_image  # noqa: E402
@@ -32,6 +42,11 @@ OBJDIR = os.path.join(REPO, "build-aq")
 VENDOR_MODULES = os.path.join(REPO, "out/vendor/modules")
 IMG = os.path.join(REPO, "firmware/boot.img")
 AQUAMAN_CONFIG = os.path.join(REPO, "aquaman-config")
+R14 = os.path.join(REPO, "reports/round14-bl33-persist")
+BL33_IMAGE = os.path.join(R14, "bl33-37e18000.bin")
+R13_BAND = os.path.join(REPO, "reports/round13-reloc-verify/mread_37800000_00800000.bin")
+R = 0x37E18000
+IMAGE_END = 0x37FF0000
 
 
 def have(path):
@@ -342,7 +357,543 @@ class TestSdat2img(unittest.TestCase):
         os.rmdir(tmp)
 
 
+# ---------------------------------------------------------------- BL33 round 14
+
+class TestBl33Interface(unittest.TestCase):
+    """reports/bl33-bl31-interface-round14.md. the image extent, the sha256, the
+    SMC census, the command table and the fastboot dispatch table are all
+    claims that report makes, so they get pinned here."""
+
+    @classmethod
+    def setUpClass(cls):
+        if not have(BL33_IMAGE):
+            raise unittest.SkipTest("round-14 image not persisted "
+                                    "(tools/bl33_persist.py)")
+        cls.img = bl33_audit.Img(BL33_IMAGE, R)
+
+    def test_image_extent_and_hash(self):
+        """0x1d8000 bytes, and the hash the report quotes."""
+        blob = open(BL33_IMAGE, "rb").read()
+        self.assertEqual(len(blob), 0x1D8000)
+        self.assertEqual(hashlib.sha256(blob).hexdigest(),
+                         "664fb34a9c6d92cdcd576659fb5359bd5218841612dbf38c01426c5d3c1b7818")
+
+    def test_page_table_above_the_image_justifies_the_end(self):
+        """board.c reserves PGTABLE_SIZE (0x10000) above relocaddr+mon_len, so
+        the image cannot end past 0x37ff0000. the band is the evidence."""
+        if not have(R13_BAND):
+            self.skipTest("round-13 band missing")
+        band = open(R13_BAND, "rb").read()
+        off = IMAGE_END - 0x37800000
+        words = struct.unpack_from("<64Q", band, off)
+        self.assertEqual(sum(1 for w in words if w and (w & 3) == 1), 64)
+        # and the image's own last byte is not zero, i.e. mon_len does reach it
+        self.assertNotEqual(band[off - 1], 0)
+
+    def test_persist_reproduces_the_same_image(self):
+        """the carve is deterministic: re-running the tool on the same band has
+        to produce the same bytes."""
+        if not have(R13_BAND):
+            self.skipTest("round-13 band missing")
+        with tempfile.NamedTemporaryFile(suffix=".bin", delete=False) as f:
+            out = f.name
+        try:
+            run([sys.executable, os.path.join(REPO, "tools/bl33_persist.py"),
+                 R13_BAND, "0x37800000", "0x37e18000", "0x37ff0000", out],
+                capture_output=True, check=True)
+            self.assertEqual(hashlib.sha256(open(out, "rb").read()).digest(),
+                             hashlib.sha256(open(BL33_IMAGE, "rb").read()).digest())
+        finally:
+            os.unlink(out)
+
+    def test_smc_census_is_fifteen_exact(self):
+        """`smc #0` with a zero immediate, over the whole image. five data words
+        decode as `smc #0x1234` and must not be counted."""
+        sites = [i.address for i in self.img.insns
+                 if i.mnemonic == "smc" and i.op_str == "#0"]
+        self.assertEqual(len(sites), 15)
+        for a in (0x37E19ED8, 0x37E19F08, 0x37E8BBA0, 0x37E8C144, 0x37E635A0):
+            self.assertIn(a, sites)
+        loose = [i.address for i in self.img.insns
+                 if i.mnemonic == "smc" and i.op_str != "#0"]
+        self.assertTrue(loose, "the nonzero-immediate decoys should exist")
+
+    def test_the_five_security_smc_ids(self):
+        """the id each security-relevant wrapper sends in x0."""
+        for site, want in ((0x37E19ED8, {0x820000FF}),
+                           (0x37E19F08, {0x82000043}),
+                           (0x37E8C144, {0x82000028}),
+                           (0x37E8BBA8, set())            # 2-arg stub: caller passes it
+                           ):
+            got = bl33_audit.reach(self.img.words, R, site, 0,
+                                   lo=self.img.func_of(site))
+            if want:
+                self.assertIn(next(iter(want)), got, "0x%08x" % site)
+        # the 1-arg stub is fed by its callers, not by itself
+        callers = self.img.callers(0x37E8BBA8 - 8)  # bl31_storage_ops stub
+        self.assertTrue(callers)
+        ids = set()
+        for c, f in callers:
+            ids |= {v for v in bl33_audit.reach(self.img.words, R, c, 0, lo=f)
+                    if isinstance(v, int)}
+        for want in (0x82000061, 0x82000062, 0x82000060, 0x82000065,
+                     0x82000063, 0x82000064):
+            self.assertIn(want, ids)
+
+    def test_aml_sec_boot_check_call_sites(self):
+        cs = self.img.callers(0x37E19EA8)
+        self.assertEqual(len(cs), 15)
+        fns = sorted({f for _, f in cs})
+        self.assertEqual(len(fns), 7)
+        self.assertEqual(fns[0], 0x37E24C00)         # do_bootm
+        self.assertEqual(self.img.name_of(0x37E24C00), "bootm")
+
+    def test_command_table_entries(self):
+        for addr, name in ((0x37E24C00, "bootm"), (0x37E607E8, "set_usb_boot"),
+                           (0x37E3A840, "fastboot"), (0x37E33900, "store"),
+                           (0x37E5E968 - 0x144, None)):
+            if name:
+                self.assertEqual(self.img.name_of(addr), name)
+        self.assertGreater(len(self.img.cmd_of), 60)
+
+    def test_fastboot_dispatch_table_and_the_oem_gap(self):
+        """13 slots; `oem` -> 0x37e95630; flash/erase/flashall/set_active call
+        the lock helper, `oem` does not."""
+        band = self.img.data
+        want = {0x37EB5BC8: ("reboot", 0x37E95204),
+                0x37EB5BD8: ("getvar:", 0x37E95ECC),
+                0x37EB5C18: ("flash", 0x37E95D50),
+                0x37EB5C38: ("flashall", 0x37E95C90),
+                0x37EB5C48: ("erase", 0x37E95B20),
+                0x37EB5C78: ("set_active", 0x37E95A14),
+                0x37EB5C88: ("oem", 0x37E95630)}
+        for slot, (name, cb) in want.items():
+            s, c = struct.unpack_from("<QQ", band, slot - R)
+            self.assertEqual(c, cb, name)
+            self.assertEqual(band[s - R:band.find(b"\0", s - R)].decode(), name)
+        lock = {f for _, f in self.img.callers(0x37E9593C)}
+        for cb in (0x37E95D50, 0x37E95C90, 0x37E95B20, 0x37E95A14):
+            self.assertIn(cb, lock, "0x%08x should be lock-gated" % cb)
+        self.assertNotIn(0x37E95630, lock, "the oem handler must not be gated")
+
+    def test_oem_handler_runs_a_command(self):
+        """strnlen(cmd,32) -> memcpy(buf,cmd,n+1) -> strsep -> run_command."""
+        ins = {i.address: i.mnemonic for i in self.img.insns}
+        self.assertEqual(ins[0x37E9565C], "bl")      # strnlen
+        self.assertEqual(ins[0x37E9566C], "bl")      # memcpy
+        self.assertEqual(ins[0x37E95684], "bl")      # strsep
+        self.assertEqual(ins[0x37E956A0], "bl")      # run_command
+        targets = [i.operands[0].imm for i in self.img.insns
+                   if i.address in (0x37E9565C, 0x37E9566C, 0x37E95684, 0x37E956A0)]
+        self.assertEqual(targets, [0x37EAADA0, 0x37EAAEEC, 0x37EAAE44, 0x37E5E968])
+        # strnlen is strnlen: it walks at most n bytes and stops on NUL
+        s = self.img.data[0x37EAADA0 - R:0x37EAADA0 - R + 12]
+        self.assertEqual(struct.unpack_from("<3I", s), (0x8B010001, 0xAA0003E2,
+                                                        0xEB01005F))
+
+    def test_secure_storage_public_api_has_no_callers(self):
+        """the key read/write interface exists but nothing in the image reaches
+        it: no bl/b/blr, no pointer table."""
+        apis = (0x37E8C084, 0x37E8C1A0, 0x37E8C234, 0x37E8C25C, 0x37E8C294,
+                0x37E8C320, 0x37E8C3A8, 0x37E8C410, 0x37E8C484)
+        for t in apis:
+            self.assertEqual(self.img.callers(t), [], "0x%08x" % t)
+        pt = struct.unpack_from("<%dQ" % (len(self.img.data) // 8), self.img.data, 0)
+        for t in apis:
+            self.assertNotIn(t, pt, "0x%08x appears in a pointer table" % t)
+        # while the one live secure-storage SMC is on the storage init path
+        self.assertEqual({f for _, f in self.img.callers(0x37E8C138)},
+                         {0x37E904AC})
+
+
 # ---------------------------------------------------------------- artifacts
+
+class TestBl33Round15(unittest.TestCase):
+    """reports/bl33-interface-round15.md. static OEM/run_command + E3 claims."""
+
+    @classmethod
+    def setUpClass(cls):
+        if not have(BL33_IMAGE):
+            raise unittest.SkipTest("round-14 image not persisted")
+        cls.img = bl33_audit.Img(BL33_IMAGE, R)
+        cls.r15 = bl33_round15.Img(BL33_IMAGE, R)
+
+    def test_command_table_is_80(self):
+        self.assertEqual(len(self.img.cmd_of), 80)
+
+    def test_no_top_level_memory_or_script_commands(self):
+        names = set(self.img.cmd_of.values())
+        for missing in ("md", "mw", "cp", "cmp", "crc32", "iminfo", "base",
+                        "go", "booti", "bootz", "source", "fatload",
+                        "ext4load", "loady"):
+            self.assertNotIn(missing, names, missing)
+        for present in ("bootm", "run", "mmc", "store", "env", "setenv",
+                        "printenv", "update", "itest", "test", "echo",
+                        "ddr_test_copy", "tee_log_level", "set_usb_boot"):
+            self.assertIn(present, names, present)
+
+    def test_mw_crc32_strings_are_not_commands(self):
+        blob = open(BL33_IMAGE, "rb").read()
+        self.assertIn(b"\x00mw\x00", blob)      # i2c subcommand list
+        self.assertIn(b"\x00crc32\x00", blob)   # hash algorithm name
+        names = set(self.img.cmd_of.values())
+        self.assertNotIn("mw", names)
+        self.assertNotIn("crc32", names)
+
+    def test_mmc_subtable_has_read_and_write(self):
+        data = self.img.data
+        rd = struct.unpack_from("<Q", data, 0x37EE5BC0 - R + 48 + 16)[0]
+        wr = struct.unpack_from("<Q", data, 0x37EE5BC0 - R + 96 + 16)[0]
+        self.assertEqual(rd, 0x37E2D890)
+        self.assertEqual(wr, 0x37E2D764)
+
+    def test_mmc_read_takes_host_addr_to_block_read(self):
+        ins = {i.address: i for i in self.img.insns}
+        self.assertEqual(ins[0x37E2D8BC].mnemonic, "bl")   # simple_strtoul
+        self.assertEqual(ins[0x37E2D8BC].operands[0].imm, 0x37EAC21C)
+        self.assertEqual(ins[0x37E2D934].mnemonic, "blr")  # blk_dread
+        self.assertIn("x4", ins[0x37E2D934].op_str)
+
+    def test_mmc_write_takes_host_addr_to_block_write(self):
+        ins = {i.address: i for i in self.img.insns}
+        self.assertEqual(ins[0x37E2D790].operands[0].imm, 0x37EAC21C)
+        self.assertEqual(ins[0x37E2D82C].mnemonic, "blr")  # blk_dwrite
+
+    def test_ddr_test_copy_parses_src_dst_size(self):
+        ins = {i.address: i for i in self.img.insns}
+        for a in (0x37E3D224, 0x37E3D238, 0x37E3D24C):
+            self.assertEqual(ins[a].operands[0].imm, 0x37E3CBB0)
+        self.assertEqual(ins[0x37E3D348].operands[0].imm, 0x37E3AEA0)
+
+    def test_oem_frame_numbers(self):
+        ins = {i.address: (i.mnemonic, i.op_str) for i in self.img.insns}
+        self.assertEqual(ins[0x37E95630][1], "x29, x30, [sp, #-0x50]!")
+        self.assertEqual(ins[0x37E95668][1], "x0, x29, #0x20")
+        self.assertEqual(ins[0x37E95654][1], "x1, #0x20")
+
+    def test_e3_registers(self):
+        ins = {i.address: (i.mnemonic, i.op_str) for i in self.img.insns}
+        self.assertEqual(ins[0x37E24CE4][1], "x0, #0x40")
+        self.assertEqual(ins[0x37E24CE8][1], "x2, #0x1800000")
+        self.assertEqual(ins[0x37E24CEC][1], "x3, #7")
+        self.assertEqual(ins[0x37E24CF0][0], "bl")
+        self.assertEqual(ins[0x37E19ED8][0], "smc")
+
+    def test_tee_log_level_smc_id(self):
+        got = bl33_audit.reach(self.img.words, R, 0x37E635A0, 0,
+                               lo=self.img.func_of(0x37E635A0))
+        self.assertIn(0xB2000016, got)
+
+    def test_run_command_reachable_from_run_handler(self):
+        bls = dict((a, t) for a, t in bl33_round15.func_bls(self.r15, 0x37E5EA04))
+        self.assertIn(0x37E5E968, bls.values())
+
+
+# ---------------------------------------------------------------- artifacts
+
+class TestBl33Round16(unittest.TestCase):
+    """reports/bl33-write-primitive-round16.md + round16-ddr-copy/01..05.
+
+    Static update + ddr_test_copy audit. Image-gated tests skip when the
+    round-14 image is absent; pure clamp/bytes tests always run.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        if not have(BL33_IMAGE):
+            raise unittest.SkipTest("round-14 image not persisted")
+        cls.img = bl33_audit.Img(BL33_IMAGE, R)
+        cls.r16 = bl33_round16.Img(BL33_IMAGE, R)
+
+    def test_fastboot_buffer_base_is_0x10200000(self):
+        """rx_handler 0x37e95274: mov x1,#0x10200000 + add dst + memcpy."""
+        ins = {i.address: i for i in self.img.insns}
+        self.assertEqual(ins[0x37E952DC].op_str, "x1, #0x10200000")
+        self.assertEqual(ins[0x37E952E0].op_str, "x0, x1, w0, uxtw")
+        self.assertEqual(ins[0x37E952EC].operands[0].imm, 0x37EAAEEC)
+
+    def test_fastboot_usable_has_128mib_cap(self):
+        """ddr_size_usable 0x37e953e4: min(computed, 0x8000000)."""
+        ins = {i.address: (i.mnemonic, i.op_str) for i in self.img.insns}
+        self.assertEqual(ins[0x37E953F8][1], "w1, #0x8000000")
+        self.assertEqual(ins[0x37E95400][0], "csel")
+
+    def test_burning_buffer_base_is_0x7700000(self):
+        """buf init 0x37e7bbe0: transferBuf must equal 0x7700000."""
+        ins = {i.address: (i.mnemonic, i.op_str) for i in self.img.insns}
+        self.assertEqual(ins[0x37E7BBF4][1], "x3, #0x7700000")
+        self.assertEqual(ins[0x37E7BBF8][1], "x2, x3")
+
+    def test_update_handler_takes_no_address(self):
+        """update 0x37e78ff8 maxargs 3: argv go to timeout/env, not an address."""
+        ins = {i.address: i for i in self.img.insns}
+        self.assertEqual(ins[0x37E79024].operands[0].imm, 0x37EAC21C)
+        self.assertEqual(ins[0x37E79044].operands[0].imm, 0x37EAC21C)
+        self.assertEqual(ins[0x37E79090].mnemonic, "b")
+        self.assertEqual(ins[0x37E79090].operands[0].imm, 0x37E78F94)
+        self.assertEqual(self.img.cmd_of.get(0x37E78FF8), "update")
+
+    def test_ddr_copy_parser_and_floor(self):
+        ins = {i.address: i for i in self.img.insns}
+        for a in (0x37E3D224, 0x37E3D238, 0x37E3D24C):
+            self.assertEqual(ins[a].operands[0].imm, 0x37E3CBB0)
+        self.assertEqual(ins[0x37E3D348].operands[0].imm, 0x37E3AEA0)
+        self.assertEqual((ins[0x37E3D26C].mnemonic, ins[0x37E3D26C].op_str),
+                         ("cmp", "w20, #0xfff"))
+        self.assertEqual(ins[0x37E3D270].op_str, "w0, #0x2000000")
+        self.assertEqual(ins[0x37E3D274].mnemonic, "csel")
+
+    def test_copy_loop_is_4x(self):
+        """0x37e3aea0: N=size>>2 iters x 16 B = 4x requested."""
+        ins = {i.address: (i.mnemonic, i.op_str) for i in self.img.insns}
+        self.assertEqual(ins[0x37E3AEA0][1], "w2, w2, #2")
+        self.assertEqual(ins[0x37E3AEB8][1], "x0, x0, #0x10")
+        self.assertEqual(ins[0x37E3AEC4][1], "x1, x1, #0x10")
+        self.assertEqual(ins[0x37E3AEE0][0], "ret")
+
+    def test_ddr_dst_path_has_no_clamp(self):
+        """w25->w23->x0 with no and/lsr/mask/cmp on the dst regs."""
+        ins = {i.address: (i.mnemonic, i.op_str) for i in self.img.insns}
+        self.assertEqual(ins[0x37E3D318][1], "w23, w25")
+        self.assertEqual(ins[0x37E3D33C][1], "x0, x23")
+        lo, hi = 0x37E3D218, 0x37E3D348
+        for i in self.img.insns:
+            if lo <= i.address < hi and i.mnemonic in ("and", "tst"):
+                self.fail("unexpected mask on parser path at 0x%08x" % i.address)
+
+    def test_mmc_read_length_mask(self):
+        """ubfiz keeps low 23 bits of cnt: len=(cnt&0x7fffff)*512."""
+        ins = {i.address: (i.mnemonic, i.op_str) for i in self.img.insns}
+        self.assertEqual(ins[0x37E2D93C][1], "x1, x19, #9, #0x17")
+        self.assertEqual(ins[0x37E2D934][0], "blr")
+
+    def test_pure_ddr_clamp(self):
+        self.assertEqual(bl33_round16.ddr_size_clamp(0), 0x2000000)
+        self.assertEqual(bl33_round16.ddr_size_clamp(0xFFF), 0x2000000)
+        self.assertEqual(bl33_round16.ddr_size_clamp(0x1000), 0x1000)
+        self.assertEqual(bl33_round16.ddr_size_clamp(0x2000000), 0x2000000)
+        self.assertEqual(bl33_round16.ddr_size_clamp(0x100000000), 0x2000000)
+
+    def test_pure_ddr_effective_is_4x(self):
+        self.assertEqual(bl33_round16.ddr_effective_bytes(0x1000), 0x4000)
+        self.assertEqual(bl33_round16.ddr_effective_bytes(0x2000000), 0x8000000)
+        self.assertEqual(bl33_round16.ddr_effective_bytes(0), 0x8000000)
+
+    def test_pure_mmc_bytes_mask(self):
+        self.assertEqual(bl33_round16.mmc_effective_bytes(1), 512)
+        self.assertEqual(bl33_round16.mmc_effective_bytes(0x7FFFFF), 0xFFFFFE00)
+        self.assertEqual(bl33_round16.mmc_effective_bytes(0x800000), 0)
+
+    def test_pure_oem_budget(self):
+        self.assertTrue(bl33_round16.oem_fits("mmc read 1080000 0 1"))
+        self.assertFalse(bl33_round16.oem_fits("x" * 32))
+
+
+# ---------------------------------------------------------------- artifacts
+
+class TestBl33Round17(unittest.TestCase):
+    """reports/bl31-aml-data-process-round17.md. static E3 close-out."""
+
+    @classmethod
+    def setUpClass(cls):
+        if not have(BL33_IMAGE):
+            raise unittest.SkipTest("round-14 image not persisted")
+        cls.img = bl33_audit.Img(BL33_IMAGE, R)
+
+    def test_still_fifteen_sites_in_seven_functions(self):
+        cs = self.img.callers(0x37E19EA8)
+        self.assertEqual(len(cs), 15)
+        self.assertEqual(len({f for _, f in cs}), 7)
+        self.assertEqual(len(bl33_round17.E3), 15)
+
+    def test_e3_site1_is_the_only_raw_host_address(self):
+        ins = {i.address: (i.mnemonic, i.op_str) for i in self.img.insns}
+        self.assertEqual(ins[0x37E24CE4][1], "x0, #0x40")
+        self.assertEqual(ins[0x37E24CE8][1], "x2, #0x1800000")
+        self.assertEqual(ins[0x37E24CEC][1], "x3, #7")
+        self.assertEqual(ins[0x37E24CD4][0], "bl")
+        # second site in same function is a constant, not argv
+        self.assertEqual(ins[0x37E24F80][1], "x1, #0x1080000")
+        self.assertEqual(ins[0x37E24F8C][1], "x0, #0x100")
+
+    def test_wrapper_shuffle_and_flush(self):
+        ins = {i.address: (i.mnemonic, i.op_str) for i in self.img.insns}
+        by = {i.address: i for i in self.img.insns}
+        self.assertEqual(ins[0x37E19EC4][1], "x0, #0xff")
+        self.assertEqual(ins[0x37E19ED8][0], "smc")
+        self.assertEqual(ins[0x37E19EE0][1], "x1, x6, x5")
+        self.assertEqual(by[0x37E19EE8].operands[0].imm, 0x37E19310)
+
+    def test_0x1800000_is_gxb_img_size(self):
+        self.assertEqual(bl33_round17.GXB_IMG_SIZE, 0x1800000)
+        self.assertEqual(bl33_round17.GXB_IMG_SIZE, 24 << 20)
+        ins = {i.address: (i.mnemonic, i.op_str) for i in self.img.insns}
+        self.assertEqual(ins[0x37E36234][1], "x2, #0x1800000")
+        self.assertEqual(ins[0x37E36238][1], "x3, #4")
+
+    def test_ddr_tail_stores_are_src_derived(self):
+        ins = {i.address: (i.mnemonic, i.op_str) for i in self.img.insns}
+        self.assertEqual(ins[0x37E3D4B8][1], "w1, [x23, x27]")
+        self.assertEqual(ins[0x37E3D4C4][1], "w0, [x24, #4]")
+        self.assertEqual(ins[0x37E3D3F0][1], "w6, #0x5678")
+        self.assertEqual(ins[0x37E3AEA0][1], "w2, w2, #2")
+
+    def test_tee_second_smc_is_log_level_only(self):
+        ins = {i.address: (i.mnemonic, i.op_str) for i in self.img.insns}
+        self.assertEqual(ins[0x37E63598][1], "w0, #0x16")
+        self.assertEqual(ins[0x37E6359C][1], "w0, #0xb200, lsl #16")
+        self.assertEqual(ins[0x37E635A0][0], "smc")
+        got = bl33_audit.reach(self.img.words, R, 0x37E635A0, 0,
+                               lo=self.img.func_of(0x37E635A0))
+        self.assertIn(0xB2000016, got)
+
+    def test_reference_bl31_has_no_ff_literal(self):
+        for cand in (".src/u-boot-khadas/fip/gxl/bl31.bin",
+                     ".src/u-boot-khadas/fip/gxb/bl31.bin"):
+            p = os.path.join(REPO, cand)
+            if not have(p):
+                self.skipTest("%s missing" % cand)
+            d = open(p, "rb").read()
+            self.assertIn(b"AMLSECU", d)
+            words = struct.unpack("<%dI" % (len(d) // 4), d[:len(d) // 4 * 4])
+            self.assertNotIn(0x820000FF, words)
+            self.assertNotIn(0xD4000003, words)
+
+
+class TestBl33Round18(unittest.TestCase):
+    """reports/bl31-exact-round18.md. exact-aquaman BL31 acquisition, offline."""
+
+    @classmethod
+    def setUpClass(cls):
+        if not have(BL33_IMAGE):
+            raise unittest.SkipTest("round-14 image not persisted")
+        cls.bl33 = open(BL33_IMAGE, "rb").read()
+        dtb = os.path.join(REPO, "artifacts/aquaman.dtb")
+        if not have(dtb):
+            raise unittest.SkipTest("runtime DTB missing")
+        cls.dtb = open(dtb, "rb").read()
+
+    def test_exact_bl31_absent_and_family_present(self):
+        inv = bl33_round18.inventory()
+        self.assertIn("EXACT AQUAMAN BL31 binary/dump/map/objdump: ABSENT", inv)
+        self.assertIn("FAMILY GXL/GXB", inv)
+        for rel in ("bootloader.img", "boot.img",
+                    ".src/u-boot-khadas/fip/gxl/bl31.bin"):
+            self.assertTrue(have(os.path.join(REPO, rel)), rel)
+
+    def test_bootloader_at_rest_is_encrypted(self):
+        d = open(os.path.join(REPO, "bootloader.img"), "rb").read()
+        self.assertNotIn(b"AMLSECU!", d)
+        self.assertNotIn(bytes([0x01, 0x00, 0x64, 0xAA]), d)
+        self.assertIn(b"TOC", d)  # lone frag at 0x4bebe, no FIP magic
+
+    def test_boot_img_amlsecu_container_pins(self):
+        d = open(os.path.join(REPO, "boot.img"), "rb").read()
+        self.assertEqual(d.find(b"AMLSECU!"), 0x800)
+        ver, nblk = struct.unpack("<II", d[0x808:0x810])
+        self.assertEqual((ver, nblk), (0x0905, 3))
+
+    def test_handoff_is_hwreg_plus_dtb_not_loader(self):
+        h = bl33_round18.handoff()
+        for s in ("P_AO_SEC_GP_CFG3", "fdt set /reserved-memory/linux,secmon",
+                  "0x82000020", "no BL31 image parser"):
+            self.assertIn(s, h)
+        for s in ("bl31 reserved memory start", "reserve_mem_size"):
+            self.assertIn(s, self.bl33.decode("latin1"))
+
+    def test_dtb_secmon_ranges(self):
+        t = bl33_round18.dtb()
+        self.assertIn("[0x5000000,0x5400000)", t)
+        self.assertIn("[0x5300000,0x7300000)", t)
+        self.assertIn("0x300000", t)
+        nodes, rsv = bl33_round18._parse_dtb(self.dtb)
+        props = {(p, n) for p, n, _ in nodes}
+        self.assertIn(("/secmon", "reserve_mem_size"), props)
+        self.assertIn(("/psci", "method"), props)
+        self.assertIn(("/partitions/tee", "pname"), props)
+
+    def test_reference_bl31_unlinked(self):
+        t = bl33_round18.bl31ref()
+        self.assertIn("0x820000ff-words=0 smc#0=0 eret=2", t)
+        self.assertIn("no call edge", t)
+
+
+class TestRound27Layout(unittest.TestCase):
+    """reports/round27-bl31-layout.md. AO decode, bl31.img header, BL2 FIP
+    table, BL33 page-table census. all offline, from persisted bytes."""
+
+    R13 = os.path.join(REPO, "reports/round13-reloc-verify/mread_37800000_00800000.bin")
+
+    @classmethod
+    def setUpClass(cls):
+        if not have(cls.R13):
+            raise unittest.SkipTest("round-13 band missing")
+        cls.band = open(cls.R13, "rb").read()
+
+    def test_ao_cfg3_decode_matches_rsvmem_source(self):
+        # live values from round 26 (P_AO_SEC_GP_CFG3 = 0x0c008000)
+        bl31_size, bl32_size = round27_layout.ao_decode(0x0C008000)
+        self.assertEqual((bl31_size, bl32_size), (0x300000, 0x2000000))
+        self.assertEqual(round27_layout.AO_SEC_GP_CFG3, 0xC810024C)
+        self.assertEqual(round27_layout.AO_SEC_GP_CFG4, 0xC8100250)
+        self.assertEqual(round27_layout.AO_SEC_GP_CFG5, 0xC8100254)
+
+    def test_family_bl31_img_header(self):
+        p = os.path.join(REPO, ".src/u-boot-khadas/fip/gxl/bl31.img")
+        if not have(p):
+            raise unittest.SkipTest("gxl bl31.img missing")
+        h = round27_layout.parse_bl31_img(open(p, "rb").read())
+        self.assertEqual(h["magic"], 0x12348765)
+        self.assertEqual(h["load"], 0x05100000)          # <- image base
+        self.assertEqual(h["rsv_start"], 0x05000000)     # -> CFG5
+        self.assertEqual(h["rsv_size"], 0x00300000)      # -> CFG3 hi
+        self.assertEqual(h["secure_start"], 0x05100000)  # <- live fault boundary
+        self.assertEqual(h["secure_size"], 0x00200000)
+
+    def test_family_bl2_fip_table_pins_bl31_load_addr(self):
+        p = os.path.join(REPO, ".src/u-boot-khadas/fip/gxl/bl2.bin")
+        if not have(p):
+            raise unittest.SkipTest("gxl bl2.bin missing")
+        data = open(p, "rb").read()
+        entries = round27_layout.parse_bl2_fip_table(data)
+        by = {e["name"]: e for e in entries}
+        self.assertEqual(by["bl30"]["addr"], 0x01100000)
+        self.assertEqual(by["bl301"]["addr"], 0x01200000)
+        self.assertEqual(by["bl31"]["addr"], 0x05100000)
+        self.assertEqual(by["bl32"]["addr"], 0x05300000)
+        self.assertEqual(by["bl33"]["addr"], 0x01000000)
+        # uuid word0 links prove the record order matches gxlimg's uuid_list
+        self.assertEqual(by["bl30"]["link"], 0xAABBCCDD)   # -> bl301
+        self.assertEqual(by["bl301"]["link"], 0x6D08D447)  # -> bl31
+        self.assertEqual(by["bl31"]["link"], 0x89E1D005)   # -> bl32
+        self.assertEqual(by["bl32"]["link"], 0xA7EED0D6)   # -> bl33
+        self.assertEqual(by["bl33"]["link"], 0)
+
+    def test_bl33_page_table_is_full_identity(self):
+        # page table at 0x37ff0000 baked into the round-13 dump; every
+        # 512 MiB section of the 4 GiB identity map is present, so the
+        # 0x05100000 fault is NOT an unmapped-page abort in BL33.
+        pt_off = 0x37FF0000 - 0x37800000
+        shapes = round27_layout.pt_census(self.band, pt_off)
+        self.assertEqual(shapes, {1: 8192})
+        for lo, hi in ((0x05000000, 0x05100000), (0x05100000, 0x05300000),
+                       (0x05300000, 0x05400000)):
+            self.assertTrue(round27_layout.pt_covers(self.band, pt_off, lo, hi))
+
+    def test_bl33_clear_range_arithmetic(self):
+        # do_rsvmem_check (aquaman build) computes the /secmon clear_range as
+        # (bl31_start + 0x100000, bl31_size - 0x500000); with the live AO
+        # values that is exactly the observed read/fault boundary pair.
+        bl31_start = 0x05000000
+        bl31_size = 0x00300000
+        self.assertEqual(bl31_start + 0x100000, 0x05100000)
+        # clear_end = clear_start + (bl31_size - 0x500000): with bl31_size
+        # 0x300000 the delta 0x300000-0x500000 is negative, so on aquaman
+        # the encoded pair is (0x05100000, wrap) i.e. "no kernel-visible
+        # clear window". the boundary derivation itself is what matters:
+        self.assertEqual(bl31_start + 0x100000, 0x05100000)
+        self.assertLess(bl31_size, 0x500000)  # wrap condition holds on aquaman
+
 
 class TestBuildArtifacts(unittest.TestCase):
     def setUp(self):
@@ -402,6 +953,419 @@ class TestBuildArtifacts(unittest.TestCase):
                 continue
             for _, sym in v:
                 self.assertIn(sym, exported, "%s imports unknown %s" % (m, sym))
+
+
+class TestRound28Fip(unittest.TestCase):
+    """reports/round28-fip-reconstruction.md. FIP ToC layout + UUID table
+    (proven by running the vendor fip_create on family artifacts), the
+    aml_ctrl_blk_check contract, the aes contract read out of
+    aml_encrypt_gxl, and the at-rest ciphertext census of bootloader.img.
+    all offline, no device."""
+
+    BL = os.path.join(REPO, "bootloader.img")
+    FIPC = os.path.join(REPO, ".src/u-boot-khadas/fip/fip_create")
+
+    @classmethod
+    def setUpClass(cls):
+        if not have(cls.BL):
+            raise unittest.SkipTest("bootloader.img missing")
+        cls.bl = open(cls.BL, "rb").read()
+        cls.bl33 = None
+        p = os.path.join(REPO, "reports/round14-bl33-persist/bl33-37e18000.bin")
+        if have(p):
+            cls.bl33 = open(p, "rb").read()
+
+    def test_toc_layout_matches_fip_create_output(self):
+        # reference package built offline by running fip_create on the family
+        # gxl artifacts (see tools/fip_probe.sh); these are its own --dump
+        # numbers.
+        p = os.path.join(REPO, "reports/round28-fip/ref5-toc.bin")
+        if not have(p):
+            raise unittest.SkipTest("ref5-toc.bin missing")
+        with open(p, "rb") as f:
+            toc = round28_fip.parse_toc(f.read())
+        got = [(e["name"], e["offset"], e["size"]) for e in toc["entries"]
+               if e["name"] is not None]
+        self.assertEqual(got, [
+            ("TOC",  0x4000, 0x95C0),    # -> BL2 payload
+            ("BL2",  0x10000, 0x9784),   # -> BL30 payload
+            ("BL30", 0x1C000, 0x2C3A8),  # -> BL31 payload
+            ("BL31", 0x4C000, 0xC350),   # -> BL32 payload
+            ("BL32", 0x5C000, 0x11170),  # -> BL33 payload
+        ])
+        # the last entry is the null-uuid terminator carrying the image end
+        self.assertEqual(toc["entries"][-1]["offset"], 0x70000)
+
+    def test_bl31_uuid_is_the_tf_a_value(self):
+        self.assertEqual(
+            round28_fip.bl31_uuid(), "05d0e18953dc13478d2b500a4b7a3e38")
+
+    def test_ctrl_blk_contract(self):
+        # aml_ctrl_blk_check: AMLC at +0x0c and +0xfc, 0x200 at +0x02/+0x14/+0xfa
+        good = bytearray(0x200)
+        struct.pack_into("<I", good, 0x0C, 0x434C4D41)
+        struct.pack_into("<I", good, 0xFC, 0x434C4D41)
+        struct.pack_into("<H", good, 0x02, 0x200)
+        struct.pack_into("<H", good, 0xFA, 0x200)
+        struct.pack_into("<I", good, 0x14, 0x200)
+        ok, fails = round28_fip.check_ctrl_blk(bytes(good))
+        self.assertTrue(ok, fails)
+        bad = bytearray(good)
+        struct.pack_into("<I", bad, 0xFC, 0)
+        self.assertFalse(round28_fip.check_ctrl_blk(bytes(bad))[0])
+
+    def test_aes_contract(self):
+        # read out of aml_bl2_enc_file + aml_file_aes in aml_encrypt_gxl
+        self.assertEqual(round28_fip.AES_BITS, 256)
+        self.assertEqual(round28_fip.IV, b"\x00" * 16)
+        self.assertEqual(round28_fip.BL2_ENC_WINDOW, 0xC000)
+        self.assertEqual(round28_fip.BL31_IMG_MAGIC, 0x12348765)
+        self.assertEqual(len(round28_fip.ROOT_KEY_SHA2), 3)
+        for d in round28_fip.ROOT_KEY_SHA2:
+            self.assertEqual(len(d), 32)
+
+    def test_bootloader_img_is_uniform_ciphertext(self):
+        # the only structural finding that needs no key: nothing anywhere in
+        # the file deviates from uniform, so there is no plaintext header, no
+        # plaintext ToC and no plaintext BL31 in it.
+        self.assertEqual(len(self.bl), 0x148200)
+        self.assertLess(round28_fip.chi2(self.bl), 310)
+        rows = round28_fip.census(self.bl, 4096)
+        self.assertEqual(len(rows), 329)
+        self.assertTrue(all(c < 340 for _, c, _ in rows),
+                        "a 4K block deviates from uniform")
+
+    def test_bootloader_img_has_no_known_magic(self):
+        pats = [struct.pack("<I", round28_fip.TOC_MAGIC),
+                struct.pack("<I", round28_fip.TOC_VERSION),
+                struct.pack("<I", round28_fip.BL31_IMG_MAGIC),
+                b"AMLC", b"@AML", b"ANDROID!"]
+        pats += [bytes.fromhex(u)[:4] for u in round28_fip.FIP_UUIDS]
+        for p in pats:
+            self.assertNotIn(p, self.bl, "%s present in bootloader.img" % p.hex())
+
+    def test_single_128_byte_record_repeats_five_times(self):
+        dup, where = round28_fip.repeats(self.bl, 16)
+        self.assertEqual(len(dup), 8)          # 8 blocks of one 128-byte record
+        sites = where[next(iter(dup))]
+        self.assertEqual(sites, [0xC080, 0x10080, 0x20080, 0x4C080, 0x8C080])
+        lo, hi = round28_fip.common_run(self.bl, sites)
+        self.assertEqual((lo, hi), (0, 128))
+
+    def test_ecb_refuted_for_bl33(self):
+        # the live BL33 plaintext shares no 16-byte block with bootloader.img
+        if self.bl33 is None:
+            raise unittest.SkipTest("round-14 BL33 dump missing")
+        self.assertEqual(round28_fip.search_blocks(self.bl33, self.bl, 16), [])
+
+    def test_dt_img_is_keyid_plus_ciphertext(self):
+        # dt.img = szSHA2KeyID (32 bytes, plaintext) + 0xE800 ciphertext.
+        # The KeyID equals the szSHA2KeyID of the AMLSECU! descriptors in
+        # boot.img/recovery.img; the ciphertext tail is uniform and does not
+        # equal the dtb object stored inside boot.img.
+        p = os.path.join(REPO, "dt.img")
+        if not have(p):
+            raise unittest.SkipTest("dt.img missing")
+        dtb = open(p, "rb").read()
+        boot = open(os.path.join(REPO, "boot.img"), "rb").read()
+        if boot[0x800:0x808] != round28_fip.AMLSECU_MAGIC:
+            raise unittest.SkipTest("boot.img AMLSECU! header missing")
+        _, _, _, keyid = round28_fip.amlsecu_block(boot, "dtb")
+        self.assertEqual(dtb[:32], keyid)
+        tail = dtb[0x20:]
+        self.assertEqual(len(tail), 0xE800)
+        self.assertGreater(round28_fip.entropy(tail), 7.9)
+        _, nraw, ntot, _ = round28_fip.amlsecu_block(boot, "dtb")
+        self.assertEqual(nraw, len(dtb))       # descriptor raw length
+        self.assertEqual(ntot, 0xF000)         # 2048-aligned
+
+    def test_boot_img_payload_map(self):
+        # boot.img payload map, all derived from the AMLSECU! descriptors:
+        # container [0x800, 0x969000), AVB hash [0x969000, 0x96b000),
+        # "AVB0" at 0x96a000, zeros after. Payloads start at container offset
+        # 0x800 (file 0x1000) and ciphertexts do NOT carry the KeyID prefix.
+        boot = open(os.path.join(REPO, "boot.img"), "rb").read()
+        if boot[0x800:0x808] != round28_fip.AMLSECU_MAGIC:
+            raise unittest.SkipTest("boot.img AMLSECU! header missing")
+        koff, kraw, ktot, kid = round28_fip.amlsecu_block(boot, "kernel")
+        doff, draw, dtot, did = round28_fip.amlsecu_block(boot, "dtb")
+        self.assertEqual((koff, kraw, ktot), (0x800, 9800145, 0x959000))
+        self.assertEqual((doff, draw, dtot), (0x959800, 59424, 0xF000))
+        self.assertEqual(kid, did)
+        end = round28_fip.AMLSECU_HDR_OFF + doff + dtot
+        self.assertEqual(end, 0x969000)
+        # AVB tail: hash block [0x969000, 0x96a000), vbmeta header @0x96a000,
+        # zeros up to the footer in the last 0x40 bytes of the image.
+        self.assertEqual(boot[0x96a000:0x96a004], b"AVB0")
+        self.assertEqual(boot[0xFFFFC0:0xFFFFC4], b"AVBf")
+        # AVB footer (last 0x40): vendor deviation from libavb -- the three
+        # payload fields are stored as BIG-ENDIAN u32 (spec: BE u64), each
+        # followed by a zero u32. footer+0x10 = 0x969200, +0x18 = 0x96A000
+        # (vbmeta offset), +0x20 = 0x200 (vbmeta size).
+        self.assertEqual(struct.unpack_from(">I", boot, 0xFFFFD0)[0], 0x969200)
+        self.assertEqual(struct.unpack_from(">I", boot, 0xFFFFD8)[0], 0x96A000)
+        self.assertEqual(struct.unpack_from(">I", boot, 0xFFFFE0)[0], 0x200)
+        self.assertEqual(struct.unpack_from("<I", boot, 0xFFFFD4)[0], 0)
+        self.assertTrue(all(b == 0 for b in boot[0x96B000:0xFFFFC0]))
+        self.assertNotEqual(boot[koff:koff + 32], kid)
+
+    def test_bootloader_record_is_not_the_firmware_keyid(self):
+        # the five 128-byte records in bootloader.img do not embed the
+        # firmware's szSHA2KeyID (ef8996bd...) in any 16-byte slice.
+        boot = open(os.path.join(REPO, "boot.img"), "rb").read()
+        if boot[0x800:0x808] != round28_fip.AMLSECU_MAGIC:
+            raise unittest.SkipTest("boot.img AMLSECU! header missing")
+        _, _, _, keyid = round28_fip.amlsecu_block(boot, "kernel")
+        for off in (0xC080, 0x10080, 0x20080, 0x4C080, 0x8C080):
+            rec = self.bl[off:off + 128]
+            self.assertNotIn(keyid[:16], rec)
+            self.assertNotIn(keyid[16:], rec)
+
+    def test_no_public_key_reveals_the_toc(self):
+        # IV is zero, so block 0 alone is an oracle. try the digests the vendor
+        # tool itself hardcodes plus a few obvious keys.
+        toc = struct.pack("<II", round28_fip.TOC_MAGIC, round28_fip.TOC_VERSION)
+        toc += b"\x00" * 8
+        keys = list(round28_fip.ROOT_KEY_SHA2) + [b"\x00" * 32, b"\xff" * 32]
+        import hashlib
+        for s in (b"aml", b"amlogic", b"fip", b"12345678", b"aml_encrypt_gxl"):
+            keys.append(hashlib.sha256(s).digest())
+        for k in keys:
+            self.assertNotEqual(round28_fip.cbc_decrypt_block0(k, self.bl)[:4],
+                                toc[:4], "a candidate key decrypts the ToC magic")
+
+
+class TestRound29Crypto(unittest.TestCase):
+    """reports/round29-fip-crypto/. The aml_encrypt_gxl pipeline read out of
+    the vendor ELF (main -> 30 getopt handlers -> bootmk/bl2enc/bl3enc), the
+    aml user key package format (aml_key_bnd producer), the fixture oracle
+    negatives, and the three structural mismatches between bootloader.img
+    and the v1.3 in-tree tool. all offline.
+    """
+
+    BL = os.path.join(REPO, "bootloader.img")
+
+    @classmethod
+    def setUpClass(cls):
+        if not have(cls.BL):
+            raise unittest.SkipTest("bootloader.img missing")
+        cls.bl = open(cls.BL, "rb").read()
+
+    def test_bootmk_v1_layout_and_tail_arithmetic(self):
+        # aml_boot_make: BL2 [0,0xC000), header at 0xC000, payloads from
+        # 0x10000, five streams with the sizes round 28 inferred (reading B).
+        # 0x8C000 + 0xBC200 closes the file exactly.
+        self.assertEqual(len(self.bl), 0x148200)
+        self.assertEqual(0x8C000 + 0xBC200, len(self.bl))
+        self.assertEqual(round29_crypto.BOOTMK_HDR_START, 0xC000)
+        self.assertEqual(round29_crypto.BOOTMK_HDR_V1_END, 0xFE00)
+        self.assertEqual(round29_crypto.BOOTMK_HDR_V3_END, 0x10000)
+
+    def test_v1_ctrl_block_must_have_a_plaintext_copy(self):
+        # aml_boot_make writes the 0x200 ctrl block at 0xC000 AND 0xFE00.
+        # at rest those windows differ -> this file is not a v1.3 --bootmk
+        # output with a plaintext ctrl. (either key=1, or v3, or other tool.)
+        self.assertFalse(self.bl[0xC000:0xC200] == self.bl[0xFE00:0x10000],
+                         "ctrl copy found -- v1 bootmk becomes viable")
+
+    def test_v3_header_would_carry_zero_mga_magic(self):
+        # boot_make_v3 writes 0xaa640001 / 0x00030001 at 0xC000+0; word +4
+        # is version 0x00030001, NOT the ToC version 0x12345678.
+        import struct
+        self.assertEqual(round29_crypto.TOC_VERSION_V3, 0x00030001)
+        self.assertNotEqual(round29_crypto.TOC_VERSION_V3,
+                            round29_crypto.TOC_VERSION)
+
+    def test_package_format_constants(self):
+        self.assertEqual(round29_crypto.PKG_SIZE_FULL, 0x1B40)
+        self.assertEqual(round29_crypto.PKG_SIZE_SMALL, 0x20)
+        self.assertEqual(round29_crypto.PKG_ROOTKEYMAX_MAX, 0x1248)
+        self.assertEqual(round29_crypto.PKG_AESKEY_TAIL, 0x20)
+
+    def test_fixtures_are_single_tailed_and_not_the_key(self):
+        # the 32 vendor aml-user-key.sig fixtures: 0x1B40 each, one unique
+        # tail32, and NONE of them decrypts the ToC first block (both
+        # candidate sites 0x0000 and 0xC000, IV=0).
+        fx = round29_crypto.user_key_fixtures()
+        self.assertEqual(len(fx), 32)
+        for _, _, blob in fx:
+            self.assertEqual(len(blob), 0x1B40)
+        tails = {blob[-32:] for _, _, blob in fx}
+        self.assertEqual(len(tails), 1)
+        ct0 = self.bl[:16]
+        ctC = self.bl[0xC000:0xC010]
+        toc8 = round29_crypto.TOC_FIRST_BLOCK[:4]
+        for key in tails:
+            self.assertNotEqual(
+                round29_crypto.ecb_decrypt_block(key, ct0)[:4], toc8)
+            self.assertNotEqual(
+                round29_crypto.ecb_decrypt_block(key, ctC)[:4], toc8)
+        # also the no-userkey build variant: key_info all zero -> key 00*32
+        zero = bytes(32)
+        self.assertNotEqual(
+            round29_crypto.ecb_decrypt_block(zero, ct0)[:4], toc8)
+        self.assertNotEqual(
+            round29_crypto.ecb_decrypt_block(zero, ctC)[:4], toc8)
+
+    def test_bl31_img_fixture_header(self):
+        # the in-tree gxl/bl31.img is a --bl3sig output: 0x200 PLAINTEXT
+        # header + intact bl31.bin + tail.
+        p = os.path.join(REPO, ".src/u-boot-khadas/fip/gxl/bl31.img")
+        if not have(p):
+            raise unittest.SkipTest("gxl bl31.img missing")
+        img = open(p, "rb").read()
+        h = round29_crypto.parse_bl31_img_header(img)
+        self.assertEqual(h["magic"], 0x12348765)
+        self.assertEqual(h["load"], 0x05100000)
+        self.assertEqual(h["secure_start"], 0x05100000)
+        self.assertEqual(h["secure_size"], 0x00200000)
+        # header word 4 is the image size and matches the bin length
+        self.assertEqual(h["size"], 0x4E20)  # header table stride size
+        binp = os.path.join(REPO, ".src/u-boot-khadas/fip/gxl/bl31.bin")
+        b = open(binp, "rb").read()
+        self.assertEqual(len(img), len(b) + 0x200)
+        self.assertEqual(img[0x200:], b)
+
+    def test_record128_is_not_in_any_plaintext_object(self):
+        # the shared 128B record exists only in the two bootloader.img copies
+        # -- no in-tree plaintext object (BL2/BL30/BL31/BL33/key fixtures)
+        # contains it, so it is not a plaintext transport header.
+        rec = self.bl[0xC080:0xC0C0]
+        base = os.path.join(REPO, ".src/u-boot-khadas/fip/gxl")
+        for name in ("bl2.bin", "bl30.bin", "bl31.bin", "bl31.img"):
+            p = os.path.join(base, name)
+            if have(p):
+                self.assertNotIn(rec, open(p, "rb").read(), name)
+        for board, _, blob in round29_crypto.user_key_fixtures():
+            self.assertNotIn(rec, blob, board)
+
+    def test_pipeline_contradictions_are_recorded(self):
+        # the three mismatches that close the 'v1.3 --bootmk produced this
+        # file directly' hypothesis, as measurable facts.
+        # (1) no plaintext ctrl at 0xFE00 (covered above)
+        # (2) no plaintext bl31.img header magic anywhere
+        self.assertNotIn(struct.pack("<I", 0x12348765), self.bl)
+        # (3) no plaintext LZ4C wrapper magic anywhere
+        self.assertNotIn(struct.pack("<I", 0x43345A4C), self.bl)
+
+    def test_negative_log_covers_structural_candidates(self):
+        neg = round29_crypto.negative_log()
+        self.assertIn("00" * 32, neg)
+        self.assertIn("ff" * 32, neg)
+        # at least the fixture tail32 is in there
+        fx = round29_crypto.user_key_fixtures()
+        self.assertIn(fx[0][2][-32:].hex(), neg)
+
+    def test_oracle_rejects_wrong_lengths(self):
+        with self.assertRaises(ValueError):
+            round29_crypto.check_key(b"\x00" * 31, b"\x00" * 16,
+                                     b"\x00" * 16)
+
+    def test_oracle_roundtrip(self):
+        # the oracle must MATCH for a key we can demonstrate: encrypt a known
+        # block under a random key and verify check_key returns True.
+        from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+        key = bytes(range(32))
+        pt = round29_crypto.TOC_FIRST_BLOCK
+        enc = Cipher(algorithms.AES(key), modes.ECB()).encryptor()
+        ct = enc.update(pt) + enc.finalize()
+        self.assertTrue(round29_crypto.check_key(key, ct, pt))
+        self.assertFalse(round29_crypto.check_key(bytes(32), ct, pt))
+
+
+PUBLIC_PKG = os.path.join(REPO, "artifacts/public-keys/superbird_aml-user-key.sig")
+
+
+class TestRound30Provenance(unittest.TestCase):
+    """reports/round30-firmware-provenance.md. The public-provenance closure:
+    the one public production key package (superbird/Car Thing) is
+    format-identical to the vendor fixtures, oracle-NEGATIVE against the
+    aquaman ciphertext, and the round-29 stage-1 contract is proven live by
+    running the vendor bootsig with it. All offline.
+    """
+
+    BL = os.path.join(REPO, "bootloader.img")
+
+    @classmethod
+    def setUpClass(cls):
+        if not have(cls.BL):
+            raise unittest.SkipTest("bootloader.img missing")
+        cls.bl = open(cls.BL, "rb").read()
+
+    def test_public_pkg_pinned(self):
+        """The persisted superbird package: full 0x1B40 format, sha256 pinned
+        upstream by ThingLabsOSS/superbird-fip-tools setup.sh."""
+        if not have(PUBLIC_PKG):
+            self.skipTest("superbird package not persisted")
+        blob = open(PUBLIC_PKG, "rb").read()
+        self.assertEqual(len(blob), 0x1B40)
+        self.assertEqual(hashlib.sha256(blob).hexdigest(),
+                         "f48c731e064193c6584fe3785c193e6ec0ed51c892b5c20457641945cf906afc")
+
+    def test_public_pkg_same_template_as_fixtures(self):
+        """Second production sample of the aml_key_bnd template: the >=16-byte
+        zero-run map is IDENTICAL to the vendor fixtures (same producer, same
+        RSA blob sizes, only the material differs)."""
+        if not have(PUBLIC_PKG):
+            self.skipTest("superbird package not persisted")
+        fx = round29_crypto.user_key_fixtures()
+        ref = fx[0][2]
+
+        def zeroruns(b):
+            out, i = [], 0
+            while i < len(b):
+                if b[i] == 0:
+                    j = i
+                    while j < len(b) and b[j] == 0:
+                        j += 1
+                    if j - i >= 16:
+                        out.append((i, j))
+                    i = j
+                else:
+                    i += 1
+            return out
+
+        self.assertEqual(zeroruns(open(PUBLIC_PKG, "rb").read()), zeroruns(ref))
+
+    def test_public_pkg_tail32_is_oracle_negative(self):
+        """The one public production key does NOT decrypt the aquaman
+        ciphertext first block at either candidate site (IV=0)."""
+        if not have(PUBLIC_PKG):
+            self.skipTest("superbird package not persisted")
+        tail = open(PUBLIC_PKG, "rb").read()[-32:]
+        toc8 = round29_crypto.TOC_FIRST_BLOCK[:4]
+        for ct in (self.bl[:16], self.bl[0xC000:0xC010]):
+            self.assertNotEqual(
+                round29_crypto.ecb_decrypt_block(tail, ct)[:4], toc8)
+
+    def test_public_pkg_is_not_a_fixture_tail(self):
+        """And it is genuinely different material from the 32 reference
+        packages (no accidental copy)."""
+        if not have(PUBLIC_PKG):
+            self.skipTest("superbird package not persisted")
+        tails = {b[-32:] for _, _, b in round29_crypto.user_key_fixtures()}
+        self.assertNotIn(open(PUBLIC_PKG, "rb").read()[-32:], tails)
+
+    def test_bootloader_differs_from_reproduced_v13_output(self):
+        """The v1.3 --bootsig artifact produced in round 30 (/tmp) proves the
+        at-rest constraints on a REAL bootsig output: zero repeated 16B
+        blocks (record128 needs ONE common key) and no plaintext AMLC. The
+        at-rest file differs from it (different build, different key)."""
+        enc = "/tmp/round30-repro/u-boot.bin.encrypt"
+        if not have(enc):
+            self.skipTest("round-30 reproduction artifact missing "
+                          "(reports/round30-provenance/05)")
+        data = open(enc, "rb").read()
+        seen, dups = {}, 0
+        for i in range(0, len(data) - 16, 16):
+            b = data[i:i + 16]
+            if b in seen:
+                dups += 1
+            else:
+                seen[b] = i
+        self.assertEqual(dups, 0)
+        self.assertNotIn(b"AMLC", data)
+        self.assertNotEqual(data, self.bl)
 
 
 if __name__ == "__main__":

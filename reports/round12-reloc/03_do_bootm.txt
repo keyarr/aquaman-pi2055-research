@@ -1,0 +1,65 @@
+aml_sec_boot_check       0x37e19ea8  BL callers: 0x37e24cf0 0x37e24f90 0x37e2a088 0x37e2a0c4 0x37e33e94 0x37e33ec8 0x37e34084 0x37e340d4 0x37e35ec4 0x37e3623c 0x37e36340 0x37e565e4 0x37e56664 0x37e566f4 0x37e56774
+set_usb_boot wrapper     0x37e19efc  BL callers: 0x37e60838 0x37e76594
+flush_dcache_range       0x37e19310  BL callers: 0x37e19ee8 0x37e3ef44 0x37e3effc 0x37e3f080 0x37e3f138 0x37e3f1cc 0x37e3f284 0x37e3f86c 0x37e3f90c 0x37e3f998 0x37e3fa3c 0x37e3fadc 0x37e3fb80 0x37e91134 0x37e91644 0x37e9b720
+
+=== disassembly of the top caller of aml_sec_boot_check (candidate do_bootm) ===
+  0x37e24c60  b.eq     #0x37e24cc8                     
+  0x37e24c64  ldr      x0, [x19, #8]                   
+  0x37e24c68  adrp     x1, #0x37ee4000                 
+  0x37e24c6c  mov      w2, #9                          
+  0x37e24c70  add      x1, x1, #0xcd8                  
+  0x37e24c74  bl       #0x37e5eddc                     
+  0x37e24c78  sub      w2, w20, #2                     
+  0x37e24c7c  add      x3, x19, #0x10                  
+  0x37e24c80  cbz      x0, #0x37e24e44                 
+  0x37e24c84  ldr      x4, [x0, #0x10]                 
+  0x37e24c88  adrp     x5, #0x37f72000                 
+  0x37e24c8c  cmp      x4, #1                          
+  0x37e24c90  mov      x0, #7                          
+  0x37e24c94  add      x5, x5, #0x3e8                  
+  0x37e24c98  csel     x4, x4, x0, ne                  
+  0x37e24c9c  ldrsw    x0, [x5, #0x13c]                
+  0x37e24ca0  cmp      x0, x4                          
+  0x37e24ca4  b.lt     #0x37e24cb4                     
+  0x37e24ca8  adrp     x0, #0x37ec0000                 
+  0x37e24cac  add      x0, x0, #0xa9                   
+  0x37e24cb0  b        #0x37e24e40                     
+  0x37e24cb4  mov      x0, x25                         
+  0x37e24cb8  mov      w1, w24                         
+  0x37e24cbc  mov      w6, #0                          
+  0x37e24cc0  bl       #0x37e255c8                     
+  0x37e24cc4  b        #0x37e25000                     
+  0x37e24cc8  ldr      x0, [x19, #8]                   
+  0x37e24ccc  add      x1, x29, #0x60                  
+  0x37e24cd0  mov      w2, #0x10                       
+  0x37e24cd4  bl       #0x37eac21c                     
+  0x37e24cd8  mov      w1, w0                          
+  0x37e24cdc  b        #0x37e24ce4                     
+  0x37e24ce0  mov      x1, #0x1080000                  
+  0x37e24ce4  mov      x0, #0x40                       
+  0x37e24ce8  mov      x2, #0x1800000                  
+  0x37e24cec  mov      x3, #7                          
+  0x37e24cf0  bl       #0x37e19ea8                      <-- calls aml_sec_boot_check
+  0x37e24cf4  mov      x20, x0                         
+  0x37e24cf8  cbz      w0, #0x37e24d10                 
+  0x37e24cfc  adrp     x0, #0x37ec0000                 
+  0x37e24d00  mov      w1, w20                         
+  0x37e24d04  add      x0, x0, #0xd3                   
+  0x37e24d08  bl       #0x37e593c8                     
+  0x37e24d0c  b        #0x37e24db0                     
+  0x37e24d10  adrp     x22, #0x37ec0000                
+  0x37e24d14  add      x22, x22, #0xec                 
+  0x37e24d18  mov      x0, x22                         
+  0x37e24d1c  bl       #0x37e58920                     
+  0x37e24d20  mov      x20, x0                         
+  0x37e24d24  cbnz     x0, #0x37e24d44                 
+  0x37e24d28  adrp     x0, #0x37ec0000                 
+  0x37e24d2c  mov      w1, w20                         
+  0x37e24d30  add      x0, x0, #0xf1                   
+  0x37e24d34  bl       #0x37e5e968                     
+  0x37e24d38  mov      x0, x22                         
+  0x37e24d3c  bl       #0x37e58920                     
+  0x37e24d40  mov      x20, x0                         
+  0x37e24d44  adrp     x0, #0x37ec0000                 
+  0x37e24d48  mov      x1, x20                         
+  0x37e24d4c  add      x0, x0, #0xff                   

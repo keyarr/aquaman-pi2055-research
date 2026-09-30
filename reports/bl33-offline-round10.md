@@ -1,5 +1,11 @@
 # BL33 offline, round 10: the 256 KiB window is U-Boot, matched on secure storage
 
+> **refined by `reports/bl33-offline-round11.md`.** §5's relocation question is
+> answered: there is no second copy in the dump and no `0x40000` delta. the
+> window is the middle of a `0x01000000`-based load copy, and the §9 model line
+> "0x01040000 is the base/entrypoint" becomes "base is 0x01000000, the window is
+> at +0x40000". every measurement in this file stands.
+
 date: 2026-09-29, round 10. offline only. no usb, no device, no write, no 0x05,
 no eMMC, no reset. the input is the round 8 dump that was already on disk and was
 not re-read.
