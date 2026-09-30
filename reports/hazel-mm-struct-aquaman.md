@@ -320,28 +320,39 @@ stay `0`: `create_cache` uses `kmem_cache_zalloc` (`slab_common.c:336`), and the
 only writer of `s->offset` is the `SLAB_DESTROY_BY_RCU | SLAB_POISON | ctor`
 block at `slub.c:3455-3467`, none of which applies to this cache.
 
-`tools/ghostlock_target.h:222` records `GL_MM_SIZE 0x338`, and the comment
-above it claims "0x338 = 824B -> 4 objects per 4K page"
-(`tools/ghostlock_target.h:219`), with `GL_MM_OBJS_PER_PAGE 4`
-(`tools/ghostlock_target.h:237`). **The size is the wrong grid and the object
-count is the wrong order.** The stride the kernel actually walks is `0x340`,
-and the slab is order 1 with 9 objects. `tools/ghostlock_leak_cal.c:77` prints
-the same wrong pair, and labels it "kmalloc-1024", which is also wrong.
+`tools/ghostlock_target.h:227` records `GL_MM_SIZE 0x338`. The stride the
+kernel actually walks is `0x340`, and the slab is order 2 with 19 objects
+(derived in §3.3; a prior revision of this report said order 1 / 9 objects,
+which was wrong — see §3.3 correction).
 
 On the merge question, because a merged cache would break the whole grid:
 `find_mergeable` (`mm/slab_common.c:253-297`) rejects every `kmalloc-*`
-candidate for this cache on two independent checks. `size` is first
-`ALIGN(824, 64) = 832`, then `if (s->size - size >= sizeof(void *)) continue;`
-(`slab_common.c:287`) rejects a 1024-byte cache outright
-(`1024 - 832 = 192 >= 8`), and `if (align > s->align || s->align % align)
-continue;` (`slab_common.c:288-289`) rejects it again, since `align` is 64 for
-this cache and `s->align` is 8 for `kmalloc-*`. So `mm_struct` ends up in a
-dedicated cache named `mm_struct`, as the comment at
-`tools/ghostlock_target.h:219` says. Residual caveat: merging is only *attempted*
-because `slab_nomerge` is `0` by default (`slab_common.c:47`), and it can be
-forced to 1 by a `slab_nomerge` kernel command-line parameter
-(`slab_common.c:49-59`). A `slab_nomerge` on the device cmdline would only make
-the cache *more* dedicated, not less, so this does not affect the geometry.
+candidate for this cache. `size` is first `ALIGN(824, 64) = 832`, then
+`if (size > s->size) continue;` (`slab_common.c:276`) rejects the smaller
+caches (`kmalloc-512` and below), and
+`if (s->size - size >= sizeof(void *)) continue;` (`slab_common.c:288`)
+rejects the larger ones outright (`1024 - 832 = 192 >= 8` for
+`kmalloc-1024`, more for the rest). Note the merge gate before those:
+`SLAB_MERGE_SAME` (`slab_common.c:279`) passes for both sides here because
+`SLAB_NOTRACK`/`SLAB_ACCOUNT` evaluate to `0` (`CONFIG_KMEMCHECK`/
+`CONFIG_MEMCG` unset in `aquaman-config`), and the align check
+(`slab_common.c:285`) also passes (`kmalloc-*` align is 64 on this tree via
+`ARCH_KMALLOC_MINALIGN=ARCH_DMA_MINALIGN=64`, not 8 — a prior revision of
+this report said 8, which was wrong). The size window is what rejects:
+a merge needs an existing cache with `s->size` in `[832, 839]`, and none
+exists. Non-kmalloc neighbours existing at `proc_caches_init()` time miss
+it by hundreds of bytes (lab DWARF: `fs_cache` stride `0x40`, `files_cache`
+`0x2c0`, `signal_cache` `0x440`, `task_struct` `0xdc0`; `sighand_cache` is
+unmergeable via `SLAB_DESTROY_BY_RCU`+ctor; boot caches carry
+`refcount=-1`). Had a merge happened, `__kmem_cache_alias`
+(`slub.c:4208-4236`) would have adopted the older cache's geometry and name.
+So `mm_struct` ends up in a dedicated cache named `mm_struct`. Residual
+caveat: merging is only *attempted* because `slab_nomerge` is `0` by default
+(`slab_common.c:47`), and it can be forced to 1 by a `slab_nomerge` kernel
+command-line parameter (`slab_common.c:49-59`); the stock cmdline
+(`boot.img` header) has none. A `slab_nomerge` on the device cmdline would
+only make the cache *more* dedicated, not less, so this does not affect the
+geometry.
 
 ### 3.3 Order and objects per slab
 
@@ -355,31 +366,56 @@ max_objects = order_objects(slub_max_order, size, reserved);
 min_objects = min(min_objects, max_objects);
 ```
 
-- `slub_max_order = PAGE_ALLOC_COSTLY_ORDER` = 1 (`slub.c:3175`), no
-  `CONFIG_SLUB_MAX_ORDER` in 4.9.
+- `slub_max_order = PAGE_ALLOC_COSTLY_ORDER` = 3 (`slub.c:3175`,
+  `mmzone.h:36`, `Documentation/vm/slub.txt:120`), no
+  `CONFIG_SLUB_MAX_ORDER` in 4.9. A prior revision of this report said 1;
+  that was wrong (1 is neither the default nor present anywhere on this
+  path) and everything derived from it (min_objects=9, order 1) was wrong
+  with it. Overrides checked and absent: no `slub_max_order=` /
+  `slub_min_objects=` / `slub_min_order=` / `slab_nomerge` / `maxcpus` on
+  the stock cmdline (`boot.img` header:
+  `androidboot.dtbo_idx=0 otg_device=1 buildvariant=user`);
+  `debug_guardpage_minorder()` is 0 (`CONFIG_DEBUG_PAGEALLOC=n`,
+  `aquaman-config:5250`); no vendor assignment to `slub_max_order` anywhere
+  in the tree (only `mm/slub.c`; the Amlogic `MEMORY_EXTEND` hooks touch
+  the `kmalloc_order` large path and `L1_CACHE_SHIFT`, not the order path).
 - `slub_min_objects` is a boot/module param, `0` by default
   (`CONFIG_SLUB_MIN_OBJECTS` does not exist in 4.9; confirmed absent from both
-  configs and from the Kconfig).
+  configs and from the Kconfig). Same for `slub_min_order` (= 0).
 - `reserved = 0` (needs `SLAB_DESTROY_BY_RCU`; not set here).
+- `nr_cpu_ids = 4` at `proc_caches_init()` time: `setup_nr_cpu_ids()` runs
+  in `start_kernel` (`init/main.c:517`), long before `proc_caches_init()`
+  (`init/main.c:642`); the runtime DTB (`artifacts/aquaman.dtb`) has 4 CPU
+  nodes, so `nr_cpu_ids = find_last_bit(possible,8)+1 = 4`
+  (`kernel/smp.c:541-544`). No `maxcpus=` to clamp it further.
 
-Objects per slab at each order, with `size = 0x340`:
+Objects per slab at each order, with `size = 0x340`, and the waste gate
+(`rem <= slab_size / fraction`, fraction tried as 16, then 8, then 4 —
+note: the divisor is the fraction itself, not `100/(100-fraction)`; a prior
+revision used the percentage form from newer kernels, which was wrong):
 
 ```
-order 0:  4096 B ->  4 objects, 768 B leftover
-order 1:  8192 B ->  9 objects, 704 B leftover
-order 2: 16384 B -> 19 objects, 576 B leftover
-order 3: 32768 B -> 39 objects, 320 B leftover
+order 0:  4096 B ->  4 objects, 768 B leftover (18.8%; > 1/16 and > 1/8)
+order 1:  8192 B ->  9 objects, 704 B leftover ( 8.6%; > 1/16, <= 1/8)
+order 2: 16384 B -> 19 objects, 576 B leftover ( 3.5%; <= 1/16)
+order 3: 32768 B -> 39 objects, 320 B leftover ( 1.0%; <= 1/16)
 ```
 
-`min_objects` per CPU count:
+`min_objects = 4 * (fls(nr_cpu_ids) + 1)`, capped at
+`max_objects = order_objects(slub_max_order, size, 0)`:
 
 ```
-nr_cpu_ids=1 -> fls=1 -> min_objects=8  vs max(order 1)=9 -> 8
-nr_cpu_ids=2 -> fls=2 -> min_objects=12 vs 9 -> 9
-nr_cpu_ids=4 -> fls=3 -> min_objects=16 vs 9 -> 9
+nr_cpu_ids=1 -> fls=1 -> min_objects=8   vs max(order 3)=39 -> 8
+nr_cpu_ids=2..3 -> fls=2 -> min_objects=12 vs 39 -> 12
+nr_cpu_ids=4..7 -> fls=3 -> min_objects=16 vs 39 -> 16
+nr_cpu_ids=8 -> fls=4 -> min_objects=20 vs 39 -> 20
 ```
 
-Then the loop tries `fraction = 16, 8, 4` and `slub_order()`
+(`min_objects` is a floor that sets the start order, not the final object
+count — see §3.6. A prior revision plugged `min(16, 9) = 9`, which only
+holds under the refuted `max_order=1` premise.)
+
+Then the loop tries `fraction = 16, 8, 4` and `slab_order()`
 (`slub.c:3203-3225`):
 
 ```c
@@ -392,20 +428,31 @@ for (order = max(min_order, get_order(min_objects * size + reserved));
 }
 ```
 
-`fract_leftover = 100 / (100 - fraction)`.
+Aquaman case (`nr_cpu_ids=4`, `min_objects=16`, `max_order=3`):
+start at `get_order(16*832) = get_order(13312) = 2`.
+`order 2`: `slab_size=16384`, `rem = 576`, fraction 16 gives
+`576 <= 16384/16 = 1024` -> **break at the first fraction tried**.
+=> **order 2, 19 objects per 16384-byte slab.** No fraction fallback, no
+`min_objects` decrement loop (`while (min_objects > 1)` at `slub.c:3248`
+is never reached).
 
-- `nr_cpu_ids=4` (A53 quad, per `reports/ghostlock-oracle-v2-device.md:41`),
-  `min_objects=9`: start at `get_order(9*832) = get_order(7488) = 1`.
-  `order 1`: `slab_size=8192`, `rem = 704`, `fract_leftover` for
-  fraction 16 is `100/84 = 1`, so `704 <= 8192/1` is true -> **break, order 1**.
-  => **9 objects per 8192-byte slab.**
-- `nr_cpu_ids=1`, `min_objects=8`: start at `get_order(8*832)=get_order(6656)=1`.
-  Same evaluation -> **order 1, 9 objects**.
+Sensitivity (same code, other inputs):
+- `nr_cpu_ids=1`, `min_objects=8`: start `get_order(6656)=1`; order 1:
+  `704 > 8192/16=512`, no break; order 2: `576 <= 1024`, break -> order 2.
+- `nr_cpu_ids=8`, `min_objects=20`: start `get_order(16640)=3`; order 3:
+  `320 <= 2048`, break -> order 3, 39 objects. Ruled out by the 4-CPU DTB.
+- `max_order=1` (refuted, needs a cmdline param that is absent):
+  `min(16,9)=9`, start 1, order 1 fails at fraction 16, passes at
+  fraction 8 (`704 <= 1024`) -> order 1, 9 objects. This is the only branch
+  that yields order 1, and its premise contradicts the stock cmdline.
+- `max_order=0`: order 0, 4 objects. Same refutation.
 
-So the derivation lands on **order 1, 9 objects, 8192 B per slab** for any CPU
-count from 1 to 4. It does not depend on the unresolved CPU count.
+So the derivation lands on **order 2, 19 objects, 16384 B per slab** for
+`nr_cpu_ids` 1..7 (4 on device), and the CPU count only matters at 8.
+The old `order=1` result is refuted, not merely unconfirmed.
 
-**Derived geometry (`LAB`, with a small `CONF` component):**
+**Derived geometry (`LAB` sizes + `CONF` config/cmdline/DTB + `UNK` stock
+binary):**
 
 ```
 cache name      : "mm_struct"          (fork.c:2140)   CONF (source)
@@ -415,23 +462,37 @@ inuse           : 0x338               (slub.c:3453)         LAB
 s->size (stride): 0x340 (832)          (slub.c:3502)    LAB
 s->offset       : 0x0                                    LAB
 s->align        : 0x40 (64)            (slab_common.c:304)  LAB
-slab order      : 1 (8192 B)           (slub.c:3227)    LAB
-objects/slab    : 9                    (oo_make)        LAB
+slab order      : 2 (16384 B)          (slub.c:3227)    INFERRED (closed
+objects/slab    : 19                   (oo_make)         derivation; stock
+max_order       : 3 (PAGE_ALLOC_COSTLY_ORDER)            binary sealed)
+min_objects     : 16 (nr_cpu_ids=4)
 ```
 
-### 3.4 The three possible outcomes, and which one the code selects
+### 3.4 `min_objects` is a floor, not the object count (correction)
+
+A prior revision treated `min_objects=9` as implying 9 objects per slab.
+The code uses it only as the loop floor:
+`for (order = max(min_order, get_order(min_objects * size + reserved)); ...)`.
+The final count is `order_objects(chosen order, size, reserved)`.
+Here `min_objects=16` forces the search to *start* at order 2 (room for 16),
+and order 2 fits 19. Floor 16, result 19 — no contradiction.
+
+### 3.5 The outcomes, and which one the code selects
 
 | outcome | condition | status |
 |---|---|---|
-| order-0, 4 x `0x340` | `slub_max_order=0` or a huge `min_objects` | **ruled out**: `slub_max_order=1` is hardcoded at `slub.c:3175` |
-| order-1, 9 x `0x340` | `min_objects` in `[1, 9]` | **selected by the derivation**, order 1, 9 objects |
-| other | vendor override of `slub_max_order`/boot params | `UNK`; the Amlogic tree has no `CONFIG_SLUB_MAX_ORDER` knob, but the stock tree is not public |
+| order-0, 4 x `0x340` | `slub_max_order=0` via cmdline/guardpage | **ruled out**: stock cmdline has no `slub_max_order=`, `CONFIG_DEBUG_PAGEALLOC=n` |
+| order-1, 9 x `0x340` | `slub_max_order=1` via cmdline | **ruled out**: same; the only branch yielding order 1 and its premise is absent |
+| order-2, 19 x `0x340` | defaults (`max_order=3`, `min_objects=16`) | **selected by the derivation** |
+| order-3, 39 x `0x340` | `nr_cpu_ids=8` | **ruled out**: DTB has 4 CPUs, `nr_cpu_ids=4` before `proc_caches_init()` |
+| other | vendor override of the order path in the stock tree | residual `UNK`; the ancestral tree has none and the stock binary is sealed |
 
-This lands on the user's second branch: **order-1, 9 x `0x340`**. Hazel's
-8 KiB geometry therefore has a *numerically* independent justification on the
-Aquaman, arrived at from the Aquaman's own code. It is not copied from Hazel,
-and it is not assumed. The `9` differs from Hazel's `MM_OBJS 18` because the
-stride differs (`0x340` vs `0x1c0`).
+This selects **order-2, 19 x `0x340`**. It is not copied from Hazel (whose
+`MM_OBJS 18` comes from a `0x1c0` stride on ARM32) and it is not assumed:
+it falls out of `slub_max_order=3` + `nr_cpu_ids=4` with no open branch.
+The prior revision's order-1 result traced to a single wrong premise
+(`PAGE_ALLOC_COSTLY_ORDER = 1`); with the correct default (3) order 1 is
+unreachable without a cmdline override.
 
 Caveat that keeps this `LAB` and not `CONF`: this is the *lab* build. Its
 `build-aq/.config` has `CONFIG_SLUB_DEBUG=y` while the device has it `n`
@@ -446,7 +507,7 @@ the *simpler* case: no `SLAB_RED_ZONE` (so no `size += sizeof(void*)` +
 would be, which is why the lab build's real cache is *not* the device's real
 cache and why nothing here is `CONF` until measured.
 
-### 3.5 What is directly observable on the device, and how
+### 3.6 What is directly observable on the device, and how
 
 This is the part that can be closed with **zero reboots and no UAF**:
 
@@ -662,14 +723,14 @@ is `+0x400 + 0x6c8 = 0xACC = 2764 B`, comfortably inside 8192.
 
 | number | depends on | Aquaman value |
 |---|---|---|
-| `MM_OBJS 18` | `mm_struct` size / slab order | **9** (derived, 3.1-3.3) |
+| `MM_OBJS 18` | `mm_struct` size / slab order | **19** (derived, 3.1-3.5) |
 | `MM_OBJ_SIZE 0x1c0` | `sizeof` + `SLAB_HWCACHE_ALIGN` | **`0x340`**, not `0x1c0` |
-| `MM_SLAB_SIZE 8192` | slab order | **8192** (order 1) |
+| `MM_SLAB_SIZE 8192` | slab order | **16384** (order 2) |
 | payload offsets `+0x100/+0x140/+0x200/+0x400` | Hazel's ARM32 struct sizes | **must be recomputed** for LP64 |
 | `RECLAIM_PAGES 1024` | statistical, empirical | `UNK` |
-| `MM_PARTIALS 8`, `prep_n 32*MM_OBJS` | SLUB partial-list behaviour | `UNK`, rescale by the 3x object-count change |
+| `MM_PARTIALS 8`, `prep_n 32*MM_OBJS` | SLUB partial-list behaviour | `UNK`, rescale by the object-count change (18 -> 19) |
 | `SO_SNDBUF 1 MB` | nothing target specific | reusable |
-| 8 KiB `send` | must equal the slab order | order 1 -> 8 KiB still correct |
+| 8 KiB `send` | must equal the slab order | order 2 -> 16 KiB `send` needed, not 8 KiB |
 
 `SLAB_FREELIST_RANDOM` is unset on the device (`aquaman-config:208`), and
 `CONFIG_AMLOGIC_SLUB_DEBUG` is unset (`:1557`), and `SLAB_FREELIST_HARDENED`
@@ -689,7 +750,7 @@ internal span is the fake `task_struct`, which needs fields up to `+0x6c8`
 (`dwarf_offsets.py`, `LAB`, and the `rt_mutex_get_effective_prio` disassembly
 confirms `0x7e0`/`0x7e8`/`0x68`).
 
-Budget inside one 8192 B unit:
+Budget inside one 16384 B unit:
 
 ```
 fake rt_mutex   0x20  (lock 0x00, waiters 0x08, leftmost 0x10, owner 0x18)
@@ -701,20 +762,20 @@ raw sum               0x0f20 = 3872 B
 ```
 
 Even with zero padding and zero alignment waste, the four objects need
-3872 B of *contiguous, non-overlapping* space. That fits in 8192. But:
+3872 B of *contiguous, non-overlapping* space. That fits in 16384. But:
 
 - `fake task` alone is `0xdc0` = 3520 B, so the reclaim unit is dominated by it.
-- The reclaim primitive here is a **single 8 KiB unix-socket send**: the payload
-  is copied into one contiguous buffer. Fine, 3872 < 8192.
+- The reclaim primitive here is a **single 16 KiB unix-socket send**: the payload
+  is copied into one contiguous buffer. Fine, 3872 < 16384.
 - However the objects must land at *fixed relative offsets* the kernel will
   follow (`+0x100`, `+0x140`, `+0x200`, `+0x400` in Hazel). Recomputing for
   LP64: with 64-byte alignment, a natural packing is `lock` at `+0x000`,
   `waiter` at `+0x100`, `fops` at `+0x200`, `task` at `+0x300`. Task then ends
-  at `0x300 + 0xdc0 = 0x10c0` = 4288 B. Fits in 8192 with 3904 B spare.
+  at `0x300 + 0xdc0 = 0x10c0` = 4288 B. Fits in 16384 with 12096 B spare.
 
-So the width problem is **solvable within one 8 KiB unit**, and the geometry
+So the width problem is **solvable within one 16 KiB unit**, and the geometry
 question is not what blocks the payload. What is not yet answered is whether
-the 8 KiB send reliably lands on the released slab page: that is empirical.
+the 16 KiB send reliably lands on the released slab page: that is empirical.
 
 Important: the LP64 fops is `0xf0` (15 pointers, `include/linux/fs.h:1728-1756`),
 and this 4.9 tree has `read_iter`/`write_iter`, which Hazel's ARM32 blob also
@@ -729,13 +790,13 @@ Engineering hypothesis for the Aquaman cross-cache step, not a design
 decision:
 
 1. Shape the `mm_struct` cache with `alloc_held_mm()` (`/proc/pid/mem` hold
-   trick), sized to the **9 objects per slab** geometry, not 18.
-2. Free all held mms in one window so the order-1 slab pages return to the
+   trick), sized to the **19 objects per slab** geometry, not 18.
+2. Free all held mms in one window so the order-2 slab pages return to the
    page allocator.
 3. Reclaim with `AF_UNIX` `SOCK_STREAM` socketpairs, `SO_SNDBUF 1 MB`, and
-   8 KiB `send`s, matching the order-1 slab.
+   16 KiB `send`s, matching the order-2 slab.
 4. Pack `rt_mutex` / `rt_mutex_waiter` / `file_operations` / `task_struct`
-   at 64-byte-aligned offsets, total 4288 B, verified to fit in 8192.
+   at 64-byte-aligned offsets, total 4288 B, verified to fit in 16384.
 5. Confirm with `MSG_PEEK` per socket, exactly as Hazel does.
 
 Steps 1-4 are derived. Step 5's reliability, the number of sockets, and the
@@ -786,8 +847,8 @@ Hazel (4.9 ARM32, Fire OS 7), Aquaman current work (this repo).
 | `stack reuse` | CONF | CONF | **UNK** | reclaim code exists (`ghostlock_reclaim_try.c`) but never ran |
 | `stack stamp` | CONF (setsockopt) | CONF (setsockopt) | **INCOM/unknown** | `pselect` 6/6 reboots; the MCAST 40 B overlap is uncalculated (§8) |
 | `mm_struct leak` | CONF (dedicated slide.c) | CONF (futex hash timing) | **UNK** | Hazel route needs a 4-word LP64 hash reimplementation; SoC timing untested |
-| `cross-cache` | CONF (pipe, `MM_ORDER 3`) | CONF (AF_UNIX 8 KiB) | **PLAUS** | geometry derived: order 1, 9 x `0x340`; step-5 reliability untested |
-| `controlled object` | CONF | CONF | **PLAUS** | 3872 B raw sum fits in 8192; offsets must be regenerated |
+| `cross-cache` | CONF (pipe, `MM_ORDER 3`) | CONF (AF_UNIX 8 KiB) | **PLAUS** | geometry derived: order 2, 19 x `0x340`; step-5 reliability untested |
+| `controlled object` | CONF | CONF | **PLAUS** | 3872 B raw sum fits in 16384; offsets must be regenerated |
 | `kernel read` | CONF | CONF | **UNK** | `configfs_buffer.mutex` at `+0x20` here vs `+0x18` in Hazel; dentry tolerance unverified |
 | `kernel write` | CONF | CONF | **UNK** | the EFAULT boundary trick depends on the vendor `copy_from_user` direction, untested on arm64 |
 | `task/cred` | CONF | CONF | **PLAUS** | `cred` size `0xa8`, `uid` at `+0x04`, `DEBUG_CREDENTIALS` unset: mechanics identical. Needs an address. |
@@ -836,8 +897,11 @@ depths. This is a computation, not an experiment.
 2. **The oracle may be pointed at the wrong consumer** (§6 #3). If correct,
    this invalidates the current design rather than a constant, and it is
    detectable statically. Cheapest possible win in the project.
-3. **The `mm_struct` grid in the tooling is wrong** (`0x338` vs `0x340`,
-   `ghostlock_target.h:222`, `ghostlock_leak_cal.c:77`). Latent.
+3. **The `mm_struct` grid in the tooling was wrong** (order 1 / 9 / 8192 B
+   from a wrong `PAGE_ALLOC_COSTLY_ORDER=1` premise; fixed to order 2 /
+   19 / 16384 B in `ghostlock_target.h`, `ghostlock_mm_enum.h`,
+   `ghostlock_leak_cal.c:77`, plus the latent `0x338`-as-stride in older
+   comments). The stride `0x340` was already right.
 4. **No reclaim has been attempted.** `tools/ghostlock_reclaim_try.c` has no
    log in `out/logs/`.
 5. **Stock binary is unavailable.** `boot.img` is AMLSECU-encrypted
@@ -854,10 +918,10 @@ depths. This is a computation, not an experiment.
 | # | hypothesis | status |
 |---|---|---|
 | H1 | `mm_struct` stock size is `0x338` like the lab | PLAUS (all size-affecting config guards agree; stock source unknown) |
-| H2 | slab order 1, 9 objects, 8192 B | LAB-derived; device `SLUB_DEBUG=n` matches the derivation |
+| H2 | slab order 2, 19 objects, 16384 B | INFERRED: closed derivation from ancestral tree + device config/DTB/cmdline; stock binary sealed |
 | H3 | `futex_hashsize == 1024` | LAB, plausible, boot-time value |
 | H4 | hash timing is measurable on a quad A53 | UNK |
-| H5 | 8 KiB unix send reclaims the released order-1 slab | UNK |
+| H5 | 16 KiB unix send reclaims the released order-2 slab | UNK |
 | H6 | the orphan `pi_blocked_on` is what the reboot faults on | UNK |
 | H7 | the 40 B MCAST window covers the fields that matter | UNK (§8) |
 | H8 | configfs dentry tolerance survives an ashmem `f_op` swap | UNK |
@@ -888,13 +952,13 @@ Resolve, from source + `build-aq/vmlinux` only:
 
 **Single question for experiment 1, with a binary criterion:**
 
-> *Question:* can an 8192-byte `AF_UNIX` `send` recover the order-1 slab page
+> *Question:* can a 16384-byte `AF_UNIX` `send` recover the order-2 slab page
 > released by a batch of held `mm_struct`s?
 
 Binary criterion:
 
 - **PASS**: at least one socket's `MSG_PEEK` buffer contains the 32-bit
-  sentinel `0x5A5A5A5A` at offset `0x800` (last word of an 8192 B payload).
+  sentinel `0x5A5A5A5A` at offset `0x3FFC` (last word of a 16384 B payload).
   Then the reclaim primitive is demonstrated.
 - **FAIL**: zero sockets show the sentinel after the full spray, on all
   repetitions in the batch.
@@ -927,11 +991,12 @@ attribute, so `s->offset` is not directly observable.
   (`remove_waiter` uses `current` at `rtmutex.c:1108-1111`), and the
   `CMP_REQUEUE_PI -> EDEADLK` rollback is reached on the device 5/5.
 - The `mm_struct` cache geometry is derivable: `sizeof 0x338`, stride `0x340`,
-  order 1, 9 objects, 8192 B. Derived from `fork.c:2140` +
-  `slab_common.c:304-325` + `slub.c:3203-3227`, with the device's own
-  `SLUB_DEBUG=n`.
+  order 2, 19 objects, 16384 B, `max_order=3`, `min_objects=16`.
+  Derived from `fork.c:2140` + `slab_common.c:304-325` + `slub.c:3203-3276`,
+  with the device's own `SLUB_DEBUG=n`, stock cmdline (no `slub_*`), and the
+  4-CPU DTB (`nr_cpu_ids=4` before `proc_caches_init()`).
 - The four forged objects need 3872 B raw and pack into 4288 B at
-  64-byte-aligned offsets, inside the 8192 B unit.
+  64-byte-aligned offsets, inside the 16384 B unit.
 - No allocator hardening to defeat: `# CONFIG_SLUB_DEBUG is not set`
   (`aquaman-config:203`, no red zones and no `STORE_USER`),
   `# CONFIG_SLAB_FREELIST_RANDOM is not set` (`aquaman-config:208`),
@@ -945,9 +1010,10 @@ attribute, so `s->offset` is not directly observable.
   `[mm, pad, addr]`; the Aquaman hashes 4 words
   `[word_lo, word_hi, mm_lo, mm_hi]` (`LAB`, from the `0xdeadbeff` immediate
   in `hash_futex`). The `mm` must be recovered as a 64-bit value.
-- The `0x338` grid in `tools/ghostlock_target.h:222` and
-  `tools/ghostlock_leak_cal.c:77` is wrong; the stride is `0x340` and the slab
-  is order 1 with 9 objects, not order 0 with 4.
+- The old order-1 grid (`tools/ghostlock_target.h`, `ghostlock_mm_enum.h`,
+  `tools/ghostlock_leak_cal.c:77`) was wrong; the stride is `0x340` and the
+  slab is order 2 with 19 objects, not order 1 with 9 (and not order 0
+  with 4). Fixed in this revision.
 - The "PAD 0x180 hit" is not evidence. Fixed-VLA stamper, SP never moved,
   0 hits on re-run.
 - The `pselect` stack stamp, as built, is a dead end: 6/6 reboots, oracle
@@ -963,7 +1029,7 @@ attribute, so `s->offset` is not directly observable.
 - Whether the 40-byte MCAST window covers `waiter->task`/`waiter->lock` (H7).
   Deliberately not answered; §8 has the open computation.
 - Which code path actually faults in the 6 observed reboots (H6).
-- Whether an 8 KiB unix send reliably captures the released slab page (H5).
+- Whether a 16 KiB unix send reliably captures the released slab page (H5).
 - Whether configfs tolerates an ashmem `f_op` swap on this build (H8), and
   whether the `copy_from_user` boundary trick behaves the same on arm64.
 - The stock kernel's `futex_hashsize` (H3) and its KASLR window behaviour.

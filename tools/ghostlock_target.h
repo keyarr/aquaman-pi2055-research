@@ -216,10 +216,23 @@
 #define GL_PSELECT_SHIFT_MAX      0x01c0UL
 
 /* ------------------------------------------------------------------ */
-/* 7. mm_struct — size 0x338 (SLUB, cache dedicado "mm_struct")        */
-/*    0x338 = 824B -> 4 objects per 4K page                             */
+/* 7. mm_struct — SLUB, cache dedicado "mm_struct"                       */
+/*    sizeof 0x338 (LAB_DERIVED: DWARF build-aq/vmlinux, guards em       */
+/*    mm_types.h conferem entre aquaman-config e build-aq/.config)       */
+/*    stride 0x340 (LAB_DERIVED: ALIGN(0x338,64) em slab_common.c:304 +  */
+/*    slub.c:3501; cache_line 64B via A53 CWG=4 e MEMORY_EXTEND=y)       */
+/*    order 2, 19 objs, slab 0x4000 (INFERRED: calculate_order slub.c:   */
+/*    3227 with max_order=3/min_objects=16; ver ghostlock_mm_enum.h)       */
 /* ------------------------------------------------------------------ */
 #define GL_MM_SIZE               0x338
+#define GL_MM_OBJECT_SIZE        0x338   /* LAB_DERIVED: s->object_size */
+#define GL_MM_INUSE              0x338   /* LAB_DERIVED: slub.c:3453 */
+#define GL_MM_ALIGN              0x40    /* LAB_DERIVED: slab_common.c:304 */
+#define GL_MM_STRIDE             0x340   /* LAB_DERIVED: s->size, ALIGN */
+#define GL_MM_OFFSET             0x0     /* LAB_DERIVED: slub.c:3455, sem RCU/POISON/ctor */
+#define GL_MM_ORDER              2       /* INFERRED: max_order=3, min_objects=16 -> order 2 */
+#define GL_MM_SLAB_SIZE          0x4000  /* INFERRED: PAGE_SIZE<<2 */
+#define GL_MM_OBJS               19      /* INFERRED: 19 x 0x340 em 0x4000, resto 576 */
 #define GL_MM_MMAP               0x000
 #define GL_MM_TASK_SIZE          0x030
 #define GL_MM_TOTAL_VM           0x0b0
@@ -234,7 +247,6 @@
 #define GL_MM_ARG_END            0x128
 #define GL_MM_ENV_START          0x130
 #define GL_MM_ENV_END            0x138
-#define GL_MM_OBJS_PER_PAGE      4
 #define GL_MM_CACHE_NAME         "mm_struct"
 
 /* ------------------------------------------------------------------ */

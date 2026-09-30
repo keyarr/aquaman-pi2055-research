@@ -74,7 +74,7 @@ int main(void) {
             printf("[warn] affinity errno=%d (proceeding without pin)\n", errno);
     }
 
-    printf("[info] mm_struct=0x338 kmalloc-1024 objs_per_4k=4 (ref build-aq DWARF)\n");
+    printf("[info] mm_struct stride=0x340 order=2 objs_per_slab=19 slab=0x4000 (ref build-aq DWARF + slub.c)\n");
 
     /* Test A: best-median of NROUND rounds per address.
      * Suppresses scheduling noise; hash signal appears as
