@@ -1,0 +1,33 @@
+=== FASE 1 EXECUTADA, 2026-09-30 ~19:00 ===
+
+entry: adb reboot fastboot -> 18d1:0d02 em 2s
+        fastboot oem update 5000 -> host FAILED (esperado, larga o link)
+        1b8e:c003 em ~200ms
+
+  raw     00 07 00 10
+  version 0.7
+  stage   16 (TPL/BL33-u-boot)
+
+== before set_usb_boot 2 ==
+  GP_CFG7  0xc810025c  0x00400007  07 00 40 00
+  GP_CFG0  0xc8100240  0x04000331  31 03 00 04
+  SD_CFG15 0xc810023c  0x03b04200  00 42 b0 03
+  GP_CFG7[31] = 0   GP_CFG0[3:0] = 1   SD_CFG15[15:12] = 4
+
+== set_usb_boot 2 (bulkcmd 0x34 -> run_command) ==
+  success
+
+== after set_usb_boot 2 ==
+  GP_CFG7  0xc810025c  0x00400007  07 00 40 00
+  GP_CFG0  0xc8100240  0x04000331  31 03 00 04
+  SD_CFG15 0xc810023c  0x03b04200  00 42 b0 03
+  GP_CFG7[31] = 0   GP_CFG0[3:0] = 1   SD_CFG15[15:12] = 4
+
+== CONTROLE, mesma janela, set_usb_boot 1 (CLEAR_USB_BOOT) ==
+  before e after: valores byte-identicos ao bloco acima
+  GP_CFG7[31] 0 -> 0
+
+== verdict ==
+  GP_CFG7[31]  0 -> 0
+  NO OBSERVABLE CHANGE. real null, nao read falhado: os bytes sao coerentes
+  ao vivo (bit 22 = rpmb_state set, [7:0] = 0x07 campo de boot).

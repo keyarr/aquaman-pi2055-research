@@ -118,7 +118,7 @@ two-instruction stubs by asking each `bl` caller what it passes.
 | 3 | `0x37e19e88` | `0x37e19e80` | `0x82000033` | `EFUSE_USER_MAX` | constant | HIGH |
 | 4 | `0x37e19e9c` | `0x37e19e98` `aml_reboot` | argument | reboot / system-off | `aml_system_off` → `0x82000042`; `reboot` cmd → `0x84000009` (PSCI) | HIGH |
 | **5** | **`0x37e19ed8`** | **`0x37e19ea8` `aml_sec_boot_check`** | **`0x820000ff`** | **`AML_DATA_PROCESS`** — image/efuse verify | **15 call sites, §D** | HIGH |
-| **6** | **`0x37e19f08`** | **`0x37e19efc` `set_usb_boot_function`** | **`0x82000043`** | **`SET_USB_BOOT_FUNC`** | **`set_usb_boot` cmd argv[1], unvalidated; also constant `1`** | HIGH |
+| **6** | **`0x37e19f08`** | **`0x37e19efc` `set_usb_boot_function`** | **`0x82000043`** | **`SET_USB_BOOT_FUNC`** | **`set_usb_boot` cmd argv[1] via `simple_strtoul(...,16)`, unvalidated; also constant `1`. round 31: exactly 2 callers — the cmd at `0x37e60838` and `0x37e76594`, the latter the v2-burning `aml_burn_check_is_ready_for_burn` clear path, NOT setkeys. x2 = 0x10 not zeroed, return discarded. Nothing in this build ever passes 2 except the command** | HIGH |
 | 7 | `0x37e19fac` | `0x37e19f4c` `__get_chip_id` | `0x82000044` (+`0x21`) | `GET_CHIP_ID` | `chipid` cmd, out buffer = shared mem | HIGH |
 | 8 | `0x37e1a148` | `0x37e1a0e0` | `0x82000018` | hdmitx reg read (`reg_ops.c`) | constant | HIGH |
 | 9 | `0x37e1a164` | `0x37e1a150` | `0x82000019` | hdmitx reg write | constant + data | HIGH |
@@ -280,7 +280,7 @@ skipped by coming from USB.
 | path | reachable by | privileged operation | guarded by |
 |---|---|---|---|
 | `oem <cmd>` → `run_command` | USB host, any boot | any of the 80 U-Boot commands, 31 chars | nothing (no lock check) — each command's own checks |
-| `set_usb_boot <val>` → `0x82000043` | host via `oem`, or the CLI | asks BL31 to set the USB-boot flag | no range validation in BL33 |
+| `set_usb_boot <val>` → `0x82000043` | host via `oem`, or the CLI | asks BL31 to set the USB-boot flag. **the only command in the build that can arm FORCE_USB_BOOT (round 31 §3.4)** | no range validation in BL33 |
 | `update <ms>` → `0x37e78f94` | host (fastboot `update`, or `oem update`) | enters the v2 usbburning protocol: RAM read/upload, download, image write, `bootm` | none in BL33; this is the interface rounds 7-13 used to read RAM at all |
 | `keyman` / `keyunify` | host via `oem` | unifykey: reads `/unifykey` from the DTB and reads/writes keys (`key-name`, `key-type`, `key-device`, `key-permit`, `secure`, `normal`, `efuse`) | to be established (§D.3) |
 | `secure_storage_set_info` → `0x82000028` | storage init, every `mmc`/`store` | tells BL31 the storage geometry | constant argument |

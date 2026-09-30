@@ -1,0 +1,14 @@
+t=   0.000  start   2717:4e40  android            bcdDevice=0223 speed=480 bDeviceClass=00 bNumConfigurations=1
+t=   0.000  start   other: ['0408:403a', '04ca:3802', '1d6b:0002', '1d6b:0003', '3151:3020']
+t=   0.000  target present: True
+t=   6.498  OFF      2717:4e40 android
+t=   6.498  *** no Aquaman device on the bus ***
+t=   6.498  target up -> down
+t=   9.778  ON       18d1:0d02  fastboot BL33      bcdDevice=9999 speed=480 bDeviceClass=02 bNumConfigurations=1
+t=   9.778  target down -> up
+t=  13.948  OFF      18d1:0d02 fastboot BL33
+t=  13.948  *** no Aquaman device on the bus ***
+t=  13.948  target up -> down
+t=  14.319  ON       1b8e:c003  optimus/TPL/BL33   bcdDevice=0007 speed=480 bDeviceClass=00 bNumConfigurations=1
+t=  14.319  target down -> up
+t= 300.003  watcher done, 300 s

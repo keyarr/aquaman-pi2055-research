@@ -1,5 +1,30 @@
 # USB entry from U-Boot on aquaman, audit plus read-only probe (round 3)
 
+> **PARTIALLY SUPERSEDED by `reports/round31-usbboot-reset-path.md` (same BL33
+> dump, later analysis).** the round-3 USB findings all stand — `update` reaches
+> `1b8e:c003`, the descriptor match, §2.2, §2.4, §2.5. What is WRONG is the
+> reset experiment in §2.6 and the conclusions built on it. Corrected in place
+> below, marked **REVOKED**:
+> - §2.6 trial 2 "`oem reset` = `reset_cpu(0)`" — **REVOKED**, `do_reset` is a
+>   13-instruction stub with no `smc #0`, no AO write and no PSCI
+> - §2.6 trial 3 "`fastboot reboot` → `run_command("reboot fastboot")`" —
+>   **REVOKED**, that call is not in this build; the fastboot completion
+>   callbacks tail-call the same stub
+> - §2.6 "three different reset paths, one outcome" — **REVOKED**, it was
+>   **one** reset and **two** crashes. The reset-mode hypothesis was never tested
+> - §2.6 "recovery was a power cycle every single time, as the warm-reboot note
+>   predicted" — **REVOKED** for trials 2 and 3: with no reset issued, nothing
+>   ever wrote GP_CFG7, so a power cycle cannot be evidence that the flag was set
+> - §1.4 row `reboot-bootloader` (fastboot cmd) — **REVOKED**, aquaman
+>   `reboot-bootloader` also hits the stub
+> - §1.4 rows `reboot` / `set_usb_boot 1..4` — aquaman column upgraded from
+>   "unknown" to measured
+> - the "two survivors" in §2.6 and the open question in §5 — re-graded in
+>   round 31 §6/§7
+>
+> The USB entry conclusions (§4, §5 conclusion 1) are unaffected and remain the
+> working, reproducible result of this file.
+
 date: 2026-09-29. goal: find out whether the aquaman U-Boot can be pushed into
 USB burning / USB download / BootROM without HDMI boot dongle, UART or opening
 the box. no `flash`, no `erase`, no `format`, no `setenv`, no `saveenv`.
@@ -18,11 +43,13 @@ exactly what they did.
   matches `v2_usb_tool/usb_pcd.c` from the reference tree byte for byte,
   including bcdDevice `0x0007`, zero string descriptors and MaxPower 2 mA. the
   round-2 claim that `1b8e:c003 = BootROM` is wrong.
-- **BootROM via `set_usb_boot 2`: tried 3 times, failed 3 times.** three
-  different resets (`reboot cold_boot`, `reset`, `fastboot reboot`), same
-  outcome: dead box, zero USB devices for ~85 s, manual power cycle required.
-  the "wrong reset mode" hypothesis is refuted. the path is CONFIRMED in the GXL
-  code but **does not reproduce** on aquaman. see §2.6.
+- **BootROM via `set_usb_boot 2`: never actually tested, because 2 of the 3
+  "resets" do not reset.** `oem reset` and `fastboot reboot` both land in
+  `do_reset`, which on this build is a 13-instruction stub with no `smc #0`, no
+  AO write and no PSCI. only `oem reboot cold_boot` emitted a real reset
+  (PSCI `0x84000009` x1=0), and that is the one leg with no bus watcher and no
+  log. the path is CONFIRMED in the GXL code; on aquaman it is **UNTESTED**, not
+  refuted. see §2.6 and `reports/round31-usbboot-reset-path.md` §1.
 - `fastboot oem sleep 3` wedged the fastboot session. the stick needed a power
   cycle. any U-Boot command that blocks kills the session.
 
@@ -157,11 +184,12 @@ device's command table.
 | `usb_burning` (env) = `update 1000` | gxl_skt_v1.h:96 | env unreadable | same, 1000 ms window | no | med |
 | `try_auto_burn` (env) | gxl_skt_v1.h:98 | env unreadable | `update 700` + identifyWaitTime 750 | no | med |
 | `sdc_burning` (env) / `sdc_burn` | gxl_skt_v1.h:100, v2_sdc_burn/ | unknown | burn from SD `aml_sdc_burn.ini` | **yes, eMMC** | high |
-| `set_usb_boot 1..4` | cmd_reboot.c:207 | **tested 3x**, see §2.6 | SMC 0x82000043 to BL31; `2` = force next boot into ROM USB | **yes, AO register** (warm-reboot proof, power-cycle clear) | high, all three trials killed the box and needed a manual power cycle |
-| `get_rebootmode` | cmd_reboot.c:181 | unknown | reads `AO_SEC_SD_CFG15[15:12]`, setenv `reboot_mode` (RAM only) | no | low |
-| `reboot [mode]` | cmd_reboot.c:189 | unknown | `aml_reboot(PSCI_SYS_REBOOT, mode)`; `update`=3, `fastboot`=4, `bootloader`=7 | no | med, reboots |
+| `set_usb_boot 1..4` | cmd_reboot.c:207 | **CONFIRMED present**, `0x37e607e8`; 1 real reset + 2 non-resets, see §2.6 | SMC 0x82000043 to BL31, x1 = `simple_strtoul(argv[1],NULL,**16**)`, unvalidated; `2` = FORCE_USB_BOOT in the header. BL33 never writes GP_CFG7; the only arm path in the whole build is this command | **yes, AO register**, but the power-cycle argument for it does **not** hold (round 31 §1) | high, but the experiment is invalid, not the command |
+| `get_rebootmode` | cmd_reboot.c:181 | **CONFIRMED**, `0x37e604a4` | reads `AO_SEC_SD_CFG15[15:12]`, setenv `reboot_mode` (RAM only) | no | low |
+| `reboot [mode]` | cmd_reboot.c:189 | **CONFIRMED**, `0x37e60654` | `aml_reboot(0x84000009, mode&0xf, 0, 0)` — **the only real reset in this build**; `cold_boot`=0, `normal`=1, `update`=3, `fastboot`=4, `bootloader`=7, plus Xiaomi-only `rpmbp`=9 | no | med, reboots |
+| `reset` | arch/arm/lib/reset.c:30-41 | **CONFIRMED, but a STUB**, `0x37e21684` | printf, `udelay(0xc350)`, two no-ops, then a watchdog register poke at `0xc11098d0` (the DTB `/watchdog` node). **no smc, no AO write, no PSCI — it does not reset the SoC** | no | high, silently does not reset and leaves the host with no answer |
 | `fastboot` | cmd_fastboot.c:36 | **confirmed** (we are in it) | serve fastboot | no | low |
-| `reboot-bootloader` (fastboot cmd) | f_fastboot.c:368 | confirmed present in family | `run_command("reboot fastboot")` | no | low |
+| `reboot-bootloader` (fastboot cmd) | f_fastboot.c:368 | **REVOKED** — on aquaman it is `0x37e94e6c`, a tail-`b` into the `do_reset` stub, **not** `run_command("reboot fastboot")`. Use `oem reboot bootloader` (PSCI mode 7) instead | no reset on aquaman | no | high, silently does nothing |
 | `tiny_usbtool` | aml_tiny_usbtool/aml_tiny_usbtool.c:71 | unknown | 1b8e:c003 tiny USB tool (efuse, reg read) | some ops write efuse | high |
 | `usbboot` | cmd_usb.c:707 | unknown | **USB mass-storage diskboot**, *not* burning | no | low |
 | `usb start/stop` | cmd_usb.c:682 | unknown | USB host mode | no | low |
@@ -317,16 +345,25 @@ the optional confirmation is the stage byte: the vendor control request
 needs root on the host to claim the device (`sudo` asks for a password here)
 and the descriptor match above already settles the question.
 
-### 2.6 `set_usb_boot 2`, three resets, three identical failures
+### 2.6 `set_usb_boot 2`, three trials — **only one of them was a reset**
 
-run with the user present, bus watcher up, one command at a time. three
-trials, each ending in a manual power cycle:
+> **REVOKED as a reset experiment, see `reports/round31-usbboot-reset-path.md`
+> §1.** `do_reset` on this build (`0x37e21684`) is a 13-instruction stub: printf,
+> a page-allocator call with `0xc350`, two no-ops, `REG32(0)`, return. no
+> `smc #0`, no AO write, no PSCI. `fastboot reboot` and `fastboot
+> reboot-bootloader` both tail-call it (`0x37e94e58`, `0x37e94e6c`); the family's
+> `run_command("reboot fastboot")` is not in this build. **Trials 2 and 3 never
+> reset the chip — the device stayed in BL33 both times.** what is left is one
+> real reset and two BL33 crashes, so the reset-mode hypothesis was never
+> tested and the trail-3 conclusions below do not hold.
 
-| # | reset used | what it is | result |
+run with the user present, bus watcher up, one command at a time:
+
+| # | reset used | what it really is | result |
 |---|---|---|---|
-| 1 | `oem reboot cold_boot` | `aml_reboot(PSCI_SYS_REBOOT, 0)` → mode 0, PSCI path (cmd_reboot.c:155) | logo Xiaomi ~100 ms, then off. 83 s of bus silence. |
-| 2 | `oem reset` | `reset_cpu(0)` directly, no mode tag, no PSCI (arch/arm/lib/reset.c:30-41) | black screen from the start. 89 s of bus silence. |
-| 3 | `fastboot reboot` | maps to `run_command("reboot fastboot")` (f_fastboot.c:366-369) → mode 4 | same, dead box, needed a power cycle |
+| 1 | `oem reboot cold_boot` | **real reset**: `aml_reboot(0x84000009, 0)` at `0x37e607d4` | logo Xiaomi ~100 ms, then off. 83 s of bus silence. **no bus watcher on this leg.** |
+| 2 | `oem reset` | **STUB**, no reset issued (`do_reset` `0x37e21684`) | black screen from the start. 89 s of bus silence. |
+| 3 | `fastboot reboot` | **STUB**, no reset issued (`0x37e94e58` → `do_reset`) | same, dead box, needed a power cycle |
 
 trial 2 was run fully stepwise, the only one with a clean before/after:
 
@@ -364,44 +401,67 @@ device leave the bus and never come back in any USB mode. the actual silence
 is longer than the 83-89 s measured by hand earlier, because the earlier
 numbers stopped counting when I stopped looking.
 
+> **read this log knowing that legs 2 and 3 never reset** (round 31 §1). the
+> device left the bus at t=26.962 and t=232.715 because the fastboot session
+> died, not because a reset was issued and the box failed to come back. three
+> further observations from the same log, none of which were in the round-3
+> reading: (a) a plain `adb reboot` returns to Android in 15-20 s, so a
+> 168.9 s and a 40.3 s gap are both anomalous for a reset that worked;
+> (b) if leg 3's `fastboot reboot` had really gone through `reboot fastboot`
+> (PSCI mode 4) the device would have come back as **fastboot**, and it came
+> back as **Android** — consistent with the stub and with a lost reboot mode;
+> (c) the log cannot separate self-recovery from recovery after the user's power
+> cycle. 168.9 s is a plausible human latency and a very unlikely spontaneous
+> boot. not resolvable from this material.
+
 user observations, the part no log can give:
 - trial 1: rebooted, **Xiaomi logo for ~100 ms**, then powered off.
 - trials 2 and 3: **black screen**, nothing on the Linux bus.
 
-what this settles:
+what this settles, re-graded by round 31 §6/§7:
 
-- "wrong reset mode" → **REFUTADO**. `reset` is `reset_cpu(0)` with no mode
-  tag at all, and it failed the same way as PSCI mode 0. three different reset
-  paths, one outcome.
-- "the ROM honoured FORCE_USB_BOOT and enumerated 1b8e:c003" → **REFUTADO**,
-  three times, and with a 4 ms poll covering two of them end to end, not just
-  an empty journal.
-- "the box stayed on the normal boot path" → **REFUTADO**, it never booted.
-- "the boot behaviour changed" → **CONFIRMADO**. a plain reset on this device
-  returns to Android in 15-20 s; the round-2 log records exactly that for
-  `adb reboot`, and `do_reset` is the standard fallback when `fastboot boot`
-  is rejected (`f_fastboot.c:580`). 83-89 s of nothing is not that.
-- "the mechanism is the documented FORCE_USB_BOOT one" → **DESCONHECIDO**.
-  two survivors:
-  1. Xiaomi's BL31 ignores SMC `0x82000043`, the flag was never set, and
-     `set_usb_boot`/`reset` is independently broken in this build. Consistent
-     with everything observed, including the fact that the flag *is* cleared
-     by a power cycle (which would be a no-op if it were never set).
-  2. the flag is set, the ROM enters USB, the handshake never completes, and
-     the box falls through to power-off.
-- the 100 ms Xiaomi splash in trial 1 is a real data point and it is awkward:
-  the BootROM is BL1 and has no splash. a Xiaomi logo means BL33 or the kernel
-  ran, so the box got past the ROM. that argues against "died in the ROM" and
-  slightly for survivor 1. trial 2 showed a black screen instead, so even the
-  splash is not consistent across resets.
-- recovery was a power cycle every single time, as the "warm reboot keeps the
-  order, cold reset clears it" note predicted. **no damage**: Android came
-  back normal after all three, and `unlocked: yes` / `secure: no` were never
-  touched.
-- **do not run this again.** three trials, three power cycles, zero USB
-  devices, no new information. anything further needs either a different
-  trigger (physical strap, HDMI dongle) or a different order of operations that
-  nobody has a reason to guess at on a box that currently boots fine.
+- "wrong reset mode" → **STILL OPEN, not refuted**. two of the three legs never
+  reset, so the mode was varied exactly once. `reboot cold_boot` (mode 0) is the
+  only data point and it is the one leg with no bus watcher.
+- "the ROM honoured FORCE_USB_BOOT and enumerated 1b8e:c003" → **REFUTED**,
+  with a 4 ms poll covering legs 2 and 3 end to end, not just an empty journal.
+  note the limit: those are the two legs that did not reset, so this refutes
+  the ROM path only in the no-reset case.
+- "the box stayed on the normal boot path" → **REVOKED as stated**. it never
+  booted in any leg, but in legs 2 and 3 it never had the chance: it was sitting
+  in BL33 with a dead session.
+- "the boot behaviour changed" → **CONFIRMADO, and now explained**. a plain
+  `reboot <mode>` returns to Android in 15-20 s (round 2 records that for
+  `adb reboot`). the 83-169 s gaps are what a stub that does not reset looks
+  like, not a different boot path.
+- "the mechanism is the documented FORCE_USB_BOOT one" → **DESCONHECIDO**,
+  unchanged, but the round-3 reasoning underneath it is wrong. The power-cycle
+  argument does **not** support "the flag was set": GP_CFG7 is cleared by
+  whoever writes it, and in legs 2 and 3 nothing ever wrote it, so a power cycle
+  is a no-op on that register and cannot be evidence. four survivors now:
+  1. BL31 ignores SMC `0x82000043`, the flag is never set.
+  2. the flag is set and cleared before the ROM sees it. the family BL31 has a
+     `bl31 clear usb flag` path and zeroes `GP_CFG7[7:0]` on every reboot
+     (round 31 §4.2, family evidence only, the aquaman BL31 is unreadable).
+  3. the flag is set, the ROM enters USB, the handshake never completes.
+  4. **the reset works, linux boots, and the USB side never enumerates** — not
+     considered before. BL1 has no splash, so trial 1's 100 ms Xiaomi logo means
+     something with a display ran.
+- the 100 ms Xiaomi splash in trial 1 is still the most valuable datum in this
+  file and it is still awkward: BL1 has no splash, so a Xiaomi logo means BL33
+  or the kernel ran and the box got past the ROM. that argues against "died in
+  the ROM". it is also the only leg with a real reset, and it was never
+  instrumented. trial 2's black screen is now explained without a reset, so the
+  splash inconsistency across legs is no longer evidence of anything.
+- recovery: a power cycle was used in every leg, and **for legs 2 and 3 that is
+  consistent with never having reset at all** — there was nothing to recover
+  from. **no damage**: Android came back normal after all three, and
+  `unlocked: yes` / `secure: no` were never touched.
+- **do not run `set_usb_boot 2` + `reset` again.** that combination is now known
+  to not reset at all, so it cannot produce information about the reset path.
+  a useful repeat needs `reboot <mode>` (§2.6 row 1), a bus watcher, and ideally
+  a read of `0xc810025c` before and after the SMC (round 31 §8 item 1: cheapest
+  and most decisive, and it has never been done).
 
 ## 3. the transition questions (phase 3)
 
@@ -507,17 +567,19 @@ the flag survives warm reboot, so recovery needs a power cycle (or
 `set_usb_boot 1` from inside U-Boot before the reset, which does not help if
 you already lost fastboot).
 
-status on aquaman: **tested three times, never worked** (§2.6). the change in
-boot behaviour is real and reproducible, the BootROM USB device is not. so the
-honest answer to phase 4 is:
+status on aquaman: **never actually tested** (§2.6, as corrected by round 31).
+two of the three legs never reset the chip, and the one that did had no bus
+watcher. so the honest answer to phase 4 is:
 
-- the *mechanism* is CONFIRMED in the GXL reference code. whether it is
-  functional in this particular build is UNKNOWN, and three attempts to find
-  out produced a dead box rather than a USB device.
-- the reset mode was ruled out as the variable, so there is no cheap retry
-  left. the two remaining explanations (BL31 ignoring the SMC, or a failed ROM
-  USB handshake) are not separable from the host side with the tools here.
-- for BootROM USB on this stick, the route that works is the physical one
+- the *mechanism* is CONFIRMED in the GXL reference code, and the SMC is
+  CONFIRMED issued by BL33 on this build. whether BL31 acts on it is UNKNOWN:
+  the aquaman BL31 is secure-only and unreadable (rounds 18/26/27/30).
+- the reset mode was **never** ruled out as the variable. there is a cheap
+  retry left, and round 31 §8 lists it: read `0xc810025c` before and after the
+  SMC, which needs no reset at all and would close the question on its own.
+- the failure of legs 2 and 3 says nothing about the ROM, because the ROM was
+  never reached. do not count them as evidence against the mechanism.
+- for BootROM USB on this stick, the route known to work is the physical one
   (HDMI `boot@USB` dongle or strap). that is not a claim about Amlogic in
   general, it is what the evidence on this device supports.
 
@@ -547,14 +609,18 @@ be triggered from the host with no extra hardware.**
 
 this is **not** BootROM. it is the U-Boot-level Amlogic factory burning mode
 (the one the `aml_update_pkg` / "Amlogic USB Burning Tool" drives). reaching the
-actual BL1 BootROM needs `set_usb_boot 2` plus a reset, and that was tried three
-ways and produced no USB device at all (§2.6), or the physical strap.
+actual BL1 BootROM needs `set_usb_boot 2` plus a **real** reset, and that pairing
+has never actually been run: two of the three legs never reset (§2.6 as
+corrected, round 31 §1), and the one that did was uninstrumented. or the
+physical strap.
 
 ### everything that stayed unknown
 
-- why the `set_usb_boot` path fails: a BL31 that ignores SMC `0x82000043`
-  versus a ROM that enters USB and never completes the handshake.
-  **DESCONHECIDO**, and not separable from the host side with what is here.
+- whether BL31 acts on SMC `0x82000043` at all. **DESCONHECIDO**, and the
+  cheapest way to find out has never been tried: read `0xc810025c` from inside
+  BL33 before and after the SMC. no reset required (round 31 §8 item 1).
+- if it does act, whether the flag survives to the BootROM. **DESCONHECIDO**.
+  round 31 §6 re-grades this into four live readings instead of two.
 - the U-Boot env contents: permanently unreadable from the host (§2.2).
 - whether `usb_burning=update 1000` exists in the aquaman env (it would give a
   1 s automatic window on `reboot_mode=update`): **DESCONHECIDO**.
@@ -565,10 +631,12 @@ ways and produced no USB device at all (§2.6), or the physical strap.
   flow. we entered the mode twice and sent no protocol commands, so no write was
   possible. the safe rule going forward: never leave a real Amlogic burning tool
   attached while this command is in flight.
-- `set_usb_boot 2` is the one that needs a warning label. three trials, three
-  dead boxes, three manual power cycles, zero new information. **do not run it
-  again.** the whole point of running the three reset variants was to rule out
-  the reset mode as the variable, and it did: that closes the cheap retries.
+- `set_usb_boot 2` still needs a warning label, but for a different reason than
+  round 3 gave. **do not pair it with `reset` or `fastboot reboot`**: those are
+  stubs on this build, so the combination never resets the chip and cannot
+  produce information about the reset path. a repeat is only worth doing as
+  `set_usb_boot 2` → read `0xc810025c` → `reboot <mode>` with a bus watcher up
+  (round 31 §8).
 - the fastboot session on this build is fragile: one blocking `oem` command
   (`sleep 3`) killed it (§2.3). every future test needs a power-cycle plan and a
   USB bus monitor running *before* the trigger.
@@ -576,6 +644,8 @@ ways and produced no USB device at all (§2.6), or the physical strap.
   and should be treated as a missed 1 s window, not a refutation. §2.4 shows the
   window really is about 370 ms wide when triggered from fastboot.
 - nothing in this round wrote to eMMC, the env, the OTP or any partition. the
-  only lasting state change is the one-shot `P_AO_SEC_GP_CFG7[31]` flag, which
-  the power cycle already cleared. device is back on Android, unlocked, no
-  writes.
+  round-3 claim that the lasting state change was the one-shot
+  `P_AO_SEC_GP_CFG7[31]` flag is **downgraded to UNKNOWN**: with two of three
+  legs never resetting, there is no evidence the flag was ever written, and
+  `GP_CFG7` is cleared by its writer, not by a power cycle. device is back on
+  Android, unlocked, no writes.

@@ -1,0 +1,21 @@
+=== C0 EXECUTADO, 2026-09-30 ~19:26 ===
+controle: reboot cold_boot REAL (PSCI 0x84000009), SEM set_usb_boot
+
+precondicao: power-cycle limpo. boot_completed=1, uptime 24.7s,
+             adb por USB 26919800005844922, bus 2717:4e40
+
+  adb reboot fastboot     -> 18d1:0d02 em 5.6s
+  fastboot devices        -> 1234567890  Android Fastboot
+  fastboot oem reboot cold_boot -> FAILED (Status read failed)  [esperado:
+        o device larga o link fastboot ao resetar. o host ve falha mesmo
+        em entrada limpa. o watcher e a fonte da verdade]
+
+  t=  0.000  2717:4e40  android        bcdDevice=0223
+  t=  5.618  2717:4e40  OFF
+  t=  8.947  18d1:0d02  fastboot BL33  bcdDevice=9999
+  t= 12.814  18d1:0d02  OFF
+  t= 30.341  2717:4e40  android        bcdDevice=0223
+
+  VEREDITO: cold_boot FUNCIONAL. 17.5s de silencio, volta ao Android.
+  nenhum 1b8e:c003, nenhum outro VID:PID Amlogic durante o reset.
+  coerente com o round 2 (adb reboot 15-20s).

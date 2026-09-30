@@ -23,6 +23,40 @@ aquaman PI.2055 kernel provenance research
  - aquaman-config : kernel config extracted from the device.
 
  current state, start here:
+ - reports/round34-setusbboot-realreset.md : **`set_usb_boot 2` + real reset
+   DOES wedge the stick.** C0 vs F2, one SMC apart, same build, same watcher:
+   no flag -> android back in 17.5 s. flag -> no USB for 885 s at 4 ms
+   resolution, until a physical power-cycle. the flag is real and the SMC is
+   not inert, but it is NOT `GP_CFG7[31]` — that reads 0 in both runs. the
+   armed state does not survive a power-cycle either. this finally instruments
+   round-3 trial 1, the one leg nobody had a watcher on.
+ - reports/round33-doreset-watchdog-loop.md : **why `oem reset` and
+   `fastboot reboot` hang the stick.** `do_reset` (0x37e21684) is not a
+   harmless stub: its last call reaches `0x37e1a058`, which has an
+   unconditional back-edge at 0x37e1a0bc and **never returns**. the loop
+   enables the meson watchdog (0xc11098d0, BIT(18)) and kicks it
+   (0xc11098dc) on every pass, so no watchdog reset ever fires either. BL33
+   spins forever, stops answering USB, and only the physical plug exits. that
+   is the round-3 "hang", with no flag involved. **separate failure from
+   round34**: this one never reaches the reset at all, `set_usb_boot 2` +
+   `cold_boot` does.
+ - reports/round32-controlled-experiment.md : the set_usb_boot / cold_boot
+   question turned into three runs. **ALL THREE DONE. C0: `cold_boot` works,
+   17.5 s. F1: `set_usb_boot 2` does not move `GP_CFG7[31]`. F2: flag + real
+   reset wedges 885 s.** see round34 for the conclusion.
+   F1 detail: `set_usb_boot 2` does
+   not move `GP_CFG7[31]` (0 -> 0), and neither does `set_usb_boot 1` as a
+   control.** read-only, one burning window, 21 ms, BL33 confirmed answering
+   throughout. that null is real but it measures the wrong register — see
+   round34, where F2 shows the flag does something anyway.
+   adds tools/usb_watch.py (4 ms bus poll, was missing from the repo entirely)
+   and tools/flagtest.py (one-session read/SMC/read, because re-entering
+   optimus clears the flag before you can observe it).
+ - reports/round31-usbboot-reset-path.md : what happens AFTER `0x82000043`.
+   the round-3 set_usb_boot experiment was invalid: `do_reset` is a stub, so
+   2 of its 3 "resets" never reset the stick and it never reached the BootROM
+   in those legs. also the only place the reset path, the full GP_CFG7 access
+   set in BL33 and the SMC 0x82000043 surface are mapped. offline, no device.
  - reports/bl33-offline-round10.md : the U-Boot anchor. matched
    securestorage.c + 13 BL31 ids at 0x01040000..0x0107ffff, pulled from a 16 MiB
    RAM dump. first real code for BL33 instead of string hunting.
@@ -71,6 +105,15 @@ aquaman PI.2055 kernel provenance research
  DTB" in bl33-offline-round8.md §3.1, the "11 SMC sites" in §5 (wrong opcode
  constant), the "unidentified ARM64, not U-Boot" verdict for 0x01040000 in §3.2,
  and every "the board DTB is sealed in dt.img" line — that DTB is out of RAM now.
+from round 31, the set_usb_boot one is the expensive one: **the round-3 "three
+resets, one outcome" is wrong. two of the three did not reset.** `reset` and
+`fastboot reboot` both land in a `do_reset` stub with no smc, no AO write and no
+PSCI, so the reset-mode hypothesis was never tested and the stick never reached
+the BootROM in those two legs. corrected in place in usb-entry-aquaman.md
+§0/§1.4/§2.6/§4.3/§5/§6, plus the `reset` row in bl33-interface-round15.md, the
+SMC row in bl33-bl31-interface-round14.md, and the GP_CFG7 census line in
+round27-bl31-layout.md (it labelled `SEC_AO_SEC_GP_CFG7` as
+watchdog/JTAG/GPIO/clock, which is what kept the clear path invisible).
 
  short version: the kernel builds (Image + dtb + modules, reproducible with
  tools/build_aquaman_kernel.sh), the stock modules are extracted and mapped, the

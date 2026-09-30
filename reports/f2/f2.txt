@@ -1,0 +1,28 @@
+=== F2 EXECUTADO, 2026-09-30 ~19:37 ===
+set_usb_boot 2 + reset REAL (oem reboot cold_boot), COM watcher
+
+precondicao: pos-C0, boot limpo, uptime 261.9s, adb USB, sem residuo de F1
+
+  adb reboot fastboot              -> 18d1:0d02 em 5.7s
+  fastboot oem set_usb_boot 2      -> AMLOGIC x3 + OKAY 0.000s
+                                     device ainda no bus (18d1:0d02 presente)
+  fastboot oem reboot cold_boot    -> FAILED (Status read failed) [esperado]
+
+  t=  0.000  2717:4e40  android     bcdDevice=0223
+  t=  5.712  OFF      2717:4e40
+  t=  8.981  ON       18d1:0d02    bcdDevice=9999
+  t= 14.946  OFF      18d1:0d02
+  t= 14.946  *** no Aquaman device on the bus ***
+  [nada por mais 885s. watcher de 900s esgotado. zero reenumeracao.]
+
+  VEREDITO: CASO C.
+  - flag armada, reset real issued, NENHUM USB por 885s
+  - contrastado com C0: MESMO reset, MESMO comando, sem flag -> 17.5s de volta
+  - a flag e a unica variavel. GP_CFG7[31] le 0 nos dois lados (F1).
+  - precisa de power-cycle. SO O PLUG FISICO SAI.
+
+  DIFERENCA ISOLADA (esta e a primeira vez que fica provada):
+    C0: sem set_usb_boot 2 -> 17.5s -> android
+    F2: com set_usb_boot 2 -> 885s+ -> nada
+  mesmo reset real, mesmo watcher, mesma build. a unica diferenca entre as
+  duas pernas e a chamada SMC 0x82000043 com x1=2.

@@ -30,6 +30,12 @@ BL31 image location  = 0x05100000..0x05300000 (2 MiB secure window)
 BL31 bytes readable  = NO
 reason               = window is Secure-only; TPL/BL33 runs in NS and every NS
                        read aborts (external abort class -> USB drop)
+family gxl bl31.bin  = PARTIAL IMAGE, round 31 §4.2. valid text to 0x2c398,
+                       but it references data at 0xc5000 / 0xc5ec0 and a
+                       128-byte FID class map at 0xcb040, all past the end of
+                       the file. the SMC dispatch table and the 0x82000043
+                       handler are therefore NOT in any artifact. do not cite
+                       this binary as a behavioural reference for BL31.
 ```
 
 ## 1. origin of the AO values: register -> decoder -> semantics -> DTB
@@ -81,12 +87,22 @@ Scans executed (all negative unless stated):
 ```text
 BL33 (EXACT):     every ldr/str/adrp+add at disp 0x24c/0x250/0x254 ->
                   readers only (the 4 sites in s1). ZERO writers.
-gxl bl31.bin:     movz/movk AO census = 17 constants (0xc8100228 x2,
-                  0xda10023c, 0xda10001c x4, 0xda10025c x5, 0xda100248,
-                  0xda100140, 0xc81004c0 x2). all watchdog/JTAG/GPIO/clock.
-                  ZERO at 0x24c/0x250/0x254. (notable: 0xda10001c
-                  AMA0xC0 clear of bits 0x30 at 0x18c74 — BL31 lowers EL1
-                  AMA registers' security gating; listed for completeness)
+gxl bl31.bin:     movz/movk AO census (round 31, tools/bl31_ao_census.py,
+                  names resolved from secure_apb.h): 0xda10025c x6 =
+                  SEC_AO_SEC_GP_CFG7, 0xda10001c x5 = AO_RTI_STATUS_REG3,
+                  0xda10023c x1 = AO_SEC_SD_CFG15 (read only),
+                  0xda100248 x1, 0xda100140 x1, 0xc8100228 x2,
+                  0xc81004c0 x3. ZERO at 0x24c/0x250/0x254.
+                  *** the 6 GP_CFG7 refs are all read-modify-write: two clear
+                  [7:0] (and #0xffff00ff), two are bit-indexed pin helpers
+                  (1 << (idx+8), idx = (x&0xff)+((x&0xff00)>>6), a pad-index
+                  decoder at 0x24a50). NONE sets bit 31. round 31 §4.2. ***
+                  CORRECTION: this census line previously read "17 constants,
+                  0xda10025c x5, all watchdog/JTAG/GPIO/clock", which is wrong
+                  twice — the count is 6, and AO_SEC_GP_CFG7 is not a
+                  watchdog/JTAG/GPIO/clock register. that mislabel is what let
+                  the clear path stay invisible. the 0x18ddc function also holds
+                  a literal "bl31 clear usb flag" printf.
 gxb bl31.bin:     no AO movz/movk pair at all.
 u-boot source:    no writel(P_AO_SEC_GP_CFG[3-5]) anywhere.
 linux source:     no AO_SEC_GP_CFG writer (kernel only consumes DTB).

@@ -1,0 +1,3 @@
+=== idem, leitura de controle via tools/optimus.py identify + probe ===
+  1b8e:c003 respondeu stage 16 apos ~90s do SMC (gadget vivo, nao travado)
+  re-leitura dos tres registradores: identica

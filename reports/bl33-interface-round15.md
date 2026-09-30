@@ -123,15 +123,16 @@ osd                0x37e61da0  subcmd+args           no              no         
 printenv           0x37e57ea8  [names]               no (env read)   no              no    HIGH
 query              0x37e56224  op                    no evidenced    no              no    MED
 read_temp          0x37e571f8  none                  POSSIBLE (env backend) dispatch (br x3) no MED
-reboot             0x37e60654  [mode]                no              no (SMC 0x82000042/PSCI reboots) no HIGH
-reset              0x37e21684  none                  no              no (resets)     no    MED
+reboot             0x37e60654  [mode]                no              no (SMC 0x84000009 x1=mode&0xf) no HIGH
+reset              0x37e21684  none                  no              *** STUB, does NOT reset (r31) *** no HIGH
 ringmsr            0x37e57afc  args                  no              no              no    MED
 rpmb_state         0x37e57b4c  none                  POSSIBLE (env/bootargs) no      no    MED
 rsvmem             0x37e62e84  subcmd+args           no              no              no    MED
 run                0x37e5ea04  var names             no              YES (env script -> run_command) no HIGH(chain)/MED(bytes)
 set_active_slot    0x37e2bd60  slot (no-op stub)     no              no              no    MED
 set_trim_base      0x37e56d40  numeric               no evidenced    no              no    MED
-set_usb_boot       0x37e607e8  value (hex, unvalidated) no          no (SMC 0x82000043) no HIGH
+set_usb_boot       0x37e607e8  value (hex, unvalidated) no          no (SMC 0x82000043 x1=val) no HIGH
+                                                             (only FORCE_USB_BOOT arm path in the build, r31 §3.4)
 setenv             0x37e58470  name [value]          YES (env RAM)   no              no    HIGH
 setkeys            0x37e219f0  ids                   env vars (2x setenv backend) no no   MED-HIGH
 showvar            0x37e22aa8  [names]               no              no              no    MED

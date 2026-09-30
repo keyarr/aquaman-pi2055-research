@@ -677,7 +677,7 @@ Status table:
 | `hash_futex` == upstream 4.9.113, 4 words, LP64 | `CONF` (source) + `LAB` (asm) |
 | `ks_hash` from Hazel is directly reusable | **NO**, `CONF` mismatch |
 | `mm` must be recovered as a 64-bit value | `CONF` |
-| timing side channel works on this SoC | **NO**, `REFUTED (measured)`: one `futex_q` node in the woken bucket costs 0-2 ns, see the experimental section |
+| timing side channel works on this SoC | **NO**, `REFUTED (measured)`: one `futex_q` node in the woken bucket costs 0-2 ns, see the MM leak timing feasibility section |
 | `futex_hashsize == 1024` | `LAB`, plausible, boot-time |
 
 ---
@@ -920,7 +920,7 @@ depths. This is a computation, not an experiment.
 | H1 | `mm_struct` stock size is `0x338` like the lab | PLAUS (all size-affecting config guards agree; stock source unknown) |
 | H2 | slab order 2, 19 objects, 16384 B | INFERRED: closed derivation from ancestral tree + device config/DTB/cmdline; stock binary sealed |
 | H3 | `futex_hashsize == 1024` | LAB, plausible, boot-time value |
-| H4 | hash timing is measurable on a quad A53 | **REFUTED (measured)**: 0-2 ns per node, below resolution; see the experimental section |
+| H4 | hash timing is measurable on a quad A53 | **REFUTED (measured)**: 0-2 ns per node, below resolution; see the MM leak timing feasibility section |
 | H5 | 16 KiB unix send reclaims the released order-2 slab | UNK |
 | H6 | the orphan `pi_blocked_on` is what the reboot faults on | UNK |
 | H7 | the 40 B MCAST window covers the fields that matter | UNK (§8) |
@@ -1263,7 +1263,7 @@ change in any of A/B/C/D.
   force, order-1 grid (REFUTED), 8 KiB reclaim unit, ARM32 offsets,
   userspace fake task, **the `FUTEX_WAKE_PRIVATE` bucket timing oracle**
   (H4, REFUTED by measurement: 0-2 ns per node against a 1.5 us positive
-  control, host and ARM64; see the experimental section).
+  control, host and ARM64; see the MM leak timing feasibility section).
 - `UNKNOWN`: `futex_hashsize`
   boot value (H3, expect 1024), stock `mm_struct` size if the 2022 tree
   diverged (H1), floating CMA bases, stock U-Boot seed behavior,
@@ -1271,14 +1271,15 @@ change in any of A/B/C/D.
 
 ---
 
-## Experimental results: the futex bucket timing oracle
+## MM leak timing feasibility
 
 `NO SIGNAL` on the host, `NO STEP` on both ARM64 machines tested, and the
 labelled MATCH/MISMATCH arms are `INVALID TEST` by their own null controls.
-H4 moves from `UNKNOWN` to `REFUTED (measured)`. Split into `STATIC` and
-`DEVICE OBSERVATION` below.
+H4 moves from `UNKNOWN` to `REFUTED (measured)`. Re-confirmed on the host
+with the final harness on 2026-09-30, both affinities. Split into
+`STATIC FACTS` and `DEVICE OBSERVATION` below.
 
-### STATIC
+### STATIC FACTS
 
 Nothing here changes the static model. It is all `kernel/futex.c` in the
 `.src/linux-amlogic` tree, which is the 4.9.113 code, and it is why the
@@ -1320,7 +1321,9 @@ specific `mm`.
 
 ### DEVICE OBSERVATION
 
-Tool: `tools/test_aq_futex_timing.c`, NDK r29, same recipe as the other tools
+Host context for everything below: the tool runs unmodified on the host,
+where `mm` is knowable in principle but treated the same way (assumed,
+never read). Device runs used NDK r29, same recipe as the other tools
 here. Private futexes only, one process, one `mm`,
 `FUTEX_WAKE_PRIVATE(uaddr, 1, NULL, NULL, 0)`, no PI, no rtmutex, no
 `mm_struct`, no reclaim, no kernel write, no UAF, no reboot. Every timed
@@ -1406,6 +1409,57 @@ been reported as signal:
   to 88, flagged as bogus by the null control. The order is now re-randomised
   every round with a step coprime to `nc`.
 
+#### Host re-run of the final harness, 2026-09-30 (both affinities)
+
+Same tool rebuilt and rerun on the host (x86-64, 12 cpu, gcc 16.2.1):
+`--n 8000`, 3 passes, 3 pairs, warm-up 2000, `--affinity split` and
+`--affinity same`, CSV for both. Merged labelled arms: n=24000 per arm
+(3 pairs x 3 passes x 8000). Parking: 512 threads in CALIBRATE, then
+one `futex_q` (PILE, 4 threads) + 16 SPRAY nodes.
+
+The mm-free budget is unchanged: `NO STEP` in both runs, one node in the
+woken bucket `delta_p50 = 0 ns`, `auc = 0.5000`.
+
+Labelled arms: `INVALID TEST` in both affinities, again from their own
+null controls, and this run pins the mechanism. Pairs 1 and 3 are flat
+(pair 1 auc 0.4962 split / 0.5020 same), but pair 2 separates — `+9 ns`
+split, `-9 ns` same — and its same-page null control
+`NULL_MISMATCH2_vs_MISMATCH2_2` separates even harder
+(auc 0.0252 / 0.9664, abs z ~105). A treatment whose sign flips between
+affinities while its own null control separates harder than the treatment
+is a page-local artifact, not a bucket effect. `CONTROL_vs_MISMATCH`
+pooled confirms the MISMATCH arm carries the artifact
+(z_paired -0.29, z_mwu -4.39 split; -0.69, -42.36 same).
+
+```text
+condition=CONTROL   split: p50=110 p95=114 p99=135 mean=111.2 std=4.4   n=8000
+condition=CONTROL   same:  p50=109 p95=112 p99=123 mean=109.5 std=2.4   n=8000
+MATCH1_vs_MISMATCH1 split: auc=0.4962 z_paired= 0.68   same: auc=0.5020 z_paired=-0.80
+MATCH2_vs_MISMATCH2 split: auc=0.9736 z_paired=16.50   same: auc=0.0314 z_paired=-20.28
+  null same-page 2  split: auc=0.0252 z=-104.94       same: auc=0.9664 z= 103.11
+MATCH3_vs_MISMATCH3 split: auc=0.5053 z_paired= 1.55   same: auc=0.6790 z_paired= 3.89
+  null same-page 3  split: auc=0.5274 z=   6.26        same: auc=0.4625 z=  -8.45
+SELFPAIR floor      split: z=1.11                      same: z=1.09
+BUDGET (mm-free)    split: delta_p50=0 auc=0.5000      same: delta_p50=0 auc=0.5000
+positive control    split: real match of 4 waiters 1593 ns vs no-match p50 ~111 ns
+```
+
+Measurer pinned both runs (352/352 probe points), wake anomalies 0,
+post-run `wake(PILE)=4` OK.
+
+- Affinity effect: none on the conclusion. The tail moves with placement
+  (CONTROL p99 `135 ns` split vs `123 ns` same, std `4.4` vs `2.4`), but
+  the verdict is `INVALID TEST` in both and the budget is `NO STEP` in
+  both. The pair-2 delta flips sign between affinities (`+9 ns` vs
+  `-9 ns`), which is what a page/cache artifact does under a scheduler
+  change and a bucket effect would not.
+- Page offset effect: pairs share one offset class and offsets rotate
+  across pairs (0x000, 0x040, 0x100 this run). No offset class produced a
+  consistent treatment; the only deltas come from specific adjacent-page
+  locations, matching the per-page artifact (up to 8 ns) and the
+  cross-page residual (1-2 ns) documented above. Varying `both.offset`
+  does not create a signal because the budget it would amplify is 0 ns.
+
 #### What was not tried, and why
 
 `LOCK_PI`, `WAIT_REQUEUE_PI`, `CMP_REQUEUE_PI` and `sched_setattr` on the
@@ -1432,6 +1486,7 @@ step is absent at every split.
 | labelled MATCH vs MISMATCH, host | `AUC 0.4995`, null control `0.4971`, 0/3 pairs separate |
 | labelled MATCH vs MISMATCH, ARM64 | `INVALID TEST`, null controls abs z 5-63 |
 | mm-free scan, 16243 cells | no cluster: bulk p99 `14 ns`, top-15 p50 `40 ns`, gap to bulk max `6 ns` |
+| host re-run 2026-09-30, n=8000 x 3 passes x 3 pairs, both affinities | `INVALID TEST` (same-page null controls abs z ~105, treatment sign flips between affinities); budget `NO STEP` in both |
 | instrument positive control | real match of 4 waiters `2314 ns` host / `37461 ns` device |
 
 **Verdict: `NO SIGNAL`.** Not `WEAK SIGNAL`, and specifically not the "MATCH
