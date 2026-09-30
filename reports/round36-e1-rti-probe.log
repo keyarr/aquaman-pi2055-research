@@ -1,0 +1,79 @@
+=== session 1790810917.681603098 :  ===
+1234567890	 Android Fastboot
+=== trigger 1790810922.093947883 ===
+FAILED (Status read failed (No s=== optimus up 1790810922.533813065 ===
+raw     00 07 00 10
+version 0.7
+stage   16 (TPL/BL33-u-boot)
+
+== before ==
+  GP_CFG7    0xc810025c  0x0040000b
+  GP_CFG0    0xc8100240  0x04000331
+  SD_CFG15   0xc810023c  0x03b04200
+  SD_CFG12   0xc8100230  0xa080b3b5
+  SD_CFG13   0xc8100234  0x00000000
+  SD_CFG14   0xc8100238  0x00000000
+  GP_CFG1    0xc8100244  0x00010081
+  GP_CFG2    0xc8100248  0x10000000
+  GP_CFG3    0xc810024c  0x0c008000
+  GP_CFG4    0xc8100250  0x05300000
+  GP_CFG5    0xc8100254  0x05000000
+  GP_CFG6    0xc8100258  0x00000000
+  GP_CFG8    0xc8100260  0x00000000
+  GP_CFG9    0xc8100264  0x00000000
+    GP_CFG0[3:0]=1  GP_CFG7[31]=0  -> is_tpl_loaded_from_usb()=0
+    SD_CFG15[15:12]=0x4  SD_CFG15[31:28]=0x0  SD_CFG15[11:8]=0x2
+
+== bulkcmd: set_usb_boot 2 ==
+Traceback (most recent call last):
+  File "<repo>/tools/rti_probe.py", line 210, in <module>
+    main()
+    ~~~~^^
+  File "<repo>/tools/rti_probe.py", line 171, in main
+    cmd(dev, "set_usb_boot 2")
+    ~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "<repo>/tools/rti_probe.py", line 153, in cmd
+    print("  " + optimus.bulkcmd(dev, c).split(b"\0")[0]
+                 ~~~~~~~~~~~~~~~^^^^^^^^
+  File "<repo>/tools/optimus.py", line 133, in bulkcmd
+    return bytes(dev.read(BULK_IN_EP, BULK_REPLY, BULK_TIMEOUT))
+                 ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.14/site-packages/usb/core.py", line 1035, in read
+    intf, ep = self._ctx.setup_request(self, endpoint)
+            GP_CFG7    0xc810025c  X unreadable
+  GP_CFG0    0xc8100240  X unreadable
+  SD_CFG15   0xc810023c  X unreadable
+  SD_CFG12   0xc8100230  X unreadable
+  SD_CFG13   0xc8100234  X unreadable
+  SD_CFG14   0xc8100238  X unreadable
+  GP_CFG1    0xc8100244  X unreadable
+  GP_CFG2    0xc8100248  X unreadable
+  GP_CFG3    0xc810024c  X unreadable
+  GP_CFG4    0xc8100250  X unreadable
+  GP_CFG5    0xc8100254  X unreadable
+  GP_CFG6    0xc8100258  X unreadable
+  GP_CFG8    0xc8100260  X unreadable
+  GP_CFG9    0xc8100264  X unreadable
+
+---- keys: set_usb_boot 1 ----
+  no change
+
+== verdict, 0.566 s ==
+  words changed by the arm: 0, by the clear: 0
+  GP_CFG7 unchanged at 0xc810025c
+  GP_CFG0 unchanged at 0xc8100240
+  SD_CFG15 unchanged at 0xc810023c
+  SD_CFG12 unchanged at 0xc8100230
+  SD_CFG13 unchanged at 0xc8100234
+  SD_CFG14 unchanged at 0xc8100238
+  GP_CFG1 unchanged at 0xc8100244
+  GP_CFG2 unchanged at 0xc8100248
+  GP_CFG3 unchanged at 0xc810024c
+  GP_CFG4 unchanged at 0xc8100250
+  GP_CFG5 unchanged at 0xc8100254
+  GP_CFG6 unchanged at 0xc8100258
+  GP_CFG8 unchanged at 0xc8100260
+  GP_CFG9 unchanged at 0xc8100264
+  left disarmed with set_usb_boot 1, no reset issued.
+=== done 1790810923.258739529 ===
+target gone from bus

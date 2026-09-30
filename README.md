@@ -23,6 +23,36 @@ aquaman PI.2055 kernel provenance research
  - aquaman-config : kernel config extracted from the device.
 
  current state, start here:
+ - reports/round36-force-usb-boot-state.md : **where FORCE_USB_BOOT lives.**
+   `fip/gxl/bl2.bin` and `fip/gxl/bl30.bin` are plaintext, unstripped and had
+   never been opened. BL2 holds the answer at `0x820` and `0x79b4`: the boot
+   decision reads `AO_RTI_STATUS_REG3[15:12]` (0xc810001c) against a hardcoded
+   `2`, and `bl2_get_boot_device()` returns **6** when that field is 2, which
+   matches neither 1 (eMMC) nor 2 (NAND) in the storage dispatch at `0x850`, so
+   the same BL2 run that takes the USB branch also loses the eMMC path. BL31
+   names the field itself: `and w19,w19,#0xffff0fff` sits right next to the
+   string literal `"bl31 clear usb flag"`, so `[11:8]` is the usb flag. same
+   code in gxb. BL30 moves `[3:0]` into `SD_CFG15[15:12]`, which closes round
+   35's open item, puts the reboot reason in `[31:28]` from BL31 shared RAM, and
+   clears `[11:8]` before it resets. **GP_CFG7[8:31] is a 24-entry gpio pad
+   array**, so `GP_CFG7[31]` is pad 23's output latch and BL33's
+   `is_tpl_loaded_from_usb()` is half dead code on gxl. that is the F1 null,
+   explained. `romboot.h`'s "GP_CFG0[31:28] = boot device" is stale, it is
+   `[3:0]`. the bl31 FID handlers sit at 0x05100000 in a blob absent from every
+   `fip/*/bl31.*` in the tree, measured across all 6 SoC generations, so the
+   `x1=2` setter is still not in the report. next step is E1, one read-only
+   session: read `0xc810001c`, `set_usb_boot 2`, read it again.
+ - reports/round35-mode7-bootdelay.md : **`reboot bootloader` (mode 7) is
+   `setenv bootdelay -1`, nothing else.** not a hang, not a missing USB, a
+   designed stop. `do_get_rebootmode` at 0x37e60618 sets it, `main_loop` at
+   0x37e22328 runs preboot *before* `bootdelay_process`, and
+   `autoboot_command` at 0x37e24500 (`cmn w19,#1`) skips `bootcmd`. the logo
+   is the BL33 `init_display` blit, painted inside preboot, before the gate.
+   `switch_bootmode` has six branches and `bootloader` is not one of them, so
+   fastboot is never even requested. also decodes the full 15-entry
+   `AO_SEC_SD_CFG15[15:12]` table (7 -> `bootloader`) and corrects round 31
+   §4.3: BL31 writes `RTI_STATUS_REG3` (0xda10001c), not SD_CFG15, and the
+   poll at 0x1886c is a BL30-ready handshake on [17:16], not the mode.
  - reports/round34-setusbboot-realreset.md : **`set_usb_boot 2` + real reset
    DOES wedge the stick.** C0 vs F2, one SMC apart, same build, same watcher:
    no flag -> android back in 17.5 s. flag -> no USB for 885 s at 4 ms

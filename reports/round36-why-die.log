@@ -1,0 +1,50 @@
+=== session 1790810716.742278907 : 0xc8100200 0xc810025c 0xc810023c 0xc8100204 ===
+1234567890	 Android Fastboot
+=== trigger 1790810721.375533719 ===
+FAILED (Status read failed (No such device))
+fastboot: error: Command failed
+=== optimus up 1790810721.803992212 ===
+raw     00 07 00 10
+version 0.7
+stage   16 (TPL/BL33-u-boot)
+
+== alternating fresh-handle reads ==
+raw     00 07 00 10
+version 0.7
+stage   16 (TPL/BL33-u-boot)
+  round 0  0xc8100200  ERR       5  161.3 ms
+Traceback (most recent call last):
+  File "<repo>/tools/why_die.py", line 79, in <module>
+    main()
+    ~~~~^^
+  File "<repo>/tools/why_die.py", line 64, in main
+    v, e = one(a, 250)
+           ~~~^^^^^^^^
+  File "<repo>/tools/why_die.py", line 43, in one
+    dev = optimus.find()
+  File "<repo>/tools/optimus.py", line 92, in find
+    if dev.get_active_configuration() is None:
+       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/usr/lib/python3.14/site-packages/usb/core.py", line 935, in get_active_configuration
+    return self._ctx.get_active_configuration(self)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/usr/lib/python3.14/site-packages/usb/core.py", line 113, in wrapper
+    return f(self, *args, **kwargs)
+  File "/usr/lib/python3.14/site-packages/usb/core.py", line 256, in get_active_configuration
+    self.managed_open()
+    ~~~~~~~~~~~~~~~~~^^
+  File "/usr/lib/python3.14/site-packages/usb/core.py", line 113, in wrapper
+    return f(self, *args, **kwargs)
+  File "/usr/lib/python3.14/site-packages/usb/core.py", line 132, in managed_open
+    self.handle = self.backend.open_device(self.dev)
+                  ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "/usr/lib/python3.14/site-packages/usb/backend/libusb1.py", line 808, in open_device
+    return _DeviceHandle(dev)
+  File "/usr/lib/python3.14/site-packages/usb/backend/libusb1.py", line 656, in __init__
+    _check(_lib.libusb_open(self.devid, byref(self.handle)))
+    ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.14/site-packages/usb/backend/libusb1.py", line 604, in _check
+    raise USBError(_strerror(ret), ret, _libusb_errno[ret])
+usb.core.USBError: [Errno 19] No such device (it may have been disconnected)
+=== done 1790810722.193804910 ===
+target gone from bus
