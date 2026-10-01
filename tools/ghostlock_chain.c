@@ -105,12 +105,38 @@
  *   HARDWARE_REPRODUCED 2026-10-01); pi_state->pi_mutex is LEA +0x10, zero
  *   pointer writers, requeue cannot rebind (PI->PI rejected), H16 source
  *   control NATURALLY IMPOSSIBLE offline, natural retarget HARDWARE_REFUTED.
+ * H16 targeted-write (see reports/ghostlock-h16-targeted-write.md):
+ *   stock-relative search (H16_REL=SP0-0x290 conjecture, STOCK
+ *   INCONCLUSIVE); tool tools/ghostlock_h16_search.py replaces the retired
+ *   lab-absolute SP0-0x278 window; 411 8B stores in H16+-0x40 lab, 154
+ *   KERNEL_POINTER, 0 usable rt_mutex carrier; poll table/current spill
+ *   is the geometry probe only (no retarget attempted).
+ * H16 targeted search, this phase (see reports/ghostlock-targeted-write.md):
+ *   tool tools/ghostlock_h16_target_search.py (--stack/--same-task/--store8/
+ *   --stp/--atomic/--carrier/--rtmutex/--current/--frame-reuse/--ioctl/
+ *   --syscall/--verify/--all) re-ranks the same 411/154 surface for
+ *   EXACT_H16+TARGET_RT_MUTEX; 0 candidates combine both; poll table/current
+ *   stays the geometry probe only (P4 dist, no write); consumer stays
+ *   FUTEX_LOCK_PI(f_chain); no new harness mode, no memory touched.
+ * Disclosure (see reports/ghostlock-stock-disclosure.md, READ-ONLY phase):
+ *   disclose_stack (23) / disclose_heap (24): read-only probes, no trigger,
+ *   no write, no fake (classify each output as kptr or not).
+ *   disclose_write8 (25): FASE 11 harness, argv[4]=H16 argv[5]=F_alt hex,
+ *   validates size/align/lifetime/consumer WITHOUT touching memory.
+ * Emit census (see reports/ghostlock-emit-census.md, READ-ONLY phase):
+ *   emit_dev (26): /dev open census only (O_RDONLY|O_NONBLOCK + close,
+ *   no ioctl, no read). Decides OPEN_OK vs DENIED per node; ioctl emit
+ *   for C1/C2/C3 lives in tools/ghostlock_emit_probe.c (safe version/
+ *   query ioctls only, separate binary, same P0-P5 discipline).
+ *   emit_pi (27): PI-struct emit rule + fstat index check (dev/ino only,
+ *   no pointer). No trigger, no write, no fake.
  * First heap word past waiter->lock is lock+0x00 RMW (trylock);
  * first naturally-alterable heap predicate is lock+0x10 leftmost
  * (HEAP_PREDICATE_0); owner+0x28 is get_task_struct INC on O.
  */
 #define _GNU_SOURCE
 #include <errno.h>
+#include <fcntl.h>
 #include <pthread.h>
 #include <sched.h>
 #include <stdint.h>
@@ -118,6 +144,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/mman.h>
+#include <sys/socket.h>
+#include <sys/stat.h>
 #include <sys/syscall.h>
 #include <time.h>
 #include <unistd.h>
@@ -352,8 +380,225 @@ static const char *mode_name(int m) {
     case 20: return "alt_only";
     case 21: return "alt_base";
     case 22: return "h16_static";
+    case 23: return "disclose_stack";
+    case 24: return "disclose_heap";
+    case 25: return "disclose_write8";
+    case 26: return "emit_dev";
+    case 27: return "emit_pi";
     default: return "immediate";
     }
+}
+
+/* FASE 5/8 stock disclosure probes + FASE 11 future-write harness.
+ * READ-ONLY: no kernel memory written, no futex trigger, no fake object,
+ * no stack corruption. Only ordinary read-only syscalls + /proc reads
+ * whose outputs are classified as kernel-pointer vs not.
+ *
+ * is_kptr(v): heuristic for a disclosed kernel VA on this 4.9 arm64
+ * stock (VA39, PAGE_OFFSET 0xffffff8000000000): top 16 bits set and
+ * inside the kernel half. Userspace echoes (robust head, auxv) fail it.
+ */
+static int is_kptr(uint64_t v) {
+    if (v >> 48 == 0xffff)
+        return 1;
+    return 0;
+}
+
+static void read_file_line(const char *path, char *buf, size_t cap,
+                           const char *tag) {
+    FILE *f = fopen(path, "r");
+    if (!f) {
+        printf("P4 DISCLOSE %s %s: unreadable errno=%d (%s)\n",
+               tag, path, errno, strerror(errno));
+        return;
+    }
+    if (!fgets(buf, (int)cap, f))
+        buf[0] = 0;
+    buf[strcspn(buf, "\n")] = 0;
+    printf("P4 DISCLOSE %s %s: \"%.160s\"\n", tag, path, buf);
+    fclose(f);
+}
+
+/* FASE 11 harness: accept two addresses as parameters/telemetry and check
+ * size/alignment/persistence/lifetime WITHOUT touching memory. */
+static int disclose_write8_check(uint64_t h16, uint64_t falt) {
+    int ok = 1;
+    printf("P4 WRITE8_SPEC h16=%#llx falt=%#llx\n",
+           (unsigned long long)h16, (unsigned long long)falt);
+    if (h16 == 0 || falt == 0) {
+        printf("P4 WRITE8_REJECT null operand (need both addrs)\n");
+        ok = 0;
+    }
+    if (h16 & 7) {
+        printf("P4 WRITE8_REJECT h16 unaligned (need 8B align)\n");
+        ok = 0;
+    }
+    if (falt & 7) {
+        printf("P4 WRITE8_REJECT falt unaligned (need 8B align)\n");
+        ok = 0;
+    }
+    /* size is fixed 8B single word by construction (H16 slot width) */
+    printf("P4 WRITE8_SIZE 8 (single word [W_waiter+0x38], wider risks frame)\n");
+    if (!is_kptr(h16))
+        printf("P4 WRITE8_NOTE h16 fails kptr heuristic "
+               "(expected until STACK_DISCLOSURE reproduces)\n");
+    if (!is_kptr(falt))
+        printf("P4 WRITE8_NOTE falt fails kptr heuristic "
+               "(expected until HEAP_DISCLOSURE reproduces)\n");
+    /* lifetime/persistence cannot be checked without the addresses; the
+     * rule is stated so a future round can gate on it, not run it now. */
+    printf("P4 WRITE8_LIFETIME frame-alive required (W in FWRQ, "
+           "stable across H16.4 0x52fc + H16.7 0x4df0/cmp 0x4df4); "
+           "NOT verified here (no write performed)\n");
+    printf("P4 WRITE8_CONSUMER H16.7 ldr x0,[x28,#0x38] + cmp x20,x0: "
+           "h16 must equal walk x28 base, falt must equal x0/x20 value\n");
+    if (ok)
+        printf("P4 WRITE8_ACCEPT spec well-formed (telemetry only, "
+               "NO memory touched)\n");
+    printf("P6 RESULT=%s mode=disclose_write8 (read-only harness, no write)\n",
+           ok ? "SPEC_ACCEPTED_NOWRITE" : "SPEC_REJECTED_NOWRITE");
+    return ok ? 0 : 1;
+}
+
+static int run_disclose(int mode, uint64_t h16, uint64_t falt) {
+    char buf[512];
+    if (mode == 25)
+        return disclose_write8_check(h16, falt);
+    printf("P0 READY var=%c mode=%s (read-only disclosure probe, no trigger, "
+           "no write)\n", g_var, mode_name(mode));
+    /* Stack-disclosure candidates (FASE 5): every output is printed raw so
+     * a reviewer can see masking (zeros) vs a real pointer. */
+    read_file_line("/proc/self/stack", buf, sizeof(buf), "STACK");
+    read_file_line("/proc/self/wchan", buf, sizeof(buf), "WCHAN");
+    read_file_line("/proc/self/syscall", buf, sizeof(buf), "SYSCALL");
+    read_file_line("/proc/self/stat", buf, sizeof(buf), "STAT");
+    /* Heap-disclosure candidates (FASE 8): robust echo is a USER pointer
+     * (control for the classifier), sched outputs are scalars. */
+    {
+        void *head = 0;
+        size_t len = 0;
+#ifdef SYS_get_robust_list
+        errno = 0;
+        /* get_robust_list(pid=0): returns the USER head this process set */
+        {
+            long rr = syscall(SYS_get_robust_list, 0, &head, &len);
+            printf("P4 DISCLOSE ROBUST rc=%ld errno=%d head=%p len=%zu kptr=%d "
+                   "(expect USER echo, kptr=0)\n",
+                   rr, errno, head, len, is_kptr((uint64_t)(uintptr_t)head));
+        }
+#else
+        printf("P4 DISCLOSE ROBUST skipped (no SYS_get_robust_list)\n");
+#endif
+    }
+    {
+        struct sched_param p;
+        memset(&p, 0, sizeof(p));
+        errno = 0;
+        int r = sched_getparam(0, &p);
+        printf("P4 DISCLOSE SCHED_GETPARAM rc=%d errno=%d prio=%d "
+               "(scalar, never a pointer)\n", r, errno, p.sched_priority);
+    }
+    {
+        int fd[2] = { -1, -1 };
+        if (!socketpair(1 /*AF_UNIX*/, 1 /*SOCK_STREAM*/, 0, fd)) {
+            char addr[128];
+            socklen_t alen = sizeof(addr);
+            memset(addr, 0, sizeof(addr));
+            errno = 0;
+            int r = getsockname(fd[0], (void *)addr, &alen);
+            printf("P4 DISCLOSE GETSOCKNAME rc=%d errno=%d alen=%u "
+                   "bytes0=%02x%02x%02x%02x (addr bytes, never kptr)\n",
+                   r, errno, (unsigned)alen,
+                   (unsigned char)addr[0], (unsigned char)addr[1],
+                   (unsigned char)addr[2], (unsigned char)addr[3]);
+            close(fd[0]);
+            close(fd[1]);
+        } else {
+            printf("P4 DISCLOSE GETSOCKNAME socketpair failed errno=%d\n", errno);
+        }
+    }
+    if (mode == 24) {
+        /* f_alt identity without a pointer: the ONLY stock-legal identity
+         * is the occupancy verdict (alt_base TIMEOUT proves a valid
+         * contended rt_mutex). Document the rule; the threaded alt_base
+         * run itself stays the authority (see report sec. 8/10). */
+        printf("P4 DISCLOSE HEAP_RULE f_alt identity = occupancy verdict "
+               "(alt_base TIMEOUT_BLOCK 3000ms), not a pointer; "
+               "SINGLE_SOURCE until a second path confirms\n");
+    }
+    printf("P6 RESULT=%s mode=%s (read-only, no write, no trigger)\n",
+           "DISCLOSURE_PROBE_DONE", mode_name(mode));
+    printf("P8 END mode=%s\n", mode_name(mode));
+    return 0;
+}
+
+/* FASE 19 read-only emit modes (no trigger, no threads, no write).
+ * emit_dev (26): /dev OPEN census only. No ioctl, no read: open
+ * O_RDONLY|O_NONBLOCK then close. OPEN_OK vs DENIED decides the FASE 2
+ * shortlist; struct emit for the shortlist is audited offline and probed
+ * by tools/ghostlock_emit_probe.c (C1/C2/C3 safe ioctls).
+ * emit_pi (27): PI-struct emit rule + fstat index check. fstat returns
+ * dev/ino (index, never a pointer); the four PI structs have zero
+ * copy_to_user in futex.c/rtmutex.c, so the rule is NO_POINTER. */
+static int run_emit_dev(void) {
+    static const char *paths[] = {
+        "/dev/binder", "/dev/hwbinder", "/dev/ashmem", "/dev/ion",
+        "/dev/mali", "/dev/xt_qtaguid", "/dev/ge2d", "/dev/vndbinder",
+        "/dev/ionvideo", "/dev/amvideo", "/dev/cec", "/dev/vfm",
+        "/dev/null", "/dev/full", "/dev/zero",
+    };
+    printf("P0 READY var=%c mode=emit_dev (read-only /dev open census, "
+           "no trigger, no write)\n", g_var);
+    for (unsigned i = 0; i < sizeof(paths) / sizeof(paths[0]); i++) {
+        errno = 0;
+        int fd = open(paths[i], O_RDONLY | O_NONBLOCK);
+        int e = errno;
+        if (fd >= 0) {
+            printf("P1 OPEN %s OPEN_OK fd=%d\n", paths[i], fd);
+            close(fd);
+            printf("P4 CLOSE %s closed\n", paths[i]);
+        } else {
+            printf("P1 OPEN %s DENIED errno=%d (%s)\n",
+                   paths[i], e, strerror(e));
+        }
+    }
+    printf("P6 RESULT=EMIT_DEV_DONE mode=emit_dev (open census only, "
+           "ioctl emit in ghostlock_emit_probe C1/C2/C3)\n");
+    printf("P8 END mode=emit_dev\n");
+    return 0;
+}
+
+static int run_emit_pi(void) {
+    printf("P0 READY var=%c mode=emit_pi (read-only PI emit rule + fstat, "
+           "no trigger, no write)\n", g_var);
+    printf("P4 EMIT_RULE futex_pi_state: no copy_to_user in futex.c/rtmutex.c "
+           "(NO_POINTER)\n");
+    printf("P4 EMIT_RULE rt_mutex.wait_lock/waiters/leftmost/owner: in-kernel "
+           "walk only (NO_POINTER)\n");
+    printf("P4 EMIT_RULE rt_mutex_waiter.task/lock/prio: birth stp only, "
+           "zero copy-out (NO_POINTER)\n");
+    printf("P4 EMIT_RULE futex_q.rt_waiter/pi_state: stack+heap, freed on "
+           "wake (NO_POINTER)\n");
+    {
+        struct stat st;
+        const char *p = "/dev/binder";
+        int fd = open(p, O_RDONLY | O_NONBLOCK);
+        if (fd >= 0) {
+            errno = 0;
+            int r = fstat(fd, &st);
+            printf("P4 FSTAT %s rc=%d errno=%d dev=%llx ino=%llu mode=%o "
+                   "(index only, never a pointer)\n", p, r, errno,
+                   (unsigned long long)st.st_dev,
+                   (unsigned long long)st.st_ino, st.st_mode);
+            close(fd);
+        } else {
+            printf("P4 FSTAT %s OPEN_DENIED errno=%d (%s)\n",
+                   p, errno, strerror(errno));
+        }
+    }
+    printf("P6 RESULT=EMIT_PI_DONE mode=emit_pi (rule + index check, no leak)\n");
+    printf("P8 END mode=emit_pi\n");
+    return 0;
 }
 
 static void *waiter_fn(void *u) {
@@ -662,9 +907,32 @@ int main(int argc, char **argv) {
             g_mode = 21;
         else if (!strcmp(argv[3], "h16_static"))
             g_mode = 22;
+        else if (!strcmp(argv[3], "disclose_stack"))
+            g_mode = 23;
+        else if (!strcmp(argv[3], "disclose_heap"))
+            g_mode = 24;
+        else if (!strcmp(argv[3], "disclose_write8"))
+            g_mode = 25;
+        else if (!strcmp(argv[3], "emit_dev"))
+            g_mode = 26;
+        else if (!strcmp(argv[3], "emit_pi"))
+            g_mode = 27;
         else
             g_mode = 0;
     }
+    if (g_mode == 25) {
+        /* FASE 11 harness: argv[4]=H16 hex argv[5]=F_alt hex (telemetry
+         * only, no write). g_busy/pin/fwq untouched in this mode. */
+        uint64_t h16 = argc > 4 ? strtoull(argv[4], 0, 0) : 0;
+        uint64_t falt = argc > 5 ? strtoull(argv[5], 0, 0) : 0;
+        return run_disclose(25, h16, falt);
+    }
+    if (g_mode == 23 || g_mode == 24)
+        return run_disclose(g_mode, 0, 0);
+    if (g_mode == 26)
+        return run_emit_dev();
+    if (g_mode == 27)
+        return run_emit_pi();
     if (argc > 4)
         g_busy = strtoull(argv[4], 0, 0);
     if (argc > 5 && !strcmp(argv[5], "pin"))

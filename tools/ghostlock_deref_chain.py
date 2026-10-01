@@ -17,6 +17,14 @@ The chain is a dataflow walk, not pretty printing: x28 = pi_blocked_on, and a
 load whose base register is the previous hop's destination becomes the next
 hop. Everything else (base = task, base = a constant) is listed as "not chained"
 so it cannot be mistaken for part of the primitive.
+
+NOTE: LAB != STOCK. Lab VAs/frames are OFFLINE_ONLY. The retired lab-absolute
+spill window (SP0-0x278) is superseded by tools/ghostlock_h16_search.py.
+Read-only disclosure inventory lives in tools/ghostlock_disclosure.py
+(--proc/--copy/--stack-flow/--heap); this file adds --disclosure
+(disclosed-target -> known-consumer ruler, FASE 12, no memory touched)
+and --target (H16 destination+value bidirectional taint ruler, FASE 7,
+paired with tools/ghostlock_h16_target_search.py, no memory touched).
 """
 import re
 import subprocess
@@ -1528,6 +1536,150 @@ def pi_source_chain():
     print("")
 
 
+def emit_chain():
+    """EMIT validation ruler (FASE 13): what a future disclosed pointer must
+    satisfy before it is called a leak. Read-only, touches no memory.
+
+    For any candidate u64 value reaching userspace, the claim
+    DIRECT_KERNEL_PTR is accepted only when all five hold:
+      1. FIELD: which struct field produced it (name + offset);
+      2. LOAD: which instruction loaded it (VA + mnemonic + operands);
+      3. COPY: which instruction copied it out (copy_to_user/put_user VA);
+      4. USER: where userspace received it (syscall + output buffer + width);
+      5. MASK: which transform applied (none/%pK/hash/truncate) + object
+         identity (emitted == independently inferred address of same object).
+    Anything less is SINGLE_SOURCE. Index/user-echo/scalar outputs
+    (binder ptr zeros, ashmem name, ion heap id) fail step 5 by
+    construction and stay NO_POINTER/USER_ECHO/INDEX.
+
+    EVIDENCE: OFFLINE_ONLY (ruler). Stock C1/C2/C3 outputs to date:
+    all zeros/scalars/indices, zero kptr hits (see emit-census report).
+    """
+    print("=" * 72)
+    print("EMIT -> POINTER validation ruler (read-only, FASE 13)")
+    print("EVIDENCE: OFFLINE_ONLY (ruler) + HARDWARE_* (C1/C2/C3 outputs).")
+    print("=" * 72)
+    print("")
+    print("To promote a candidate u64 to DIRECT_KERNEL_PTR, show:")
+    print("  1. FIELD: struct + offset (e.g. rt_mutex_waiter.lock +0x38)")
+    print("  2. LOAD : VA + insn (e.g. 0x...4df0 ldr x0,[x28,#0x38])")
+    print("  3. COPY : VA + bl copy_to_user/put_user (e.g. binder.c:4829)")
+    print("  4. USER : syscall + buffer + width (e.g. ioctl BINDER_GET_NODE_DEBUG_INFO, 8B)")
+    print("  5. MASK : transform (none vs %pK vs hash vs truncate) + identity")
+    print("     (emitted == independently inferred address, two configs/paths)")
+    print("")
+    print("Stock scoreboard (this phase, shell, read-only):")
+    print("  C1 binder VERSION=8 scalar; NODE_DEBUG ptr=0 cookie=0 x2 stable")
+    print("     -> USER_ECHO zeros. HARDWARE_REPRODUCED (values).")
+    print("  C2 ashmem GET_SIZE=0 scalar; GET_NAME=\"dev/ashmem\" user-string")
+    print("     -> SCALAR/USER_ECHO. HARDWARE_REPRODUCED (values).")
+    print("  C3 ion HEAP_QUERY cnt=3 scalar; heaps codec_mm_ion/5/5,")
+    print("     cma_ion/4/4, vmalloc_ion/0/0 (rc=-EINVAL quirk, buffer filled)")
+    print("     -> INDEX+SCALAR. HARDWARE_REPRODUCED (values).")
+    print("  is_kptr hits across all C1/C2/C3 outputs: 0.")
+    print("")
+    print("Single next bottleneck: one read-only kernel-pointer source for")
+    print("EITHER address that survives stock masking (unaudited /dev corners")
+    print("past C1/C2/C3, or deeper EMIT walk past BFS depth 3).")
+    print("")
+
+
+def disclosure_chain():
+    """READ/DISCLOSE consumer validation: disclosed addr -> known consumer.
+
+    H16 consumer: rt_mutex_adjust_prio_chain H16.7
+      0xffffff8009104df0 ldr x0,[x28,#0x38] + 0x4df4 cmp x20,x0 / b.ne out.
+    Any disclosed H16_addr must equal the x28 base the walk loads here;
+    any disclosed F_alt_addr must equal the x0 value compared against x20
+    (next_lock) at +0x4df4. Until both disclosures are HARDWARE_REPRODUCED
+    this mapping is a read-only ruler, not a write plan.
+
+    FASE 12: DISCLOSED TARGET -> KNOWN CONSUMER (OFFLINE_ONLY until stock
+    addresses exist). No memory is touched by this function.
+    """
+    print("=" * 72)
+    print("DISCLOSURE -> CONSUMER validation (read-only ruler)")
+    print("EVIDENCE: OFFLINE_ONLY (build-aq/vmlinux). No stock addresses yet.")
+    print("=" * 72)
+    print("")
+    print("H16_addr (disclosed stack slot) must satisfy:")
+    print("  H16_addr == x28 at 0xffffff8009104df0 (walk re-read base)")
+    print("  [H16_addr] == x0 after ldr, == x20 (next_lock) at 0x4df4 cmp")
+    print("  x20 itself == [stale waiter+0x38] read at H16.4 (0x52fc -> x25)")
+    print("  both reads hit the SAME 8 bytes: stability across H16.4+H16.7")
+    print("  is the acceptance test (mismatch bails at +0x4df8).")
+    print("")
+    print("F_alt_addr (disclosed heap rt_mutex) must satisfy:")
+    print("  F_alt_addr == &f_alt.pi_mutex == pi_state_alt + 0x10 (LEA S3)")
+    print("  [F_alt_addr+0x00] = free wait_lock (trylock at +0x4e44 succeeds)")
+    print("  [F_alt_addr+0x10] = occ waiter (leftmost gate H16 passes)")
+    print("  [F_alt_addr+0x18] = owner A (non-NULL, H11 passes)")
+    print("  top->lock at [leftmost+0x38] == F_alt_addr (BUG_ON H18/H19 passes)")
+    print("")
+    print("Cross-check rule: H16_addr is validated by the STACK page temps")
+    print("  (same page/SP base as FWRQ, dist 0); F_alt_addr is validated by")
+    print("  TWO independent paths when possible (disclosure + occupancy")
+    print("  verdict alt_base TIMEOUT proves the object is a valid contended")
+    print("  rt_mutex). Single-source disclosure stays SINGLE_SOURCE.")
+    print("")
+    print("Future WRITE8(H16_addr, F_alt_addr) spec (NOT implemented):")
+    print("  size 8B single word; align 8; H16 frame alive (W in FWRQ);")
+    print("  value learned (both addrs disclosed), never guessed; window")
+    print("  between trigger return and consumer walk; consumer stays")
+    print("  FUTEX_LOCK_PI(f_chain) FULL. The harness accepts both values")
+    print("  as parameters/telemetry only (see ghostlock_chain disclose modes).")
+    print("")
+
+
+def target_chain():
+    """H16 TARGET ruler (FASE 7): bidirectional dataflow acceptance test.
+
+    A candidate store passes only when BOTH hold:
+      DESTINATION TAINT (store <- pointer base <- origin):
+        EXACT_H16      delta==0, width 8, base x29/sp on same-task frame
+        H16_RELATIVE   abs(delta)<=0x40, width 8 (geometry only, not success)
+        STACK_SAME_PAGE abs(delta)<=0x400 (same page, not H16)
+        UNRELATED      everything else (REJECT)
+      VALUE TAINT (store <- value reg <- origin):
+        TARGET_RT_MUTEX      8B kptr from pi_state->pi_mutex/+0x10 LEA/rt_mutex
+        OTHER_KERNEL_POINTER 8B kptr of any other origin (task/heap/code/stack)
+        USER_POINTER         8B user-derived (needs a leak; NONE AVAILABLE)
+        INTEGER              scalar/zero/derived-int/str Wn (REJECT for retarget)
+        UNKNOWN              untainted/unknown return (REJECT, not a pointer)
+    Only EXACT_H16 + (TARGET_RT_MUTEX or OTHER_KERNEL_POINTER) continues
+    to a stock geometry probe, and only with a legitimate kernel pointer,
+    single-word, frame-alive, consumer FUTEX_LOCK_PI(f_chain).
+    Paired tool: ghostlock_h16_target_search.py prints both classes per
+    candidate. EVIDENCE: OFFLINE_ONLY (ruler). Current scoreboard:
+    33 EXACT_H16 (9 KPTR, 0 UPTR, 2 INTEGER, 1 DERIVED, 21 UNKNOWN),
+    0 TARGET_RT_MUTEX at EXACT (audited surface, depth<=3).
+    """
+    print("=" * 72)
+    print("H16 TARGET ruler: destination x value (read-only, FASE 7)")
+    print("EVIDENCE: OFFLINE_ONLY (ruler). Stock geometry INCONCLUSIVE.")
+    print("=" * 72)
+    print("")
+    print("DESTINATION TAINT (store <- base <- origin):")
+    print("  EXACT_H16       delta==0, w==8, x29/sp, same-task frame (ONLY pass)")
+    print("  H16_RELATIVE    abs(delta)<=0x40, w==8 (geometry probe only)")
+    print("  STACK_SAME_PAGE abs(delta)<=0x400 (same page, not H16)")
+    print("  UNRELATED       else (REJECT)")
+    print("")
+    print("VALUE TAINT (store <- reg <- origin):")
+    print("  TARGET_RT_MUTEX     pi_state->pi_mutex/+0x10/rt_mutex 8B kptr")
+    print("  OTHER_KERNEL_POINTER task/heap/code/stack 8B kptr (geometry/value proof first)")
+    print("  USER_POINTER        user-derived 8B (needs leak; NONE AVAILABLE)")
+    print("  INTEGER             scalar/zero/derived/str Wn (REJECT for retarget)")
+    print("  UNKNOWN             untainted/unknown (REJECT, not a pointer)")
+    print("")
+    print("GATE: EXACT_H16 + (TARGET_RT_MUTEX|OTHER_KERNEL_POINTER) only.")
+    print("H16.4 0x52fc (x25) and H16.7 0x4df0/cmp 0x4df4 must read the SAME")
+    print("8 bytes; mismatch bails at +0x4df8. Poll table/current spills are")
+    print("H16_RELATIVE (+8/+20 lab) with OTHER_KERNEL_POINTER (task/code):")
+    print("geometry probe ONLY, never a retarget value.")
+    print("")
+
+
 def main():
     if len(sys.argv) < 3:
         sys.exit(__doc__ + "\nadd --graph for the curated chain graph, "
@@ -1538,7 +1690,10 @@ def main():
                  "--natural for the unstamped natural waiter path, "
                  "--h16 for every waiter->lock load/store + dataflow, "
                   "--h16-write for FASE1 table + 8B-store scan, "
-                  "--pi-source for pi_state->pi_mutex origin + rebind verdict")
+                  "--pi-source for pi_state->pi_mutex origin + rebind verdict, "
+                  "--disclosure for disclosed-target -> known-consumer ruler, "
+                  "--emit for emit -> pointer validation ruler (FASE 13), "
+                  "--target for H16 destination+value taint ruler (FASE 7)")
     vmlinux = sys.argv[1]
     args = sys.argv[2:]
     if args[0] == "--graph":
@@ -1566,6 +1721,15 @@ def main():
         return
     if args[0] in ("--pi-source", "--h16-source"):
         pi_source_chain()
+        return
+    if args[0] == "--disclosure":
+        disclosure_chain()
+        return
+    if args[0] == "--emit":
+        emit_chain()
+        return
+    if args[0] == "--target":
+        target_chain()
         return
     if args[0] == "--all":
         for imm, label in ((PI_BLOCKED_ON, "pi_blocked_on"),

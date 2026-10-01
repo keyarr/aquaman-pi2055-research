@@ -22,6 +22,7 @@ REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(REPO, "tools"))
 
 import bl33_audit  # noqa: E402
+import bl33_ctrl  # noqa: E402
 import bl33_round15  # noqa: E402
 import bl33_round16  # noqa: E402
 import bl33_round17  # noqa: E402
@@ -687,6 +688,183 @@ class TestBl33Round16(unittest.TestCase):
     def test_pure_oem_budget(self):
         self.assertTrue(bl33_round16.oem_fits("mmc read 1080000 0 1"))
         self.assertFalse(bl33_round16.oem_fits("x" * 32))
+
+
+class TestBl33Round37(unittest.TestCase):
+    """round 37: ddr_test_copy as a control primitive (write -> control flow).
+
+    The tail write, the live page table, the cmd_tbl consumer and the oem
+    character budget. Pure arithmetic tests always run, image-gated ones skip.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        if not have(BL33_IMAGE):
+            raise unittest.SkipTest("round-14 image not persisted")
+        cls.d, cls.ins = bl33_ctrl.load_img(BL33_IMAGE)
+        cls.at = {i.address: (i.mnemonic, i.op_str) for i in cls.ins}
+
+    # ---- primitive -------------------------------------------------------
+
+    def test_tail_is_four_copies_of_one_word(self):
+        """0x37e3d4b8..0x37e3d4d8: one 32-bit value, four times, 16 B at dst+L."""
+        for a in (0x37E3D4B8, 0x37E3D4C4, 0x37E3D4D0, 0x37E3D4D8):
+            self.assertTrue(self.at[a][0].startswith("str"), hex(a))
+        self.assertEqual(self.at[0x37E3D4B8][1], "w1, [x23, x27]")
+        self.assertEqual(self.at[0x37E3D4C4][1], "w0, [x24, #4]")
+        self.assertEqual(self.at[0x37E3D4D0][1], "w0, [x24, #8]")
+        self.assertEqual(self.at[0x37E3D4D8][1], "w0, [x24, #0xc]")
+        # w1 and w0 both come from the same read-loop word
+        self.assertEqual(self.at[0x37E3D4A4][1], "w1, [x3, #4]!")
+        self.assertEqual(self.at[0x37E3D4BC][1], "w0, [x3]")
+
+    def test_fill_length_and_its_start(self):
+        """0x37e3d3d0 ubfiz -> stride; 0x37e3d440 -> L = loop*stride."""
+        self.assertEqual(self.at[0x37E3D3D0][1], "x0, x22, #4, #0x1e")
+        self.assertEqual(self.at[0x37E3D440][1], "x27, x0, x27")
+        self.assertEqual(self.at[0x37E3D48C][1], "x24, x23, x27")
+        self.assertEqual(self.at[0x37E3D3F4][1], "w6, #0x1234, lsl #16")
+
+    def test_no_cache_maintenance_in_the_handler(self):
+        for i in self.ins:
+            if 0x37E3D1B0 <= i.address <= 0x37E3D52C:
+                self.assertNotIn(i.mnemonic, ("dc", "ic", "dsb", "isb", "dc civac"))
+                self.assertNotIn("civac", i.op_str)
+                self.assertNotIn("cvau", i.op_str)
+
+    def test_pure_primitive_model(self):
+        m = bl33_ctrl.prim_model(0x1000, 1)
+        self.assertEqual((m["N"], m["L"], m["srcoff"]), (0x400, 0x4000, 0x200))
+        m = bl33_ctrl.prim_model(0x2000000, 1)
+        self.assertEqual((m["N"], m["L"], m["srcoff"]),
+                         (0x800000, 0x8000000, 0x400000))
+        m = bl33_ctrl.prim_model(0x1000, 2)
+        self.assertEqual(m["L"], 0x8000)
+
+    # ---- execution surface ----------------------------------------------
+
+    def test_page_table_is_rw_and_executable(self):
+        if not have(R13_BAND):
+            self.skipTest("round-13 band not present")
+        with open(os.path.join(REPO, R13_BAND), "rb") as fh:
+            d = fh.read()
+        q = struct.unpack("<8192Q", d[0x7F0000:0x800000])
+        for v in q:
+            ap = (((v >> 4) & 1) << 1) | ((v >> 8) & 1)
+            self.assertIn(ap, (0, 2))
+            self.assertEqual((v >> 54) & 1, 0)      # XN
+            self.assertEqual((v >> 10) & 1, 1)      # AF
+            self.assertEqual(v & 3, 1)              # block
+
+    def test_cmd_table_layout_and_consumer(self):
+        """0x30-stride array at 0x37f60eb0; ->cmd at +0x10; bootm is index 6."""
+        bootm = 0x37F60FD0
+        self.assertEqual(struct.unpack_from("<Q", self.d, bootm - R)[0], 0x37EC01FE)
+        self.assertEqual(self.d[0x37EC01FE - R:0x37EC01FE - R + 5], b"bootm")
+        self.assertEqual(struct.unpack_from("<Q", self.d, bootm - R + 0x10)[0],
+                         0x37E24C00)
+        # entry 0 is the one the write targets: its ->cmd slot is 0x37f60ec0
+        self.assertEqual(bl33_ctrl.A_CMD, 0x37F60EB0 + 0x10)
+        # call_cmd: find_cmd -> maxargs gate -> ldr x4,[x19,#0x10] -> blr x4
+        self.assertEqual(self.at[0x37E5F6E8][1], "x4, [x19, #0x10]")
+        self.assertEqual(self.at[0x37E5F6FC], ("blr", "x4"))
+        self.assertEqual(self.at[0x37E5F6B4][1], "w0, [x0, #8]")
+        self.assertEqual(self.at[0x37E5F690], ("bl", "#0x37e5ee9c"))
+        # find_cmd walks a 0x30-stride array, no global list
+        self.assertEqual(self.at[0x37E5EE24][1], "w24, #0x30")
+        self.assertEqual(self.at[0x37E5EE6C][1], "x19, x19, #0x30")
+
+    def test_oem_budget_is_28_chars(self):
+        """cb_oem 0x37e95630: strnlen(cmd,32) -> memcpy 33 B into a 0x30 B buf."""
+        self.assertEqual(self.at[0x37E95654][1], "x1, #0x20")
+        self.assertEqual(self.at[0x37E95660][1], "x2, x0, #1")
+        self.assertEqual(self.at[0x37E95668][1], "x0, x29, #0x20")
+        self.assertEqual(self.at[0x37E95684], ("bl", "#0x37eaae44"))
+        self.assertEqual(self.at[0x37E956A0], ("bl", "#0x37e5e968"))
+        # 0x37eaada0 is strnlen: end = s + n
+        self.assertEqual(self.at[0x37EAADA0][1], "x1, x0, x1")
+        self.assertEqual(bl33_ctrl.TOKEN_MAX, 28)
+
+    def test_pure_budget_cannot_fit_the_surgical_form(self):
+        free = bl33_ctrl.TOKEN_MAX - len("ddr_test_copy") - 3
+        self.assertEqual(free, 12)          # chars for src+dst+size
+        self.assertLess(free - 4 - 8, 1)    # size 4 digits + dst 8 digits leave 0 for src
+
+    def test_do_run_does_not_concatenate(self):
+        """0x37e5ea04: getenv(argv[i]) then run_command(value) per variable."""
+        self.assertEqual(self.at[0x37E5EA30], ("bl", "#0x37e58920"))
+        self.assertEqual(self.at[0x37E5EA50], ("bl", "#0x37e5e968"))
+        self.assertEqual(self.at[0x37E5EA28][1], "w22, w1, #4")
+
+    def test_optimus_command_buffer_has_no_generic_run(self):
+        """0x37f8a638 takes 0xffff bytes (0xc0 sub-op) but 0x34 only matches a list."""
+        self.assertEqual(self.at[0x37E76BC0], ("bl", "#0x37eaaeec"))
+        self.assertEqual(self.at[0x37E799D4], ("bl", "#0x37e5e8cc"))
+        # 0x37e5e8cc is the whitespace tokenizer, not run_command
+        self.assertEqual(self.at[0x37E5E8E4][0], "ldrb")
+        for a, s in ((0x37ED85E7, "low_power"), (0x37ED85F1, "disk_initial"),
+                     (0x37ED8686, "download"), (0x37ED868F, "upload"),
+                     (0x37ECFEDF, "read_temp"), (0x37ED876B, "get_chipid")):
+            self.assertEqual(self.d[a - R:a - R + len(s)], s.encode())
+
+
+class TestBl33Round38(unittest.TestCase):
+    """round 38: corrective audit. consumer is 64-bit, chain as stated is out."""
+
+    @classmethod
+    def setUpClass(cls):
+        if not have(BL33_IMAGE):
+            raise unittest.SkipTest("round-14 image not persisted")
+        cls.d, cls.ins = bl33_ctrl.load_img(BL33_IMAGE)
+        cls.at = {i.address: (i.mnemonic, i.op_str) for i in cls.ins}
+
+    def test_consumer_load_is_64_bit(self):
+        self.assertEqual(self.at[0x37E5F6E8], ("ldr", "x4, [x19, #0x10]"))
+        self.assertEqual(self.at[0x37E5F6FC], ("blr", "x4"))
+        self.assertTrue(self.at[0x37E5F6E8][1].split(",")[0].strip().startswith("x"))
+        # neighbouring struct fields are 32-bit, which is why w vs x matters
+        self.assertEqual(self.at[0x37E5F6B4][1], "w0, [x0, #8]")
+        self.assertEqual(self.at[0x37E5F718][1], "w0, [x19, #0xc]")
+
+    def test_cmd_struct_entries_0_to_2(self):
+        base, stride = 0x37F60EB0, 0x30
+        names = [b"aml_sysrecovery", b"amlmmc", b"avb"]
+        cmds = [0x37E8387C, 0x37E2F064, 0x37E63A64]
+        for i, (nm, cmd) in enumerate(zip(names, cmds)):
+            b = base + i * stride
+            ptr = struct.unpack_from("<Q", self.d, b - R)[0]
+            self.assertEqual(self.d[ptr - R:ptr - R + len(nm)], nm)
+            self.assertEqual(struct.unpack_from("<Q", self.d, b - R + 0x10)[0], cmd)
+        self.assertEqual(bl33_ctrl.A_CMD, base + 0x10)
+        # table bounds from sconv, 116 entries here
+        self.assertEqual((0x37F62470 - base) // stride, 116)
+
+    def test_tail_pointer_is_non_canonical(self):
+        w = 0x10200000
+        u64 = (w << 32) | w
+        self.assertEqual(u64, 0x1020000010200000)
+        self.assertNotIn((u64 >> 48) & 0xFFFF, (0x0000, 0xFFFF))
+
+    def test_collateral_range_for_surgical_form(self):
+        m = bl33_ctrl.prim_model(0x1000, 1, dst=0x37F5CEC0)
+        self.assertEqual(m["L"], 0x4000)
+        self.assertEqual(0x37F5CEC0 + m["L"], 0x37F60EC0)
+        self.assertEqual(m["tail"], (0x37F60EC0, 0x37F60ED0))
+
+    def test_page_table_is_512mb_identity(self):
+        if not have(R13_BAND):
+            self.skipTest("round-13 band not present")
+        with open(os.path.join(REPO, R13_BAND), "rb") as fh:
+            d = fh.read()
+        q = struct.unpack("<8192Q", d[0x7F0000:0x800000])
+        self.assertEqual(q[0], 0x411)
+        self.assertEqual(q[1], 0x20000411)
+        self.assertEqual(q[2], 0x40000401)
+        for v in q:
+            self.assertEqual(v & 3, 1)
+            self.assertEqual((v >> 54) & 1, 0)
+        self.assertEqual((q[0] >> 2) & 0x7, 4)
+        self.assertEqual((q[2] >> 2) & 0x7, 0)
 
 
 # ---------------------------------------------------------------- artifacts
