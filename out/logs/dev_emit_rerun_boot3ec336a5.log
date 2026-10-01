@@ -1,0 +1,24 @@
+P0 READY candidate=C1 dev=/dev/binder (read-only, no trigger)
+P1 OPEN fd=3 errno=0 (Success)
+P2 QUERY BINDER_VERSION rc=0 errno=0 (Success) protocol=8 kptr=0
+P3 CAPTURE NODE_DEBUG rc=0 errno=0 (Success)
+P3 CAPTURE ptr=0 cookie=0 strong=0 weak=0
+P5 VERIFY C1 ptr_kptr=0 cookie_kptr=0 ptr_like=0 (expect 0/0/0 on fresh fd: USER_ECHO zeros)
+P3 CAPTURE repeat rc=0 ptr=0 cookie=0 (stability check)
+P4 CLOSE fd closed
+P0 READY candidate=C2 dev=/dev/ashmem (read-only, no trigger)
+P1 OPEN fd=3 errno=0 (Success)
+P2 QUERY ASHMEM_GET_SIZE rc=0 errno=0 (Success) kptr=0 (expect 0, scalar)
+P3 CAPTURE ASHMEM_GET_NAME rc=0 errno=0 (Success) name="dev/ashmem" kptr=0 (expect USER_ECHO dev/ashmem)
+P4 CLOSE fd closed
+P5 VERIFY C2 scalar+user-string only (no kernel pointer by construction)
+P0 READY candidate=C3 dev=/dev/ion (read-only, no trigger)
+P1 OPEN fd=3 errno=0 (Success)
+P2 QUERY HEAP_QUERY_CNT0 rc=0 errno=0 (Success) cnt=3 kptr=0 (expect count scalar)
+P3 CAPTURE HEAP_QUERY_BUF rc=-1 errno=22 (Invalid argument) cnt=3
+P3 CAPTURE heap[0] name="codec_mm_ion" type=5 id=5 kptr=0
+P3 CAPTURE heap[1] name="cma_ion" type=4 id=4 kptr=0
+P3 CAPTURE heap[2] name="vmalloc_ion" type=0 id=0 kptr=0
+P5 VERIFY C3 name/type/id only (INDEX+SCALAR, no kernel VA by construction)
+P4 CLOSE fd closed
+P6 RESULT=EMIT_PROBE_DONE which=all (read-only, no trigger, no write)

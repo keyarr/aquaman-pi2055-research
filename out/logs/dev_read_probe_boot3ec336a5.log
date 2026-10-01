@@ -1,0 +1,51 @@
+BOOT check:
+MALI open fd=3 errno=0(ok)
+MALI poll r=1 revents=1 errno=2(No such file or directory)
+MALI read n=-1 errno=22(Invalid argument)
+MALI result=OPEN_OK_NO_SAFE_IOCTL classification=INCOMPLETE_NEEDS_SOURCE
+UHID open fd=3 errno=0(ok)
+UHID poll r=0 revents=0 errno=22(Invalid argument)
+UHID read n=-1 errno=11(Try again) prop_kptr=0
+UHID result=READ_EAGAIN_OR_QUEUE classification=USER_INPUT_ECHO_OR_EMPTY
+EVDEV /dev/input/event0 open fd=3 errno=0(ok)
+EVDEV /dev/input/event0 EVIOCGVERSION rc=0 errno=0 ver=65537 kptr=0
+EVDEV /dev/input/event0 EVIOCGID rc=0 errno=0 bustype=16 vendor=1 product=1 version=256 kptr=0
+EVDEV /dev/input/event0 EVIOCGBIT rc=8 errno=0 bytes=0700 kptr=0
+EVDEV /dev/input/event0 poll r=0 revents=0
+EVDEV /dev/input/event0 read n=-1 errno=11(Try again)
+EVDEV /dev/input/event1 open fd=3 errno=0(ok)
+EVDEV /dev/input/event1 EVIOCGVERSION rc=0 errno=0 ver=65537 kptr=0
+EVDEV /dev/input/event1 EVIOCGID rc=0 errno=0 bustype=16 vendor=7054 product=3308 version=1 kptr=0
+EVDEV /dev/input/event1 EVIOCGBIT rc=8 errno=0 bytes=0300 kptr=0
+EVDEV /dev/input/event1 poll r=0 revents=0
+EVDEV /dev/input/event1 read n=-1 errno=11(Try again)
+EVDEV /dev/input/event2 open fd=3 errno=0(ok)
+EVDEV /dev/input/event2 EVIOCGVERSION rc=0 errno=0 ver=65537 kptr=0
+EVDEV /dev/input/event2 EVIOCGID rc=0 errno=0 bustype=5 vendor=10007 product=12985 version=0 kptr=0
+EVDEV /dev/input/event2 EVIOCGBIT rc=8 errno=0 bytes=1300 kptr=0
+EVDEV /dev/input/event2 poll r=0 revents=0
+EVDEV /dev/input/event2 read n=-1 errno=11(Try again)
+EVDEV /dev/input/event3 open fd=3 errno=0(ok)
+EVDEV /dev/input/event3 EVIOCGVERSION rc=0 errno=0 ver=65537 kptr=0
+EVDEV /dev/input/event3 EVIOCGID rc=0 errno=0 bustype=6 vendor=0 product=0 version=1 kptr=0
+EVDEV /dev/input/event3 EVIOCGBIT rc=8 errno=0 bytes=1300 kptr=0
+EVDEV /dev/input/event3 poll r=0 revents=0
+EVDEV /dev/input/event3 read n=-1 errno=11(Try again)
+EVDEV result=SCALARS_ONLY classification=SCALAR_ONLY
+RND /dev/random open fd=3 errno=0
+RND /dev/random read n=16 kptr=0 (random bytes, not kernel)
+RND /dev/urandom open fd=3 errno=0
+RND /dev/urandom read n=16 kptr=0 (random bytes, not kernel)
+RND result=RANDOM_BYTES classification=NO_DATA
+QTAGUID open fd=3 errno=0(ok)
+QTAGUID read n=-1 errno=22(Invalid argument)
+QTAGUID proc stats open fd=3 errno=0(ok)
+QTAGUID stats head=idx iface acct_tag_hex uid_tag_int cnt_set rx_bytes rx_packets tx_bytes tx_packets rx_tcp_bytes rx_tcp_packets rx_udp_by
+QTAGUID result=NO_READ_OP classification=NO_DATA
+NULL open fd=3 errno=0
+NULL read n=0 errno=0
+ZERO open fd=3 errno=0
+ZERO read n=8 zero=1 kptr=0
+PTMX open fd=3 errno=0(ok)
+MISC result=SINKS classification=NO_DATA
+READ_PROBE_DONE which=all
