@@ -1,0 +1,11 @@
+$ sudo python3 /tmp/opencode/write_test2.py
+[  0.018s] open ok
+[  0.019s] BEFORE2 0x37801000: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+[  0.019s] WRITE2 0x37801000 <- 44 33 22 11 ok
+[  0.219s] AFTER2  0x37801000: 44 33 22 11 00 00 00 00 00 00 00 00 00 00 00 00
+[  0.219s] RESULT2: CONFIRMADO
+[  1.219s] REREAD  0x37801000: 44 33 22 11 00 00 00 00 00 00 00 00 00 00 00 00 persistente-na-sessao
+[  1.220s] RESTORE2 verify=00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 OK
+[  1.220s] CHECK1 0x37800000: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 limpo
+EXIT=0
+lsusb: Bus 003 Device 011: ID 1b8e:c003 Amlogic, Inc. (segue vivo)

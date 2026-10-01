@@ -1,0 +1,27 @@
+P0 READY mode=A-full boot=3ec336a5-439f-497f-b9f7-08fd7441b174 pid=14638 attempts=1 holds_req=817 pairs_req=512 payload=16384 sentinel=0x5a5a5a5a@0x3ffc
+P4 BUDDY before_shape unreadable errno=13
+P4 MEM before_shape MemTotal:        1004412 kB
+P4 MEM before_shape MemFree:          130136 kB
+P4 MEM before_shape MemAvailable:     303124 kB
+P4 SLAB slabinfo=absent
+P4 SLAB mm_struct_sysfs=denied-BLOCKED (unpriv expected denied)
+P1 SHAPED holds=817 (pre=18 leak=1 post=19 spray=171 prep=608) child_first=14640 child_last=15456 t_ms=1203
+P4 BUDDY after_shape unreadable errno=13
+P4 MEM after_shape MemTotal:        1004412 kB
+P4 MEM after_shape MemFree:          124724 kB
+P4 MEM after_shape MemAvailable:     298128 kB
+P2 FREED holds=817
+P4 BUDDY after_free unreadable errno=13
+P4 MEM after_free MemTotal:        1004412 kB
+P4 MEM after_free MemFree:          129264 kB
+P4 MEM after_free MemAvailable:     302340 kB
+P3 SPRAYED pairs=512 sends_ok=512 spray_errno=0 t_ms=45
+P4 BUDDY after_spray unreadable errno=13
+P4 MEM after_spray MemTotal:        1004412 kB
+P4 MEM after_spray MemFree:          119468 kB
+P4 MEM after_spray MemAvailable:     292768 kB
+P5 PEEK plumbing_hits=512/512 first=0 t_ms=7 (PLUMBING_SIGNAL, not reclaim)
+P6 RECLAIM reclaim_hits=0 (REAL_RECLAIM_SIGNAL unavailable: slabinfo absent, buddy+sysfs denied, no UAF read)
+P6 RESULT=FAIL mode=A-full (reclaim_hits=0; plumbing_hits=512 is NOT reclaim proof)
+P7 SUMMARY mode=A-full boot=3ec336a5-439f-497f-b9f7-08fd7441b174 pid=14638 attempts=1 holds_req=817 holds_ok=817 freed=817 pairs_req=512 pairs_ok=512 sends_ok=512 pressure_obj=16384B plumbing_hits=512 reclaim_hits=0 emfile=0 hold_blocked=0 hold_other=0 t_ms=3306
+P8 END mode=A-full (no reboot observed during exec)

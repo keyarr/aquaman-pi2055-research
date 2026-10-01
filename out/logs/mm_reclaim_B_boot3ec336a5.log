@@ -1,0 +1,27 @@
+P0 READY mode=B-fallback boot=3ec336a5-439f-497f-b9f7-08fd7441b174 pid=15462 attempts=1 holds_req=20 pairs_req=16 payload=16384 sentinel=0x5a5a5a5a@0x3ffc
+P4 BUDDY before_shape unreadable errno=13
+P4 MEM before_shape MemTotal:        1004412 kB
+P4 MEM before_shape MemFree:          129004 kB
+P4 MEM before_shape MemAvailable:     301988 kB
+P4 SLAB slabinfo=absent
+P4 SLAB mm_struct_sysfs=denied-BLOCKED (unpriv expected denied)
+P1 SHAPED holds=20 (pre=10 leak=1 post=9 spray=0 prep=0) child_first=15464 child_last=15483 t_ms=20
+P4 BUDDY after_shape unreadable errno=13
+P4 MEM after_shape MemTotal:        1004412 kB
+P4 MEM after_shape MemFree:          129188 kB
+P4 MEM after_shape MemAvailable:     302272 kB
+P2 FREED holds=20
+P4 BUDDY after_free unreadable errno=13
+P4 MEM after_free MemTotal:        1004412 kB
+P4 MEM after_free MemFree:          128716 kB
+P4 MEM after_free MemAvailable:     302328 kB
+P3 SPRAYED pairs=16 sends_ok=16 spray_errno=0 t_ms=2
+P4 BUDDY after_spray unreadable errno=13
+P4 MEM after_spray MemTotal:        1004412 kB
+P4 MEM after_spray MemFree:          128500 kB
+P4 MEM after_spray MemAvailable:     302112 kB
+P5 PEEK plumbing_hits=16/16 first=0 t_ms=7 (PLUMBING_SIGNAL, not reclaim)
+P6 RECLAIM reclaim_hits=0 (REAL_RECLAIM_SIGNAL unavailable: slabinfo absent, buddy+sysfs denied, no UAF read)
+P6 RESULT=FAIL mode=B-fallback (reclaim_hits=0; plumbing_hits=16 is NOT reclaim proof)
+P7 SUMMARY mode=B-fallback boot=3ec336a5-439f-497f-b9f7-08fd7441b174 pid=15462 attempts=1 holds_req=20 holds_ok=20 freed=20 pairs_req=16 pairs_ok=16 sends_ok=16 pressure_obj=16384B plumbing_hits=16 reclaim_hits=0 emfile=0 hold_blocked=0 hold_other=0 t_ms=2043
+P8 END mode=B-fallback (no reboot observed during exec)

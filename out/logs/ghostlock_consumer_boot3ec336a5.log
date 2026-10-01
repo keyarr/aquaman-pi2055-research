@@ -1,0 +1,174 @@
+=== pos_cycle  ===
+P0 READY var=B mode=pos_cycle pad=0x0 fake=0x7fa7c34000 owner=0x0 waiter2=0x0 win=0x2780c0 pipe=3,4
+P0 fake: +0x08=0 +0x10=0 +0x18=0
+P0 THREADS main_pid=15749 main_tid=15751 W_tid=15751
+P0 W_DID_NOT_BLOCK f_target tid=15751
+P0 POSITIVE_CONTROL lock_pi(f_chain) rc=0 errno=0 (Success)
+P1 POSITIVE_CONTROL_ARMED w_back=1 (O already printed its LOCK_PI result)
+P2 CONSUMER_SKIPPED the walk already ran during arming
+P3 GRAPH_STANDS cycle W->f_target->f_chain intact
+P6 POSITIVE_CONTROL_VERDICT see P0 line: EDEADLK expected, anything else means the walk path is not understood
+EXIT:0
+
+=== base_t 200000 nopin 4 ===
+P0 READY var=B mode=base_t pad=0x0 fake=0x7f7be47000 owner=0x0 waiter2=0x0 win=0x2780c0 pipe=3,4
+P0 fake: +0x08=0 +0x10=0 +0x18=0
+P1 TRIGGER_SKIPPED baseline_no_requeue
+P2 BASELINE errno=n/a (no trigger)
+P3 GRAPH_BASELINE no_trigger waiter_parked owner_blocked
+P4 STAMP_SKIPPED base_t natural_bytes_only sp_futex=0x7d6ad9fb80 waiter_est=0x7d6ad9f8d0 page_off=0x38d0
+P4 FINAL var=B fake_before +0x08=0 +0x10=0 +0x18=0 waiter_prio=1
+P5 LOCK_PI_ENTER var=B mode=base_t timeout_abs3s
+P5 LOCK_PI_DONE rc=-1 errno=110 (Connection timed out) elapsed_ms=3000
+P6 RESULT=TIMEOUT_BLOCK var=B mode=base_t pad=0x0 waiters=0 leftmost=0 owner=0 entered=1 done=1 rc=-1 errno=110 elapsed_ms=3000
+P6 HINT HIT_ENQUEUE leftmost==&win means rt_mutex_enqueue ran on our page.
+EXIT:0
+
+=== occ_base  ===
+P0 READY var=B mode=occ_base pad=0x0 fake=0x7f796bd000 owner=0x0 waiter2=0x0 win=0x2780c0 pipe=3,4
+P0 fake: +0x08=0 +0x10=0 +0x18=0
+P1 TRIGGER_SKIPPED occupied_f_target_no_requeue (CONTROL occ_n=1)
+P2 BASELINE errno=n/a (no trigger)
+P3 GRAPH_BASELINE occ_n=1 occupied=0 occ2_parked=0 fwake_errno=22
+P4 NO_STAMP in_window sp_futex=0x7d68512b80 waiter_est_lab=0x7d685128d0 (NOT a stock offset)
+P4 OCCUPANCY_ARMED occ_n=1 occ2_parked=0
+P5 LOCK_PI_ENTER var=B mode=occ_base target=f_chain timeout_abs3s in_window
+P5 LOCK_PI_DONE rc=-1 errno=110 (Connection timed out) elapsed_ms=3000
+P6 RESULT=TIMEOUT_BLOCK mode=occ_base target=f_chain in_window done=1 rc=-1 errno=110 elapsed_ms=3000
+P7 TARGET_STATE occ_n=1 f_target_occupied=0 occ2_parked=0 alt_parked=0 consumer_errno=110 elapsed_ms=3000
+P8 END mode=occ_base
+EXIT:0
+
+=== trg_inwin  ===
+P0 READY var=B mode=trg_inwin pad=0x0 fake=0x7f847c0000 owner=0x0 waiter2=0x0 win=0x2780c0 pipe=3,4
+P0 fake: +0x08=0 +0x10=0 +0x18=0
+P1 TRIGGER_ENTER cmp_requeue_pi f_wait->f_target
+P2 EDEADLK errno=35 (Resource deadlock would occur)
+P3 GRAPH_PRESERVED no_teardown waiter_keeps_f_chain owner_blocked fwrq_alive=1 fwake_errno=22
+P4 NO_STAMP in_window sp_futex=0x7d73718b80 waiter_est_lab=0x7d737188d0 (NOT a stock offset)
+P4 OCCUPANCY_ARMED occ_n=0 occ2_parked=0
+P5 LOCK_PI_ENTER var=B mode=trg_inwin target=f_chain timeout_abs3s in_window
+P5 LOCK_PI_DONE rc=-1 errno=110 (Connection timed out) elapsed_ms=3000
+P6 RESULT=TIMEOUT_BLOCK mode=trg_inwin target=f_chain in_window done=1 rc=-1 errno=110 elapsed_ms=3000
+P7 TARGET_STATE occ_n=0 f_target_occupied=0 occ2_parked=0 alt_parked=0 consumer_errno=110 elapsed_ms=3000
+P8 END mode=trg_inwin
+EXIT:0
+
+=== occ_tgt  ===
+P0 READY var=B mode=occ_tgt pad=0x0 fake=0x7f7b494000 owner=0x0 waiter2=0x0 win=0x2780c0 pipe=3,4
+P0 fake: +0x08=0 +0x10=0 +0x18=0
+P1 TRIGGER_ENTER cmp_requeue_pi f_wait->f_target (f_target occupied)
+P2 EDEADLK errno=35 (Resource deadlock would occur)
+P3 GRAPH_PRESERVED occ_n=1 occupied=0 occ2_parked=0 fwake_errno=22
+P4 NO_STAMP in_window sp_futex=0x7d6a2e9b80 waiter_est_lab=0x7d6a2e98d0 (NOT a stock offset)
+P4 OCCUPANCY_ARMED occ_n=1 occ2_parked=0
+P5 LOCK_PI_ENTER var=B mode=occ_tgt target=f_chain timeout_abs3s in_window
+P5 LOCK_PI_DONE rc=-1 errno=35 (Resource deadlock would occur) elapsed_ms=0
+P6 RESULT=EDEADLK_CYCLE mode=occ_tgt target=f_chain in_window done=1 rc=-1 errno=35 elapsed_ms=0
+P7 TARGET_STATE occ_n=1 f_target_occupied=0 occ2_parked=0 alt_parked=0 consumer_errno=35 elapsed_ms=0
+P8 END mode=occ_tgt
+EXIT:0
+
+=== alt_only  ===
+P0 READY var=B mode=alt_only pad=0x0 fake=0x7f8d443000 owner=0x0 waiter2=0x0 win=0x2780c0 pipe=3,4
+P0 fake: +0x08=0 +0x10=0 +0x18=0
+P1 TRIGGER_ENTER cmp_requeue_pi f_wait->f_target
+P2 EDEADLK errno=35 (Resource deadlock would occur)
+P3 GRAPH_PRESERVED no_teardown waiter_keeps_f_chain owner_blocked fwrq_alive=1 fwake_errno=22
+P4 NO_STAMP in_window sp_futex=0x7d7c195b80 waiter_est_lab=0x7d7c1958d0 (NOT a stock offset)
+P4 OCCUPANCY_ARMED occ_n=0 occ2_parked=0
+P4 ALT_ARMED a_armed=1 alt_go=1 alt_parked=1 f_alt=2147499426
+P5 LOCK_PI_ENTER var=B mode=alt_only target=f_chain timeout_abs3s in_window
+P5 LOCK_PI_DONE rc=-1 errno=110 (Connection timed out) elapsed_ms=3000
+P6 RESULT=TIMEOUT_BLOCK mode=alt_only target=f_chain in_window done=1 rc=-1 errno=110 elapsed_ms=3000
+P7 TARGET_STATE occ_n=0 f_target_occupied=0 occ2_parked=0 alt_parked=1 consumer_errno=110 elapsed_ms=3000
+P8 END mode=alt_only
+EXIT:0
+
+=== alt_tgt  ===
+P0 READY var=B mode=alt_tgt pad=0x0 fake=0x7f7eb87000 owner=0x0 waiter2=0x0 win=0x2780c0 pipe=3,4
+P0 fake: +0x08=0 +0x10=0 +0x18=0
+P1 TRIGGER_ENTER cmp_requeue_pi f_wait->f_target (f_target occupied)
+P2 EDEADLK errno=35 (Resource deadlock would occur)
+P3 GRAPH_PRESERVED occ_n=1 occupied=0 occ2_parked=0 fwake_errno=22
+P4 NO_STAMP in_window sp_futex=0x7d6b7beb80 waiter_est_lab=0x7d6b7be8d0 (NOT a stock offset)
+P4 OCCUPANCY_ARMED occ_n=1 occ2_parked=0
+P4 ALT_ARMED a_armed=1 alt_go=1 alt_parked=1 f_alt=2147499433
+P5 LOCK_PI_ENTER var=B mode=alt_tgt target=f_chain timeout_abs3s in_window
+P5 LOCK_PI_DONE rc=-1 errno=35 (Resource deadlock would occur) elapsed_ms=0
+P6 RESULT=EDEADLK_CYCLE mode=alt_tgt target=f_chain in_window done=1 rc=-1 errno=35 elapsed_ms=0
+P7 TARGET_STATE occ_n=1 f_target_occupied=0 occ2_parked=0 alt_parked=1 consumer_errno=35 elapsed_ms=0
+P8 END mode=alt_tgt
+EXIT:0
+
+=== alt_base  ===
+P0 READY var=B mode=alt_base pad=0x0 fake=0x7f8f0bc000 owner=0x0 waiter2=0x0 win=0x2780c0 pipe=3,4
+P0 fake: +0x08=0 +0x10=0 +0x18=0
+P1 TRIGGER_SKIPPED baseline_no_requeue
+P2 BASELINE errno=n/a (no trigger)
+P3 GRAPH_BASELINE no_trigger waiter_parked owner_blocked
+P4 NO_STAMP in_window sp_futex=0x7d7de0eb80 waiter_est_lab=0x7d7de0e8d0 (NOT a stock offset)
+P4 OCCUPANCY_ARMED occ_n=0 occ2_parked=0
+P4 ALT_ARMED a_armed=1 alt_go=1 alt_parked=1 f_alt=2147499441
+P5 LOCK_PI_ENTER var=B mode=alt_base target=f_alt timeout_abs3s in_window
+P5 LOCK_PI_DONE rc=-1 errno=110 (Connection timed out) elapsed_ms=3000
+P6 RESULT=TIMEOUT_BLOCK mode=alt_base target=f_alt in_window done=1 rc=-1 errno=110 elapsed_ms=3000
+P7 TARGET_STATE occ_n=0 f_target_occupied=0 occ2_parked=0 alt_parked=1 consumer_errno=110 elapsed_ms=3000
+P8 END mode=alt_base
+EXIT:0
+
+=== ctrl_t 200000 nopin 4 ===
+P0 READY var=B mode=ctrl_t pad=0x0 fake=0x7f79b4a000 owner=0x0 waiter2=0x0 win=0x2780c0 pipe=3,4
+P0 fake: +0x08=0 +0x10=0 +0x18=0
+P1 TRIGGER_ENTER cmp_requeue_pi f_wait->f_target
+P2 EDEADLK errno=35 (Resource deadlock would occur)
+P3 GRAPH_PRESERVED no_teardown waiter_keeps_f_chain owner_blocked fwrq_alive=0 fwake_errno=22
+P4 STAMP_SKIPPED ctrl_t natural_bytes_only sp_futex=0x7d68aa2b80 waiter_est=0x7d68aa28d0 page_off=0x28d0
+P4 FINAL var=B fake_before +0x08=0 +0x10=0 +0x18=0 waiter_prio=1
+P5 LOCK_PI_ENTER var=B mode=ctrl_t timeout_abs3s
+P5 LOCK_PI_DONE rc=0 errno=0 (Success) elapsed_ms=0
+P6 RESULT=ACQUIRED var=B mode=ctrl_t pad=0x0 waiters=0 leftmost=0 owner=0 entered=1 done=1 rc=0 errno=0 elapsed_ms=0
+P6 HINT HIT_ENQUEUE leftmost==&win means rt_mutex_enqueue ran on our page.
+EXIT:0
+
+---BOOT CHECK---
+3ec336a5-439f-497f-b9f7-08fd7441b174
+ 16:32:39 up  6:50,  0 users,  load average: 2.59, 2.04, 1.78
+=== pos_cycle try 1 ===
+P0 READY var=B mode=pos_cycle pad=0x0 fake=0x7f84648000 owner=0x0 waiter2=0x0 win=0x2780c0 pipe=3,4
+P0 fake: +0x08=0 +0x10=0 +0x18=0
+P0 THREADS main_pid=15818 main_tid=15820 W_tid=15820
+P0 POSITIVE_CONTROL lock_pi(f_chain) rc=-1 errno=35 (Resource deadlock would occur)
+P0 W_DID_NOT_BLOCK f_target tid=15820
+P1 POSITIVE_CONTROL_ARMED w_back=1 (O already printed its LOCK_PI result)
+P2 CONSUMER_SKIPPED the walk already ran during arming
+P3 GRAPH_STANDS cycle W->f_target->f_chain intact
+P6 POSITIVE_CONTROL_VERDICT see P0 line: EDEADLK expected, anything else means the walk path is not understood
+EXIT:0
+
+=== pos_cycle try 2 ===
+P0 READY var=B mode=pos_cycle pad=0x0 fake=0x7f792c9000 owner=0x0 waiter2=0x0 win=0x2780c0 pipe=3,4
+P0 fake: +0x08=0 +0x10=0 +0x18=0
+P0 THREADS main_pid=15823 main_tid=15825 W_tid=15825
+P0 POSITIVE_CONTROL lock_pi(f_chain) rc=-1 errno=35 (Resource deadlock would occur)
+P0 W_DID_NOT_BLOCK f_target tid=15825
+P1 POSITIVE_CONTROL_ARMED w_back=1 (O already printed its LOCK_PI result)
+P2 CONSUMER_SKIPPED the walk already ran during arming
+P3 GRAPH_STANDS cycle W->f_target->f_chain intact
+P6 POSITIVE_CONTROL_VERDICT see P0 line: EDEADLK expected, anything else means the walk path is not understood
+EXIT:0
+
+=== pos_cycle try 3 ===
+P0 READY var=B mode=pos_cycle pad=0x0 fake=0x7fa1a6a000 owner=0x0 waiter2=0x0 win=0x2780c0 pipe=3,4
+P0 fake: +0x08=0 +0x10=0 +0x18=0
+P0 THREADS main_pid=15828 main_tid=15830 W_tid=15830
+P0 POSITIVE_CONTROL lock_pi(f_chain) rc=-1 errno=35 (Resource deadlock would occur)
+P0 W_DID_NOT_BLOCK f_target tid=15830
+P1 POSITIVE_CONTROL_ARMED w_back=1 (O already printed its LOCK_PI result)
+P2 CONSUMER_SKIPPED the walk already ran during arming
+P3 GRAPH_STANDS cycle W->f_target->f_chain intact
+P6 POSITIVE_CONTROL_VERDICT see P0 line: EDEADLK expected, anything else means the walk path is not understood
+EXIT:0
+
+3ec336a5-439f-497f-b9f7-08fd7441b174
+ 16:33:03 up  6:50,  0 users,  load average: 2.49, 2.05, 1.79

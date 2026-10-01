@@ -1,0 +1,14 @@
+trigger: fastboot oem update 5000 -> FAILED (Status read failed (No such device)) rc=1 (esperado, entra em burning)
+lsusb: Bus 003 Device 011: ID 1b8e:c003 Amlogic, Inc.
+
+$ sudo python3 /tmp/opencode/write_test.py
+[  0.017s] usb open ok
+[  0.017s] identify raw=00 07 00 10 stage=16
+[  0.017s] BEFORE 0x37800000: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 | ascii=b'\x00\x00\x00\x00'
+[  0.017s] WRITE 0x01 0x37800000 <- 41 42 43 44 (4B)
+[  0.017s] write ctrl_transfer returned ok
+[  0.218s] AFTER  0x37800000: 41 42 43 44 00 00 00 00 00 00 00 00 00 00 00 00 | ascii=b'ABCD'
+[  0.218s] RESULT: WRITE_MEM CONFIRMADO - readback bate
+[  0.218s] RESTORE <- 00 00 00 00 ; verify=00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 OK
+EXIT=0
+lsusb: Bus 003 Device 011: ID 1b8e:c003 Amlogic, Inc. (segue vivo, sem travar)

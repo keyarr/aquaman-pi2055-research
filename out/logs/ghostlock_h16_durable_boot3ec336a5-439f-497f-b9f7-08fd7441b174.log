@@ -1,0 +1,99 @@
+P0 READY var=B mode=base_t pad=0x0 fake=0x7f93653000 owner=0x0 waiter2=0x0 win=0x2780c0 pipe=3,4
+P0 fake: +0x08=0 +0x10=0 +0x18=0
+P1 TRIGGER_SKIPPED baseline_no_requeue
+P2 BASELINE errno=n/a (no trigger)
+P3 GRAPH_BASELINE no_trigger waiter_parked owner_blocked
+P4 STAMP_SKIPPED base_t natural_bytes_only sp_futex=0x7d825abb80 waiter_est=0x7d825ab8d0 page_off=0x38d0
+P4 FINAL var=B fake_before +0x08=0 +0x10=0 +0x18=0 waiter_prio=1
+P5 LOCK_PI_ENTER var=B mode=base_t timeout_abs3s
+P5 LOCK_PI_DONE rc=-1 errno=110 (Connection timed out) elapsed_ms=3000
+P6 RESULT=TIMEOUT_BLOCK var=B mode=base_t pad=0x0 waiters=0 leftmost=0 owner=0 entered=1 done=1 rc=-1 errno=110 elapsed_ms=3000
+P6 HINT HIT_ENQUEUE leftmost==&win means rt_mutex_enqueue ran on our page.
+
+=== occ_base ===
+P0 READY var=B mode=occ_base pad=0x0 fake=0x7fa6ac5000 owner=0x0 waiter2=0x0 win=0x2780c0 pipe=3,4
+P0 fake: +0x08=0 +0x10=0 +0x18=0
+P1 TRIGGER_SKIPPED occupied_f_target_no_requeue (CONTROL occ_n=1)
+P2 BASELINE errno=n/a (no trigger)
+P3 GRAPH_BASELINE occ_n=1 occupied=0 occ2_parked=0 fwake_errno=22
+P4 NO_STAMP in_window sp_futex=0x7d9591ab80 waiter_est_lab=0x7d9591a8d0 (NOT a stock offset)
+P4 OCCUPANCY_ARMED occ_n=1 occ2_parked=0
+P5 LOCK_PI_ENTER var=B mode=occ_base target=f_chain timeout_abs3s in_window
+P5 LOCK_PI_DONE rc=-1 errno=110 (Connection timed out) elapsed_ms=3000
+P6 RESULT=TIMEOUT_BLOCK mode=occ_base target=f_chain in_window done=1 rc=-1 errno=110 elapsed_ms=3000
+P7 TARGET_STATE occ_n=1 f_target_occupied=0 occ2_parked=0 alt_parked=0 consumer_errno=110 elapsed_ms=3000
+P8 END mode=occ_base
+
+=== trg_inwin ===
+P0 READY var=B mode=trg_inwin pad=0x0 fake=0x7f8c091000 owner=0x0 waiter2=0x0 win=0x2780c0 pipe=3,4
+P0 fake: +0x08=0 +0x10=0 +0x18=0
+P1 TRIGGER_ENTER cmp_requeue_pi f_wait->f_target
+P2 EDEADLK errno=35 (Resource deadlock would occur)
+P3 GRAPH_PRESERVED no_teardown waiter_keeps_f_chain owner_blocked fwrq_alive=1 fwake_errno=22
+P4 NO_STAMP in_window sp_futex=0x7d7afe9b80 waiter_est_lab=0x7d7afe98d0 (NOT a stock offset)
+P4 OCCUPANCY_ARMED occ_n=0 occ2_parked=0
+P5 LOCK_PI_ENTER var=B mode=trg_inwin target=f_chain timeout_abs3s in_window
+P5 LOCK_PI_DONE rc=-1 errno=110 (Connection timed out) elapsed_ms=3000
+P6 RESULT=TIMEOUT_BLOCK mode=trg_inwin target=f_chain in_window done=1 rc=-1 errno=110 elapsed_ms=3000
+P7 TARGET_STATE occ_n=0 f_target_occupied=0 occ2_parked=0 alt_parked=0 consumer_errno=110 elapsed_ms=3000
+P8 END mode=trg_inwin
+
+=== occ_tgt ===
+P0 READY var=B mode=occ_tgt pad=0x0 fake=0x7f81252000 owner=0x0 waiter2=0x0 win=0x2780c0 pipe=3,4
+P0 fake: +0x08=0 +0x10=0 +0x18=0
+P1 TRIGGER_ENTER cmp_requeue_pi f_wait->f_target (f_target occupied)
+P2 EDEADLK errno=35 (Resource deadlock would occur)
+P3 GRAPH_PRESERVED occ_n=1 occupied=0 occ2_parked=0 fwake_errno=22
+P4 NO_STAMP in_window sp_futex=0x7d700a7b80 waiter_est_lab=0x7d700a78d0 (NOT a stock offset)
+P4 OCCUPANCY_ARMED occ_n=1 occ2_parked=0
+P5 LOCK_PI_ENTER var=B mode=occ_tgt target=f_chain timeout_abs3s in_window
+P5 LOCK_PI_DONE rc=-1 errno=35 (Resource deadlock would occur) elapsed_ms=0
+P6 RESULT=EDEADLK_CYCLE mode=occ_tgt target=f_chain in_window done=1 rc=-1 errno=35 elapsed_ms=0
+P7 TARGET_STATE occ_n=1 f_target_occupied=0 occ2_parked=0 alt_parked=0 consumer_errno=35 elapsed_ms=0
+P8 END mode=occ_tgt
+
+=== alt_only (C0) ===
+P0 READY var=B mode=alt_only pad=0x0 fake=0x7fa9e79000 owner=0x0 waiter2=0x0 win=0x2780c0 pipe=3,4
+P0 fake: +0x08=0 +0x10=0 +0x18=0
+P1 TRIGGER_ENTER cmp_requeue_pi f_wait->f_target
+P2 EDEADLK errno=35 (Resource deadlock would occur)
+P3 GRAPH_PRESERVED no_teardown waiter_keeps_f_chain owner_blocked fwrq_alive=1 fwake_errno=22
+P4 NO_STAMP in_window sp_futex=0x7d98bcbb80 waiter_est_lab=0x7d98bcb8d0 (NOT a stock offset)
+P4 OCCUPANCY_ARMED occ_n=0 occ2_parked=0
+P4 ALT_ARMED a_armed=1 alt_go=1 alt_parked=1 f_alt=2147500525
+P5 LOCK_PI_ENTER var=B mode=alt_only target=f_chain timeout_abs3s in_window
+P5 LOCK_PI_DONE rc=-1 errno=110 (Connection timed out) elapsed_ms=3000
+P6 RESULT=TIMEOUT_BLOCK mode=alt_only target=f_chain in_window done=1 rc=-1 errno=110 elapsed_ms=3000
+P7 TARGET_STATE occ_n=0 f_target_occupied=0 occ2_parked=0 alt_parked=1 consumer_errno=110 elapsed_ms=3000
+P8 END mode=alt_only
+
+=== alt_tgt ===
+P0 READY var=B mode=alt_tgt pad=0x0 fake=0x7fae7bb000 owner=0x0 waiter2=0x0 win=0x2780c0 pipe=3,4
+P0 fake: +0x08=0 +0x10=0 +0x18=0
+P1 TRIGGER_ENTER cmp_requeue_pi f_wait->f_target (f_target occupied)
+P2 EDEADLK errno=35 (Resource deadlock would occur)
+P3 GRAPH_PRESERVED occ_n=1 occupied=0 occ2_parked=0 fwake_errno=22
+P4 NO_STAMP in_window sp_futex=0x7d9c3feb80 waiter_est_lab=0x7d9c3fe8d0 (NOT a stock offset)
+P4 OCCUPANCY_ARMED occ_n=1 occ2_parked=0
+P4 ALT_ARMED a_armed=1 alt_go=1 alt_parked=1 f_alt=2147500532
+P5 LOCK_PI_ENTER var=B mode=alt_tgt target=f_chain timeout_abs3s in_window
+P5 LOCK_PI_DONE rc=-1 errno=35 (Resource deadlock would occur) elapsed_ms=0
+P6 RESULT=EDEADLK_CYCLE mode=alt_tgt target=f_chain in_window done=1 rc=-1 errno=35 elapsed_ms=0
+P7 TARGET_STATE occ_n=1 f_target_occupied=0 occ2_parked=0 alt_parked=1 consumer_errno=35 elapsed_ms=0
+P8 END mode=alt_tgt
+
+=== h16_static (C1) ===
+P0 READY var=B mode=h16_static pad=0x0 fake=0x7fa7da3000 owner=0x0 waiter2=0x0 win=0x2780c0 pipe=3,4
+P0 fake: +0x08=0 +0x10=0 +0x18=0
+P1 TRIGGER_ENTER cmp_requeue_pi f_wait->f_target
+P2 EDEADLK errno=35 (Resource deadlock would occur)
+P3 GRAPH_PRESERVED no_teardown waiter_keeps_f_chain owner_blocked fwrq_alive=1 fwake_errno=22
+P4 NO_STAMP in_window sp_futex=0x7d96af5b80 waiter_est_lab=0x7d96af58d0 (NOT a stock offset)
+P4 OCCUPANCY_ARMED occ_n=0 occ2_parked=0
+P4 ALT_ARMED a_armed=1 alt_go=1 alt_parked=1 f_alt=2147500540
+P5 LOCK_PI_ENTER var=B mode=h16_static target=f_chain timeout_abs3s in_window
+P5 LOCK_PI_DONE rc=-1 errno=110 (Connection timed out) elapsed_ms=3000
+P5b LOCK_PI_TARGET_DONE rc=-1 errno=110 (Connection timed out) elapsed_ms=3000
+P6 RESULT=TIMEOUT_BLOCK mode=h16_static target=f_chain in_window done=1 rc=-1 errno=110 elapsed_ms=3000
+P7 TARGET_STATE occ_n=0 f_target_occupied=0 occ2_parked=0 alt_parked=1 consumer_errno=110 elapsed_ms=3000
+P8 END mode=h16_static
