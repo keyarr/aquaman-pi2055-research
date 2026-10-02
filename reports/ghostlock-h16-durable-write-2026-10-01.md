@@ -1,5 +1,11 @@
 # ghostlock h16 durable write — [W_waiter+0x38] = &f_alt.pi_mutex
 
+> DIRECTION (2026-10-02, see `reports/CURRENT_STATE.md`): principal is
+> post-free stack reuse + disclosure; H16 live retarget is secondary;
+> reclaim without verifier, audited live H16 writer search, fake object,
+> arbitrary R/W, cred/root are closed. Post-free reuse is not demonstrated
+> on Aquaman. Live-retarget was audited and not demonstrated.
+
 Date: 2026-10-01. Device: Xiaomi Mi TV Stick 1080p (aquaman, S805Y/GXL, Android 9, PI.2055, 4.9.113 arm64). Lab: build-aq/vmlinux + .src/linux-amlogic. One boot, no power-cycle, no flash, no SELinux bypass, no root.
 
 Tools: `tools/ghostlock_deref_chain.py --h16/--h16-write/--pi-source/--target` + `tools/ghostlock_h16_target_search.py --all/--carrier/--atomic/--rtmutex/--current/--frame-reuse/--ioctl/--syscall/--store8/--verify` (live from binary) + `tools/ghostlock_chain.c` (unchanged P0-P8, modes alt_only/alt_tgt/h16_static/occ_tgt/trg_inwin/occ_base/base_t). Full disassembly cache `/tmp/opencode/aq_full.asm` (3768288 lines). Static verify 30/30. `pthread_setschedparam` not used.

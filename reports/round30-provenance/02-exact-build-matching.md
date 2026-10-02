@@ -51,5 +51,6 @@ unresolved). There was literally no candidate to hash.
 
 Corollary that matters for the key question: the artifact that would
 re-enter the round-28/29 pipeline (a second copy of the exact bootloader
-ciphertext) also does not exist publicly. The only existing copy of the
+ciphertext) was not found in any searched public location (01 sweep scope).
+The only existing copy of the
 ciphertext remains the one in this repo.

@@ -136,10 +136,12 @@ TCR_EL1   = 0x300004516   (0x37e193f0)              TG0=4K, 48-bit VA
 | v2 burning transfer buffer | `0x07700000..0x0b700000` (64 MiB) | RW | 0 | 0 | RWX, host bytes |
 | runtime DTB | `0x01000000..0x0100e3a8` | RW | 0 | 0 | RWX |
 
-classification, honestly stated: **there is no RX or RO region anywhere above
-`0x400000`.** nothing in this firmware marks code read-only or data
-non-executable. `.text`, `.rodata`, `.data` and `.bss` all live in
-`0x37e18000..0x37ff0000` and all share one page-table class.
+classification, honestly stated: the reconstructed table contains descriptors
+with RW/XN compatible with RWX for these regions. The effectively active state
+at the execution point was not demonstrated (SCTLR/MMU timing). Nothing in the
+reconstructed descriptors marks code read-only or data non-executable above
+`0x400000`. `.text`, `.rodata`, `.data` and `.bss` all live in
+`0x37e18000..0x37ff0000` and share one page-table descriptor class.
 
 `0x12345678` and every other pattern the fill produces is a legal pointer:
 block `0x12345678 >> 21` = 145, AP = EL1-RW. `strncasecmp` on it reads the

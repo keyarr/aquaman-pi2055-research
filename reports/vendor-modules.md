@@ -185,7 +185,7 @@ alias sdio:c*v024CdB821* rtl8821cs
 ```
 
 Realtek PCI ID `024c:dC81` / `024c:dB82`. that is the chip, confirmed from the
-module itself, not from a hardware-ficha guess.
+module itself, not from a hardware-spec guess.
 
 only two modules have a `srcversion`: `rtl8821cs.ko`
 (`F2CB4D2C35C53BE3A522AD8`) and `mali.ko` (`2D7D9BB7C0C5C7B40C8A42A`).
@@ -211,7 +211,7 @@ it matches `aquaman-config`.
 
 ## what this settles about `kernel-baseline.md`
 
-`kernel-baseline.md` lists, under "only-B com valor real", 15
+`kernel-baseline.md` lists, under "only-B with real value", 15
 `AMLOGIC_MEDIA_VDEC_*` options that meson64 has and the device does not, and
 asks where the stock kernel's video decode comes from. **answered: entirely
 from these 14 `.ko` files.** the device has `AMLOGIC_MEDIA_VIDEO=y` and
@@ -263,3 +263,11 @@ be closed by matching the config exactly. the Amlogic media symbols that differ
 ge2d workqueue calls) are not — those reflect different source, and no config
 change will fix them. the split is not measured per-symbol, so treat "190" as
 an upper bound on what configuration could recover.
+
+## Presence vs runtime usage
+
+Extraction from the OTA proves presence. `modules.dep` proves dependency
+metadata. `srcversion` proves module identity when present. None of these,
+alone, proves `insmod` at runtime. These modules are present in the vendor
+OTA; runtime loading needs separate evidence. `/proc/modules` or init logs
+would be that evidence, if ever collected. No such experiment is run here.

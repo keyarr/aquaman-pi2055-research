@@ -1,5 +1,11 @@
 # ghostlock reference comparison 2026-10-01 — archaeology, no device run
 
+> DIRECTION (2026-10-02, see `reports/CURRENT_STATE.md`): principal is
+> post-free stack reuse + disclosure; H16 live retarget is secondary;
+> reclaim without verifier, audited live H16 writer search, fake object,
+> arbitrary R/W, cred/root are closed. Post-free reuse is not demonstrated
+> on Aquaman. Live-retarget was audited and not demonstrated.
+
 Date: 2026-10-01. Scope: comparative architecture only. No third-party
 exploit executed, no payload copied, no offsets ported, no root/cred/RW
 attempted, no fuzzing. All device claims below cite prior Aquaman reports

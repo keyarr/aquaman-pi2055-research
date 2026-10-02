@@ -496,7 +496,7 @@ BRIDGE ANSWER: no demonstrable bridge between host->keyman->secure-world and
 boot/secure-verification on static evidence (per-function negative over all 7 boot/AML
 parents + string sweeps; only generic libc callees shared). keyman graph terminates at:
 RAM sink (read), status codes (write/verify), RAM-env (fmt=str), UART (fmt=hex),
-USB via INDEPENDENT fixed-name paths (fastboot `usid`, optimus HDCP八). boot graph
+USB via INDEPENDENT fixed-name paths (fastboot `usid`, optimus HDCP). boot graph
 terminates at BL31 (`0x820000ff` with BL33-side validation absent). next material leads
 in the same artifacts: setkeys/optimus provisioning flows (factory HDCP/MAC behavior)
 and live rsvmem/share-mem locators for exact BL31 (§8). investigation continued past

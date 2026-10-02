@@ -1,15 +1,18 @@
-# repo-state — audit of the repo as found, 2026-09-29
+# repo-state — audit, updated 2026-10-02
 
-technical map, not a summary of the README. everything here was verified
-against the files, the git history, or a run in this session. where a prior
-report contradicts what is in the repo, both are listed and the newer
-evidence wins.
+Current index: `reports/CURRENT_STATE.md` (verdicts),
+`reports/EVIDENCE_MATRIX.md` (evidence by subsystem),
+`reports/INVALIDATED_HYPOTHESES.md` (20 closed leads).
+This file is the file-level audit: what was superseded, what still misleads,
+what stays valid, what is offline-only, what was hardware-reproduced, and what
+was never executed.
 
 ## files
 
-> audit date 2026-09-29, before the RAM dump rounds. items marked below as
-> since-superseded: the `dt.img` rows, the "40 reports" count, and the
-> hypothesis/blocker lists at the bottom, which are updated inline.
+> audit updated 2026-10-02. `dt.img` rows below are superseded for the blob
+> (recovered from RAM) but still true for the vendor `.dts` source.
+> Historical report counts are omitted; see `EVIDENCE_MATRIX.md` for the
+> current map.
 
 ```text
 aquaman-config              146 KB  kernel config extracted from the device (4447 opts)
@@ -19,11 +22,11 @@ firmware/dt.img             59 KB   encrypted DTB payload (no d00dfeed magic)
 boot_unpack/ patched_unpack/ recovery_unpack/   unpacked boot/magisk/recovery
 *.new.dat.br                OTA sparse-data for system/vendor/product/odm + transfer lists
 out/                        ghostlock C binaries, asm dumps, logs
-out/vendor/                 NEW: reassembled vendor partition + the 28 .ko
+out/vendor/                 reassembled vendor partition + the 28 .ko
 src/                        EMPTY. was where the source was meant to live
 build-aq/                   objdir, gitignored. held a vmlinux/Image from a tree that no longer exists
-tools/                      17 scripts, mostly ghostlock C plus the boot/fastboot parsers
-reports/                    40 reports
+tools/                      scripts, mostly ghostlock C plus the boot/fastboot parsers
+reports/                    see EVIDENCE_MATRIX.md (count omitted, historical counts mislead)
 ```
 
 ### tools that exist and work
@@ -159,35 +162,44 @@ and no network. see `reports/vendor-modules.md`.
 
 ## what is proven
 
+Current verdicts live in `reports/CURRENT_STATE.md`. Summary, with evidence class:
+
 1. the device is a Xiaomi Mi TV Stick 1080p, `aquaman` / PI.2055 / MiTV-AESP0,
    S805Y on GXL, 1 GiB, Android 9, kernel 4.9.113 built 2022-09-06
    12:53:43 CST by `jenkins@c5-mitv-cm-build06.bj` with Linaro 6.3.1-2017.02.
-2. no exact public source exists. McMCCRU is ancestral. GPL request
-   (MiBox_Kernel_OpenSource#11) open since 2025-01.
-3. the baseline compiles and produces a valid ARM64 `Image`
-   (see `reports/rebuilt-kernel.md` for this session's numbers).
+   [PROVEN, offline + hardware]
+2. no exact source found in searched public material. McMCCRU is ancestral.
+   GPL request (MiBox_Kernel_OpenSource#11) open since 2025-01. Absence in
+   searched material does not prove non-existence. [PROBABLE + scope guard]
+3. the baseline builds with `CONFIG_AMLOGIC_DVB=n` and produces a valid ARM64
+   `Image` (see `reports/rebuilt-kernel.md`). HEAD does not compile with
+   `CONFIG_AMLOGIC_DVB=y`. [HARDWARE_OBSERVED for build, PROVEN for breakage]
 4. the fastboot memory flow is mapped end to end
-   (`reports/fastboot-memory-flow.md`).
+   (`reports/fastboot-memory-flow.md`). [OFFLINE_ONLY for static chain]
 5. `fastboot boot` does not execute unsigned payloads on this build, because
    BL31 is secure-fused and `aml_sec_boot_check` rejects them before any
    format check (`fastboot-memory-flow.md` §6, from E1-E8).
-6. the download buffer overlaps the address `bootm` reads (E5 vs E6). the
-   exact value is not provable from an encrypted U-Boot.
+   [HARDWARE_REPRODUCED]
+6. the download buffer overlaps the address `bootm` reads (E5 vs E6).
+   Exact BUF unknown; `BUF == Y` as equality is INCONCLUSIVE.
+   [HARDWARE_REPRODUCED for overlap]
 7. video decode, encode, GPU, Wi-Fi, Bluetooth and the Amlogic DVB demux are
-   **vendor modules**; HDMI, CEC and audio are built-in. 28 `.ko`, extracted
-   (`reports/vendor-modules.md`).
+   **vendor modules present in OTA**; HDMI, CEC and audio are built-in. 28 `.ko`, extracted
+   (`reports/vendor-modules.md`). Presence does not prove runtime loading.
 8. the vendor modules carry `vermagic 4.9.y`. **this is this tree's own
    doing, not a provenance clue**: `Makefile:1221` replaces the module version
    stamp with `<major>.<minor>.y` so modules do not pin the sublevel. got this
    wrong on the first pass and the repo's own build disproved it — see
    `reports/vendor-modules.md` §2. `ddr_window_64.ko` really is foreign
-   (`3.14.29`).
+   (`3.14.29`). [PROVEN]
 9. the vendor modules will not load on a kernel built from McMCCRU: 13
-   symbols missing, 190 CRCs differ.
-10. **the aquaman DTB.** pulled out of DRAM at `0x01000000`, 58280 bytes, valid
+   symbols missing, 190 CRCs differ (190 is upper bound, split unmeasured).
+   [PROVEN, offline]
+10. **the aquaman DTB blob.** pulled out of DRAM at `0x01000000`, 58280 bytes, valid
     FDT, `gxl_aquaman_1g`, 376 nodes / 1798 properties, `dtc` round-trips it
     with zero errors. `artifacts/aquaman.dtb` / `.dts`
-    (`reports/aquaman-dtb-extraction.md`).
+    (`reports/aquaman-dtb-extraction.md`). Vendor `.dts` source still missing;
+    Linux receipt unconfirmed. [HARDWARE_REPRODUCED for blob]
 11. **a U-Boot/Amlogic code fragment exists at `0x01040000..0x0107ffff`** and
     matches `drivers/securestorage/securestorage.c` structurally: the three
     `bl31_storage_ops*` stubs, `secure_storage_init` with the four share-storage
@@ -196,52 +208,82 @@ and no network. see `reports/vendor-modules.md`.
     **strong evidence of U-Boot/Amlogic code. NOT PROVEN** that
     `0x01040000` is the base or entrypoint, and NOT PROVEN that the whole of
     BL33 is in that window.
+12. BL33: cmd_tbl/handlers/consumers mapped [HARDWARE_OBSERVED]; WRITE/FILL +
+    same-cycle redirects demonstrated [HARDWARE_REPRODUCED, rounds 42/43/44/46];
+    live env writable [HARDWARE_REPRODUCED]; semantic consumption NOT PROVEN.
+13. GhostLock: trigger + FUTEX_LOCK_PI consumer + f_target/f_alt fidelity
+    [HARDWARE_REPRODUCED]; H16 live-retarget, disclosure, reclaim, R/W/root
+    NOT PROVEN (see CURRENT_STATE for scopes). Principal is post-free reuse +
+    disclosure, secondary H16, closed reclaim-without-verifier / fake / cred.
+
+## what is offline-only
+
+- static fastboot chain, BL33 disasm censuses (15 SMC, 116 cmds), CRC/config
+  arithmetic, H16 birth/readers, page-table descriptor decode.
+- All reference-tree values (BUF 0x10200000, loadaddr defaults) are derivations,
+  not device measurements.
+
+## what was never executed
+
+- flash/erase/saveenv/setenv persistence, BootROM USB burning, blind ioctls
+  without source, fake object, arbitrary R/W, cred/root, `run storeboot`
+  with destructive tail, post-reset boot deviation observation.
 
 ## what is still hypothesis
 
+See `reports/CURRENT_STATE.md` for the full table. Open items:
+
 1. **which of the 190 CRC differences are config-derived and which are
-   different source.** not measured per-symbol. the config-derived ones could
-   in principle be closed by matching the device config exactly; the Amlogic
-   media symbol ones cannot. 190 is an upper bound on what config could
-   recover.
-2. the true `CONFIG_USB_FASTBOOT_BUF_ADDR` and `loadaddr` on this build. the
-   reference tree's values are the best guess; `bootloader.img` is encrypted.
-3. the aquaman DTS **source**. **the DTB itself is no longer a hypothesis**: it
-   was read out of DRAM at `0x01000000` and is `artifacts/aquaman.dtb`
-   (`reports/aquaman-dtb-extraction.md`). what remains unknown is the vendor's
-   `.dts` file, since `dt.img` is still encrypted and the recovered blob is a
-   decompilation with no include/label structure. the port map is written
-   (`reports/aquaman-dts-port.md`) and is now checkable against the blob.
+   different source.** not measured per-symbol. 190 is upper bound.
+2. the true `CONFIG_USB_FASTBOOT_BUF_ADDR` on this build. `loadaddr` live is
+   `0x1080000` (HARDWARE_OBSERVED); BUF exact remains INCONCLUSIVE;
+   `bootloader.img` is encrypted.
+3. the aquaman DTS **source**. Blob recovered; vendor `.dts` missing;
+   Linux receipt unconfirmed.
 4. the AMLSECU packing format and the `aml-user-key.sig`. parser understood,
    packer closed, key never published.
-5. everything in the GhostLock track. dispatch and rollback reached on device,
-   exploitability not demonstrated, and the 2026-09-29 commit says
-   "dead end documented, six panics for nothing".
-6. **where BL33 actually is.** `reports/bl33-offline-round10.md` matched a
-   U-Boot/Amlogic fragment at `0x01040000..0x0107ffff` on `securestorage.c` and
-   13 BL31 ids. the base address, the entrypoint and whether the whole of BL33
-   is in that window are all unproven. the relocation delta is unproven too:
-   a constant shift maps 1326 of 1567 out-of-window `BL` targets back inside,
-   but 47413 values reach that count. this is the live lead, and the call graph
-   from `0x01073ba0` is where the work is.
+5. GhostLock: trigger/consumer/fidelity HARDWARE_REPRODUCED; H16 write,
+   disclosure, reclaim, R/W/root NOT PROVEN. Principal is post-free reuse +
+   disclosure (PROBABLE, not demonstrated on Aquaman). See
+   `reports/ghostlock-reference-comparison-2026-10-01.md`.
+6. **where BL33 live copy is.** SUPERSEDED as open question for location:
+   executing copy at `0x37e18000` (`_start` + banner + cmd_tbl) is
+   HARDWARE_OBSERVED (rounds 12/13, persisted round14, live==offline round40).
+   What stays unproven: base/entrypoint of the stale `0x01040000` fragment
+   window, and whether the whole image was ever there.
+
+Old files that still mislead if read as current (use banners + this table,
+not the old wording):
+
+- `bootm-test-image.md` / `set-active-sink.md`: `X = 0x10200000` as device fact.
+- `buffer-equals-loadaddr-proof.md` title: `BUF == Y` as equality (overlap only).
+- `fastboot-boot-verdict.md` root cause: max-download-size argument.
+- `vendor-module-compat.md`: extraction needs root.
+- `kernel-build-env.md` / `kernel-smoke-test.md`: baseline compiles at HEAD.
+- `bl33-offline-round8.md` §§3.1/3.2/3.5/5/7: second DTB copy, 11 SMCs,
+  0x01040000 unidentified, stock kernel at 0x0169e000, BL33-not-in-range.
+- `dts-analysis.md` / old `aquaman-dts-port.md` / `rebuilt-kernel.md` #16 old
+  wording: DTB sealed/unavailable (blob now recovered).
+- Any `BL33 is RWX` without descriptor caveat; any `env mutation alters boot`
+  without consumption caveat; any `modules in use` from presence alone;
+  any global `no disclosure / no writer` without audited-surface scope.
 
 ## blockers, ranked
 
 1. **BL31 rejects unsigned images.** every RAM-only path funnels through
-   `do_bootm` → SMC. `booti` and `go` are not compiled in (E8). this blocks
-   execution, and it is the reason to stop spending time on address hunting.
-2. **no exact source.** so no exact config, no exact DTS source, and — as just
-   measured — no CRC-compatible kernel.
-3. **the board DTB.** ~~encrypted, unavailable~~ — **RESOLVED for the blob**,
-   recovered from DRAM. what is still unavailable is the vendor's `.dts`
-   source, so the 4.9 port can be validated but not authored from the original.
-4. ~~**`/proc/device-tree` has never been read off the stock device.**~~ **not
-   needed**, the FDT was read out of RAM instead. it would still be a cheap
-   confirmation that the running kernel received this exact blob.
-5. **`aml_sec_boot_check` is still not located.** the U-Boot fragment at
-   `0x01040000` is secure storage, not the boot gate, and `AML_DATA_PROCESS`
-   (`0x820000ff`) is built nowhere in the 16 MiB dump. blocker 1 stands and
-   this round did not touch it.
+   `do_bootm` → SMC. `booti` and `go` are not compiled in (E8, single-method).
+   this blocks execution, and it is the reason to stop spending time on address hunting.
+2. **no exact source found in searched material.** so no exact config, no exact
+   DTS source, and no CRC-compatible kernel. Does not prove non-existence.
+3. **the board DTB source.** RESOLVED for the blob, recovered from DRAM.
+   Still missing: vendor `.dts` source. Still unconfirmed: Linux receipt via
+   `/proc/device-tree`.
+4. **GhostLock disclosure + verified reclaim.** trigger/consumer/fidelity done;
+   forge needs addresses as bytes first, then overlap, then verified capture.
+   H16 live-retarget is secondary; post-free reuse is principal but not
+   demonstrated on Aquaman.
+5. **`aml_sec_boot_check` gate stands.** located as wrapper `0x37e19ea8`
+   (`mov x0,#0x820000ff` + `smc #0`); BL31 internals closed. No bypass demonstrated.
 
 ## reproducibility notes
 

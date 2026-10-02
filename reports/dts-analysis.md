@@ -4,20 +4,20 @@ read this first, it changed the answer and only the last section still holds.
 
 ```text
 DTB runtime:
-    encontrado em 0x01000000
-    FDT válido
+    found at 0x01000000
+    valid FDT
     gxl_aquaman_1g
     amlogic, Gxl
     mali@d00c0000
 
 DTS:
-    primeiro esboço já reconstruído a partir do dump de RAM
-    parcialmente correlacionado com os nós/props observados no FDT
-    ainda não provado como source exato do vendor
+    first sketch already reconstructed from the RAM dump
+    partially correlated with the nodes/props observed in the FDT
+    not yet proven as the exact vendor source
 
 dt.img:
-    continua criptografado no artifact de firmware
-    não confundir o primeiro esboço extraído da RAM com o DTS original
+    still encrypted in the firmware artifact
+    do not confuse the first sketch extracted from RAM with the original DTS
 ```
 
 the FDT was pulled out of live DRAM at `0x01000000` on 2026-09-29, 58280

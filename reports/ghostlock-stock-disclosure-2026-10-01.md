@@ -1,4 +1,10 @@
 RESULT: NO_DISCLOSURE_FOUND
+
+> DIRECTION (2026-10-02, see `reports/CURRENT_STATE.md`): principal is
+> post-free stack reuse + disclosure; H16 live retarget is secondary;
+> reclaim without verifier, audited live H16 writer search, fake object,
+> arbitrary R/W, cred/root are closed. Post-free reuse is not demonstrated
+> on Aquaman. Live-retarget was audited and not demonstrated.
 BOOT_ID: 3ec336a5-439f-497f-b9f7-08fd7441b174
 TARGET_POINTER: [W_waiter+0x38] (waiter->lock) / &f_alt.pi_mutex
 DISCLOSED_BYTES: none (0 bytes kernel pointer disclosed)

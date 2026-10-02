@@ -27,7 +27,7 @@ classification: ANCESTOR (direct family baseline, without Xiaomi/aquaman deltas)
 
 ## closest source found
 
-NO EXACT SOURCE. ranking by actual proximity:
+No exact source found in searched public material. ranking by actual proximity:
 
 1. MiCode/MiTV_OpenSource@dangal-p-oss — official Xiaomi, 4.9.113, Amlogic, 2019-07-11. Wrong device (dangal TV), no aquaman DTS, no 805Y DTS. Config score 14.07% vs 14.05% for McMCCRU (technical tie). Useful as a reference for how Xiaomi packages a 4.9.113 Amlogic P kernel.
    URL: https://github.com/MiCode/MiTV_OpenSource, branch dangal-p-oss, commit 2ecab23dd 2019-07-11.
@@ -35,11 +35,11 @@ NO EXACT SOURCE. ranking by actual proximity:
 3. khadas/linux ubuntu-4.9 / LineageOS android_kernel_amlogic_linux-4.9 lineage-22.2 — same GXL family (VIM1 S905X ~ S805Y), fresh (2025-2026), wrong board, no aquaman.
 4. torvalds/linux meson-gxl-s805y-xiaomi-aquaman.dts (merged May 2025) — only aquaman DTS existing anywhere, but modern mainline, not 4.9 downstream. Serves as hardware map (1GB, eMMC HS200, RTL8821CS via sd_emmc_b, uart_A BT, hdmi_tx + cec_AO, sound XIAOMI-AQUAMAN), based on p241. Not suitable for a 4.9 rebuild.
 
-## does a Xiaomi 2022 tree exist publicly? NO
+## does a Xiaomi 2022 tree exist in searched public material? NOT FOUND
 
 - MiCode has 3 repos: Xiaomi_Kernel_OpenSource (phones only), MiBox_Kernel_OpenSource (once-o-oss, 4.9.54, MiBox3, 2019-02), MiTV_OpenSource (dangal/machuca/venom, no aquaman). Issue #11 on the MiBox repo (Jan 2025) requests aquaman GPL source and remains open.
 - fingerprint c5-mitv-cm-build06.bj: zero indexed hits. PI-2055: only dumps (tadiphone, now 404) + XDA thread with Yandex OTA. No repo/branch/commit.
-- conclusion: the 2022 build came from an internal Xiaomi/Amlogic tree that was never published. What is missing is exactly: downstream aquaman DTS, aquaman defconfig, Android TV deltas, and AMLSECU packaging with the user-key.
+- conclusion: the evidence is compatible with an unpublished downstream tree; the exact origin was not identified. What is missing is exactly: downstream aquaman DTS, aquaman defconfig, Android TV deltas, and AMLSECU packaging with the user-key.
 
 ## is it possible to reproduce 4.9.113? NOT YET
 

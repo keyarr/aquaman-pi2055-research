@@ -1,5 +1,11 @@
 # ghostlock h16 targeted write — stock-relative stack rewrite search
 
+> DIRECTION (2026-10-02, see `reports/CURRENT_STATE.md`): principal is
+> post-free stack reuse + disclosure; H16 live retarget is secondary;
+> reclaim without verifier, audited live H16 writer search, fake object,
+> arbitrary R/W, cred/root are closed. Post-free reuse is not demonstrated
+> on Aquaman. Live-retarget was audited and not demonstrated.
+
 Date: 2026-10-01. Authority: Xiaomi Mi TV Stick 1080p (aquaman, S805Y/GXL,
 Android 9, PI.2055, 4.9.113 arm64). Lab instruments: build-aq/vmlinux +
 .src/linux-amlogic + full disassembly cache. No fake, no arbitrary R/W,

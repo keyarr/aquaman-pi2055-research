@@ -31,11 +31,12 @@ real finding, not a rerun.
 | modules | 10 `.ko` | PASS |
 
 stock kernel for size reference: the encrypted kernel block inside `boot.img`
-has `nTotalLength 0x959000` = 9801728 bytes ≈ 9.3 MiB. **our Image is 2.8× the
-stock kernel.** that is the single largest measurable difference and it is
-worth stating plainly: a 26 MiB image against a ~9.3 MiB stock kernel means
-the baseline carries a great deal the device does not, or the device's kernel
-was stripped, or both. `text_offset` matching at `0x1080000` is a good sign for
+has `nTotalLength 0x959000` = 9801728 bytes ≈ 9.3 MiB. our Image is 27308544
+bytes (26.0 MiB). that size gap is an observed difference whose semantics
+needs normalisation before comparison: 9.3 MiB derives from the block /
+container size as interpreted by AMLSECU and is not automatically equivalent
+to the final decompressed Image size. do not read it as proof of source
+divergence on its own. `text_offset` matching at `0x1080000` is a good sign for
 the U-Boot handoff specifically.
 
 ## config: 49 differences against the device
@@ -137,7 +138,7 @@ cosmetic, and it can be matched with `KBUILD_BUILD_*` if it ever matters.
 
 | # | difference | class | note |
 |---|---|---|---|
-| 1 | Image 26.0 MiB vs stock ~9.3 MiB | **unknown** | 2.8×. unknown cause, largest single gap |
+| 1 | Image 26.0 MiB vs stock ~9.3 MiB container | **observed difference, semantics unnormalised** | container size per AMLSECU, not decompressed Image; do not use as source-divergence proof alone |
 | 2 | `AMLOGIC_DVB=n` vs device `y` | **blocking** | HEAD commit does not compile, §7 |
 | 3 | 190 CRC diffs, of which the Amlogic media set | **blocking** | different source, no config fix |
 | 4 | 13 missing symbols (W1 Wi-Fi, pstore compression) | **blocking** | tree lacks the code entirely |
@@ -179,7 +180,8 @@ KERNEL:   NOT a reproduction. an approximation with a documented, quantified gap
 
 "the kernel builds" is not "the kernel is reproduced", and the gap is
 specifically: wrong DTB, no DVB module, a media stack whose exported types
-differ from the stock one, and 2.8× the stock size.
+differ from the stock one, and an observed size difference (26 MiB Image vs
+~9.3 MiB container) whose semantics needs normalisation before comparison.
 
 ## 7. the build did not work the first time, and that matters
 

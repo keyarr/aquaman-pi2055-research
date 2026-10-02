@@ -11,9 +11,9 @@ new tests `TestBl33Round15` in `tools/run_tests.py` (11 tests, pass).
 
 answer to the round question first:
 
-> Existe no BL33 uma primitiva controlavel pela OEM interface que
-> permita modificar memoria ou transferir controle, ou o unico caminho
-> relevante continua sendo do_bootm -> AML_DATA_PROCESS -> BL31?
+> Is there in BL33 a primitive controllable via the OEM interface that
+> allows modifying memory or transferring control, or does the only relevant
+> path remain do_bootm -> AML_DATA_PROCESS -> BL31?
 
 **both.** `do_bootm -> AML_DATA_PROCESS -> BL31` is still the only
 *verified* path, but it is **not** the only controllable memory/control

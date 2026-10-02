@@ -68,27 +68,27 @@ overwrite destructive, never surgical; the only precise write is the
 ## 4. conclusion (only CONFIRMED / UNPROVEN / REFUTED)
 
 ```text
-1. Os bytes do host chegam a uma regiao RAM conhecida?
+1. Do host bytes reach a known RAM region?
    CONFIRMED. Fastboot: [0x10200000,0x18200000) via 0x37e95274.
    Burning/update: [0x07700000,0x0b700000) via 0x37e7bbe0 + header math.
    Both fixed-address, gated size, no host address (01).
-2. Essa regiao pode ser usada como source de ddr_test_copy?
+2. Can this region be used as ddr_test_copy source?
    CONFIRMED for address reach. argv[1] takes any 32-bit addr incl.
    both buffers, no clamp (02, 03). Data survival is a separate
    question (see 6).
-3. O destino e controlavel?
+3. Is the destination controllable?
    CONFIRMED as address reach (HIGH, 03): argv[2]->x0 with no
    and/lsr/mask/range-compare/base-add/truncation-beyond-32-bit.
-4. O tamanho e controlavel?
+4. Is the size controllable?
    CONFIRMED with a floor (PARTIAL): argv[3]->w2, <0x1000 forced to
    0x2000000, no max, effective bytes 4x requested (02, 03).
-5. Existe clamp suficiente para impedir arbitrary write?
+5. Is there enough clamp to prevent arbitrary write?
    REFUTED as the reason: there is deliberately NO dst/max clamp, yet
    arbitrary write still fails. What blocks it is not a clamp but the
    handler's own fill phase destroying the payload (02 sect 4).
    Minimum clamp (<0x1000 floor) exists but is not what defeats the chain.
-6. A composicao update + ddr_test_copy constitui, estaticamente,
-   uma arbitrary RAM write?
+6. Does the update + ddr_test_copy composition constitute, statically,
+   an arbitrary RAM write?
    REFUTED. End state is L bytes of 0x12345678 at dst plus 16
    src-derived bytes at dst+L (L=(clamp(len)>>2)*16*loop, min 16 KiB),
    not N free host bytes at dst (05 sect 1). Round 15 HIGH is kept for
@@ -96,9 +96,9 @@ overwrite destructive, never surgical; the only precise write is the
    constant-fill with word-tail, not arbitrary write.
 ```
 
-Also unchanged: assinatura, chave e BL31 bypass continuam nao
-demonstrados (UNPROVEN). E2 continua refutado. Nada foi executado no
-device. Nenhum patch em SMC / aml_sec_boot_check / do_bootm foi tentado.
+Also unchanged: signature, key and BL31 bypass remain undemonstrated
+(UNPROVEN). E2 stays refuted. Nothing was executed on the
+device. No patch to SMC / aml_sec_boot_check / do_bootm was attempted.
 
 ## 5. files and tests
 

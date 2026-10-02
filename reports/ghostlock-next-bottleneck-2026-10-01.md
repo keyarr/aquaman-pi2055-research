@@ -1,21 +1,27 @@
 # ghostlock next bottleneck — disclosure check (2026-10-01)
 
-Date: 2026-10-01. Question: existe disclosure no stock que entregue
-`W_waiter` vivo + `[W_waiter+0x38]` atual + `&f_alt.pi_mutex` no mesmo
-contexto do consumer? Resposta: nao na superficie auditada.
+> DIRECTION (2026-10-02, see `reports/CURRENT_STATE.md`): principal is
+> post-free stack reuse + disclosure; H16 live retarget is secondary;
+> reclaim without verifier, audited live H16 writer search, fake object,
+> arbitrary R/W, cred/root are closed. Post-free reuse is not demonstrated
+> on Aquaman. Live-retarget was audited and not demonstrated.
+
+Date: 2026-10-01. Question: is there any disclosure on stock that delivers
+live `W_waiter` + current `[W_waiter+0x38]` + `&f_alt.pi_mutex` in the same
+consumer context? Answer: no on the audited surface.
 
 ## Environment split
 
-HOST/VM Linux (OFFLINE_ONLY, nunca evidencia de comportamento):
+HOST/VM Linux (OFFLINE_ONLY, never behavior evidence):
 
-* grep / objdump / readelf / DWARF sobre `build-aq/vmlinux`
+* grep / objdump / readelf / DWARF over `build-aq/vmlinux`
 * `.src/linux-amlogic` (futex.c, rtmutex.c, sched, proc, net, binder, ashmem, ion)
 * `tools/ghostlock_disclosure.py`, `ghostlock_emit_search.py`,
   `ghostlock_deref_chain.py`, `ghostlock_h16_target_search.py`
-* parsing de logs em `out/logs/`, compilacao NDK estatica
-* tudo abaixo marcado OFFLINE_ONLY e nada contado como hardware
+* log parsing in `out/logs/`, static NDK compilation
+* everything below marked OFFLINE_ONLY and nothing counted as hardware
 
-DEVICE REAL (unico que conta para kernel behavior):
+REAL DEVICE (only one counting for kernel behavior):
 
 ```text
 DEVICE_BOOT_ID: 3ec336a5-439f-497f-b9f7-08fd7441b174
@@ -25,12 +31,12 @@ FINGERPRINT: Xiaomi/aquaman/aquaman:9/PI/2055:user/release-keys
 SELINUX: Enforcing, shell u:r:shell:s0 uid 2000
 ```
 
-Regra aplicada: sem BOOT_ID nao e hardware evidence. Sem run no
-device e OFFLINE_ONLY. Nenhum resultado de VM escrito como reproduzido.
+Applied rule: without BOOT_ID it is not hardware evidence. Without a run on
+the device it is OFFLINE_ONLY. No VM result written as reproduced.
 
 ## Current state
 
-Fechado anterior, preservado sem reabrir:
+Previously closed, preserved without reopening:
 
 ```text
 RESULT: NO_EXACT_WRITER_FOUND
@@ -41,7 +47,7 @@ REBOOTS: 0
 TESTS: 126 OK
 ```
 
-Matriz (mesmo boot 3ec336a5, historico recitado):
+Matrix (same boot 3ec336a5, recited history):
 
 ```text
 base_t       TIMEOUT
@@ -53,50 +59,50 @@ alt_tgt      EDEADLK
 h16_static   TIMEOUT + TIMEOUT
 ```
 
-Leitura: consumer segue `f_target` desde o nascimento.
-`f_alt` so aparece quando configurado desde o nascimento
-(`alt_base` TIMEOUT prova mutex valido e contendido, nao endereco).
-`alt_only` vs `alt_tgt` prova fidelidade do consumer LEVEL_2,
-nao escrita. `waiter->lock = lock` (rtmutex.c:998, H16.0
-`stp x20,x19,[x21,#0x30]`) e o unico writer legitimo.
-Nenhum writer grava `[W_waiter+0x38] = &f_alt.pi_mutex`.
-H16.4 (`0x52fc ldr x25,[x0,#0x38]`) e H16.7
-(`0x4df0 ldr x0,[x28,#0x38]` + `cmp @0x4df4`) sem mecanismo
-demonstrado de escrita. LEVEL_2 mantido, LEVEL_3 nem tentado.
+Reading: consumer follows `f_target` since birth.
+`f_alt` only appears when configured since birth
+(`alt_base` TIMEOUT proves valid contended mutex, not address).
+`alt_only` vs `alt_tgt` proves LEVEL_2 consumer fidelity,
+not write. `waiter->lock = lock` (rtmutex.c:998, H16.0
+`stp x20,x19,[x21,#0x30]`) is the only legitimate writer.
+No writer writes `[W_waiter+0x38] = &f_alt.pi_mutex`.
+H16.4 (`0x52fc ldr x25,[x0,#0x38]`) and H16.7
+(`0x4df0 ldr x0,[x28,#0x38]` + `cmp @0x4df4`) with no demonstrated
+write mechanism. LEVEL_2 kept, LEVEL_3 not even attempted.
 
 ## Closed paths
 
-Nao reabertos nesta rodada, citados com motivo:
+Not reopened this round, cited with reason:
 
 * H16 writer depth<=3: 33 EXACT (9 KPTR heavy/priv/transient, 2 INT,
   1 DERIVED, 21 UNKNOWN spills), atomics 0, ioctl 0 exact,
   poll table/current GEOMETRY_ONLY valor errado (task/code/small-int),
   PI `+0x10` LEA register-only zero spills. Veredito: NOT_FOUND.
 * reclaim / MSG_PEEK / buddyinfo / slab guessing: `mm_reclaim_probe`
-  A/B/control FAIL `reclaim_hits=0`, plumbing 512/512 PASS nos 3 modos.
-  PEEK e plumbing, nao reuse. buddyinfo errno=13, slabinfo ausente,
-  slab attrs 0400. BLOCKED / REFUTED como prova.
-* Mali: GET/QUERY read-only HARDWARE_REFUTED para disclosure;
+  A/B/control FAIL `reclaim_hits=0`, plumbing 512/512 PASS in all 3 modes.
+  PEEK is plumbing, not reuse. buddyinfo errno=13, slabinfo missing,
+  slab attrs 0400. BLOCKED / REFUTED as proof.
+* Mali: GET/QUERY read-only HARDWARE_REFUTED for disclosure;
   stateful 34 handlers BOUNDED_COPY+VALIDATED ou SCALAR/NO_EMIT,
   open/close e get/put balanceados. Zero OOB/UAF/KPTR provado.
-  Blind ioctl sem source proibido, nao executado.
-* geometry-only / stack coincidence / poll-select sem writer:
-  `dist=0` prova reuso de pagina/SP, nao endereco absoluto nem valor
-  rt_mutex. Nunca promovido a retarget.
-* fake waiter / cred / R/W / root: fora de escopo ate H16 mover.
-  Nao tentados, nao reivindicados.
+  Blind ioctl without source forbidden, not executed.
+* geometry-only / stack coincidence / poll-select without writer:
+  `dist=0` proves page/SP reuse, not absolute address nor
+  rt_mutex value. Never promoted to retarget.
+* fake waiter / cred / R/W / root: out of scope until H16 moves.
+  Not attempted, not claimed.
 * kallsyms / `%pK` / dmesg / debugfs / tracing / sys tunables:
-  masked ou Permission denied para shell (ver Device experiments).
-* ashmem/configfs: precisa fake fops + dentry tolerante; sem leak
-  demonstrado, nao e disclosure.
+  masked or Permission denied for shell (see Device experiments).
+* ashmem/configfs: needs fake fops + tolerant dentry; without demonstrated
+  leak, not disclosure.
 * ge2d / vfm / ionvideo / amvideo / vndbinder / cec:
   shell-unreachable (errno=13) ou DISABLED (-EIO). INDEX/fd apenas.
 
 ## Disclosure candidates
 
 Formato exigido: TARGET / VALUE / ENVIRONMENT / STATUS.
-Runs-on-VM = analise estatica. Runs-on-DEVICE = probe real neste boot
-ou historico com BOOT_ID. Todo resto OFFLINE_ONLY.
+Runs-on-VM = static analysis. Runs-on-DEVICE = real probe on this boot
+or history with BOOT_ID. Everything else OFFLINE_ONLY.
 
 ```text
 candidate: S1 /proc/pid/stack
@@ -179,16 +185,16 @@ status: USER_ECHO / SCALAR_ONLY, NOT_FOUND
 candidate: pi_state+0x10 LEA carrier
 source: attach 0x9614, requeue 0xabe4, lock_pi 0xb1b8/0xb238/0xb2a0
 runs on VM?: yes (forward-spill zero KPTR spills)
-runs on DEVICE?: no (register-only, sem slot para ler)
+runs on DEVICE?: no (register-only, no slot to read)
 target value: &f_alt.pi_mutex via reg
-status: REGISTER_ONLY OFFLINE_ONLY, NOT_FOUND como leak
+status: REGISTER_ONLY OFFLINE_ONLY, NOT_FOUND as leak
 
 candidate: mali ioctls beyond open + vendor f_op depth>3 + unaudited /dev
 source: mali.ko out-of-tree, amlogic KOs unreachable
 runs on VM?: partial (census 34 stateful OFFLINE_ONLY-negativo)
 runs on DEVICE?: no (open census apenas; blind ioctl proibido)
 target value: any kptr
-status: UNKNOWN / NOT_COVERED, nao e candidato, e lacuna explicita
+status: UNKNOWN / NOT_COVERED, not a candidate, explicit gap
 
 candidate: pagemap PFN / maps / smaps
 source: USER VMAs, PFN precisa priv
@@ -198,14 +204,14 @@ target value: kernel VA via PFN
 status: PFN 0 / USER_ONLY, NOT_FOUND
 ```
 
-Nenhuma linha acima entrega os 3 itens juntos no mesmo contexto
-do consumer. Occupancy verdict (`alt_base` TIMEOUT) identifica o
-objeto semanticamente e e mantido como SINGLE_SOURCE-adjacent
-identity rule, deliberadamente NAO chamado de disclosure.
+No line above delivers the 3 items together in the same
+consumer context. Occupancy verdict (`alt_base` TIMEOUT) identifies
+the object semantically and is kept as SINGLE_SOURCE-adjacent
+identity rule, deliberately NOT called disclosure.
 
 ## Device experiments
 
-Somente o que rodou no aparelho nesta rodada. Mesmo boot em todas.
+Only what ran on the device this round. Same boot in all.
 
 ```text
 DEVICE_BOOT_ID: 3ec336a5-439f-497f-b9f7-08fd7441b174
@@ -218,7 +224,7 @@ T1 STACK:
 ```text
 COMMAND_EXECUTED_ON_DEVICE: adb -s 26919800005844922 shell 'cat /proc/self/stack'
 RESULT: 9 linhas [<0000000000000000>] walk_stackframe/proc_pid_stack/seq_read/SyS_read/el0_svc_naked. Zero kptr. MASKED.
-STATIC_ANALYSIS: base.c:472 %pK gating prediz zeros. DEVICE_TEST confirma. CONCLUSION: STACK_DISCLOSURE ausente aqui.
+STATIC_ANALYSIS: base.c:472 %pK gating predicts zeros. DEVICE_TEST confirms. CONCLUSION: no STACK_DISCLOSURE here.
 ```
 
 T2 WCHAN:
@@ -226,7 +232,7 @@ T2 WCHAN:
 ```text
 COMMAND_EXECUTED_ON_DEVICE: adb -s 26919800005844922 shell 'cat /proc/self/wchan'
 RESULT: "0". Sem simbolo, sem endereco.
-STATIC_ANALYSIS: base.c:411 symbol-or-0. DEVICE_TEST confirma. CONCLUSION: nao e disclosure.
+STATIC_ANALYSIS: base.c:411 symbol-or-0. DEVICE_TEST confirms. CONCLUSION: not disclosure.
 ```
 
 T3 SYSCALL:
@@ -234,7 +240,7 @@ T3 SYSCALL:
 ```text
 COMMAND_EXECUTED_ON_DEVICE: adb -s 26919800005844922 shell 'cat /proc/self/syscall'
 RESULT: "3 0x3 0xb87cdc80 ..." user regs apenas.
-STATIC_ANALYSIS: base.c:642 user sp/pc. DEVICE_TEST confirma. CONCLUSION: USER_ONLY.
+STATIC_ANALYSIS: base.c:642 user sp/pc. DEVICE_TEST confirms. CONCLUSION: USER_ONLY.
 ```
 
 T4 STAT:
@@ -242,7 +248,7 @@ T4 STAT:
 ```text
 COMMAND_EXECUTED_ON_DEVICE: adb -s 26919800005844922 shell 'cat /proc/self/stat'
 RESULT: campos 29/30 = 0 0 (kstkesp/kstkeip zerados).
-STATIC_ANALYSIS: array.c:436 PF_DUMPCORE gate. DEVICE_TEST confirma. CONCLUSION: nao e disclosure.
+STATIC_ANALYSIS: array.c:436 PF_DUMPCORE gate. DEVICE_TEST confirms. CONCLUSION: not disclosure.
 ```
 
 T5-T7 DENIALS:
@@ -250,32 +256,32 @@ T5-T7 DENIALS:
 ```text
 COMMAND_EXECUTED_ON_DEVICE: cat /proc/kallsyms; ls /sys/kernel/slab/; ls /sys/kernel/debug/
 RESULT: Permission denied / Permission denied / Permission denied (slab lista parcial sem attrs uteis).
-STATIC_ANALYSIS: kptr_restrict + SELinux + DEBUG_FS gated. DEVICE_TEST confirma. CONCLUSION: unreachable para shell.
+STATIC_ANALYSIS: kptr_restrict + SELinux + DEBUG_FS gated. DEVICE_TEST confirms. CONCLUSION: unreachable for shell.
 ```
 
 T9 EMIT C1/C2/C3 (re-run do binario ja presente, sem push novo):
 
 ```text
 COMMAND_EXECUTED_ON_DEVICE: adb -s 26919800005844922 shell '/data/local/tmp/ghostlock_emit_probe all'
-RESULT: C1 proto=8 ptr=0 cookie=0; C2 size=0 name="dev/ashmem"; C3 cnt=3 ids 5/4/0 rc=-EINVAL quirk com buffer cheio; is_kptr=0 em tudo. Identico ao historico 3x.
-STATIC_ANALYSIS: binder USER echo, ashmem USER string, ion INDEX. DEVICE_TEST confirma classes. CONCLUSION: scalar/echo/index, nenhum kptr.
+RESULT: C1 proto=8 ptr=0 cookie=0; C2 size=0 name="dev/ashmem"; C3 cnt=3 ids 5/4/0 rc=-EINVAL quirk with full buffer; is_kptr=0 in all. Identical to 3x history.
+STATIC_ANALYSIS: binder USER echo, ashmem USER string, ion INDEX. DEVICE_TEST confirms classes. CONCLUSION: scalar/echo/index, no kptr.
 ```
 
 T10 LIVENESS:
 
 ```text
 COMMAND_EXECUTED_ON_DEVICE: adb -s 26919800005844922 shell 'cat /proc/uptime; cat /proc/sys/kernel/random/boot_id'
-RESULT: up 30255s, mesmo BOOT_ID 3ec336a5. Sem reboot/hang/panic em nenhum probe. Side effects: open+close de fds proprios + reads /proc apenas.
+RESULT: up 30255s, same BOOT_ID 3ec336a5. No reboot/hang/panic in any probe. Side effects: open+close of own fds + /proc reads only.
 ```
 
-Historico recitado, nao re-executado aqui (mesmo BOOT_ID, logs em
+Recited history, not re-executed here (same BOOT_ID, logs in
 `out/logs/`): `disclose_stack`/`disclose_heap` (zeros + robust USER
 echo + sched scalar + sockaddr bytes), `emit_dev` open census
-(262 nos, 6 shell-openable), `h16_static` TIMEOUT+TIMEOUT,
-`alt_only` TIMEOUT / `alt_tgt` EDEADLK. Citados como HISTORY, nao
-como prova nova desta rodada.
+(262 nodes, 6 shell-openable), `h16_static` TIMEOUT+TIMEOUT,
+`alt_only` TIMEOUT / `alt_tgt` EDEADLK. Cited as HISTORY, not
+as new proof this round.
 
-Nada nesta secao veio da VM. Nenhum numero de VM chamado de reproduzido.
+Nothing in this section came from the VM. No VM number called reproduced.
 
 ## Verdict
 
@@ -283,21 +289,21 @@ Nada nesta secao veio da VM. Nenhum numero de VM chamado de reproduzido.
 NO_DISCLOSURE_PATH_FOUND
 ```
 
-Escopo: superficie auditada (proc/sys/net/futex/sched/signal/
-socket/binder-sample/ge2d-vfm-sample/C1-C3). Ausencia aqui nao e
-ausencia em todo kernel; lacunas explicitas (mali blind, f_op alem
-de depth 3, /dev alem de C1-C3 com source) ficam INCONCLUSIVE,
-nao promovidas a candidatas. Nenhum primitive nomeado. H16 segue
-fechada como `NO_EXACT_WRITER_FOUND`.
+Scope: audited surface (proc/sys/net/futex/sched/signal/
+socket/binder-sample/ge2d-vfm-sample/C1-C3). Absence here is not
+absence in the whole kernel; explicit gaps (mali blind, f_op beyond
+depth 3, /dev beyond C1-C3 with source) stay INCONCLUSIVE,
+not promoted to candidates. No primitive named. H16 stays
+closed as `NO_EXACT_WRITER_FOUND`.
 
 ## Next bottleneck
 
-Um so: disclosure read-only de EITHER endereco com ruler duplo
-antes de qualquer stamper. Fechar exige `/dev` emit census alem de
-C1/C2/C3 so com source auditavel (mali precisa de source primeiro,
-sem campanha blind), depois re-walk de f_op/indirect alem de BFS
-depth 3 so para EMIT, e ao primeiro endereco rodar FASE 12
-(`--disclosure`: H16 == x28 base em H16.7 com igualdade de valor
-em H16.4) + FASE 13 (`--emit`: FIELD+LOAD+COPY+USER+MASK) antes de
-qualquer pensamento de write. Sem isso: sem stamper, sem fake,
-sem cred/RW/root, sem repetir o window depth<=3.
+Single one: read-only disclosure of EITHER address with double ruler
+before any stamper. Closing requires `/dev` emit census beyond
+C1/C2/C3 only with auditable source (mali needs source first,
+no blind campaign), then re-walk of f_op/indirect beyond BFS
+depth 3 for EMIT only, and at the first address run PHASE 12
+(`--disclosure`: H16 == x28 base at H16.7 with value equality
+at H16.4) + PHASE 13 (`--emit`: FIELD+LOAD+COPY+USER+MASK) before
+any thought of write. Without that: no stamper, no fake,
+no cred/RW/root, no repeating the depth<=3 window.

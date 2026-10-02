@@ -102,11 +102,11 @@ stage byte is the discriminator from §4.2 of that report: `{maj,min,0,16}` mean
 U-Boot TPL, so the target is BL33, not the BL1 BootROM. **this closes the last
 hole in the round 3 identification.**
 
-one divergence worth recording: the reference tree says GXL answers
-`{0, 8, 0, 16}` (`platform.h` via `USB_ROM_VER_MINOR`), the device answers
-`{0, 7, 0, 16}`. minor byte differs, stage matches. more evidence for the
-round 3 §1.2 conclusion that aquaman is a Xiaomi fork of a later tree, and a
-reminder that family evidence is family evidence.
+no divergence to record, and the earlier reading of this was wrong: the
+reference tree gives GXL `{0, 7, 0, 16}` (`platform.h:105-113`, the minor byte
+is `0` only under `CONFIG_M6`, which GXL is not). all 4 bytes match the
+reference exactly. round 3 §2.5 had it as `{0, 8, 0, 16}` and read the missing
+`#ifdef` as a Xiaomi-fork signal; corrected there too.
 
 ### 3.2 the actual RAM bytes
 

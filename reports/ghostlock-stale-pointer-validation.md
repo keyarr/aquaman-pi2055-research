@@ -286,7 +286,7 @@ and shifts every array/address-taken function in the trigger and stamper
 paths (table section 2), moving `rt_waiter` from SP0-0x2b0 (lab) to
 SP0-0x2c8 (stock-proxy) and `waiter->lock` from SP0-0x278 to SP0-0x290.
 All prior stamp experiments are therefore marked GEOMETRICALLY INVALID
-for exact slots (their结论 about pselect-miss and spill-search-emptiness
+for exact slots (their conclusion about pselect-miss and spill-search-emptiness
 survive: pselect gap grows under STRONG, and the 87->0 spill result was
 computed on lab frames but the window shift (-0x18, uniform for
 table==waiter) does not promote any rejected candidate: all exact-slot

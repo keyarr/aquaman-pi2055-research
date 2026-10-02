@@ -1,5 +1,11 @@
 # ghostlock consumer FUTEX_LOCK_PI(f_chain) — stale pi_blocked_on differential
 
+> DIRECTION (2026-10-02, see `reports/CURRENT_STATE.md`): principal is
+> post-free stack reuse + disclosure; H16 live retarget is secondary;
+> reclaim without verifier, audited live H16 writer search, fake object,
+> arbitrary R/W, cred/root are closed. Post-free reuse is not demonstrated
+> on Aquaman. Live-retarget was audited and not demonstrated.
+
 Date: 2026-10-01. Device: Xiaomi Mi TV Stick 1080p (aquaman, S805Y/GXL,
 Android 9, PI.2055, 4.9.113 arm64, PREEMPT=y, shell uid=2000, Enforcing).
 Lab authority: build-aq/vmlinux + .src/linux-amlogic

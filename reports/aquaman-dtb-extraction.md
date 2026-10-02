@@ -824,3 +824,13 @@ on the things a stick differs on. the aquaman is also not a khadas board, and
 nothing was written to the stick. the round 8 dump
 `reports/round8-bl33-read/mread_01000000_01000000.bin` was read, never
 overwritten, and still hashes to `f5e20c9e...`.
+
+## 15. three things, kept separate
+
+1. DTB stored in firmware: `dt.img`, encrypted payload, no `d00dfeed` magic.
+   Still encrypted. Not equivalent to the RAM blob.
+2. DTB recovered from RAM: `artifacts/aquaman.dtb` at `0x01000000`, 58280 B,
+   valid FDT. This is what this report proves.
+3. DTB effectively consumed by Linux: unconfirmed. Would need
+   `/proc/device-tree` or boot log showing the kernel received this exact
+   blob. Do not treat (2) as (3) without that check.

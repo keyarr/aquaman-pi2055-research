@@ -1,180 +1,67 @@
 aquaman PI.2055 kernel provenance research
 
- spent way too long on this. 
- 
- Mi TV Stick 1080p (MiTV-AESP0, aquaman, S805Y/GXL),
- Android 9 PI.2055, kernel 4.9.113 built 2022-09-06 by jenkins@c5-mitv-cm-build06.bj.
- question was simple: which source tree built this kernel?
+Mi TV Stick 1080p (MiTV-AESP0, aquaman, S805Y/GXL), Android 9 PI.2055,
+kernel 4.9.113 built 2022-09-06 by jenkins@c5-mitv-cm-build06.bj.
+Question: which source tree built this kernel, and what can still run?
 
- verdict: no exact source exists in public.
- - McMCCRU/linux-amlogic (4.9.113, 2019-06-27) is ancestor, not exact. same
-   sublevel, same amlogic base, has the 805Y package id. but zero aquaman
-   strings, zero aquaman dts, 3 years older than the build.
- - no Xiaomi 2022 tree published anywhere. MiCode has dangal/machuca/venom,
-   nothing for aquaman. GPL request (MiBox repo issue #11) open since jan 2025.
- - AMLSECU packaging sealed, no board config, no aquaman defconfig upstream.
+Start here: `reports/CURRENT_STATE.md` is the index of what is believed and why.
+`reports/EVIDENCE_MATRIX.md` maps evidence by subsystem.
+`reports/INVALIDATED_HYPOTHESES.md` lists 20 closed leads so they are not reopened.
 
- layout:
- - reports/ : provenance.md is the full story, start there. plus config diffs,
-   dts analysis, ksu/apatch notes.
- - reports/config-diff/ : aquaman-config vs defconfig/meson64/smarthome + ranking.
- - tools/ : small scripts (boot parsing, config fingerprint, fastboot probe).
- - firmware/ : boot, dt, dtbo, vbmeta, bootloader imgs + SHA256SUMS.txt.
- - aquaman-config : kernel config extracted from the device.
+Current state:
+- McMCCRU 3d4ab79e is close family, not exact source. No exact source found
+  in searched public material. That does not prove none exists.
+- Rebuild is reproducible approximation (98.1% config, 190 CRC diffs, 13 missing
+  symbols, DVB dropped at HEAD). Not a reproduction.
+- 28 vendor .ko extracted from OTA. Presence only; runtime loading unproven.
+  vermagic 4.9.y is flattened by vendor Makefile, CRCs are the real gate.
+- DTB recovered from RAM at 0x01000000, valid 58280 B blob. Vendor DTS source
+  still missing. RAM blob != Linux receipt.
+- Fastboot download overlaps region bootm reads (E5/E6). Exact BUF unknown.
+  max-download-size does not discriminate addresses.
+- Unsigned boot blocked at BL31 SMC on all RAM-only paths. booti/go absent.
+  No bypass demonstrated.
+- BL33 cmd_tbl/handlers mapped, WRITE/FILL + same-cycle redirects in RAM
+  demonstrated, live env writable. Semantic consumption by script not proven.
+- GhostLock trigger + FUTEX_LOCK_PI consumer reproduced, f_target/f_alt
+  distinguished. H16 live-retarget not demonstrated. Principal is now
+  post-free stack reuse + disclosure (not demonstrated on Aquaman).
+  Disclosure and verified reclaim remain missing. No R/W/root.
 
- current state, start here:
- - reports/round36-force-usb-boot-state.md : **where FORCE_USB_BOOT lives.**
-   `fip/gxl/bl2.bin` and `fip/gxl/bl30.bin` are plaintext, unstripped and had
-   never been opened. BL2 holds the answer at `0x820` and `0x79b4`: the boot
-   decision reads `AO_RTI_STATUS_REG3[15:12]` (0xc810001c) against a hardcoded
-   `2`, and `bl2_get_boot_device()` returns **6** when that field is 2, which
-   matches neither 1 (eMMC) nor 2 (NAND) in the storage dispatch at `0x850`, so
-   the same BL2 run that takes the USB branch also loses the eMMC path. BL31
-   names the field itself: `and w19,w19,#0xffff0fff` sits right next to the
-   string literal `"bl31 clear usb flag"`, so `[11:8]` is the usb flag. same
-   code in gxb. BL30 moves `[3:0]` into `SD_CFG15[15:12]`, which closes round
-   35's open item, puts the reboot reason in `[31:28]` from BL31 shared RAM, and
-   clears `[11:8]` before it resets. **GP_CFG7[8:31] is a 24-entry gpio pad
-   array**, so `GP_CFG7[31]` is pad 23's output latch and BL33's
-   `is_tpl_loaded_from_usb()` is half dead code on gxl. that is the F1 null,
-   explained. `romboot.h`'s "GP_CFG0[31:28] = boot device" is stale, it is
-   `[3:0]`. the bl31 FID handlers sit at 0x05100000 in a blob absent from every
-   `fip/*/bl31.*` in the tree, measured across all 6 SoC generations, so the
-   `x1=2` setter is still not in the report. next step is E1, one read-only
-   session: read `0xc810001c`, `set_usb_boot 2`, read it again.
- - reports/round35-mode7-bootdelay.md : **`reboot bootloader` (mode 7) is
-   `setenv bootdelay -1`, nothing else.** not a hang, not a missing USB, a
-   designed stop. `do_get_rebootmode` at 0x37e60618 sets it, `main_loop` at
-   0x37e22328 runs preboot *before* `bootdelay_process`, and
-   `autoboot_command` at 0x37e24500 (`cmn w19,#1`) skips `bootcmd`. the logo
-   is the BL33 `init_display` blit, painted inside preboot, before the gate.
-   `switch_bootmode` has six branches and `bootloader` is not one of them, so
-   fastboot is never even requested. also decodes the full 15-entry
-   `AO_SEC_SD_CFG15[15:12]` table (7 -> `bootloader`) and corrects round 31
-   §4.3: BL31 writes `RTI_STATUS_REG3` (0xda10001c), not SD_CFG15, and the
-   poll at 0x1886c is a BL30-ready handshake on [17:16], not the mode.
- - reports/round34-setusbboot-realreset.md : **`set_usb_boot 2` + real reset
-   DOES wedge the stick.** C0 vs F2, one SMC apart, same build, same watcher:
-   no flag -> android back in 17.5 s. flag -> no USB for 885 s at 4 ms
-   resolution, until a physical power-cycle. the flag is real and the SMC is
-   not inert, but it is NOT `GP_CFG7[31]` — that reads 0 in both runs. the
-   armed state does not survive a power-cycle either. this finally instruments
-   round-3 trial 1, the one leg nobody had a watcher on.
- - reports/round33-doreset-watchdog-loop.md : **why `oem reset` and
-   `fastboot reboot` hang the stick.** `do_reset` (0x37e21684) is not a
-   harmless stub: its last call reaches `0x37e1a058`, which has an
-   unconditional back-edge at 0x37e1a0bc and **never returns**. the loop
-   enables the meson watchdog (0xc11098d0, BIT(18)) and kicks it
-   (0xc11098dc) on every pass, so no watchdog reset ever fires either. BL33
-   spins forever, stops answering USB, and only the physical plug exits. that
-   is the round-3 "hang", with no flag involved. **separate failure from
-   round34**: this one never reaches the reset at all, `set_usb_boot 2` +
-   `cold_boot` does.
- - reports/round32-controlled-experiment.md : the set_usb_boot / cold_boot
-   question turned into three runs. **ALL THREE DONE. C0: `cold_boot` works,
-   17.5 s. F1: `set_usb_boot 2` does not move `GP_CFG7[31]`. F2: flag + real
-   reset wedges 885 s.** see round34 for the conclusion.
-   F1 detail: `set_usb_boot 2` does
-   not move `GP_CFG7[31]` (0 -> 0), and neither does `set_usb_boot 1` as a
-   control.** read-only, one burning window, 21 ms, BL33 confirmed answering
-   throughout. that null is real but it measures the wrong register — see
-   round34, where F2 shows the flag does something anyway.
-   adds tools/usb_watch.py (4 ms bus poll, was missing from the repo entirely)
-   and tools/flagtest.py (one-session read/SMC/read, because re-entering
-   optimus clears the flag before you can observe it).
- - reports/round31-usbboot-reset-path.md : what happens AFTER `0x82000043`.
-   the round-3 set_usb_boot experiment was invalid: `do_reset` is a stub, so
-   2 of its 3 "resets" never reset the stick and it never reached the BootROM
-   in those legs. also the only place the reset path, the full GP_CFG7 access
-   set in BL33 and the SMC 0x82000043 surface are mapped. offline, no device.
- - reports/bl33-offline-round10.md : the U-Boot anchor. matched
-   securestorage.c + 13 BL31 ids at 0x01040000..0x0107ffff, pulled from a 16 MiB
-   RAM dump. first real code for BL33 instead of string hunting.
- - reports/bl33-offline-round11.md : the base. that 256 KiB is the middle of a
-   ~1.8 MiB image based at 0x01000000 — a stale load copy the kernel DTB was
-   later staged over. do_bootm / aml_sec_boot_check / the boot-path SMC are
-   not in the dump; the live copy is derived to ~0x37d90000..0x37e10000.
-   fresh 16 MiB read, byte identical to round 8.
- - reports/bl33-offline-round12.md : **BL33 located.** read 0x37800000..0x38000000,
-   found the executing copy at 0x37e18000 (`_start` + banner + cmd_tbl). full
-   boot path mapped: do_bootm=0x37e24c00 -> aml_sec_boot_check=0x37e19ea8 ->
-   smc #0 @0x37e19ed8 (x0=0x820000ff). this supersedes the "not in the dump"
-   lines in rounds 10/11 — they were true of the stale load copy only.
- - reports/bl33-offline-round13.md : the relocation re-read on a fresh boot is
-   byte-identical to round 12 (sha256 3d2eca1d…, cmp 0 diffs). base 0x37e18000,
-   do_bootm, aml_sec_boot_check and the SMC site all reproduce — deterministic,
-   not a one-session artifact.
- - reports/bl33-bl31-interface-round14.md : the BL33 image is a file now
-   (0x37e18000..0x37ff0000, 0x1d8000, sha256 664fb34a…), carved offline out of
-   the round-13 band. the whole SMC surface is enumerated (15 `smc #0` sites,
-   22 ids) and the answer to "is there a privileged path besides
-   aml_sec_boot_check" is yes: the fastboot `oem` command is a host-driven
-   run_command (0x37e95630) and, unlike flash/erase/flashall/set_active, it
-   never checks the lock state; `update` enters the v2 usbburning protocol; the
-   secure-storage key interface is present but has no callers in this build.
-   findings are classified informational/suspicious/strong candidate, no
-   exploit, secure boot untouched.
- - reports/aquaman-dtb-extraction.md : the device tree, read out of DRAM at
-   0x01000000. valid FDT, 376 nodes, 1798 props. artifacts/aquaman.dtb + .dts.
- - reports/fastboot-memory-flow.md : where the payload goes. refutes the
-   old "download != boot source" root cause.
- - reports/vendor-modules.md : the 28 stock .ko, extracted from the OTA dumps
-   in this repo. no root, no device needed.
- - reports/rebuilt-kernel.md : the rebuild, and why it is not a reproduction.
- - reports/custom-kernel-execution.md : execution paths and the blocker.
- - reports/aquaman-dts-port.md : mainline 2025 -> 4.9, node by node.
- - reports/repo-state.md : audit. what is proven, what is hypothesis, and
-   the list of contradictions found in the older reports.
+Real blockers:
+1. BL31 secure-fused rejects unsigned images before kernel runs.
+2. No exact source, so no CRC-compatible kernel, no exact DTS source.
+3. No disclosure primitive, so no GhostLock forge target/value.
+4. Env mutation is writable but never observed consumed by a safe script.
 
- stale claims in older reports carry a banner at the top saying which newer
- file supersedes them. the wrong ones worth knowing about: the plaintext-boot
- "CONFIRMED" in amlsecu-open-questions.md, `X = 0x10200000` in
- bootm-test-image.md / set-active-sink.md, "root is required" in
- vendor-module-compat.md, and the max-download-size root cause in
- fastboot-boot-verdict.md. from the RAM dump rounds: the "second copy of the
- DTB" in bl33-offline-round8.md §3.1, the "11 SMC sites" in §5 (wrong opcode
- constant), the "unidentified ARM64, not U-Boot" verdict for 0x01040000 in §3.2,
- and every "the board DTB is sealed in dt.img" line — that DTB is out of RAM now.
-from round 31, the set_usb_boot one is the expensive one: **the round-3 "three
-resets, one outcome" is wrong. two of the three did not reset.** `reset` and
-`fastboot reboot` both land in a `do_reset` stub with no smc, no AO write and no
-PSCI, so the reset-mode hypothesis was never tested and the stick never reached
-the BootROM in those two legs. corrected in place in usb-entry-aquaman.md
-§0/§1.4/§2.6/§4.3/§5/§6, plus the `reset` row in bl33-interface-round15.md, the
-SMC row in bl33-bl31-interface-round14.md, and the GP_CFG7 census line in
-round27-bl31-layout.md (it labelled `SEC_AO_SEC_GP_CFG7` as
-watchdog/JTAG/GPIO/clock, which is what kept the clear path invisible).
+Links:
+- state: `reports/CURRENT_STATE.md`
+- evidence: `reports/EVIDENCE_MATRIX.md`
+- closed leads: `reports/INVALIDATED_HYPOTHESES.md`
+- provenance: `reports/provenance.md`
+- fastboot: `reports/fastboot-memory-flow.md` (overlap, not `BUF == Y`)
+- BL33: `reports/bl33-same-cycle-round46.md`, `reports/bl33-boot-decision-round44.md`
+- GhostLock: `reports/ghostlock-reference-comparison-2026-10-01.md`
+- audit: `reports/repo-state.md`
 
- short version: the kernel builds (Image + dtb + modules, reproducible with
- tools/build_aquaman_kernel.sh), the stock modules are extracted and mapped, the
- device tree is out of the stick, and execution is BLOCKED at BL31, which is
- secure-fused and refuses unsigned images. not an address problem. the U-Boot
- fragment found in RAM does not change that: it is the secure-storage interface,
- not the key, and AML_DATA_PROCESS is not in the dump.
+Invalidated hypotheses (see full file for evidence):
+payload executed via fastboot boot; download != boot source; BUF is 0x10200000;
+max-download-size proves position; vermagic proves origin; modules need device
+root; baseline compiles with DVB=y; DTB inaccessible; 0x01040000 has no U-Boot;
+old SMC count; scheduler-only consumer; free-f_chain preserves path; H16 live
+retarget as principal; MSG_PEEK proves reclaim; dist=0 proves absolute offset;
+page table equals active MMU; presence equals usage; 98% equals reproduction;
+190 CRCs equal 190 source diffs.
 
- what's actually true right now:
+What is proven / what is not:
+- Proven (hardware): E5/E6 overlap, E7 SMC reject, BL33 WRITE/FILL/redirects,
+  env writability, GhostLock trigger/consumer/fidelity, DTB blob validity.
+- Offline only: static chain, disasm censuses, CRC/config arithmetic, H16 birth.
+- Not proven: exact BUF, exact source non-existence, booti/go absence beyond
+  single method, DTB Linux receipt, env semantic consumption, H16 write,
+  disclosure, reclaim, R/W/root, active RWX MMU state.
+- Never executed: flash/erase/saveenv/setenv persistence, BootROM USB burning,
+  blind ioctls, fake object, cred/root.
 
-   kernel exploit path : trigger/reachability known, primitive not demonstrated,
-                         oracle unstable, no root
-   BL31 path           : strong U-Boot/Amlogic anchor, secure-storage functions
-                         identified, call graph incomplete, secure-boot bypass
-                         NOT demonstrated
-   DTS/DTB             : runtime DTB recovered from RAM, first DTS sketch done,
-                         many nodes now checkable against real data, exact
-                         vendor source still unavailable
-   KernelSU/APatch     : plausible for a rebuilt kernel, still needs a path to
-                         run modified kernel code
-
- bootloader crypto status (rounds 28-30): the whole aml_encrypt_gxl pipeline
- is reconstructed and test-pinned (reports/round29-bootloader-crypto.md); the
- single missing input is the 32-byte aeskey tail of the OEM aml-user-key.sig.
- round 30 exhausted public provenance for it: no public copy of the PI.2055
- build, no aquaman key package anywhere, the one public production key
- (superbird) tested oracle-negative, and the pipeline was reproduced
- end-to-end offline with that public key. verdict:
- reports/round30-firmware-provenance.md — CRYPTOGRAPHICALLY CLOSED.
-
- full writeup: reports/provenance.md
-
-how i unlocked the bootloader:
-[bootloader_unlock](https://github.com/keyarr/aquaman-pi2055-research/blob/main/reports/bootloader_unlock.md)
+Full writeup history is preserved in `reports/`. Old files carry
+SUPERSEDED banners where they overstate. Do not cite them as current.

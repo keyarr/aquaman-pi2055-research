@@ -1,5 +1,11 @@
 # buffer-proof — download buffer == loadaddr; device is secure-fused (2026-09-29 session)
 
+> NOTE (2026-10-02): title / historical name is stronger than the proof.
+> Runtime evidence establishes overlap, not exact equality. See
+> `reports/fastboot-memory-flow.md` §4 and `reports/CURRENT_STATE.md`
+> (Fastboot). `BUF ∩ Y != ∅` is hardware-reproduced; `BUF == Y == 0x1080000`
+> remains INCONCLUSIVE.
+
 SUPERSEDES the X=0x10200000 claim in reports/bootm-test-image.md and the
 X!=Y root-cause in reports/fastboot-boot-verdict.md. those were derived
 from the khadas reference header (include/g_dnl.h:18), never runtime-proven
@@ -39,7 +45,7 @@ E5 stock `fastboot boot boot.img` (download 16MB + boot) -> USB dies in ~1s
 E6 same rails, raw-'boot' (no download, Y=decrypted-stale) minutes earlier
 -> FAIL fast, stayed. SAME Y, SAME bootm, different outcome than E5.
 the download CHANGED what bootm(Y) read => download buffer OVERLAPS Y
-=> BUF==Y (==loadaddr 0x1080000, ODROID-C2 style), not 0x10200000.
+=> download overlaps Y (==loadaddr region 0x1080000 per reference tree, ODROID-C2 style), not 0x10200000. Exact BUF==Y remains unproven; overlap is what E5/E6 show.
 E7 `fastboot boot m1b_boot.img` (plaintext, 4KB) -> adb ~18s, empty
 bootreason. `fastboot boot m1_boot.img` -> adb ~17s. INVALID 4KB control ->
 adb ~16s. A/B/control identical => all three die the same pre-GO death.
@@ -57,7 +63,7 @@ input, same degeneracy noted and accepted).
 
 ## model (fits E1-E8 with one assumption)
 
-BUF == Y == 0x1080000. downloads land exactly where bootm reads
+Download overlaps the region `bootm` reads (reference `loadaddr 0x1080000`). Exact BUF value remains unknown
 (`fastboot boot` was never buggy on this build). BL31 is secure-fused:
 aml_sec_boot_check passes AMLSECU-signed bytes (E4,E5), fails plaintext
 (E6 raw-boot,E7) and double-decrypt (E6). unsigned legs (M1/M2/raw) die in

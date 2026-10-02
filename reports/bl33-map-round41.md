@@ -1,46 +1,46 @@
-# BL33 map round 41: cmd_tbl vivo + ponteiros + gd/env + alvos E2-like
+# BL33 map round 41: live cmd_tbl + pointers + gd/env + E2-like targets
 
-date: 2026-10-01. offline sobre `reports/round14-bl33-persist/bl33-37e18000.bin`
-(sha256 `664fb34a...`, `[0x37e18000,0x37ff0000)`), cruzado com E0 live da
+date: 2026-10-01. offline over `reports/round14-bl33-persist/bl33-37e18000.bin`
+(sha256 `664fb34a...`, `[0x37e18000,0x37ff0000)`), crossed with live E0 from
 round40 (`reports/round40-optimus-consumption/01_cmdtbl_mread.txt`: 0 diffs).
-nenhum write nesta etapa. nenhum `0x05`, cmd_tbl, ponteiro, pagetable,
-codigo, eMMC, BL31 tocado aqui.
+no write in this step. no `0x05`, cmd_tbl, pointer, pagetable,
+code, eMMC, BL31 touched here.
 
-contexto live herdado: stage `00 07 00 10` (TPL/BL33), WRITE_MEM 0x01 provado
-round39, consumo duplo provado round40 (arena via upload + string .rodata via
-bulk reply, ambos com restore).
+inherited live context: stage `00 07 00 10` (TPL/BL33), WRITE_MEM 0x01 HARDWARE_REPRODUCED
+round39, double consumption HARDWARE_REPRODUCED round40 (arena via upload + .rodata string via
+bulk reply, both with restore).
 
-## 0. resposta
+## 0. answer
 
 ```text
-cmd_tbl vivo  0x37f60eb0..0x37f62470, 116 entradas, stride 0x30, E0 0 diffs
+cmd_tbl live  0x37f60eb0..0x37f62470, 116 entries, stride 0x30, E0 0 diffs
 consumer      0x37e5f6e8 ldr x4,[x19,#0x10] + 0x37e5f6fc blr x4, 64-bit
-handlers      116/116 dentro do BL33, 4 grupos duplicados (alias legitimo)
-slots func    2597 qwords -> BL33, 39 clusters >=4 slots
-gd/env vivo   default .rodata em ~0x37eb65a0; env vivo em BSS 0x37f8xxxx, sem offset fixo offline
-E2-like       conteudo de string usage/help de echo/version/false + maxargs/repeatable, nunca ponteiro
-fluxo 8B      so em [entry+#0x10] cmd e sub-tabela +0x10; resto e dado ou DoS de lookup
-proximo       E2-bis em string help/version; maxargs em 2o; fluxo segue vetado
+handlers      116/116 inside BL33, 4 duplicated groups (legitimate alias)
+func slots    2597 qwords -> BL33, 39 clusters >=4 slots
+gd/env live   default .rodata at ~0x37eb65a0; live env in BSS 0x37f8xxxx, no fixed offline offset
+E2-like       string content usage/help of echo/version/false + maxargs/repeatable, never pointer
+8B flow       only at [entry+#0x10] cmd and sub-table +0x10; rest is data or lookup DoS
+next          E2-bis in help/version string; maxargs in 2nd; flow stays vetoed
 ```
 
-## 1. cmd_tbl: reconstrucao read-only
+## 1. cmd_tbl: read-only reconstruction
 
-metodo live (E0, round40, so leitura):
+live method (E0, round40, read-only):
 
 ```text
 tools/optimus.py mread 0x37f60eb0 0x15c0 > /tmp/opencode/cmd_tbl_live.bin
-# 0x15c0 = 5568 = 116 * 0x30; compara com slice do bin offline
+# 0x15c0 = 5568 = 116 * 0x30; compare with offline bin slice
 tools/optimus.py mread 0x37e5f664 0x100  # call_cmd, consumer
 ```
 
 struct: `.src/u-boot-khadas/include/command.h:30`
 `+0x00 name ptr64, +0x08 maxargs u32, +0x0c repeatable u32, +0x10 cmd ptr64,`
 `+0x18 usage ptr64, +0x20 help ptr64, +0x28 complete ptr64`.
-`0x37f60fd0` nao e base, e entry 6 bootm. `0x37f60eb0` e entry 0
-aml_sysrecovery. os "80 slots" antigos eram filtro de nome curto que quebra
-em `ddr_dqs_window_step`.
+`0x37f60fd0` is not base, it is entry 6 bootm. `0x37f60eb0` is entry 0
+aml_sysrecovery. the old "80 slots" were a short-name filter that breaks
+on `ddr_dqs_window_step`.
 
-tabela (idx | addr | nome | handler | max | rep):
+table (idx | addr | name | handler | max | rep):
 
 | 0 | 0x37f60eb0 | aml_sysrecovery | 0x37e8387c | 3 | 0 |
 | 1 | 0x37f60ee0 | amlmmc | 0x37e2f064 | 6 | 1 |
@@ -159,113 +159,113 @@ tabela (idx | addr | nome | handler | max | rep):
 | 114 | 0x37f62410 | write_trim | 0x37e57518 | 5 | 0 |
 | 115 | 0x37f62440 | write_version | 0x37e56d18 | 5 | 0 |
 
-CONFIRMADO: 116/116 handlers dentro de `[0x37e18000,0x37ff0000)`, 0 fora.
-duplicados: `0x37e40c08` x2, `0x37eab688` guid+uuid, `0x37e26644` help+`?`,
-`0x37e2c1a0` loadb/loadx/loady x3. alias, nao corrupcao.
-`complete` nonzero so em printenv/run/setenv = `0x37e5f0d0`.
+CONFIRMED: 116/116 handlers inside `[0x37e18000,0x37ff0000)`, 0 outside.
+duplicates: `0x37e40c08` x2, `0x37eab688` guid+uuid, `0x37e26644` help+`?`,
+`0x37e2c1a0` loadb/loadx/loady x3. alias, not corruption.
+`complete` nonzero only in printenv/run/setenv = `0x37e5f0d0`.
 classes: fastboot 44, boot 6 bootm, update 104, env 38/75/84/85/91,
-memoria 17/70/40/46/11/60, debug 34/58/110/64/100/54/59.
+memory 17/70/40/46/11/60, debug 34/58/110/64/100/54/59.
 
-NAO PROVADO vivo: `usage/help/complete` de hoje. `name/max/rep/cmd`
-estaveis por E0; resto decide com o mesmo `mread`.
+NOT HARDWARE_REPRODUCED live: today's `usage/help/complete`. `name/max/rep/cmd`
+stable per E0; rest decided with same `mread`.
 
-## 2. ponteiros de funcao em 0x37e18000-0x37ff0000
+## 2. function pointers in 0x37e18000-0x37ff0000
 
-metodo offline: todos os qwords alinhados em 8 que caem no BL33, cluster
-com gap <=0x40. 2597 slots, 39 clusters >=4. nada escrito.
+offline method: all 8-aligned qwords falling in BL33, cluster
+with gap <=0x40. 2597 slots, 39 clusters >=4. nothing written.
 
-principais, com papel:
+main ones, with role:
 
 ```text
-0x37ee5bc0 mmc sub-tabela (info/read/write/erase..., stride 0x30, dispatcher 0x37e2ca3c)
-0x37ee62f0 store sub-tabela (init/exit/read/write..., dispatcher 0x37e33900)
-0x37ee70f8 env sub-tabela (default/delete/export/import/print/run/save/set, dispatcher 0x37e57d6c)
-0x37f60cc0 estado bss, 24 ptrs 0x37e9xxxx (storage/fastboot glue)
-0x37f62550 usb/fastboot state (~34 slots, inclui 0x37f62638)
+0x37ee5bc0 mmc sub-table (info/read/write/erase..., stride 0x30, dispatcher 0x37e2ca3c)
+0x37ee62f0 store sub-table (init/exit/read/write..., dispatcher 0x37e33900)
+0x37ee70f8 env sub-table (default/delete/export/import/print/run/save/set, dispatcher 0x37e57d6c)
+0x37f60cc0 bss state, 24 ptrs 0x37e9xxxx (storage/fastboot glue)
+0x37f62550 usb/fastboot state (~34 slots, includes 0x37f62638)
 0x37fbc940 mmc/block ops (24 ptrs 0x37e84xxx-0x37e85xxx)
-0x37f5e478 cipher ops x4 (consumidos em 0x37e73730/50/ec)
-0x37ee2710 hook (blr x0 em 0x37e19848)
+0x37f5e478 cipher ops x4 (consumed at 0x37e73730/50/ec)
+0x37ee2710 hook (blr x0 at 0x37e19848)
 ```
 
-PROVAVEL: mesma forma do cmd_tbl principal (`find + ldr x4 + blr x4`).
-NAO PROVADO vivo: valores de BSS/estado mudam por sessao (burning buf em
-`~0x37f8a620` ja provou isso no E0). `.text/.rodata` estaveis.
+PROBABLE: same shape as main cmd_tbl (`find + ldr x4 + blr x4`).
+NOT HARDWARE_REPRODUCED live: BSS/state values change per session (burning buf at
+`~0x37f8a620` already proved this in E0). `.text/.rodata` stable.
 
-## 3. gd/env/estado
+## 3. gd/env/state
 
-CONFIRMADO: default compilado em `~0x37eb65a0`
+CONFIRMED: compiled default at `~0x37eb65a0`
 (`bootcmd=run storeboot`, `bootdelay=1`, `baudrate=115200`, `preboot=...`).
-isso e `.rodata`, nao o env vivo. prova lateral de BSS vivo: `0x37f8a638`
-no bin persistido contem resto de `upload mem 0x37800000...` da propria
-sessao de leitura.
+this is `.rodata`, not the live env. side proof of live BSS: `0x37f8a638`
+in persisted bin contains leftover of `upload mem 0x37800000...` from the
+read session itself.
 
-PROVAVEL: `gd` logo abaixo de `0x37e18000`, stack descendo. env vivo em
+PROBABLE: `gd` just below `0x37e18000`, stack descending. live env at
 `0x37f8xxxx`.
 
-NAO PROVADO: endereco exato do `env_t` vivo, `bootargs` vivo, flags
-fastboot, `gd` pointer. hunt read-only, sem escrita:
+NOT HARDWARE_REPRODUCED: exact address of live `env_t`, live `bootargs`, fastboot
+flags, `gd` pointer. read-only hunt, no write:
 
 ```text
 tools/optimus.py mread 0x37f80000 0x10000 > /tmp/opencode/bss_live.bin
-# grep bootdelay/bootargs no dump; nunca poke aqui nesta etapa
+# grep bootdelay/bootargs in dump; never poke here in this step
 ```
 
-## 4. alvos E2-like (dado, observavel, restauravel)
+## 4. E2-like targets (data, observable, restorable)
 
-E2 round40: `0x37ed8794 failed:` via bulk reply, write 4B + trigger
-`foo1234` + restore. molde: dado lido pelo BL33 + efeito visivel + restore.
+E2 round40: `0x37ed8794 failed:` via bulk reply, 4B write + trigger
+`foo1234` + restore. shape: data read by BL33 + visible effect + restore.
 
-candidatos mesma familia, todos conteudo (nunca ponteiro):
+candidates same family, all content (never pointer):
 
 ```text
-0x37ec1479 echo args to console (usage echo, visivel em help echo)
+0x37ec1479 echo args to console (usage echo, visible in help echo)
 0x37ec0a40 alias for 'help' (? / help)
-0x37ebfe66 Unknown command (resposta de comando invalido)
-0x37ec00de Sig Check (caminho bootm, so leitura aqui)
+0x37ebfe66 Unknown command (invalid-command response)
+0x37ec00de Sig Check (bootm path, read-only here)
 0x37ebdcc0 U-Boot 2015.01... (banner version)
 0x37ec738f do nothing, unsuccessfully (false)
-maxargs/repeatable de echo/false/version (u32, relaxar check nao crasha)
+maxargs/repeatable of echo/false/version (u32, relaxing check does not crash)
 ```
 
-regra: mexer em byte de string, nunca no qword que aponta para ela.
-`[entry+#0x18/+0x20]` e ponteiro, fora desta etapa mesmo sendo 8B.
+rule: touch string byte, never the qword pointing to it.
+`[entry+#0x18/+0x20]` is pointer, out of this step even though 8B.
 
-## 5. fluxo com 8 bytes, teoria somente
+## 5. 8-byte flow, theory only
 
-CONFIRMADO mecanismo em `call_cmd 0x37e5f664`: `x19=find_cmd`,
-`0x37e5f6e8 ldr x4,[x19,#0x10]`, `0x37e5f6fc blr x4`, sem mascara no meio.
-8B em `[entry+#0x10]` trocam o handler. mesma forma nas sub-tabelas
-mmc/store/env +0x10. round38 ja fechou que `W` de 32b repetido x4 nao forma
-ponteiro canonico util (`0x1020000010200000`, top16=0x1020).
+CONFIRMED mechanism at `call_cmd 0x37e5f664`: `x19=find_cmd`,
+`0x37e5f6e8 ldr x4,[x19,#0x10]`, `0x37e5f6fc blr x4`, no mask in between.
+8B at `[entry+#0x10]` swap the handler. same shape in mmc/store/env
+sub-tables +0x10. round38 already closed that 32b `W` repeated x4 does not form
+useful canonical pointer (`0x1020000010200000`, top16=0x1020).
 
-PROVAVEL: `[entry+#0x00]` name ptr trocado = DoS de lookup
-(`strncasecmp` falha antes), nao fluxo. `[+#0x18/+0x20]` = string errada.
-`[+#0x28]` complete = so autocomplete, 3 entradas.
+PROBABLE: `[entry+#0x00]` swapped name ptr = lookup DoS
+(`strncasecmp` fails first), not flow. `[+#0x18/+0x20]` = wrong string.
+`[+#0x28]` complete = only autocomplete, 3 entries.
 
-NÃO PROVADO (e vetado nesta etapa): qualquer troca real de `cmd`,
-sub-comando, cipher/mmc ops, usb state, pagetable. mapa fecha, escrita nao.
+NOT HARDWARE_REPRODUCED (and vetoed in this step): any real swap of `cmd`,
+sub-command, cipher/mmc ops, usb state, pagetable. map closes, write does not.
 
-## 6. proximo experimento
+## 6. next experiment
 
-1. mais seguro p/ primeiro 8B: conteudo de string `usage/help` de
-   echo/version/false (ex. `0x37ec1479`). printf consome, restore = bytes
-   originais, sem ponteiro/pagetable/codigo/eMMC.
-2. maior chance de mudar comportamento sem crash: `maxargs/repeatable`
-   de entrada inofensiva (false/echo). 8B cobrem os dois u32 juntos;
-   subir `maxargs` so relaxa o `cmp` em `0x37e5f6b4`.
-3. fluxo: `cmd_tbl[i].cmd +0x10` ou sub-tabela `+0x10`. vetado agora.
-4. melhor risco/retorno: E2-bis em `help`/`version`. risco minimo
-   (rodata display-only), retorno alto (2a prova WRITE->consumo->restore
-   em estrutura documentada, sem os 16 KiB de colateral do ddr_test_copy).
+1. safest for first 8B: string content `usage/help` of
+   echo/version/false (e.g. `0x37ec1479`). printf consumes, restore = original
+   bytes, no pointer/pagetable/code/eMMC.
+2. best chance to change behavior without crash: `maxargs/repeatable`
+   of harmless entry (false/echo). 8B cover both u32 together;
+   raising `maxargs` only relaxes the `cmp` at `0x37e5f6b4`.
+3. flow: `cmd_tbl[i].cmd +0x10` or sub-table `+0x10`. vetoed now.
+4. best risk/return: E2-bis in `help`/`version`. minimal risk
+   (rodata display-only), high return (2nd WRITE->consumption->restore proof
+   in documented structure, without the 16 KiB collateral of ddr_test_copy).
 
-risco real: BSS/env e pagetable nem tocar; bulk incompleto (`upload` sem
-args) ja derrubou o gadget uma vez sem nenhum write (round40 §4). so
-comando completo com drain via 0x33.
+real risk: do not touch BSS/env and pagetable; incomplete bulk (`upload` without
+args) already dropped the gadget once with no write (round40 §4). only
+complete command with drain via 0x33.
 
 ## 7. repro
 
 ```text
-python3 tools/bl33_ctrl.py dump 0x37f60eb0  # vizinhanca offline
+python3 tools/bl33_ctrl.py dump 0x37f60eb0  # offline neighborhood
 python3 -c "import struct; d=open('reports/round14-bl33-persist/bl33-37e18000.bin','rb').read(); ..."
-# tabela §1 gerada do bin, checagem handlers-inside + dups por script, nao por olho
+# table §1 generated from bin, handlers-inside + dups check by script, not by eye
 ```

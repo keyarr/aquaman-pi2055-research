@@ -333,17 +333,19 @@ needed): `reports/round3-usb-entry/usb_burning_1b8e_c003.txt`.
 | wTotalLength | `0x0020` (:60) | 0x0020 |
 
 every field is a literal constant from the U-Boot C source, down to the 2 mA
-power budget and the `0x0007` bcdDevice. a BootROM BL1 image is a different
-firmware and cannot produce those numbers. this also retroactively invalidates
-the identifier the round-2 report used.
+power budget and the `0x0007` bcdDevice. strong evidence, not proof: BL1 is a
+closed blob and nobody has its descriptors to diff against, so this cannot
+rule the ROM out by itself. the stage byte below is the discriminator. either
+way the round-2 identifier is dead, the ROM serves the same `1b8e:c003` (§4.1).
 
-the optional confirmation is the stage byte: the vendor control request
+the confirmation is the stage byte: the vendor control request
 `AM_REQ_IDENTIFY_HOST` (0x20) returns 4 bytes
 `{USB_ROM_VER_MAJOR, USB_ROM_VER_MINOR, USB_ROM_STAGE_MAJOR, USB_ROM_STAGE_MINOR}`
-= `{0, 8, 0, 16}` on GXL, with `16 // IPL = 0, SPL = 8, TPL = 16`
-(`usb_pcd.c:522-537`, `platform.h:105-112`). TPL means U-Boot. NOT RUN, it
-needs root on the host to claim the device (`sudo` asks for a password here)
-and the descriptor match above already settles the question.
+= `{0, 7, 0, 16}` for GXL (`usb_pcd.c:522-537`, `platform.h:105-113`: `0`
+unless `CONFIG_M6`, which GXL is not), with `16 // IPL = 0, SPL = 8, TPL = 16`.
+TPL means U-Boot. NOT RUN, it needs root on the host to claim the device
+(`sudo` asks for a password here). **run later, `00 07 00 10`, see
+`reports/optimus-ram-read.md` §3.1.** all 4 bytes match the reference tree.
 
 ### 2.6 `set_usb_boot 2`, three trials — **only one of them was a reset**
 
@@ -546,11 +548,12 @@ Amlogic USB device-mode target", nothing more.
 - **stage byte in the identify answer.** U-Boot answers the control request
   `AM_REQ_IDENTIFY_HOST` (0x20) with exactly 4 bytes
   `{USB_ROM_VER_MAJOR, USB_ROM_VER_MINOR, USB_ROM_STAGE_MAJOR, USB_ROM_STAGE_MINOR}`
-  = `{0, 8, 0, 16}` for GXL (usb_pcd.c:522-537, platform.h:105-112, with
+  = `{0, 7, 0, 16}` for GXL (usb_pcd.c:522-537, platform.h:105-113, `0`
+  unless `CONFIG_M6`, which GXL is not, with
   `16 // IPL = 0, SPL = 8, TPL = 16`). BootROM BL1 does not answer a control
   request; it answers a bulk read of 8 bytes with the ROM version string
-  (`GXL:BL1:<ver>:<ver>`). a host that reads 4 bytes of `{0,8,0,16}` is talking
-  to U-Boot.
+  (`GXL:BL1:<ver>:<ver>`). a host that reads 4 bytes of `{0,7,0,16}` is talking
+  to U-Boot. measured, `reports/optimus-ram-read.md` §3.1.
 - **timing.** BootROM USB exists ~instantly after reset, before BL2/BL30/BL31
   run. on this device BL33 fastboot shows up at +4 s after
   `adb reboot bootloader` (round-2 report:50). anything appearing in the first

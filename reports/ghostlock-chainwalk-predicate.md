@@ -137,7 +137,7 @@ Source-derived, no stamp, preserved graph (W keeps f_chain, O holds
 f_target blocked on f_chain). `OFFLINE_ONLY` for values;
 `HARDWARE_OBSERVED` for terminal codes (sec. 5).
 
-O0 = nenhum waiter adicional (trg_inwin)
+O0 = no additional waiter (trg_inwin)
 - owner: O (pi_state alive, refcount held, empty mutex after rollback).
 - waiters: EMPTY (sole W_waiter dequeued by remove_waiter is_top path).
 - top waiter: NULL (leftmost NULL).
@@ -145,7 +145,7 @@ O0 = nenhum waiter adicional (trg_inwin)
   via fixup (empty). `OFFLINE_ONLY`.
 - O->pi_waiters: EMPTY (W removed, no occ). `OFFLINE_ONLY`.
 
-O1 = exatamente 1 waiter adicional (occ_tgt)
+O1 = exactly 1 additional waiter (occ_tgt)
 - owner: O (same).
 - waiters: 1 (occ_waiter, enqueued before trigger, leftmost).
 - top waiter: occ_waiter (prio 120, lock=&f_target, valid).
@@ -344,7 +344,7 @@ HIT (not used here). P0-P8 one line each, flushed.
 
 ## 13. Next Bottleneck
 
-Single next gargalo: first field of natural rt_mutex that could become
+Single next bottleneck: first field of natural rt_mutex that could become
 controllable AFTER the branch, i.e. f_target+0x00 wait_lock RMW at
 0x4e44 (first off-stack op, heap, valid) and then lock+0x08/+0x10
 enqueue writes + owner+0x28 refcount + owner+0x7d4 lock. All
@@ -356,12 +356,12 @@ named with a hardware discriminator like this round.
 
 ---
 BOTTOM LINE
-- predicado real e existencia de waiter em f_target (0x508c/0x5094 + 0x4e00).
-- no binario lab em adjust_prio_chain !requeue tail + head segunda iteracao.
-- condicao natural e f_target ter >=1 waiter (occ parked, prio 120 igual).
-- occ_base/occ2_base TIMEOUT vs occ_tgt/occ2_tgt EDEADLK, uma variavel.
-- divergencia reproduzida 7x/3x vs TIMEOUTs, zero panic.
-- pos_cycle EDEADLK valido, controle util.
-- FULL natural reproduzido (stale->heap->EDEADLK 0ms), fake nao tentado.
-- primeiro campo apos branch e lock+0x00 trylock, depois +0x08/+0x10 e owner+0x28.
-- unico proximo gargalo e qual word heap pos-branch observar sem injecao.
+- real predicate is waiter existence in f_target (0x508c/0x5094 + 0x4e00).
+- in lab binary at adjust_prio_chain !requeue tail + second-iteration head.
+- natural condition is f_target having >=1 waiter (occ parked, same prio 120).
+- occ_base/occ2_base TIMEOUT vs occ_tgt/occ2_tgt EDEADLK, one variable.
+- divergence reproduced 7x/3x vs TIMEOUTs, zero panic.
+- pos_cycle valid EDEADLK, useful control.
+- natural FULL reproduced (stale->heap->EDEADLK 0ms), fake not attempted.
+- first field after branch is lock+0x00 trylock, then +0x08/+0x10 and owner+0x28.
+- only next bottleneck is which post-branch heap word to observe without injection.
