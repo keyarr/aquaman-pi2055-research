@@ -1,0 +1,18 @@
+$ sudo python3 -c (bulkcmd, um por vez, sem drain de upload valido)
+'upload mem 0x37800000 normal 0x10' -> b'success'
+'upload mem 0x0 normal 0x10' -> b'success'
+'foo' -> b'failed:'
+'upload' -> FAIL [Errno 19] No such device (it may have been disconnected)
+
+$ lsusb -d 1b8e:c003
+no 1b8e:c003 on the bus
+
+$ sudo dmesg | tail
+usb 3-5: USB disconnect, device number 11
+
+$ sudo python3 -c (apos reentrada, so comando seguro)
+'foo1234' -> seg b'failed:', first64 66 61 69 6c 65 64 3a 00 ...
+
+conclusao: bulkcmd incompleto ('upload' sem args) derruba a sessao mesmo
+sem escrita. unknown de token unico e seguro. regra: so comandos completos,
+upload valido sempre com drain via 0x33.

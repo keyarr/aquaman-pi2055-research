@@ -1,0 +1,5 @@
+$ sudo timeout 60 python3 tools/optimus.py mread 0x37f60eb0 0x15c0 > /tmp/opencode/cmdtbl.bin
+0x37f60eb0 5568 bytes in 1 transfers, 0.021s sha256=8c2f2b92205b0f5ecf3cc514d9fb7e951cfecfde5c90794a5f92ee39ff8adcd7
+$ python3 -c (compare vs reports/round14-bl33-persist/bl33-37e18000.bin)
+len 0x15c0
+match offline: True

@@ -1,0 +1,12 @@
+$ sudo timeout 60 python3 /tmp/opencode/e1_loopback.py
+[  0.017s] usb open ok
+[  0.017s] identify 00 07 00 10 stage=16
+[  0.017s] BEFORE 0x02: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+[  0.038s] PRE mread : 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 match02=True
+[  0.038s] WRITE 0x01 <- a5 a5 5a 5a
+[  0.238s] AFTER 0x02: a5 a5 5a 5a 00 00 00 00 00 00 00 00 00 00 00 00 ok=True
+[  0.259s] POST mread: a5 a5 5a 5a 00 00 00 00 00 00 00 00 00 00 00 00
+[  0.259s] RESULT: CONSUMO CONFIRMADO - 0x01 visivel via memcpy do BL33 (0x34+0x33)
+[  0.259s] RESTORE verify=00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 OK
+[  0.280s] RESTORE mread verify=00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 OK
+EXIT=0

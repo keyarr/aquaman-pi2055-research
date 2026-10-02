@@ -1,0 +1,27 @@
+IDENT 00 07 00 10 00 00 00 00 stage=16
+health arena 00 00 00 00 00 00 00 00
+health false slot 64 67 e3 37 00 00 00 00
+health test slot 74 67 e3 37 00 00 00 00
+health envprint slot a8 7e e5 37 00 00 00 00
+TEST F1 FILL->false->true
+ BEFORE false=b'failed:'
+ MID slot 6c 67 e3 37 00 00 00 00 expect 6c67e33700000000
+ TRIGGER false=b'success' expect success
+ RESTORE 64 67 e3 37 00 00 00 00 retrigger=b'failed:'
+STATUS F1 PASS
+TEST F2 FILL-scattered arena+16
+ MID 11 11 11 11 00 00 00 00 22 22 22 22 00 00 00 00 33 33 33 33
+ RESTORE 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+STATUS F2 PASS
+HUNT BSS/env read-only
+ 0x37f84000 nonzero 34 sha a9f8267d
+ 0x37f88000 nonzero 180 sha 211fc520
+ 0x37f8c000 nonzero 0 sha 4fe7b59a
+ 0x37f90000 nonzero 0 sha 4fe7b59a
+ 0x37f94000 nonzero 0 sha 4fe7b59a
+ 0x37f98000 nonzero 0 sha 4fe7b59a
+ 0x37f9c000 nonzero 0 sha 4fe7b59a
+ 0x37e10000 nonzero 0 sha 4fe7b59a
+IDENT 00 07 00 10 00 00 00 00 stage=16
+SUMMARY {'F1': 'PASS', 'F2': 'PASS'}
+DONE-SESSION-ALIVE

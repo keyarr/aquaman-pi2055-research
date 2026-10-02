@@ -1,0 +1,17 @@
+$ sudo timeout 60 python3 /tmp/opencode/e2_string.py
+[  0.016s] usb open ok
+[  0.017s] identify 00 07 00 10 stage=16
+[  0.017s] BEFORE 0x37ed8794: 66 61 69 6c 65 64 3a 00 5b 69 6e 66 6f 5d 25 73 ascii=b'failed:\x00'
+[  0.037s] PRE trigger foo1234 -> b'failed:'
+[  0.037s] WRITE 0x01 0x37ed8794 <- 46 58 41 58 ('FXAX')
+[  0.238s] MID readback: 46 58 41 58 65 64 3a 00 5b 69 6e 66 6f 5d 25 73 ok=True
+[  0.259s] POST trigger foo1234 -> b'FXAXed:'
+[  0.259s] RESULT: INCONCLUSIVO - reply inesperado b'FXAXed:'
+[  0.259s] RESTORE verify=66 61 69 6c 65 64 3a 00 5b 69 6e 66 6f 5d 25 73 OK
+[  0.279s] RESTORE trigger -> b'failed:' OK
+EXIT=0
+
+note: o script comparava com b'FAXXed:' mas o payload era 46 58 41 58
+('FXAX'). reply `FXAXed:` bate exatamente com os 4B escritos + tail `ed:`.
+veredito manual: CONSUMO CONFIRMADO. bug so na constante esperada, nao na
+evidencia. restore verificado nos dois canais.

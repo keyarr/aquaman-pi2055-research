@@ -1,0 +1,29 @@
+IDENT 00 07 00 10 00 00 00 00 stage=16
+arena 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+TEST P1 slot 0x37f616d0
+CHECK P1 0x37f616d0 64 67 e3 37 00 00 00 00 ok=True
+ BEFORE 'false'=b'failed:'
+ MID 6c 67 e3 37 00 00 00 00
+ TRIGGER 'false'=b'success'
+ RESTORE 64 67 e3 37 00 00 00 00 retrigger=b'failed:'
+STATUS P1 PASS
+ neighbor true slot 6c 67 e3 37 00 00 00 00
+TEST P2 slot 0x37f62180
+CHECK P2 0x37f62180 74 67 e3 37 00 00 00 00 ok=True
+ BEFORE 'test 1 = 2'=b'failed:'
+ MID 6c 67 e3 37 00 00 00 00
+ TRIGGER 'test 1 = 2'=b'success'
+ RESTORE 74 67 e3 37 00 00 00 00 retrigger=b'failed:'
+STATUS P2 PASS
+TEST P3 slot 0x37ee71c8
+CHECK P3 0x37ee71c8 a8 7e e5 37 00 00 00 00 ok=True
+ BEFORE 'env print foo'=b'failed:'
+ MID 6c 67 e3 37 00 00 00 00
+ TRIGGER 'env print foo'=b'success'
+ RESTORE a8 7e e5 37 00 00 00 00 retrigger=b'failed:'
+STATUS P3 PASS
+TEST T7-RUN-noop true flags=0x10
+STATUS T7 EXC [Errno 5] Input/Output Error
+TEST T8-RUN-badaddr 0x0 flags=0x10 LAST
+STATUS T8 SEND-EXC [Errno 5] Input/Output Error
+ dead [Errno 5] Input/Output Error
