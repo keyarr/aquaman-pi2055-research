@@ -67,19 +67,20 @@ environment.
 
 Current research state
 
-> **Correction 2026-10-01.** The two lines below about plaintext were wrong
-> and are revoked. `unlocked=yes / secure=no` is U-Boot env state, not eFuse.
+> Note: the unlock is real. Android boot state went from green (locked) to
+> orange (unlocked), confirming the flashing lock opened. `unlocked=yes /
+> secure=no` reflects that U-Boot env / flash-lock state, not the eFuse.
 > BL31 stays secure-fused and rejects unsigned via `aml_sec_boot_check` SMC.
 > See `reports/fastboot-boot-verdict.md` (M1/M1b/M2 all rejected, 16-21 s)
 > and `reports/fastboot-memory-flow.md` sec 6 (E7 same addr, signed passes,
-> plaintext rejected). Do not use this file as proof of execution.
+> plaintext rejected). Do not use this file as proof of unsigned execution.
 
 The device is currently:
 
 unlocked: yes
 secure:   no
 
-This state changes the U-Boot env display only. It does not disable BL31
+This state opens the flashing lock (orange confirms it). It does not disable BL31
 signature check and does not make `fastboot boot` execute unsigned payloads.
 
 Scope
