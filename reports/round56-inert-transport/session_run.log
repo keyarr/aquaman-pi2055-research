@@ -1,0 +1,52 @@
+identify:
+identify rc=0
+htab obj table=0x33e2d650 size=0x209 filled=0x4a
+table mread 20840 sha8=a1576484
+entry bootargs: (514, 870525632, 870365936)
+entry wifi_ccode: (223, 870535008, 870535040)
+entry EnableSelinux: (262, 870525168, 870525200)
+entry reboot_mode: (256, 870530000, 870530032)
+entry reboot_mode_android: (263, 870530064, 870530096)
+entry preboot: (8, 870529792, 870529824)
+bulk 'test 1 = 1' -> b'success'
+bulk 'test 1 = 2' -> b'failed:'
+bulk 'test ${wifi_ccode} = US' -> b'success'
+bulk 'test ${EnableSelinux} = enforcing' -> b'success'
+baseline bootargs @ 0x33e0baf0 len=832 sha8=c5a4b5e3
+  wificountry=['androidboot.wificountrycode=US']
+  selinux=['androidboot.selinux=enforcing']
+  reboot_mode=['androidboot.reboot_mode=fastboot']
+setenv wifi_ccode ZZ -> b'success'
+test ZZ -> b'success'
+test US -> b'failed:'
+wifi_ccode after setenv: (223, 870535008, 870535040)
+  value=b'ZZ\x007\x00\x00\x00\x00\xd0r\xee7\x00\x00\x00\x00'
+run storeargs -> b'success'
+bootargs after storeargs: (514, 870525632, 870387024)
+  len=832 sha8=e1e32443
+  wificountry=['androidboot.wificountrycode=ZZ']
+  selinux=['androidboot.selinux=enforcing']
+  reboot_mode=['androidboot.reboot_mode=fastboot']
+ASSERT ZZ present + selinux enforcing: PASS
+PHASE1 DONE, no boot yet
+== boot (E4 shape, two separate bulkcmds) ==
+imgread kernel boot 0x1080000 -> b'success'
+imgread success confirmed, issuing bootm (session will drop)
+bootm USB drop (E4 signature): USBError(19, 'No such device (it may have been disconnected)')
+session over by design
+
+== adb return ==
+device 26919800005844922 back, stock Android.
+
+== oracle (Android userspace only) ==
+ro.boot.wificountrycode = US (file getprop_ro_boot_wificountrycode.txt)
+ro.boot.selinux = enforcing
+ro.boot.reboot_mode = normal
+getenforce = Enforcing
+full getprop | grep ro.boot saved (getprop_ro_boot.txt)
+
+== verdict ==
+handed to bootm: wificountrycode=ZZ + selinux=enforcing + reboot_mode=fastboot (832 B sha e1e32443, fresh-ptr verified)
+received: wificountrycode=US + selinux=enforcing + reboot_mode=normal (inert reverted, fastboot reverted)
+Whole-string revert, not selective. Case B (FDT identity) proven for this form; stop testing selinux.
+No saveenv/flash/erase/update/recovery; marker RAM-only, died with bootm. Device healthy stock Android.

@@ -1,0 +1,80 @@
+blob before restore: b'permissiv\x00active'
+WRITE sent: enforcing @ 0x33e1d6c4
+blob after restore:  b'enforcing\x00active'
+wide: b',8bit\x00EnableSelinux\x00enforcing\x00active_slot\x00normal'
+EnableSelinux: b'enforcing\x00'
+marker: b'androidboot.selinux=enforcing logo=osd1,loaded,0'
+bootargs stock-identical: True len 832
+sha hunt32k: 1c5e262dbe68
+  'false' -> b'failed:'
+  'true' -> b'success'
+  'test 1 = 2' -> b'failed:'
+  'test 1 = 1' -> b'success'
+raw     00 07 00 10
+version 0.7
+stage   16 (TPL/BL33-u-boot)
+identify rc=0 (want 0=stage16)
+== baseline oracle ==
+  'false' -> b'failed:'
+  'true' -> b'success'
+  'test 1 = 2' -> b'failed:'
+  'test 1 = 1' -> b'success'
+== hunt ==
+hunt bytes 32768 transfers 1 sha 1c5e262dbe68
+  env EnableSelinux name@0x33e1d6b6 val@0x33e1d6c4 len=9 val=b'enforcing'
+  env bootargs      name@0x33e1d736 val@0x33e1d73f len=832 val=b'init=/init loglevel=1 console=ttyS0,115200 no_console_suspend earlycon=aml_uart,0xc81004c0 ramoops.p'
+  env initargs      name@0x33e1e02c val@0x33e1e035 len=166 val=b'init=/init loglevel=1 console=ttyS0,115200 no_console_suspend earlycon=aml_uart,0xc81004c0 ramoops.p'
+  env storeargs     name@0x33e1e751 val@0x33e1e75b len=965 val=b'get_rebootmode;setenv bootargs ${initargs} ${fs_type} reboot_mode_android=${reboot_mode_android} and'
+  env storeboot     name@0x33e1eb21 val@0x33e1eb2b len=621 val=b'get_system_as_root_mode;echo system_mode: ${system_mode};if test ${system_mode} = 1; then setenv fs_'
+  env loadaddr      name@0x33e1e0e6 val@0x33e1e0ef len=7 val=b'1080000'
+  env active_slot   name@0x33e1d6ce val@0x33e1d6da len=6 val=b'normal'
+  env avb2          name@0x33e1d6e1 val@0x33e1d6e6 len=1 val=b'1'
+  env bootdelay     name@0x33e1da96 val@0x33e1daa0 len=1 val=b'1'
+  env boot_part     name@0x33e1d727 val@0x33e1d731 len=4 val=b'boot'
+0x33e1d6b6 45 6e 61 62 6c 65 53 65 6c 69 6e 75 78 00 65 6e 66 6f 72 63 69 6e 67 00 61 63 74 69 76 65 5f 73 b'EnableSelinux\x00enforcing\x00active_s'
+0x33e1d6c4 65 6e 66 6f 72 63 69 6e 67 00 61 63 74 69 76 65 b'enforcing\x00active'
+0x33e1d6b0 2c 38 62 69 74 00 45 6e 61 62 6c 65 53 65 6c 69 6e 75 78 00 65 6e 66 6f 72 63 69 6e 67 00 61 63 74 69 76 65 5f 73 6c 6f 74 00 6e 6f 72 6d 61 6c b',8bit\x00EnableSelinux\x00enforcing\x00active_slot\x00normal'
+0x33e1d811 61 6e 64 72 6f 69 64 62 6f 6f 74 2e 73 65 6c 69 6e 75 78 3d 65 6e 66 6f 72 63 69 6e 67 20 6c 6f 67 6f 3d 6f 73 64 31 2c 6c 6f 61 64 65 64 2c 30 b'androidboot.selinux=enforcing logo=osd1,loaded,0'
+0x33e1d825 65 6e 66 6f 72 63 69 6e 67 20 6c 6f 67 6f 3d 6f b'enforcing logo=o'
+0x33e1d801 5f 61 6e 64 72 6f 69 64 3d 6e 6f 72 6d 61 6c 20 61 6e 64 72 6f 69 64 62 6f 6f 74 2e 73 65 6c 69 b'_android=normal androidboot.seli'
+0x33e1d73f b'init=/init loglevel=1 console=ttyS0,115200 no_console_suspend ea'
+0x33e1da6f b'oot.rpmb_state=0\x00bootcmd\x00run sto'
+0x33e1e035 b'init=/init loglevel=1 console=ttyS0,115200 no_console_suspend ea'
+0x33e1e75b b'get_rebootmode;setenv bootargs ${initargs} ${fs_type} reboot_mod'
+before: 65 6e 66 6f 72 63 69 6e 67 00 61 63 74 69 76 65 b'enforcing\x00active'
+WRITE sent: 9B permissiv @ 0x33e1d6c4
+after:  70 65 72 6d 69 73 73 69 76 00 61 63 74 69 76 65 b'permissiv\x00active'
+wide:   2c 38 62 69 74 00 45 6e 61 62 6c 65 53 65 6c 69 6e 75 78 00 70 65 72 6d 69 73 73 69 76 00 61 63 74 69 76 65 5f 73 6c 6f 74 00 6e 6f 72 6d 61 6c b',8bit\x00EnableSelinux\x00permissiv\x00active_slot\x00normal'
+value-ok: True
+nul-ok: True
+tail-ok (active...): True
+EnableSelinux now: b'permissiv\x00'
+bootargs selinux now: b'androidboot.selinux=enforcing logo=osd1,loaded,0'
+STATE OK: EnableSelinux=permissiv, bootargs still enforcing -> storeargs is the only next writer
+sending: run storeargs (and nothing else)
+dt=0.02s
+reply512 hex: 73 75 63 63 65 73 73 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+reply cstr: b'success'
+EnableSelinux: b'permissiv\x00'
+marker48: b'androidboot.selinux=enforcing logo=osd1,loaded,0'
+pre32: b'_android=normal androidboot.seli'
+full832 selinux occurrences: 1
+selinux field: b'androidboot.selinux=enforcing logo=osd1,'
+reboot fields: [b'reboot_mode_android=normal', b'androidboot.reboot_mode=fastboot']
+head: b'init=/init loglevel=1 console=ttyS0,115200 no_console_suspend earlycon=aml_uart,'
+tail: b't_mode=fastboot androidboot.ffu_status=-1 page_trace=on androidboot.rpmb_state=0'
+== CONTROL: functional setenv path (no raw poke) ==
+cmd: 'setenv EnableSelinux permissiv' dt=0.02s reply: b'success'
+EnableSelinux raw now: b'permissiv\x00'
+cmd: 'run storeargs' dt=0.02s reply: b'success'
+EnableSelinux raw after storeargs: b'permissiv\x00active'
+marker after control storeargs: b'androidboot.selinux=enforcing logo=osd1,loaded,0'
+selinux field: b'androidboot.selinux=enforcing logo=osd1,'
+cmd: 'printenv EnableSelinux' -> b'success'
+cmd: 'echo ${EnableSelinux}' -> b'success'
+restore setenv reply: b'success'
+EnableSelinux: b'permissiv\x00'
+marker: b'androidboot.selinux=enforcing logo=osd1,loaded,0'
+  'false' -> b'failed:'
+  'true' -> b'success'
+  'test 1 = 2' -> b'failed:'

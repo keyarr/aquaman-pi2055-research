@@ -2,7 +2,7 @@
 
 Current index: `reports/CURRENT_STATE.md` (verdicts),
 `reports/EVIDENCE_MATRIX.md` (evidence by subsystem),
-`reports/INVALIDATED_HYPOTHESES.md` (20 closed leads).
+`reports/INVALIDATED_HYPOTHESES.md` (closed leads).
 This file is the file-level audit: what was superseded, what still misleads,
 what stays valid, what is offline-only, what was hardware-reproduced, and what
 was never executed.
@@ -46,6 +46,7 @@ reports/                    see EVIDENCE_MATRIX.md (count omitted, historical co
 | `ko_versions.py` | **NEW** parses `__versions` CRCs, diffs vs `Module.symvers` | works |
 | `fastboot_addr.py` | **NEW** inverts `ddr_size_usable` for the fastboot buffer address | works |
 | `validate_artifacts.py` | **NEW** checks Image/vmlinux/dtb/modules after a build | works |
+| `bootm_env_closure.py` | **NEW** transitive `bl` closure from `bootm`/`imgread`, env-rebuild site census, Hush command lines `bootm` runs | works, reproduces N1+N2 |
 | `build_aquaman_kernel.sh` | **NEW** the reproducible build | see below |
 
 ## kernel source, exact commit

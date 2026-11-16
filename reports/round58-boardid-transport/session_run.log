@@ -1,0 +1,38 @@
+identify:
+identify rc=0
+htab obj table=0x33e2d650 size=0x209 filled=0x4a
+table mread 20840 sha8=a1576484
+entry bootargs: (514, 870525632, 870365936)
+entry boardid: (57, 870525504, 870525536)
+entry wifi_ccode: (223, 870535008, 870535040)
+entry EnableSelinux: (262, 870525168, 870525200)
+entry reboot_mode: (256, 870530000, 870530032)
+entry reboot_mode_android: (263, 870530064, 870530096)
+entry preboot: (8, 870529792, 870529824)
+bulk 'test 1 = 1' -> b'success'
+bulk 'test 1 = 2' -> b'failed:'
+bulk 'test ${boardid} = 3' -> b'success'
+bulk 'test ${EnableSelinux} = enforcing' -> b'success'
+baseline sane (1=1 success, 1=2 failed, boardid=3 success): True
+baseline bootargs @ 0x33e0baf0 len=832 sha8=c5a4b5e3
+  boardid=['androidboot.boardid=3']
+  selinux=['androidboot.selinux=enforcing']
+  reboot_mode=['androidboot.reboot_mode=fastboot']
+setenv boardid 7 -> b'success'
+test 7 -> b'success'
+test 3 -> b'failed:'
+boardid after setenv: (57, 870525504, 870418512)
+  value=b'7\x00\xee7\x00\x00\x00\x00\xd0\xd1\xe03\x00\x00\x00\x00'
+run storeargs -> b'success'
+bootargs after storeargs: (514, 870525632, 870386016)
+  len=832 sha8=a69c9f7d
+  boardid=['androidboot.boardid=7']
+  selinux=['androidboot.selinux=enforcing']
+  reboot_mode=['androidboot.reboot_mode=fastboot']
+ASSERT boardid=7 present + selinux enforcing: PASS
+PHASE1 DONE, no boot yet
+== boot (E4 shape, two separate bulkcmds) ==
+imgread kernel boot 0x1080000 -> b'success'
+imgread success confirmed, issuing bootm (session will drop)
+bootm USB drop (E4 signature): USBError(5, 'Input/Output Error')
+session over by design

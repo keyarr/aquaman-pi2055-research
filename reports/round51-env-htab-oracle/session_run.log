@@ -1,0 +1,68 @@
+entry: already at 1b8e:c003, no adb reboot needed (rule: no boot)
+identify: raw 00 07 00 10 / version 0.7 / stage 16 (TPL/BL33-u-boot)
+
+== hunt (read-only) ==
+mread 0x33E18000 0x8000 -> 32768 bytes, 1 transfer, sha8 4ced8a1d
+  EnableSelinux name@0x33e1d6b6 val@0x33e1d6c4 len 9 `enforcing`
+  bootargs name@0x33e1d736 val@0x33e1d73f len 832 head `init=/init loglevel=1 console=ttyS0,115200 ...`
+  initargs val@0x33e1e035 len 166
+  storeargs val@0x33e1e75b len 965 head `get_rebootmode;setenv bootargs ${initargs} ... androidboot.selinux=${EnableSelinux} ...`
+  storeboot val@0x33e1eb2b len 621
+historic 0x33e1d6c4 / 0x33e1d73f confirmed live this session, not reused blind (re-hunted).
+
+== htab object (read-only) ==
+read 0x37ee7278 64B -> table=0x33e2d650 size=0x209 filled=0x4a (matches offline round50)
+mread 0x33e2d650 0x5168 (521*0x28) -> 20840 bytes, sha8 d519af19, used count 74
+full key census: 74 used entries resolved via key pointers, e.g.
+  EnableSelinux idx262 entry=0x33e2ff40 used=0x106 key=0x33e328f0 data=0x33e32910 flags=0x0 key=`EnableSelinux`
+  bootargs idx514 entry=0x33e326a0 used=0x202 key=0x33e32ac0 data=0x33e35bd0 flags=0x0
+  initargs idx11 entry=0x33e2d808 key=0x33e338b0 data=0x33e338d0
+  storeargs idx151 entry=0x33e2ede8 key=0x33e343b0 data=0x33e343d0
+  storeboot idx234 entry=0x33e2fae0 key=0x33e347a0 data=0x33e347c0
+read 0x33e32910 32B -> `enforcing\0` + heap tail (distinct from arena neighbours)
+read 0x33e1d6c4 32B -> `enforcing\0active_slot\0normal\0avb`
+conclusion read-only: same string content, different heap addresses (arena 0x33e18xxx vs htab data 0x33e32xxx).
+
+== phase4 baseline oracle (no mutation) ==
+bulkcmd "test ${EnableSelinux} = enforcing" -> `success`
+bulkcmd "test ${EnableSelinux} = permissiv" -> `failed:`
+bulkcmd "test 1 = 1" -> `success`
+bulkcmd "test 1 = 2" -> `failed:`
+oracle functional, htab path active.
+
+== phase5 setenv -> htab -> env_get ==
+bulkcmd "setenv EnableSelinux permissiv" -> `success`
+bulkcmd "test ${EnableSelinux} = permissiv" -> `success`
+bulkcmd "test ${EnableSelinux} = enforcing" -> `failed:`
+re-read entry 262: data ptr still 0x33e32910 (same-size free+strdup reused same chunk), content now `permissiv\0`
+read 0x33e32910 32B -> `permissiv\0...`
+read 0x33e1d6c4 16B -> `enforcing\0active` (arena untouched by setenv)
+proves: setenv -> htab -> expansion chain.
+
+== phase6 restore via correct mechanism ==
+bulkcmd "setenv EnableSelinux enforcing" -> `success`
+bulkcmd "test ${EnableSelinux} = enforcing" -> `success`
+bulkcmd "test ${EnableSelinux} = permissiv" -> `failed:`
+read 0x33e32910 -> `enforcing`, entry data ptr 0x33e32910, arena `enforcing`. restore confirmed, proceed allowed.
+
+== phase7 WRITE stale arena only ==
+pre: arena `enforcing\0active`, htab `enforcing`, test enforcing `success`
+WRITE 0x01 9B `permissiv` @ 0x33e1d6c4 (NUL untouched)
+readback 0x33e1d6c4 32B -> `permissiv\0active_slot\0normal\0avb` (neighbours intact)
+read 0x33e32910 32B -> `enforcing\0...` (htab unchanged)
+bulkcmd "test ${EnableSelinux} = permissiv" -> `failed:`
+bulkcmd "test ${EnableSelinux} = enforcing" -> `success`
+proves: WRITE stale arena -> no htab change -> env_get still enforcing.
+
+== restore ==
+WRITE 0x01 9B `enforcing` @ 0x33e1d6c4
+readback -> `enforcing\0active_slot\0normal\0avb`
+htab -> `enforcing`
+test enforcing `success`, test permissiv `failed:`, test 1=1 `success`, test 1=2 `failed:`
+session left clean, no reboot issued.
+
+== phase9 read-only correlation (no WRITE to htab data ptr) ==
+htab obj 64B: 50 d6 e2 33 ... 09 02 00 00 4a 00 00 00 ... (table/size/filled as above)
+final hunt sha8 a846264a (diff vs initial 4ced8a1d is 94 bytes in 0x33e18780-0x33e188db heap-header region only, zero diffs in env-string region; allocator churn from setenv free/malloc, expected)
+table sha8 d519af19 unchanged.
+no saveenv, no flash, no erase, no run update/storeboot, no bootm, no imgread, no recovery, no USB burning, no GhostLock/H16/AVB/SMC, no DTB change, no .text patch, no payload.

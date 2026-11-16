@@ -1,0 +1,30 @@
+goal: find a way to call fdt_chosen (0x37e297b8) inside the burning
+session, with mread as the oracle, so the kernel is not involved at all.
+
+the fdt command handler is 0x37e2852c (cmd_tbl idx 49).
+
+--- entry, 'fdt addr' with no argument prints the current blob ---
+  string 0x37ec1b5a = 'fdt is %#08lx\n'
+--- 'fdt addr <address>' stores argv[1] via simple_strtoul ---
+  string 0x37ec1bfc = 'fdt addr <address>" command.\nAborting!\n'
+--- the 'chosen' subcommand ---
+  memcmp operand 0x37ec1475 = 'cho'
+--- the call itself ---
+
+read out:
+  0x37f72a90  the global the 'fdt' command uses as its blob pointer. this is the
+              same slot boot_relocate_fdt publishes to (round57, 'bl 0x37e28510')
+              and the one env var fdtaddr mirrors.
+  fdt_chosen is reached ONLY from the 'chosen' subcommand and from
+              image_setup_libfdt 0x37e5c344 (the bootm path). no other caller.
+
+so the in-session probe is:
+  bulkcmd "fdt addr <scratch>"   then   bulkcmd "fdt chosen"
+which runs fdt_chosen() on a RAM blob of our choosing, no boot, no kernel,
+no persistent change. fdt_chosen writes /chosen/bootargs from env_get, so a
+mread of the blob afterwards shows the env value the code actually consumed.
+
+
+caller census of fdt_chosen 0x37e297b8 (whole image, tool bl33_audit.py callers):
+  0x37e293e4  the 'fdt chosen' subcommand
+  0x37e5c344  image_setup_libfdt, the bootm path

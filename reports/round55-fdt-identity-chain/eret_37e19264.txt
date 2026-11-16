@@ -1,0 +1,47 @@
+  0x37e191f8  mrs      x0, cnthctl_el2
+  0x37e191fc  orr      x0, x0, #3
+  0x37e19200  msr      cnthctl_el2, x0
+  0x37e19204  msr      cntvoff_el2, xzr
+  0x37e19208  mrs      x0, midr_el1
+  0x37e1920c  mrs      x1, mpidr_el1
+  0x37e19210  msr      vpidr_el2, x0
+  0x37e19214  msr      vmpidr_el2, x1
+  0x37e19218  mov      x0, #0x33ff
+  0x37e1921c  msr      cptr_el2, x0
+  0x37e19220  msr      hstr_el2, xzr
+  0x37e19224  mov      x0, #0x300000
+  0x37e19228  msr      cpacr_el1, x0
+  0x37e1922c  mov      x0, #0x80000000
+  0x37e19230  orr      x0, x0, #0x20000000
+  0x37e19234  msr      hcr_el2, x0
+  0x37e19238  mov      x0, #0x800
+  0x37e1923c  movk     x0, #0x30d0, lsl #16
+  0x37e19240  msr      sctlr_el1, x0
+  0x37e19244  mov      x0, sp
+  0x37e19248  msr      sp_el1, x0
+  0x37e1924c  mrs      x0, vbar_el2
+  0x37e19250  msr      vbar_el1, x0
+  0x37e19254  mov      x0, #0x3c5
+  0x37e19258  msr      spsr_el2, x0
+  0x37e1925c  msr      elr_el2, x30
+  0x37e19260  eret     
+  0x37e19264  mov      x20, x0
+  0x37e19268  mov      x21, x1
+  0x37e1926c  mov      x22, x2
+  0x37e19270  mrs      x0, sctlr_el2
+  0x37e19274  and      x0, x0, #0xfffffffffdffffff
+  0x37e19278  msr      sctlr_el2, x0
+  0x37e1927c  mov      x2, xzr
+  0x37e19280  mov      x0, #0x878
+  0x37e19284  movk     x0, #0xc5, lsl #16
+  0x37e19288  msr      sctlr_el1, x0
+  0x37e1928c  mov      x0, #0
+  0x37e19290  msr      hcr_el2, x0
+  0x37e19294  isb      
+  0x37e19298  mov      x0, #0x1d3
+  0x37e1929c  msr      spsr_el2, x0
+  0x37e192a0  msr      elr_el2, x20
+  0x37e192a4  mov      x0, #0
+  0x37e192a8  mov      x1, x21
+  0x37e192ac  mov      x2, x22
+  0x37e192b0  eret     

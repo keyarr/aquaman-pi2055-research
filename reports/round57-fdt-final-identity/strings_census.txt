@@ -1,0 +1,124 @@
+== bootargs ==
+  0x37eb6adb 'storeargs=get_rebootmode;setenv bootargs ${initargs} ${fs_type} reboot_mode_android=${reboot_mode_android} androidboot.selinux=${EnableSelinux} logo=${display_layer},loaded,${fb_addr},${outputmode} maxcpus=${maxcpus} vout=${outputmode},enable hdmimode=${hdmim
+  0x37eb6eab 'switch_bootmode=get_rebootmode;if test ${reboot_mode} = factory_reset; then setenv reboot_mode_android normal;run storeargs;run recovery_from_flash;else if test ${reboot_mode} = update; then setenv reboot_mode_android normal;run storeargs;run update;else if t
+  0x37eb71f2 'storeboot=get_system_as_root_mode;echo system_mode: ${system_mode};if test ${system_mode} = 1; then setenv fs_type ro rootwait skip_initramfs;run storeargs;fi;get_valid_slot;get_avb_mode;echo active_slot: ${active_slot} avb2: ${avb2};if test ${active_slot} !=
+  0x37eb7647 'recovery_from_udisk=setenv bootargs ${bootargs} aml_dt=${aml_dt} recovery_part={recovery_part} recovery_offset={recovery_offset};if fatload usb 0 ${loadaddr} aml_autoscript; then autoscr ${loadaddr}; fi;if fatload usb 0 ${loadaddr} recovery.img; then if fatlo
+  0x37eb77ae 'recovery_from_flash=get_valid_slot;echo active_slot: ${active_slot};if test ${active_slot} = normal; then setenv bootargs ${bootargs} aml_dt=${aml_dt} recovery_part={recovery_part} recovery_offset={recovery_offset};if itest ${upgrade_step} == 3; then if ext4l
+  0x37eb7aa9 'init_display=get_rebootmode;echo reboot_mode:::: ${reboot_mode};if test ${reboot_mode} = quiescent; then setenv reboot_mode_android quiescent;run storeargs;setenv bootargs ${bootargs} androidboot.quiescent=1;osd open;osd clear;else if test ${reboot_mode} = re
+  0x37ebf453 'bootargs'
+  0x37ec0188 'setenv bootargs ${bootargs} defendkey=%x,%x,'
+
+== /chosen ==
+  0x37ec09d0 '/chosen'
+
+== fdt_high ==
+  0x37eb67ff 'fdt_high=0x20000000'
+  0x37ec060e 'fdt_high'
+  0x37ed128c 'Failed using fdt_high value for Device Tree'
+
+== initrd_high ==
+  0x37ec05f9 'initrd_high'
+
+== enforcing ==
+  0x37eb6673 'EnableSelinux=enforcing'
+  0x37eb6adb 'storeargs=get_rebootmode;setenv bootargs ${initargs} ${fs_type} reboot_mode_android=${reboot_mode_android} androidboot.selinux=${EnableSelinux} logo=${display_layer},loaded,${fb_addr},${outputmode} maxcpus=${maxcpus} vout=${outputmode},enable hdmimode=${hdmim
+  0x37ee0ebe 'enforcing'
+
+== normal ==
+  0x37eb690a 'active_slot=normal'
+  0x37eb6947 'reboot_mode_android=normal'
+  0x37eb6eab 'switch_bootmode=get_rebootmode;if test ${reboot_mode} = factory_reset; then setenv reboot_mode_android normal;run storeargs;run recovery_from_flash;else if test ${reboot_mode} = update; then setenv reboot_mode_android normal;run storeargs;run update;else if t
+  0x37eb71f2 'storeboot=get_system_as_root_mode;echo system_mode: ${system_mode};if test ${system_mode} = 1; then setenv fs_type ro rootwait skip_initramfs;run storeargs;fi;get_valid_slot;get_avb_mode;echo active_slot: ${active_slot} avb2: ${avb2};if test ${active_slot} !=
+  0x37eb77ae 'recovery_from_flash=get_valid_slot;echo active_slot: ${active_slot};if test ${active_slot} = normal; then setenv bootargs ${bootargs} aml_dt=${aml_dt} recovery_part={recovery_part} recovery_offset={recovery_offset};if itest ${upgrade_step} == 3; then if ext4l
+  0x37eb7aa9 'init_display=get_rebootmode;echo reboot_mode:::: ${reboot_mode};if test ${reboot_mode} = quiescent; then setenv reboot_mode_android quiescent;run storeargs;setenv bootargs ${bootargs} androidboot.quiescent=1;osd open;osd clear;else if test ${reboot_mode} = re
+  0x37ec028c 'normal'
+  0x37ec8bf3 'Start *4 normal pattern.                                 '
+  0x37f8a638 'upload mem 0x37800000 normal 0x800000'
+  0x37f8a84e 'normal'
+
+== fastboot ==
+  0x37eb4ff8 '_fastboot_context_read'
+  0x37eb5010 'fastboot_context_read'
+  0x37eb5028 '_fastboot_context_write'
+  0x37eb5040 'fastboot_context_write'
+  0x37eb6eab 'switch_bootmode=get_rebootmode;if test ${reboot_mode} = factory_reset; then setenv reboot_mode_android normal;run storeargs;run recovery_from_flash;else if test ${reboot_mode} = update; then setenv reboot_mode_android normal;run storeargs;run update;else if t
+  0x37ec5668 'fastboot_context'
+  0x37ec5730 'fastboot_read'
+  0x37ec573e 'fastboot_write'
+  0x37ec844b 'usb_dnl_fastboot'
+  0x37ec8477 '    - run as a fastboot usb device'
+  0x37ed1f2e 'fastboot update mbr fail'
+  0x37ed1f47 'fastboot write dtb fail'
+  0x37ed207c 'fastboot_partition_alias_'
+  0x37edecd1 'f_fastboot'
+  0x37edecf4 'reboot fastboot'
+  0x37edef62 '../drivers/usb/gadget/f_fastboot.c'
+  0x37f609e0 'fastboot_context'
+
+== wificountrycode ==
+  0x37eb6adb 'storeargs=get_rebootmode;setenv bootargs ${initargs} ${fs_type} reboot_mode_android=${reboot_mode_android} androidboot.selinux=${EnableSelinux} logo=${display_layer},loaded,${fb_addr},${outputmode} maxcpus=${maxcpus} vout=${outputmode},enable hdmimode=${hdmim
+
+== wifi_ccode ==
+  0x37eb68f1 'wifi_ccode=US'
+  0x37eb6adb 'storeargs=get_rebootmode;setenv bootargs ${initargs} ${fs_type} reboot_mode_android=${reboot_mode_android} androidboot.selinux=${EnableSelinux} logo=${display_layer},loaded,${fb_addr},${outputmode} maxcpus=${maxcpus} vout=${outputmode},enable hdmimode=${hdmim
+  0x37ebf9d8 'wifi_ccode'
+
+== reboot_mode ==
+  0x37eb6947 'reboot_mode_android=normal'
+  0x37eb6adb 'storeargs=get_rebootmode;setenv bootargs ${initargs} ${fs_type} reboot_mode_android=${reboot_mode_android} androidboot.selinux=${EnableSelinux} logo=${display_layer},loaded,${fb_addr},${outputmode} maxcpus=${maxcpus} vout=${outputmode},enable hdmimode=${hdmim
+  0x37eb6eab 'switch_bootmode=get_rebootmode;if test ${reboot_mode} = factory_reset; then setenv reboot_mode_android normal;run storeargs;run recovery_from_flash;else if test ${reboot_mode} = update; then setenv reboot_mode_android normal;run storeargs;run update;else if t
+  0x37eb7aa9 'init_display=get_rebootmode;echo reboot_mode:::: ${reboot_mode};if test ${reboot_mode} = quiescent; then setenv reboot_mode_android quiescent;run storeargs;setenv bootargs ${bootargs} androidboot.quiescent=1;osd open;osd clear;else if test ${reboot_mode} = re
+  0x37ebf8ed 'get_rebootmode; echo reboot_mode=${reboot_mode}; if itest ${upgrade_step} == 1; then defenv_reserv aml_dt lock; setenv upgrade_step 2; saveenv; fi;'
+  0x37ec016f 'reboot_mode'
+
+== verifiedbootstate ==
+  0x37ec0060 'androidboot.verifiedbootstate=orange'
+  0x37ec0085 'androidboot.verifiedbootstate=green'
+
+== dtbo_idx ==
+  0x37ec03f8 'androidboot.dtbo_idx'
+  0x37ed115b 'No androidboot.dtbo_idx configured'
+  0x37ed117e 'androidboot.dtbo_idx='
+
+== fdt move failed ==
+  0x37ed132f 'fdt move failed'
+
+== Using Device Tree ==
+
+== Loading Device Tree ==
+  0x37ed1305 '   Loading Device Tree to %p, end %p ... '
+
+== image is not a fdt ==
+  0x37ed1279 'image is not a fdt'
+
+== allocation error ==
+
+== node create failed ==
+
+== arch-specific fdt fixup failed ==
+
+== could not set bootargs ==
+
+== totalsize ==
+
+== androidboot ==
+  0x37eb6adb 'storeargs=get_rebootmode;setenv bootargs ${initargs} ${fs_type} reboot_mode_android=${reboot_mode_android} androidboot.selinux=${EnableSelinux} logo=${display_layer},loaded,${fb_addr},${outputmode} maxcpus=${maxcpus} vout=${outputmode},enable hdmimode=${hdmim
+  0x37eb6eab 'switch_bootmode=get_rebootmode;if test ${reboot_mode} = factory_reset; then setenv reboot_mode_android normal;run storeargs;run recovery_from_flash;else if test ${reboot_mode} = update; then setenv reboot_mode_android normal;run storeargs;run update;else if t
+  0x37eb71f2 'storeboot=get_system_as_root_mode;echo system_mode: ${system_mode};if test ${system_mode} = 1; then setenv fs_type ro rootwait skip_initramfs;run storeargs;fi;get_valid_slot;get_avb_mode;echo active_slot: ${active_slot} avb2: ${avb2};if test ${active_slot} !=
+  0x37eb7aa9 'init_display=get_rebootmode;echo reboot_mode:::: ${reboot_mode};if test ${reboot_mode} = quiescent; then setenv reboot_mode_android quiescent;run storeargs;setenv bootargs ${bootargs} androidboot.quiescent=1;osd open;osd clear;else if test ${reboot_mode} = re
+  0x37ec0060 'androidboot.verifiedbootstate=orange'
+  0x37ec0085 'androidboot.verifiedbootstate=green'
+  0x37ec03f8 'androidboot.dtbo_idx'
+  0x37ed0222 'androidboot.rpmb_state'
+  0x37ed0239 '%s androidboot.rpmb_state=%d'
+  0x37ed115b 'No androidboot.dtbo_idx configured'
+  0x37ed117e 'androidboot.dtbo_idx='
+  0x37ee0ef9 'androidboot.vbmeta.device'
+  0x37ee0f13 'androidboot.vbmeta.avb_version'
+  0x37ee0f53 'androidboot.vbmeta.device_state'
+  0x37ee0f73 'androidboot.vbmeta.hash_alg'
+  0x37ee0f8f 'androidboot.vbmeta.size'
+  0x37ee0fa7 'androidboot.vbmeta.digest'
+  0x37ee0fec 'androidboot.vbmeta.invalidate_on_error'
+  0x37ee102a 'androidboot.veritymode'
+

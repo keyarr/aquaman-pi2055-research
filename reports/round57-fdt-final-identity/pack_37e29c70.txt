@@ -1,0 +1,40 @@
+  0x37e29c70  fd7bbca9  stp      x29, x30, [sp, #-0x40]!
+  0x37e29c74  fd030091  mov      x29, sp
+  0x37e29c78  f35301a9  stp      x19, x20, [sp, #0x10]
+  0x37e29c7c  f51300f9  str      x21, [sp, #0x20]
+  0x37e29c80  f30300aa  mov      x19, x0
+  0x37e29c84  000500b4  cbz      x0, #0x37e29d24
+  0x37e29c88  7cdf0194  bl       #0x37ea1a78
+  0x37e29c8c  f503002a  mov      w21, w0
+  0x37e29c90  14008052  mov      w20, #0
+  0x37e29c94  9f02156b  cmp      w20, w21
+  0x37e29c98  ea010054  b.ge     #0x37e29cd4
+  0x37e29c9c  e103142a  mov      w1, w20
+  0x37e29ca0  e00313aa  mov      x0, x19
+  0x37e29ca4  a2e30091  add      x2, x29, #0x38
+  0x37e29ca8  a3c30091  add      x3, x29, #0x30
+  0x37e29cac  59df0194  bl       #0x37ea1a10
+  0x37e29cb0  a11f40f9  ldr      x1, [x29, #0x38]
+  0x37e29cb4  7f0201eb  cmp      x19, x1
+  0x37e29cb8  a1000054  b.ne     #0x37e29ccc
+  0x37e29cbc  e00313aa  mov      x0, x19
+  0x37e29cc0  e103142a  mov      w1, w20
+  0x37e29cc4  e1e20194  bl       #0x37ea2848
+  0x37e29cc8  03000014  b        #0x37e29cd4
+  0x37e29ccc  94060011  add      w20, w20, #1
+  0x37e29cd0  f1ffff17  b        #0x37e29c94
+  0x37e29cd4  600e40b9  ldr      w0, [x19, #0xc]
+  0x37e29cd8  0208c05a  rev      w2, w0
+  0x37e29cdc  602240b9  ldr      w0, [x19, #0x20]
+  0x37e29ce0  0108c05a  rev      w1, w0
+  0x37e29ce4  602e0012  and      w0, w19, #0xfff
+  0x37e29ce8  14044011  add      w20, w0, #1, lsl #12
+  0x37e29cec  943e0111  add      w20, w20, #0x4f
+  0x37e29cf0  9402020b  add      w20, w20, w2
+  0x37e29cf4  9402010b  add      w20, w20, w1
+  0x37e29cf8  944e1412  and      w20, w20, #0xfffff000
+  0x37e29cfc  9402004b  sub      w20, w20, w0
+  0x37e29d00  800ac05a  rev      w0, w20
+  0x37e29d04  600600b9  str      w0, [x19, #4]
+  0x37e29d08  e10313aa  mov      x1, x19
+  0x37e29d0c  e00313aa  mov      x0, x19

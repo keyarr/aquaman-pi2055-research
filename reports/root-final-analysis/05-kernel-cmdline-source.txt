@@ -1,0 +1,26 @@
+goal: is /proc/cmdline on this build anything other than the DT /chosen/bootargs?
+
+1. the running kernel's own config (artifact: reports/round54-offline-fdt-path/running_config.gz)
+   CONFIG_DEBUG_RODATA=y
+   CONFIG_BLK_DEV_INITRD=y
+   CONFIG_KALLSYMS=y
+   CONFIG_KALLSYMS_ALL=y
+   CONFIG_KALLSYMS_BASE_RELATIVE=y
+   CONFIG_RANDOMIZE_BASE=y
+   CONFIG_CMDLINE=""
+   CONFIG_HARDENED_USERCOPY=y
+   (no CONFIG_CMDLINE_EXTEND, no CONFIG_CMDLINE_FORCE in the file at all)
+
+2. the arm64 plumbing, re-derived from the ancestral tree .src/linux-amlogic
+   init/main.c:124     char __initdata boot_command_line[COMMAND_LINE_SIZE];  (a buffer, not a pointer)
+   drivers/of/fdt.c:1239  of_scan_flat_dt(early_init_dt_scan_chosen, boot_command_line);
+   drivers/of/fdt.c:1102  if (overwrite_incoming_cmdline || !cmdline[0])
+                              strlcpy(cmdline, config_cmdline, COMMAND_LINE_SIZE);
+   drivers/of/fdt.c:1107  if (read_dt_cmdline)
+                              p = of_get_flat_dt_prop(node, "bootargs", &l);
+   drivers/of/fdt.c:1116      strlcpy(cmdline, p, min((int)l, COMMAND_LINE_SIZE));
+   init/main.c:450       strlcpy(tmp_cmdline, boot_command_line, COMMAND_LINE_SIZE);
+
+   with config_cmdline="" (CONFIG_CMDLINE), overwrite_incoming_cmdline=0
+   (no CMDLINE_FORCE), concat_cmdline=0 (no CMDLINE_EXTEND):
+   boot_command_line == the /chosen/bootargs bytes, verbatim.

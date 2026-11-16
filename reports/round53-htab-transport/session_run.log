@@ -1,0 +1,37 @@
+entry: 1b8e:c003 already present, no adb reboot needed to attach
+identify: raw 00 07 00 10 / version 0.7 / stage 16 (TPL/BL33-u-boot)
+
+== re-hunt + baseline (nothing reused blind) ==
+baseline: test 1 = 2 -> failed: / test 1 = 1 -> success
+test ${EnableSelinux} = enforcing -> success / = permissiv -> failed:
+entry262 key 0x33e328f0 data 0x33e0d0e0 val `enforcing` (round52 final state, same boot)
+entry514 data 0x33e10960
+hunt sha8 def5f352 (round52 final), arena 0x33e1d6c4 `enforcing`
+
+== build marker via proven path (never arena poke) ==
+setenv EnableSelinux permissiv -> success
+test ${EnableSelinux} = permissiv -> success
+run storeargs -> success
+fresh entry514 data 0x33e10960 (same-size reuse), mread 1024, value 832 B sha8 df6c9576
+fields: reboot_mode_android=normal, androidboot.selinux=permissiv, androidboot.reboot_mode=fastboot
+assert permissiv present: PASS. saved htab_bootargs_transport_832.bin + table_preboot.bin.
+(this is the round52-A byte-identical build; ptr even reused 0x33e10960)
+
+== boot (E1/E4 shape, two separate bulkcmds) ==
+bulkcmd "imgread kernel boot 0x1080000" -> `success` (checked BEFORE bootm; on failure the plan was abort, never update)
+bulkcmd "bootm 0x1080000" -> USBError(19) disconnect, same signature as E4/E1. session over by design.
+
+== adb return ==
+~15 s later: 2717:4e40 Xiaomi aquaman, 26919800005844922 device (same stock-return signature as E1/E4)
+
+== oracle (dead session, Android userspace only) ==
+ro.boot.selinux = enforcing (file getprop_ro_boot_selinux.txt)
+getenforce = Enforcing
+ro.boot.reboot_mode = normal
+ro.boot.veritymode = enforcing
+full `getprop | grep ro.boot` saved (getprop_ro_boot.txt); notable: bootreason=[reboot,fastboot], verifiedbootstate orange, device_state unlocked (unchanged stock shape)
+
+== verdict ==
+transported string: selinux=permissiv + reboot_mode=fastboot (verified htab bytes, df6c9576)
+received string: selinux=enforcing + reboot_mode=normal (two fields differ, E1's exact double-field signature, now against the authoritative object)
+REFUTED for this form. no saveenv/flash/erase ever sent; marker died with the bootm reboot; device left in healthy stock Android, no intervention needed.

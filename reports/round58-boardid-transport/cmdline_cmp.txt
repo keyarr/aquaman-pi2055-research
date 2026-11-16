@@ -1,0 +1,10 @@
+name len sha8 boardid selinux reboot_mode wificountry
+r56_baseline 832 c5a4b5e3 ['androidboot.boardid=3'] ['androidboot.selinux=enforcing'] ['androidboot.reboot_mode=fastboot'] ['androidboot.wificountrycode=US']
+r56_ZZ 832 e1e32443 ['androidboot.boardid=3'] ['androidboot.selinux=enforcing'] ['androidboot.reboot_mode=fastboot'] ['androidboot.wificountrycode=ZZ']
+r58_baseline 832 c5a4b5e3 ['androidboot.boardid=3'] ['androidboot.selinux=enforcing'] ['androidboot.reboot_mode=fastboot'] ['androidboot.wificountrycode=US']
+r58_7 832 a69c9f7d ['androidboot.boardid=7'] ['androidboot.selinux=enforcing'] ['androidboot.reboot_mode=fastboot'] ['androidboot.wificountrycode=US']
+
+r56_baseline == r58_baseline: True
+r56_ZZ diff offsets vs r56_baseline: [595, 596]
+r58_7 diff offsets vs r58_baseline: [681]
+r58_7 == r56_ZZ? False

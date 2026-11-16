@@ -1,0 +1,8 @@
+file_len=58280
+totalsize_field=58280
+magic=0xd00dfeed
+off_struct=0x38
+has_chosen=False
+has_bootargs=False
+has_selinux=False
+has_reboot_mode=False

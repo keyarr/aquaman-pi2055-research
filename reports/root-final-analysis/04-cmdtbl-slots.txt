@@ -1,0 +1,23 @@
+cmd_tbl: base 0x37f60eb0, stride 0x30, 116 entries (live dump == offline, round46)
+layout per entry: +0x00 name, +0x08 maxargs/repeatable, +0x10 handler, +0x18 usage, +0x20 help
+
+  idx   6  bootm      handler 0x37e24c00  maxargs=64 repeatable=1
+  idx  11  dcache     handler 0x37e27ba4  maxargs=2 repeatable=1
+  idx  38  env        handler 0x37e57d6c  maxargs=64 repeatable=1
+  idx  43  false      handler 0x37e36764  maxargs=64 repeatable=1
+  idx  49  fdt        handler 0x37e2852c  maxargs=255 repeatable=0
+  idx  60  icache     handler 0x37e27b18  maxargs=2 repeatable=1
+  idx  62  imgread    handler 0x37e356d0  maxargs=5 repeatable=0
+  idx  65  keyman     handler 0x37e74290  maxargs=5 repeatable=0
+  idx  70  mmc        handler 0x37e2ca3c  maxargs=7 repeatable=1
+  idx  84  run        handler 0x37e5ea04  maxargs=64 repeatable=1
+  idx  85  saveenv    handler 0x37e57d3c  maxargs=1 repeatable=0
+  idx  91  setenv     handler 0x37e58470  maxargs=64 repeatable=0
+  idx  96  store      handler 0x37e33900  maxargs=64 repeatable=1
+  idx 100  test       handler 0x37e36774  maxargs=64 repeatable=1
+  idx 101  true       handler 0x37e3676c  maxargs=64 repeatable=1
+  idx 104  update     handler 0x37e78ff8  maxargs=3 repeatable=0
+  idx 108  usbboot    handler 0x37e371f0  maxargs=3 repeatable=1
+  idx 110  version    handler 0x37e26688  maxargs=1 repeatable=1
+
+verified: bootm 6, imgread 62, fdt 49, run 84. no booti, no go, no autoscr.

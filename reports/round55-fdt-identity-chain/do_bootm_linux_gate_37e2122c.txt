@@ -1,0 +1,22 @@
+  0x37e2122c  stp      x29, x30, [sp, #-0x20]!
+  0x37e21230  mov      x29, sp
+  0x37e21234  str      x19, [sp, #0x10]
+  0x37e21238  mov      x19, x0
+  0x37e2123c  adrp     x0, #0x37ebf000
+  0x37e21240  add      x0, x0, #0x453
+  0x37e21244  bl       #0x37e58920
+  0x37e21248  ldr      x0, [x19, #0x108]
+  0x37e2124c  cbz      x0, #0x37e21268
+  0x37e21250  mov      x0, x19
+  0x37e21254  bl       #0x37e5b800
+  0x37e21258  cbz      w0, #0x37e21278
+  0x37e2125c  adrp     x0, #0x37ebf000
+  0x37e21260  add      x0, x0, #0x45c
+  0x37e21264  b        #0x37e21270
+  0x37e21268  adrp     x0, #0x37ebf000
+  0x37e2126c  add      x0, x0, #0x47c
+  0x37e21270  bl       #0x37e593c8
+  0x37e21274  bl       #0x37eaaae8
+  0x37e21278  ldr      x19, [sp, #0x10]
+  0x37e2127c  ldp      x29, x30, [sp], #0x20
+  0x37e21280  ret      

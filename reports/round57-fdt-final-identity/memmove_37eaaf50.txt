@@ -1,0 +1,30 @@
+  0x37eaaf50  3f0000eb  cmp      x1, x0
+  0x37eaaf54  a0020054  b.eq     #0x37eaafa8
+  0x37eaaf58  1f0001eb  cmp      x0, x1
+  0x37eaaf5c  030080d2  mov      x3, #0
+  0x37eaaf60  e8000054  b.hi     #0x37eaaf7c
+  0x37eaaf64  7f0002eb  cmp      x3, x2
+  0x37eaaf68  00020054  b.eq     #0x37eaafa8
+  0x37eaaf6c  24686338  ldrb     w4, [x1, x3]
+  0x37eaaf70  04682338  strb     w4, [x0, x3]
+  0x37eaaf74  63040091  add      x3, x3, #1
+  0x37eaaf78  fbffff17  b        #0x37eaaf64
+  0x37eaaf7c  0500028b  add      x5, x0, x2
+  0x37eaaf80  2100028b  add      x1, x1, x2
+  0x37eaaf84  e30302cb  neg      x3, x2
+  0x37eaaf88  420400d1  sub      x2, x2, #1
+  0x37eaaf8c  5f0400b1  cmn      x2, #1
+  0x37eaaf90  c0000054  b.eq     #0x37eaafa8
+  0x37eaaf94  2400038b  add      x4, x1, x3
+  0x37eaaf98  84686238  ldrb     w4, [x4, x2]
+  0x37eaaf9c  a600038b  add      x6, x5, x3
+  0x37eaafa0  c4682238  strb     w4, [x6, x2]
+  0x37eaafa4  f9ffff17  b        #0x37eaaf88
+  0x37eaafa8  c0035fd6  ret      
+  0x37eaafac  e60300aa  mov      x6, x0
+  0x37eaafb0  030080d2  mov      x3, #0
+  0x37eaafb4  7f0002eb  cmp      x3, x2
+  0x37eaafb8  e0000054  b.eq     #0x37eaafd4
+  0x37eaafbc  c5686338  ldrb     w5, [x6, x3]
+  0x37eaafc0  24686338  ldrb     w4, [x1, x3]
+  0x37eaafc4  63040091  add      x3, x3, #1

@@ -1,0 +1,4 @@
+aquaman.dtb len=58280 magic=d00dfeed totalsize=58280
+chosen=False bootargs=False androidboot=False
+boot.img kernel 0x959000 @0x1080000 second 0xf000 @0xf00000 cmdline=b'androidboot.dtbo_idx=0 otg_device=1 buildvariant=user'
+kernel head AMLSECU encrypted

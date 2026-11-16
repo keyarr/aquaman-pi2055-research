@@ -1,0 +1,38 @@
+entry: no hardware. device left in stock Android by round53; untouched this session.
+method: `tools/bl33_audit.Img` on `reports/round14-bl33-persist/bl33-37e18000.bin` (sha `664fb34a…`),
+`adb shell cat /proc/config.gz` (running kernel ground truth), saved hunt bins, `artifacts/aquaman.dtb`.
+
+== 9/9 bootargs-name consumer census (ADRP+ADD to 0x37ebf453, re-derived) ==
+1. 0x37e21240 do_bootm_linux-gate: env_get -> [images+0x108] check -> 0x37e5b800 fixup stage
+2. 0x37e24dbc do_bootm: env_get -> sprintf("%s %s %s", bootargs, header?, verifiedbootstate orange|green) -> setenv
+3. 0x37e24e88 do_bootm: fresh env_get -> defendkey check
+4. 0x37e26284 bootvx-dispatch: env_get -> strcpy (no FDT write on this leg)
+5. 0x37e26404 bootvx-dispatch: env_get -> fallback string
+6. 0x37e264d8 do_bootvx_fdt: env_get -> fdt write under /chosen (same env content as fdt_chosen)
+7. 0x37e2980c fdt_chosen: env_get -> fdt_setprop(/chosen,bootargs)
+8. 0x37e57b5c rpmb_state fixup: HW AO 0xc810025c -> setenv rpmb_state + rewrite htab bootargs. NO direct callers (dispatch-only); no script invokes it; not on bootm path. recorded, exonerated.
+9. 0x37e5b9e0 bootm_load_os rebuild: bootargs + empty + header-cmdline + setenv; sets images ft fields.
+
+== exonerations (append-only or off-path) ==
+- bootm "%s %s %s" adds only header-cmdline + verifiedbootstate. header = `androidboot.dtbo_idx=0 otg_device=1 buildvariant=user` (no selinux/reboot_mode).
+- defendkey `setenv bootargs ${bootargs} defendkey=%x,%x,` fires only for recovery/update/factory_reset/upgrade_step==3. our path: fastboot.
+- imgread/unpackimg setenvs are `0x%x` addr/size bookkeeping (filesize/loadaddr family). no bootargs write.
+- bootvx writes the same env string, not a competing one.
+
+== kernel entry decoded (SMC-at-entry theory dead) ==
+0x37e21284, arch==2 (ARM64 Linux): x0=entry, x1=0xf81, x2=[images+0x100] (FDT), then 0x37e19264 = eret EL2->EL1 drop (x0=0,x1,x2). no SMC, no secure-world handoff at entry. E7's gate is verify-time (0x37e24cf0/0x37e24f90 aml_sec_boot_check) only.
+fdt path reachable via OS table 0x37eb5658 -> 0x37e21378 -> 0x37e2122c -> 0x37e5b800 -> 0x37e5c324 -> fdt_chosen. fixup target == handoff blob (same [images+0x100] field). dtb_mem_addr=0x1000000 (htab/arena agree); dump blob has 6404 free tail bytes (nospace dead).
+
+== running-kernel ground truth (adb, read-only) ==
+/proc/config.gz (5691 lines, saved as running_config.gz in log dir): CONFIG_CMDLINE="", no FORCE/EXTEND -> bootloader FDT verbatim. kernel-override theory dead. aquaman-config agrees (approximation).
+
+== field autopsy (htab df6c9576 vs getprop) ==
+agree: boardid, serialno, wifimac, veritymode, ffu_status, firstboot, region, hardware, bootloader, rpmb_state=1 (htab already 1; earlier 0 recollection was wrong).
+differ: selinux permissiv->enforcing, reboot_mode fastboot->normal.
+kernel-extra: dtbo_idx (header append, explained), verifiedbootstate orange (bootm append, explained), avb_version/vbmeta.* (AVB fixups, explained), bootreason=reboot,fastboot (BCB/misc->init, plausible, BL33 has no such string), fake_battery=42 (origin open: kernel driver default vs baked DTB; BL33 has no such string).
+
+== remaining single link ==
+statically the env string must win; hardware says stock pair wins. every writer appends or copies env; no BL33 source emits enforcing+normal. left: did fdt_chosen run+succeed on our path ([images+0x108] gate at 0x37e21248? ft-blob validity at fixup time? decrypt-skip ordering in bootm_load_os 0x37e25d0c?) or does the kernel see another blob. images-struct identity (global 0x37f723e8 vs passed-down) not proven here; exact next static read listed in report.
+
+== verdict ==
+transport still REFUTED/unexplained at one link. no boot, no hardware, no root this session. no more boots until a static read predicts the pair.

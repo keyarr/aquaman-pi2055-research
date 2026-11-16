@@ -1,0 +1,47 @@
+  0x37e297b8  fd7bbca9  stp      x29, x30, [sp, #-0x40]!
+  0x37e297bc  fd030091  mov      x29, sp
+  0x37e297c0  f35301a9  stp      x19, x20, [sp, #0x10]
+  0x37e297c4  f51300f9  str      x21, [sp, #0x20]
+  0x37e297c8  f40300aa  mov      x20, x0
+  0x37e297cc  45df0194  bl       #0x37ea14e0
+  0x37e297d0  f303002a  mov      w19, w0
+  0x37e297d4  c000f836  tbz      w0, #0x1f, #0x37e297ec
+  0x37e297d8  72e50194  bl       #0x37ea2da0
+  0x37e297dc  e10300aa  mov      x1, x0
+  0x37e297e0  c00400b0  adrp     x0, #0x37ec2000
+  0x37e297e4  007c0191  add      x0, x0, #0x5f
+  0x37e297e8  1d000014  b        #0x37e2985c
+  0x37e297ec  a20400f0  adrp     x2, #0x37ec0000
+  0x37e297f0  e00314aa  mov      x0, x20
+  0x37e297f4  01008052  mov      w1, #0
+  0x37e297f8  42442791  add      x2, x2, #0x9d1
+  0x37e297fc  5cffff97  bl       #0x37e2956c
+  0x37e29800  f303002a  mov      w19, w0
+  0x37e29804  f302f837  tbnz     w19, #0x1f, #0x37e29860
+  0x37e29808  b50400d0  adrp     x21, #0x37ebf000
+  0x37e2980c  b54e1191  add      x21, x21, #0x453
+  0x37e29810  e00315aa  mov      x0, x21
+  0x37e29814  43bc0094  bl       #0x37e58920
+  0x37e29818  600000b5  cbnz     x0, #0x37e29824
+  0x37e2981c  00008052  mov      w0, #0
+  0x37e29820  11000014  b        #0x37e29864
+  0x37e29824  a01b00f9  str      x0, [x29, #0x30]
+  0x37e29828  42050294  bl       #0x37eaad30
+  0x37e2982c  a31b40f9  ldr      x3, [x29, #0x30]
+  0x37e29830  04040011  add      w4, w0, #1
+  0x37e29834  e103132a  mov      w1, w19
+  0x37e29838  e00314aa  mov      x0, x20
+  0x37e2983c  e20315aa  mov      x2, x21
+  0x37e29840  21e40194  bl       #0x37ea28c4
+  0x37e29844  f303002a  mov      w19, w0
+  0x37e29848  a0feff36  tbz      w0, #0x1f, #0x37e2981c
+  0x37e2984c  55e50194  bl       #0x37ea2da0
+  0x37e29850  e10300aa  mov      x1, x0
+  0x37e29854  c00400b0  adrp     x0, #0x37ec2000
+  0x37e29858  00bc0191  add      x0, x0, #0x6f
+  0x37e2985c  dbbe0094  bl       #0x37e593c8
+  0x37e29860  e003132a  mov      w0, w19
+  0x37e29864  f35341a9  ldp      x19, x20, [sp, #0x10]
+  0x37e29868  f51340f9  ldr      x21, [sp, #0x20]
+  0x37e2986c  fd7bc4a8  ldp      x29, x30, [sp], #0x40
+  0x37e29870  c0035fd6  ret      

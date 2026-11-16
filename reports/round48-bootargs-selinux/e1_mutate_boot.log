@@ -1,0 +1,14 @@
+identify rc=0 (want stage 16)
+pre16 : 5f 61 6e 64 72 6f 69 64 3d 6e 6f 72 6d 61 6c 20 |_android=normal |
+tgt32 : 61 6e 64 72 6f 69 64 62 6f 6f 74 2e 73 65 6c 69 6e 75 78 3d 65 6e 66 6f 72 63 69 6e 67 20 6c 6f |androidboot.selinux=enforcing lo|
+tail16: 5f 73 74 61 74 65 3d 30 00 62 6f 6f 74 63 6d 64 |_state=0.bootcmd|
+pre-check OK: enforcing present, neighbors match, NUL intact
+WRITE 0x01 9B permissiv @ 0x33e1d825
+pre16 : 5f 61 6e 64 72 6f 69 64 3d 6e 6f 72 6d 61 6c 20
+tgt32 : 61 6e 64 72 6f 69 64 62 6f 6f 74 2e 73 65 6c 69 6e 75 78 3d 70 65 72 6d 69 73 73 69 76 20 6c 6f |androidboot.selinux=permissiv lo|
+tail16: 5f 73 74 61 74 65 3d 30 00 62 6f 6f 74 63 6d 64
+readback intact-neighbors=True
+sending: imgread kernel boot 0x1080000
+imgread reply: b'success'
+sending: bootm 0x1080000 (USB drop expected)
+bootm exception (expected on USB drop): OSError("bulkcmd 'bootm 0x1080000' failed: USBError(19, 'No such device (it may have been disconnected)')")

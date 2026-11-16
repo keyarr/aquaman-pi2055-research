@@ -1,0 +1,95 @@
+  0x37e5bda4  fd7bbba9  stp      x29, x30, [sp, #-0x50]!
+  0x37e5bda8  fd030091  mov      x29, sp
+  0x37e5bdac  f35301a9  stp      x19, x20, [sp, #0x10]
+  0x37e5bdb0  f40300aa  mov      x20, x0
+  0x37e5bdb4  400040f9  ldr      x0, [x2]
+  0x37e5bdb8  f55b02a9  stp      x21, x22, [sp, #0x20]
+  0x37e5bdbc  f76303a9  stp      x23, x24, [sp, #0x30]
+  0x37e5bdc0  f96b04a9  stp      x25, x26, [sp, #0x40]
+  0x37e5bdc4  f80302aa  mov      x24, x2
+  0x37e5bdc8  f90301aa  mov      x25, x1
+  0x37e5bdcc  330040f9  ldr      x19, [x1]
+  0x37e5bdd0  16008052  mov      w22, #0
+  0x37e5bdd4  c00a00b4  cbz      x0, #0x37e5bf2c
+  0x37e5bdd8  e00313aa  mov      x0, x19
+  0x37e5bddc  c1150194  bl       #0x37ea14e0
+  0x37e5bde0  f603002a  mov      w22, w0
+  0x37e5bde4  80000034  cbz      w0, #0x37e5bdf4
+  0x37e5bde8  a00300d0  adrp     x0, #0x37ed1000
+  0x37e5bdec  00e40991  add      x0, x0, #0x279
+  0x37e5bdf0  44000014  b        #0x37e5bf00
+  0x37e5bdf4  170340f9  ldr      x23, [x24]
+  0x37e5bdf8  200300b0  adrp     x0, #0x37ec0000
+  0x37e5bdfc  00381891  add      x0, x0, #0x60e
+  0x37e5be00  f50e4091  add      x21, x23, #3, lsl #12
+  0x37e5be04  c7f2ff97  bl       #0x37e58920
+  0x37e5be08  000300b4  cbz      x0, #0x37e5be68
+  0x37e5be0c  010080d2  mov      x1, #0
+  0x37e5be10  02028052  mov      w2, #0x10
+  0x37e5be14  02410194  bl       #0x37eac21c
+  0x37e5be18  e30300aa  mov      x3, x0
+  0x37e5be1c  7f0400b1  cmn      x3, #1
+  0x37e5be20  e00314aa  mov      x0, x20
+  0x37e5be24  c1000054  b.ne     #0x37e5be3c
+  0x37e5be28  e10313aa  mov      x1, x19
+  0x37e5be2c  e20315aa  mov      x2, x21
+  0x37e5be30  be1f0194  bl       #0x37ea3d28
+  0x37e5be34  730300b5  cbnz     x19, #0x37e5bea0
+  0x37e5be38  16000014  b        #0x37e5be90
+  0x37e5be3c  e10315aa  mov      x1, x21
+  0x37e5be40  020082d2  mov      x2, #0x1000
+  0x37e5be44  e30000b4  cbz      x3, #0x37e5be60
+  0x37e5be48  03200194  bl       #0x37ea3e54
+  0x37e5be4c  f40300aa  mov      x20, x0
+  0x37e5be50  a00300d0  adrp     x0, #0x37ed1000
+  0x37e5be54  00300a91  add      x0, x0, #0x28c
+  0x37e5be58  940300b5  cbnz     x20, #0x37e5bec8
+  0x37e5be5c  0f000014  b        #0x37e5be98
+  0x37e5be60  10200194  bl       #0x37ea3ea0
+  0x37e5be64  09000014  b        #0x37e5be88
+  0x37e5be68  2bfcff97  bl       #0x37e5af14
+  0x37e5be6c  fa0300aa  mov      x26, x0
+  0x37e5be70  04fcff97  bl       #0x37e5ae80
+  0x37e5be74  03001a8b  add      x3, x0, x26
+  0x37e5be78  e10315aa  mov      x1, x21
+  0x37e5be7c  e00314aa  mov      x0, x20
+  0x37e5be80  020082d2  mov      x2, #0x1000
+  0x37e5be84  f41f0194  bl       #0x37ea3e54
+  0x37e5be88  f40300aa  mov      x20, x0
+  0x37e5be8c  e00100b5  cbnz     x0, #0x37e5bec8
+  0x37e5be90  a00300d0  adrp     x0, #0x37ed1000
+  0x37e5be94  00e00a91  add      x0, x0, #0x2b8
+  0x37e5be98  38f5ff97  bl       #0x37e59378
+  0x37e5be9c  1a000014  b        #0x37e5bf04
+  0x37e5bea0  a00ac05a  rev      w0, w21
+  0x37e5bea4  f70a4091  add      x23, x23, #2, lsl #12
+  0x37e5bea8  600600b9  str      w0, [x19, #4]
+  0x37e5beac  e2fe3f91  add      x2, x23, #0xfff
+  0x37e5beb0  a00300d0  adrp     x0, #0x37ed1000
+  0x37e5beb4  e10313aa  mov      x1, x19
+  0x37e5beb8  6202028b  add      x2, x19, x2
+  0x37e5bebc  00600b91  add      x0, x0, #0x2d8
+  0x37e5bec0  42f5ff97  bl       #0x37e593c8
+  0x37e5bec4  16000014  b        #0x37e5bf1c
+  0x37e5bec8  f70a4091  add      x23, x23, #2, lsl #12
+  0x37e5becc  e2fe3f91  add      x2, x23, #0xfff
+  0x37e5bed0  a00300d0  adrp     x0, #0x37ed1000
+  0x37e5bed4  e10314aa  mov      x1, x20
+  0x37e5bed8  8202028b  add      x2, x20, x2
+  0x37e5bedc  00140c91  add      x0, x0, #0x305
+  0x37e5bee0  3af5ff97  bl       #0x37e593c8
+  0x37e5bee4  e00313aa  mov      x0, x19
+  0x37e5bee8  e10314aa  mov      x1, x20
+  0x37e5beec  e203152a  mov      w2, w21
+  0x37e5bef0  3f1b0194  bl       #0x37ea2bec
+  0x37e5bef4  c0000034  cbz      w0, #0x37e5bf0c
+  0x37e5bef8  a00300d0  adrp     x0, #0x37ed1000
+  0x37e5befc  00bc0c91  add      x0, x0, #0x32f
+  0x37e5bf00  74ffff97  bl       #0x37e5bcd0
+  0x37e5bf04  36008052  mov      w22, #1
+  0x37e5bf08  09000014  b        #0x37e5bf2c
+  0x37e5bf0c  e0030090  adrp     x0, #0x37ed7000
+  0x37e5bf10  00e41191  add      x0, x0, #0x479
+  0x37e5bf14  19f5ff97  bl       #0x37e59378
+  0x37e5bf18  f30314aa  mov      x19, x20
+  0x37e5bf1c  330300f9  str      x19, [x25]

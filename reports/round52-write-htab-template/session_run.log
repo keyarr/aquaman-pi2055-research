@@ -1,0 +1,66 @@
+entry: already at 1b8e:c003, no adb reboot (rule: no boot)
+identify: raw 00 07 00 10 / version 0.7 / stage 16 (TPL/BL33-u-boot)
+
+== re-hunt + htab resolve (read-only, nothing reused blind) ==
+htab obj 0x37ee7278: table=0x33e2d650 size=0x209 filled=0x4a
+table mread 20840 B sha8 d519af19 (same as round51 final: same boot, no reboot since)
+hunt 0x33e18000 32k sha8 a846264a (same as round51 final)
+arena EnableSelinux val@0x33e1d6c4 `enforcing`, arena bootargs val@0x33e1d73f 832 B
+entry262 @0x33e2ff40 key 0x33e328f0 data 0x33e32910 val `enforcing`
+entry514 @0x33e326a0 key 0x33e32ac0 data 0x33e35bd0
+
+== baseline oracle ==
+test 1 = 2 -> `failed:` / test 1 = 1 -> `success`
+test ${EnableSelinux} = enforcing -> `success` / = permissiv -> `failed:`
+
+== Phase A: WRITE live htab data (the forbidden step of round51) ==
+pre htab 0x33e32910 16B `enforcing\0` + heap tail ee37000000000000
+pre arena 0x33e1d6c4 `enforcing\0active`
+WRITE 0x01 9B `permissiv` @ 0x33e32910 (NUL at +9 untouched)
+mid htab 32B `permissiv\0` + tail identical (ee37...2000...2100...), neighbours intact
+mid arena still `enforcing\0active` (untouched)
+test ${EnableSelinux} = permissiv -> `success` (was failed:)
+test ${EnableSelinux} = enforcing -> `failed:` (was success)
+proves: host bytes -> htab data -> env_get/Hush. transport leg to parser CLOSED.
+
+== restore via correct mechanism ==
+setenv EnableSelinux enforcing -> `success`
+test enforcing -> `success` / test permissiv -> `failed:`
+htab 0x33e32910 `enforcing`, arena `enforcing`. clean.
+
+== surprise (read-only): htab bootargs already permissiv ==
+fresh entry514 data 0x33e35bd0, mread 1024, value 832 B sha8 df6c9576
+selinux field `androidboot.selinux=permissiv`, all else identical to arena (single-field diff at +230)
+htab EnableSelinux at this moment `enforcing` (oracle) -> htab bootargs NOT coherent with htab EnableSelinux
+saved: htab_bootargs_permissiv_832.bin (df6c9576), arena_bootargs_enforcing_832.bin (8bd04170)
+env_id @0x37ee70f0 = 51 (0x33)
+preboot (htab idx8, live) = `run cmdline_keys;run bcb_cmd; run factory_reset_poweroff_protect;run upgrade_check;run init_display;run storeargs;bcb uboot-command;run switch_bootmode;` (152 B, saved)
+conclusion: preboot runs storeargs at every boot (boot-time rebuilder); the permissiv htab bootargs can only come from round49's control (`setenv permissiv` + `run storeargs`) in this same boot. round49's REFUTED template verdict measured the wrong address; the effective product is still here.
+
+== controlled mirror: run storeargs with enforcing ==
+run storeargs -> `success`
+fresh entry514 data 0x33e13990 (MOVED from 0x33e35bd0: free+strdup, new chunk)
+value 832 B sha8 c5a4b5e3, selinux `enforcing`. saved.
+oracle sane (enforcing success).
+
+== controlled A/B both directions ==
+A: setenv permissiv -> success; test permissiv -> success; run storeargs -> success
+   fresh ptr 0x33e10960, 832 B sha8 df6c9576 == archaeological sha (byte-identical rebuild)
+B: setenv enforcing -> success; test enforcing -> success; run storeargs -> success
+   fresh ptr 0x33e10960 (same-size reuse), 832 B sha8 c5a4b5e3
+A vs B: single-field diff at +230 (permissiv vs enforcing), all other 823 bytes identical.
+template leg `setenv -> htab -> storeargs -> htab bootargs` HARDWARE_REPRODUCED both directions.
+
+== heap-churn self-demonstration ==
+read 0x33e32910 now returns pointer bytes (d072ee37...), NOT `enforcing`
+fresh entry262: data MOVED 0x33e32910 -> 0x33e0d0e0 (key stable 0x33e328f0), value `enforcing`, oracle agrees
+the hardcoded old address went stale mid-session under storeargs heap pressure; the oracle stayed right. the campaign lesson, live.
+bootargs ptr stable 0x33e10960 enforcing. arena both `enforcing` throughout (shadow never written by setenv/storeargs).
+
+== final state ==
+htab EnableSelinux entry 0x33e2ff40 key 0x33e328f0 data 0x33e0d0e0 `enforcing`
+htab bootargs entry 0x33e326a0 data 0x33e10960 832 B `enforcing` (sha8 c5a4b5e3)
+arena EnableSelinux 0x33e1d6c4 `enforcing`, arena bootargs selinux `enforcing`
+oracle: enforcing success / permissiv failed: / 1=1 success / 1=2 failed: / false failed: / true success
+env_id final 65. hunt final sha8 def5f352 (header churn from 3x storeargs, strings intact).
+no saveenv/flash/erase/update/storeboot/bootm/imgread/recovery/USB burning/GhostLock/H16/AVB/SMC/DTB/.text/payload. no reboot issued. no root attempted.

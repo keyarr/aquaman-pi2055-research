@@ -1,0 +1,6 @@
+magic=b'ANDROID!'
+kernel_size=9801728
+kernel_addr=0x1080000
+second_size=61440
+second_addr=0xf00000
+cmdline=androidboot.dtbo_idx=0 otg_device=1 buildvariant=user

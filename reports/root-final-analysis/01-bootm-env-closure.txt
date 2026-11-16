@@ -1,0 +1,37 @@
+=== bootm (0x37e24c00): bl-closure 236 functions, 16 blr sites ===
+  [out] 0x37e2769c   env_import        storage-backed
+  [out] 0x37e581a0   himport site 3    inside the env_relocate region
+  [out] 0x37e581fc   do_env_setenv     env -s -a/-f
+  [IN ] 0x37e58294   env_set           setenv (MUTATES the htab)
+  [IN ] 0x37e58920   env_get           READS the htab
+  [out] 0x37e58b24   set_default_env  himport_r(defenv 0x37eb65a0, len 0x1785)
+  [out] 0x37e58c10   do_env_import     himport_r(serialised blob)
+  [out] 0x37e58d94   env_relocate
+  [out] 0x37e58f10   env api table entry
+  env rebuild sites reachable: NONE
+
+=== imgread (0x37e356d0): bl-closure 28 functions, 4 blr sites ===
+  [out] 0x37e2769c   env_import        storage-backed
+  [out] 0x37e581a0   himport site 3    inside the env_relocate region
+  [out] 0x37e581fc   do_env_setenv     env -s -a/-f
+  [out] 0x37e58294   env_set           setenv (MUTATES the htab)
+  [out] 0x37e58920   env_get           READS the htab
+  [out] 0x37e58b24   set_default_env  himport_r(defenv 0x37eb65a0, len 0x1785)
+  [out] 0x37e58c10   do_env_import     himport_r(serialised blob)
+  [out] 0x37e58d94   env_relocate
+  [out] 0x37e58f10   env api table entry
+  env rebuild sites reachable: NONE
+
+=== Hush command lines reached by bootm itself (parse_stream calls) ===
+  0x37e24d34  x0='get_avb_mode;'; x22='avb2'
+  0x37e24f10  x1='setenv bootargs ${bootargs} defendkey=%x,%x,'
+  0x37e25110  x0='store dtb decrypt ${dtb_mem_addr}'; x0='Ramdisk image is corrupt or invalid\n'
+  0x37e2515c  x0='get_valid_slot;'
+  0x37e251c4  x1='store size %s 0x%p'
+  0x37e2533c  x1='store read %s 0x%p 0 0x%llx'
+  0x37e2537c  x1='setenv dtbo_mem_addr 0x%p'
+  0x37e25528  <stack buffer from snprintf>
+  0x37e25560  x1='fdt apply 0x%llx'
+  0x37e256b4  x0='get_avb_mode;'
+  0x37e26014  x0='rsvmem check'; x0='initrd_end'
+  0x37e63be0  x19='active_slot'; x0='get_valid_slot;'

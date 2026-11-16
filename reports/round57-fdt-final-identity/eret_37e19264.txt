@@ -1,0 +1,14 @@
+  0x37e19264  f40300aa  mov      x20, x0
+  0x37e19268  f50301aa  mov      x21, x1
+  0x37e1926c  f60302aa  mov      x22, x2
+  0x37e19270  00103cd5  mrs      x0, sctlr_el2
+  0x37e19274  00f86692  and      x0, x0, #0xfffffffffdffffff
+  0x37e19278  00101cd5  msr      sctlr_el2, x0
+  0x37e1927c  e2031faa  mov      x2, xzr
+  0x37e19280  000f81d2  mov      x0, #0x878
+  0x37e19284  a018a0f2  movk     x0, #0xc5, lsl #16
+  0x37e19288  001018d5  msr      sctlr_el1, x0
+  0x37e1928c  000080d2  mov      x0, #0
+  0x37e19290  00111cd5  msr      hcr_el2, x0
+  0x37e19294  df3f03d5  isb      
+  0x37e19298  603a80d2  mov      x0, #0x1d3

@@ -1,0 +1,987 @@
+10-02 14:09:25.755     0     0 I [    2.298454@1] ueventd: Parsing file /odm/ueventd.rc...
+10-02 14:09:25.755     0     0 E [    2.298519@1] ueventd: Unable to read config file '/odm/ueventd.rc': open() failed: No such file or directory
+10-02 14:09:25.755     0     0 I [    2.298674@1] ueventd: Parsing file /ueventd.amlogic.rc...
+10-02 14:09:25.755     0     0 E [    2.298724@1] ueventd: Unable to read config file '/ueventd.amlogic.rc': open() failed: No such file or directory
+10-02 14:09:25.755     0     0 I [    2.308319@2] optee_armtz: initialized driver
+10-02 14:09:25.755     0     0 I [    2.692258@0] vout: hdmichecksum [invalidcrc], kernel hdmichecksum []
+10-02 14:09:25.755     0     0 I [    2.947372@1] ueventd: Coldboot took 0.642 seconds
+10-02 14:09:25.755     0     0 W         : [    3.027944@0] EXT4-fs (mmcblk0p20): Ignoring removed nomblk_io_submit option
+10-02 14:09:25.755     0     0 I         : [    3.037540@0] EXT4-fs (mmcblk0p20): mounted filesystem with ordered data mode. Opts: errors=remount-ro,nomblk_io_submit
+10-02 14:09:25.755     0     0 I [    3.130264@1] e2fsck: e2fsck 1.43.3 (04-Sep-2016)
+10-02 14:09:25.755     0     0 I         : [    3.130264@1]
+10-02 14:09:25.755     0     0 I [    3.130303@1] e2fsck: /dev/block/data: clean, 9252/327680 files, 552365/1309692 blocks
+10-02 14:09:25.755     0     0 I         : [    3.130303@1]
+10-02 14:09:25.755     0     0 W         : [    3.131827@1] EXT4-fs (mmcblk0p20): Ignoring removed nomblk_io_submit option
+10-02 14:09:25.755     0     0 I         : [    3.136073@1] EXT4-fs (mmcblk0p20): mounted filesystem with ordered data mode. Opts: nodelalloc,nomblk_io_submit,errors=panic
+10-02 14:09:25.755     0     0 W         : [    3.137751@1] EXT4-fs (mmcblk0p3): Ignoring removed nomblk_io_submit option
+10-02 14:09:25.755     0     0 I         : [    3.139423@1] EXT4-fs (mmcblk0p3): mounted filesystem with ordered data mode. Opts: errors=remount-ro,nomblk_io_submit
+10-02 14:09:25.755     0     0 I [    3.193354@1] e2fsck: e2fsck 1.43.3 (04-Sep-2016)
+10-02 14:09:25.755     0     0 I         : [    3.193354@1]
+10-02 14:09:25.755     0     0 I [    3.193399@1] e2fsck: /dev/block/cache: clean, 24/65536 files, 10386/65536 blocks
+10-02 14:09:25.755     0     0 I         : [    3.193399@1]
+10-02 14:09:25.755     0     0 W         : [    3.194293@1] EXT4-fs (mmcblk0p3): Ignoring removed nomblk_io_submit option
+10-02 14:09:25.755     0     0 I [    3.195595@0] vout: hdmichecksum [invalidcrc], kernel hdmichecksum []
+10-02 14:09:25.755     0     0 I         : [    3.195976@1] EXT4-fs (mmcblk0p3): mounted filesystem with ordered data mode. Opts: nodelalloc,nomblk_io_submit,errors=panic
+10-02 14:09:25.755     0     0 W         : [    3.197937@1] EXT4-fs (mmcblk0p16): Ignoring removed nomblk_io_submit option
+10-02 14:09:25.755     0     0 I         : [    3.199587@1] EXT4-fs (mmcblk0p16): mounted filesystem with ordered data mode. Opts: errors=remount-ro,nomblk_io_submit
+10-02 14:09:25.755     0     0 I [    3.252101@1] e2fsck: e2fsck 1.43.3 (04-Sep-2016)
+10-02 14:09:25.755     0     0 I         : [    3.252101@1]
+10-02 14:09:25.755     0     0 I [    3.252150@1] e2fsck: /dev/block/metadata: clean, 12/4096 files, 1166/4096 blocks
+10-02 14:09:25.755     0     0 I         : [    3.252150@1]
+10-02 14:09:25.755     0     0 W         : [    3.253111@1] EXT4-fs (mmcblk0p16): Ignoring removed nomblk_io_submit option
+10-02 14:09:25.755     0     0 I         : [    3.254776@1] EXT4-fs (mmcblk0p16): mounted filesystem with ordered data mode. Opts: nodelalloc,nomblk_io_submit,errors=panic
+10-02 14:09:25.755     0     0 I [    3.297316@0] e2fsck: e2fsck 1.43.3 (04-Sep-2016)
+10-02 14:09:25.755     0     0 I         : [    3.297316@0]
+10-02 14:09:25.756     0     0 I [    3.297364@0] e2fsck: Pass 1: Checking inodes, blocks, and sizes
+10-02 14:09:25.756     0     0 I         : [    3.297364@0]
+10-02 14:09:25.756     0     0 I [    3.297373@0] e2fsck: Pass 2: Checking directory structure
+10-02 14:09:25.756     0     0 I         : [    3.297373@0]
+10-02 14:09:25.756     0     0 I [    3.297382@0] e2fsck: Pass 3: Checking directory connectivity
+10-02 14:09:25.756     0     0 I         : [    3.297382@0]
+10-02 14:09:25.756     0     0 W         : [    3.298452@0] EXT4-fs (mmcblk0p10): Ignoring removed nomblk_io_submit option
+10-02 14:09:25.756     0     0 I         : [    3.303934@0] EXT4-fs (mmcblk0p10): mounted filesystem with ordered data mode. Opts: nodelalloc,nomblk_io_submit,errors=panic
+10-02 14:09:25.756     0     0 W         : [    3.305578@0] EXT4-fs (mmcblk0p13): Ignoring removed nomblk_io_submit option
+10-02 14:09:25.756     0     0 I         : [    3.310556@0] EXT4-fs (mmcblk0p13): mounted filesystem with ordered data mode. Opts: errors=remount-ro,nomblk_io_submit
+10-02 14:09:25.756     0     0 W         : [    3.367313@1] EXT4-fs (mmcblk0p13): Ignoring removed nomblk_io_submit option
+10-02 14:09:25.756     0     0 I         : [    3.368976@1] EXT4-fs (mmcblk0p13): mounted filesystem with ordered data mode. Opts: nodelalloc,nomblk_io_submit,errors=panic
+10-02 14:09:25.756     0     0 W [    3.370057@1] init: 5 output lines suppressed due to ratelimiting
+10-02 14:09:25.756     0     0 I [    3.374378@0] zram0: detected capacity change from 0 to 536870912
+10-02 14:09:25.756     0     0 I [    3.414348@2] mkswap: Swapspace size: 524284k, UUID=2a67dd38-0c8c-49a1-b703-25b4694fa4ab
+10-02 14:09:25.756     0     0 I         : [    3.415885@1] Adding 524284k swap on /dev/block/zram0.  Priority:-1 extents:1 across:524284k SS
+10-02 14:09:25.756     0     0 I         : [    3.429335@1] register clk_set_setting cpu[33]
+10-02 14:09:25.756     0     0 I         : [    3.440111@3] Registered firmware driver success.
+10-02 14:09:25.756     0     0 I         : [    3.441270@3] Try to load video/h264_enc.bin  ...
+10-02 14:09:25.756     0     0 I         : [    3.443955@3] load firmware size : 76288, Name : video/h264_enc.bin.
+10-02 14:09:25.756     0     0 I         : [    3.443986@3] the fw pack ver v0.0 is too lower.
+10-02 14:09:25.756     0     0 I         : [    3.443990@3] it may work abnormally so need to be update in time.
+10-02 14:09:25.756     0     0 I         : [    3.444632@3] Try to load video/video_ucode.bin  ...
+10-02 14:09:25.756     0     0 I         : [    3.453083@3] load firmware size : 945408, Name : video/video_ucode.bin.
+10-02 14:09:25.756     0     0 I         : [    3.453262@3] the fw pack ver v0.0 is too lower.
+10-02 14:09:25.756     0     0 I         : [    3.453266@3] it may work abnormally so need to be update in time.
+10-02 14:09:25.756     0     0 E         : [    3.513718@1] Amlogic A/V streaming port init
+10-02 14:09:25.756     0     0 I         : [    3.517982@1] get gate demux control ok ffffffc026f5dd00
+10-02 14:09:25.756     0     0 I         : [    3.518002@1] get gate parser_top control ok ffffffc026f5d1c0
+10-02 14:09:25.756     0     0 I         : [    3.518028@1] get gate vdec control ok ffffffc026f5d880
+10-02 14:09:25.756     0     0 I         : [    3.518056@1] get gate clk_81 control ok ffffffc026f5d2c0
+10-02 14:09:25.756     0     0 I         : [    3.518097@1] get gate clk_vdec_mux control ok ffffffc02676d040
+10-02 14:09:25.756     0     0 I         : [    3.518134@1] get gate clk_hcodec_mux control ok ffffffc02676d0c0
+10-02 14:09:25.756     0     0 I         : [    3.518175@1] get gate clk_hevc_mux control ok ffffffc02676d140
+10-02 14:09:25.756     0     0 I         : [    3.518186@1] get gate clk_hevcb_mux control failed           (null)
+10-02 14:09:25.756     0     0 I         : [    3.518192@1] get gate ahbarb0 control failed           (null)
+10-02 14:09:25.756     0     0 I         : [    3.518199@1] get gate asyncfifo control failed           (null)
+10-02 14:09:25.756     0     0 D         : [    3.528709@1] amvdec_avs module init
+10-02 14:09:25.756     0     0 D         : [    3.537663@1] amvdec_h264 module init
+10-02 14:09:25.756     0     0 W         : [    3.555102@1] ammvdec_h264 module init
+10-02 14:09:25.756     0     0 D         : [    3.579135@3] amvdec_h265 module init
+10-02 14:09:25.756     0     0 W         : [    3.608180@1] ammvdec_mpeg12 module init
+10-02 14:09:25.756     0     0 W         : [    3.624088@1] ammvdec_mpeg4_driver_init_module
+10-02 14:09:25.756     0     0 D         : [    3.637495@1] amvdec_vc1 module init
+10-02 14:09:25.756     0     0 D         : [    3.650887@1] amvdec_vp9 module init
+10-02 14:09:25.756     0     0 W         : [    3.677893@1] amvenc_avc_probe -- reserved memory config fail.
+10-02 14:09:25.756     0     0 W         : [    3.677902@1] amvenc_avc - cma memory pool size: 60 MB
+10-02 14:09:25.756     0     0 W         : [    3.677931@1] encode_wq_init.
+10-02 14:09:25.756     0     0 W         : [    3.677940@1] encode start monitor.
+10-02 14:09:25.756     0     0 W         : [    3.678047@0] encode workqueue monitor start.
+10-02 14:09:25.756     0     0 W         : [    3.690374@0] vpu_init
+10-02 14:09:25.756     0     0 W         : [    3.690381@0] The chip is not support hevc encoder
+10-02 14:09:25.756     0     0 I [    3.705572@0] vout: hdmichecksum [invalidcrc], kernel hdmichecksum []
+10-02 14:09:25.756     0     0 I [    3.806162@1] logd.auditd: start
+10-02 14:09:25.774     0     0 I [    3.860178@3] binder: 2914:2914 ioctl 4018620d ffce9de0 returned -22
+10-02 14:09:25.838     0     0 D [    3.925388@0] vdc: Waited 60ms for vold
+10-02 14:09:25.848     0     0 W [    3.932954@1] audit: audit_lost=1 audit_rate_limit=5 audit_backlog_limit=64
+10-02 14:09:25.849     0     0 E [    3.932962@1] audit: rate limit exceeded
+10-02 14:09:26.074     0     0 D [    4.162107@1] vdc: Waited 0ms for vold
+10-02 14:09:26.124     0     0 I [    4.208939@0] vout: hdmichecksum [invalidcrc], kernel hdmichecksum []
+10-02 14:09:26.198     0     0 I         : [    4.284331@1] mali-utgard d00c0000.mali: set min pp to default 1
+10-02 14:09:26.198     0     0 I         : [    4.284342@1] mali-utgard d00c0000.mali: set min clk default to 0
+10-02 14:09:26.198     0     0 I         : [    4.284444@1] mali-utgard d00c0000.mali: max clk set 4
+10-02 14:09:26.198     0     0 I         : [    4.284451@1] mali-utgard d00c0000.mali: turbo clk set to 5
+10-02 14:09:26.204     0     0 W         : [    4.291360@1] gpu cooling register okay with err=0
+10-02 14:09:26.208     0     0 W         : [    4.294250@1] gpu core cooling register okay with err=0
+10-02 14:09:26.208     0     0 W [    4.294741@1] Mali: Mali device driver loaded
+10-02 14:09:26.208     0     0 I         : [    4.295588@0] aml_wifi wifi: [usb_power_control] Set WiFi power down
+10-02 14:09:26.411     0     0 I         : [    4.496146@0] aml_wifi wifi: [usb_power_control] Set WiFi power on !
+10-02 14:09:26.411     0     0 E [    4.497549@0] meson-mmc: sdio: resp_timeout,vstat:0xa3ff2800,virqc:3fff
+10-02 14:09:26.411     0     0 E [    4.497554@0] meson-mmc: sdio: err: wait for irq service, bus_fsm:0x8
+10-02 14:09:26.411     0     0 I [    4.497586@2] meson-mmc: meson_mmc_irq_thread 2768 sdio: cmd:52
+10-02 14:09:26.411     0     0 E [    4.498666@0] meson-mmc: sdio: resp_timeout,vstat:0xa3ff2800,virqc:3fff
+10-02 14:09:26.411     0     0 E [    4.498668@0] meson-mmc: sdio: err: wait for irq service, bus_fsm:0x8
+10-02 14:09:26.411     0     0 I [    4.498679@2] meson-mmc: meson_mmc_irq_thread 2768 sdio: cmd:52
+10-02 14:09:26.418     0     0 E         : [    4.503888@0] mmc_sdio_init_card  ocr = 1200000
+10-02 14:09:26.421     0     0 E         : [    4.507216@0] uhs = 1000000
+10-02 14:09:26.438     0     0 I [    4.522197@0] meson-mmc: Data 1 aligned delay is 0
+10-02 14:09:26.438     0     0 I [    4.522240@0] meson-mmc: sdio: clk 200000000 SDR mode tuning start
+10-02 14:09:26.438     0     0 I [    4.523407@0] meson-mmc: sdio: rx_tuning_result[0] = 40
+10-02 14:09:26.438     0     0 I [    4.524493@0] meson-mmc: sdio: rx_tuning_result[1] = 40
+10-02 14:09:26.438     0     0 E [    4.524526@0] meson-mmc: Tuning transfer error: nmatch=0 tuning_err:0xffffffac
+10-02 14:09:26.438     0     0 I [    4.525665@0] meson-mmc: sdio: rx_tuning_result[3] = 40
+10-02 14:09:26.441     0     0 I [    4.526820@0] meson-mmc: sdio: rx_tuning_result[4] = 40
+10-02 14:09:26.441     0     0 I [    4.526826@0] meson-mmc: sdio: best_win_start =3, best_win_size =4
+10-02 14:09:26.441     0     0 I [    4.526832@0] meson-mmc: sdio: clock=0x1000245, adjust=0x2000
+10-02 14:09:26.441     0     0 I [    4.526838@0] meson-mmc: sdio: clock =0x1000245, delay=0x0, adjust=0x2000
+10-02 14:09:26.451     0     0 I [    4.538394@0] sdio: new ultra high speed SDR104 SDIO card at address 0000
+10-02 14:09:26.458     0     0 I [    4.538402@0] sdio: clock 200000000, 4-bit-bus-width
+10-02 14:09:26.458     0     0 I         : [    4.538402@0]
+10-02 14:09:26.458     0     0 I [    4.545192@0] meson-mmc: [sdio_reinit] finish
+10-02 14:09:26.458     0     0 I         : [    4.545208@0] aml_wifi wifi: [usb_power_control] Set WiFi power on !
+10-02 14:09:26.631     0     0 I [    4.715579@0] vout: hdmichecksum [invalidcrc], kernel hdmichecksum []
+10-02 14:09:26.658     0     0 I         : [    4.745386@0] aml_wifi wifi: [pci_reinit] pci wifi reinit!
+10-02 14:09:26.658     0     0 I         : [    4.745397@0] aml_wifi wifi: [wifi_power_ioctl] Set sdio wifi power up!
+10-02 14:09:26.818     0     0 W [    4.904129@0] RTW: module init start
+10-02 14:09:26.818     0     0 W [    4.904139@0] RTW: rtl8821cs v5.8.1.3_35313.20200409_COEX20200330-4539
+10-02 14:09:26.818     0     0 W [    4.904144@0] RTW: build time: Sep  6 2022 12:54:24
+10-02 14:09:26.818     0     0 W [    4.904148@0] RTW: rtl8821cs BT-Coex version = COEX20200330-4539
+10-02 14:09:26.818     0     0 W [    4.904212@0] RTW: rtw_inetaddr_notifier_register
+10-02 14:09:26.818     0     0 W [    4.904328@0] RTW: module init ret=0
+10-02 14:09:26.818     0     0 W [    4.905048@0] RTW: module exit start
+10-02 14:09:26.818     0     0 W [    4.905183@0] RTW: rtw_inetaddr_notifier_unregister
+10-02 14:09:26.834     0     0 W [    4.918909@0] RTW: module exit success
+10-02 14:09:26.834     0     0 W [    4.918918@0] RTW: ===================== MSTAT =====================
+10-02 14:09:26.834     0     0 W [    4.918925@0] RTW: TAG      alloc       peak   aloc_cnt    err_cnt
+10-02 14:09:26.834     0     0 W [    4.918929@0] RTW: -------------------------------------------------
+10-02 14:09:26.834     0     0 W [    4.918937@0] RTW: VIR          0          0          0          0
+10-02 14:09:26.835     0     0 W [    4.918942@0] RTW: PHY          0          0          0          0
+10-02 14:09:26.835     0     0 W [    4.918947@0] RTW: SKB          0          0          0          0
+10-02 14:09:26.835     0     0 W [    4.918951@0] RTW: USB          0          0          0          0
+10-02 14:09:26.853     0     0 I         : [    4.936376@0] aml_wifi wifi: [usb_power_control] Set WiFi power down
+10-02 14:09:26.853     0     0 I         : [    4.936387@0] aml_wifi wifi: [wifi_power_ioctl] ioctl Set sdio wifi power down!
+10-02 14:09:27.139     0     0 I [    5.222342@0] vout: hdmichecksum [invalidcrc], kernel hdmichecksum []
+10-02 14:09:27.548     0     0 W [    5.632850@2] healthd: BatteryTemperaturePath not found
+10-02 14:09:27.572     0     0 W [    5.632871@2] healthd: BatteryCycleCountPath not found
+10-02 14:09:27.582     0     0 I [    5.668458@3] hdmitx: system: set hdcp_pwr 1
+10-02 14:09:27.589     0     0 E [    5.675342@3] android.hardware.health@2.0-impl: wakealarm_init: timerfd_create failed
+10-02 14:09:27.605     0     0 W [    5.679320@3] healthd: battery l=42 v=4 t=42.4 h=2 st=2 c=1 fc=10000000 chg=u
+10-02 14:09:27.628     0     0 I [    5.713502@1] hdmitx: system: restore hdcp_pwr 0
+10-02 14:09:27.628     0     0 W         : [    5.713633@1] amhdmitx amhdmitx0: hdmitx20: stop14
+10-02 14:09:27.631     0     0 W         : [    5.716633@1] amhdmitx amhdmitx0: hdmitx20: stop22
+10-02 14:09:27.644     0     0 I [    5.722893@3] hdmitx: system: sname = 1080p60hz
+10-02 14:09:27.645     0     0 I [    5.722904@3] hdmitx: system: char_clk = 148500
+10-02 14:09:27.645     0     0 I [    5.722908@3] hdmitx: system: cd = 6
+10-02 14:09:27.645     0     0 I [    5.722913@3] hdmitx: system: cs = 2
+10-02 14:09:27.645     0     0 I [    5.722919@3] hdmitx: RX tmds clk: 225   Calc clk: 222
+10-02 14:09:27.645     0     0 I [    5.728966@0] vout: hdmichecksum [invalidcrc], kernel hdmichecksum []
+10-02 14:09:27.738     0     0 W [    5.819698@2] audit: audit_lost=24 audit_rate_limit=5 audit_backlog_limit=64
+10-02 14:09:27.738     0     0 E [    5.819707@2] audit: rate limit exceeded
+10-02 14:09:27.781     0     0 I         : [    5.868636@3] aml_wifi wifi: [usb_power_control] Set WiFi power down
+10-02 14:09:27.798     0     0 I [    5.884311@0] fb: osd_open, 1489, fb_index=0,fb_rmem_size=25165824
+10-02 14:09:27.798     0     0 I [    5.884530@0] fb: osd_open, 1489, fb_index=0,fb_rmem_size=25165824
+10-02 14:09:27.798     0     0 I [    5.884573@0] fb: osd_open, 1489, fb_index=1,fb_rmem_size=1048576
+10-02 14:09:27.908     0     0 I [    5.994171@3] unifykey: amlkey_init_gen() enter!
+10-02 14:09:27.908     0     0 I [    5.996194@1] emmc_key_read: 114, read ok
+10-02 14:09:27.911     0     0 I [    5.996453@1] unifykey: amlkey_init_gen() storagekey_info.buffer=ffffffc005080000, storagekey_info.size = 40000!
+10-02 14:09:27.933     0     0 E [    6.016350@2] vfm_map_store: rm default
+10-02 14:09:27.933     0     0 E [    6.016929@2] vfm_map_store: add default decoder ppmgr deinterlace amvideo
+10-02 14:09:27.951     0     0 I         : [    6.036507@2] file system registered
+10-02 14:09:27.965     0     0 I         : [    6.051037@2] assign_ffs_buffer FFS_BUFFER_MAX=100!!!
+10-02 14:09:27.978     0     0 I         : [    6.064481@2] [DI] load 0x3e00 pq table len 223 later.
+10-02 14:09:27.998     0     0 I         : [    6.085155@3] assign_ffs_buffer FFS_BUFFER_MAX=100!!!
+10-02 14:09:27.998     0     0 I [    6.085266@3] ffs_data_put(): freeing
+10-02 14:09:28.019     0     0 I         : [    6.103454@0] set_fill_powerkey val 0 ret 0
+10-02 14:09:28.072     0     0 I         : [    6.158843@2] read descriptors
+10-02 14:09:28.072     0     0 I         : [    6.158861@2] read strings
+10-02 14:09:28.148     0     0 I         : [    6.233695@3] aml_wifi wifi: [usb_power_control] Set WiFi power on !
+10-02 14:09:28.148     0     0 W [    6.233705@3] sdio_reset_comm():  
+10-02 14:09:28.148     0     0 I [    6.235630@0] vout: hdmichecksum [invalidcrc], kernel hdmichecksum []
+10-02 14:09:28.155     0     0 E         : [    6.239119@0] mmc_sdio_init_card  ocr = 1200000
+10-02 14:09:28.158     0     0 E         : [    6.243566@2] uhs = 1000000
+10-02 14:09:28.176     0     0 I [    6.262604@0] meson-mmc: Data 1 aligned delay is 0
+10-02 14:09:28.196     0     0 I [    6.262616@0] meson-mmc: sdio: clk 200000000 SDR mode tuning start
+10-02 14:09:28.196     0     0 I [    6.263992@0] meson-mmc: sdio: rx_tuning_result[0] = 40
+10-02 14:09:28.196     0     0 I [    6.265646@0] meson-mmc: sdio: rx_tuning_result[1] = 40
+10-02 14:09:28.196     0     0 E [    6.265694@0] meson-mmc: Tuning transfer error: nmatch=0 tuning_err:0xffffffac
+10-02 14:09:28.196     0     0 I [    6.267643@2] meson-mmc: sdio: rx_tuning_result[3] = 40
+10-02 14:09:28.196     0     0 I [    6.269483@2] meson-mmc: sdio: rx_tuning_result[4] = 40
+10-02 14:09:28.196     0     0 I [    6.269491@2] meson-mmc: sdio: best_win_start =3, best_win_size =4
+10-02 14:09:28.196     0     0 I [    6.269498@2] meson-mmc: sdio: clock=0x1000245, adjust=0x2000
+10-02 14:09:28.196     0     0 I [    6.269504@2] meson-mmc: sdio: clock =0x1000245, delay=0x0, adjust=0x2000
+10-02 14:09:28.196     0     0 I [    6.269513@2] meson-mmc: [sdio_reinit] finish
+10-02 14:09:28.196     0     0 I         : [    6.269525@2] aml_wifi wifi: [usb_power_control] Set WiFi power on !
+10-02 14:09:28.196     0     0 I         : [    6.269531@2] aml_wifi wifi: [wifi_power_ioctl] 6ioctl Set usb_sdio wifi power up!
+10-02 14:09:28.275     0     0 I [    6.360156@1] vout: vout_io_open
+10-02 14:09:28.275     0     0 I [    6.360172@1] vout: vout_ioctl: cmd_dir = 0x2, cmd_nr = 0x0
+10-02 14:09:28.275     0     0 I [    6.360184@1] vout: vout_io_release
+10-02 14:09:28.275     0     0 I [    6.362191@1] hdmitx: system: set frac_rate_policy as 0
+10-02 14:09:28.402     0     0 E         : [    6.487050@0] cectx c810023c.aocec: init_cec_port_info phy_addr:2000, port num:1
+10-02 14:09:28.402     0     0 E         : [    6.487060@0] cectx c810023c.aocec: port_seq=0x0
+10-02 14:09:28.402     0     0 E         : [    6.487067@0] cectx c810023c.aocec: portinfo id:0 arc:0 phy:2100,type:0
+10-02 14:09:28.528     0     0 W         : [    6.614276@0] USB RESET
+10-02 14:09:28.571     0     0 I [    6.658221@0] fb: afbc: 1
+10-02 14:09:28.571     0     0 I [    6.658231@0] fb: afbc_type=0,enable=0
+10-02 14:09:28.641     0     0 I [    6.728081@0] android_work: sent uevent USB_STATE=CONNECTED
+10-02 14:09:28.648     0     0 W         : [    6.731041@0] USB RESET
+10-02 14:09:28.659     0     0 I [    6.742276@0] vout: hdmichecksum [invalidcrc], kernel hdmichecksum []
+10-02 14:09:28.738     0     0 W [    6.824887@0] audit: audit_lost=41 audit_rate_limit=5 audit_backlog_limit=64
+10-02 14:09:28.738     0     0 E [    6.824896@0] audit: rate limit exceeded
+10-02 14:09:28.768     0     0 I         : [    6.853298@0] configfs-gadget gadget: high-speed config #1: b
+10-02 14:09:28.768     0     0 I [    6.853773@0] android_work: sent uevent USB_STATE=CONFIGURED
+10-02 14:09:28.945     0     0 W [    7.030052@3] aml_w1_sdio_probe(711): func->num 1 sdio block size=512,
+10-02 14:09:28.946     0     0 W [    7.030062@3] aml_w1_sdio_probe(721): func->num 1 sdio_func=ffffffc026296800,
+10-02 14:09:28.946     0     0 W [    7.030071@3] aml_w1_sdio_probe(728): func_num=1, last func num=7
+10-02 14:09:28.946     0     0 W [    7.030408@3] aml_w1_sdio_probe(711): func->num 2 sdio block size=512,
+10-02 14:09:28.946     0     0 W [    7.030417@3] aml_w1_sdio_probe(721): func->num 2 sdio_func=ffffffc026295800,
+10-02 14:09:28.946     0     0 W [    7.030426@3] aml_w1_sdio_probe(728): func_num=2, last func num=7
+10-02 14:09:28.946     0     0 W [    7.030755@3] aml_w1_sdio_probe(711): func->num 3 sdio block size=512,
+10-02 14:09:28.946     0     0 W [    7.030764@3] aml_w1_sdio_probe(721): func->num 3 sdio_func=ffffffc026297000,
+10-02 14:09:28.946     0     0 W [    7.030771@3] aml_w1_sdio_probe(728): func_num=3, last func num=7
+10-02 14:09:28.946     0     0 W [    7.031042@3] aml_w1_sdio_probe(711): func->num 4 sdio block size=512,
+10-02 14:09:28.949     0     0 W [    7.031049@3] aml_w1_sdio_probe(721): func->num 4 sdio_func=ffffffc026296c00,
+10-02 14:09:28.954     0     0 W [    7.031056@3] aml_w1_sdio_probe(728): func_num=4, last func num=7
+10-02 14:09:28.957     0     0 W [    7.031329@3] aml_w1_sdio_probe(711): func->num 5 sdio block size=512,
+10-02 14:09:28.959     0     0 W [    7.031338@3] aml_w1_sdio_probe(721): func->num 5 sdio_func=ffffffc0002d1800,
+10-02 14:09:28.974     0     0 W [    7.031345@3] aml_w1_sdio_probe(728): func_num=5, last func num=7
+10-02 14:09:28.974     0     0 W [    7.031687@3] aml_w1_sdio_probe(711): func->num 6 sdio block size=512,
+10-02 14:09:28.974     0     0 W [    7.031695@3] aml_w1_sdio_probe(721): func->num 6 sdio_func=ffffffc026370000,
+10-02 14:09:28.975     0     0 W [    7.031703@3] aml_w1_sdio_probe(728): func_num=6, last func num=7
+10-02 14:09:28.975     0     0 W [    7.032287@3] aml_w1_sdio_probe(711): func->num 7 sdio block size=512,
+10-02 14:09:28.975     0     0 W [    7.032296@3] aml_w1_sdio_probe(721): func->num 7 sdio_func=ffffffc026370400,
+10-02 14:09:28.975     0     0 W         : [    7.032485@3] w1_sdio->*****************aml sdio common driver is insmoded********************
+10-02 14:09:28.975     0     0 W         : [    7.032495@3] aml_w1_sdio_insmod(857) start...
+10-02 14:09:29.120     0     0 W         : [    7.205397@1] avc open
+10-02 14:09:29.126     0     0 W         : [    7.205409@1] amvenc_avc  check CMA pool success, max instance: 3.
+10-02 14:09:29.132     0     0 W         : [    7.216173@3] allocating phys 0x2ac00000, size 20480k, wq:ffffffc024c68000.
+10-02 14:09:29.132     0     0 W         : [    7.216184@3] amvenc_avc  memory config success, buff start:0x2ac00000, size is 0x1400000, wq:ffffffc024c68000.
+10-02 14:09:29.132     0     0 W         : [    7.216323@3] avc release, wq:ffffffc024c68000
+10-02 14:09:29.132     0     0 W         : [    7.216332@3] remove  encode_work_queue ffffffc024c68000 success, _destroy_encode_work_queue line 3502.
+10-02 14:09:29.164     0     0 I [    7.248965@0] vout: hdmichecksum [invalidcrc], kernel hdmichecksum []
+10-02 14:09:29.323     0     0 W         : [    7.406521@2] driver compile date: 2022-09-06 12:54:20,driver hash: 67c2811ee43100077c132689bf990dd3c282fec7
+10-02 14:09:29.323     0     0 W         : [    7.406529@2] fw compile date: 2021-10-16 01:51:57,fw hash: ,fw size: 1071764
+10-02 14:09:29.323     0     0 W         : [    7.406535@2] driver version: v1.0.1_20210812-r driver:bfb7f4590b02cac14f7908cdd48d8c38c653add4
+10-02 14:09:29.323     0     0 W         : [    7.406542@2] aml_insmod(940) dhcp_offload 0 set done.
+10-02 14:09:29.323     0     0 W         : [    7.406542@2]
+10-02 14:09:29.323     0     0 W         : [    7.406548@2] SDIO_BUILD_IN aml_sdio_init
+10-02 14:09:29.323     0     0 W         : [    7.406552@2] =========== WLAN placed in POWER ON ========
+10-02 14:09:29.338     0     0 W         : [    7.422259@3] w1_sdio->Insmod WiFi sdio driver!
+10-02 14:09:29.338     0     0 W         : [    7.423343@2] aml wifi to create txok_thread thread !!!!
+10-02 14:09:29.338     0     0 W         : [    7.423373@2] hal_work_thread(2431)  =====creat thread hal_worl_thread<=====
+10-02 14:09:29.344     0     0 W         : [    7.429880@3] hal_rx_thread(2572)  =====creat thread hal_rx_thread<=====
+10-02 14:09:29.351     0     0 W         : [    7.438718@3] vm_cfg80211_set_parent_dev 310
+10-02 14:09:29.354     0     0 W         : [    7.439108@2] aml_sdio_calibration right, use this config: i:0, j:0, k:0, l:0
+10-02 14:09:29.354     0     0 W         : [    7.439156@1] config_pmu_reg wifi_pmu_status:0x6
+10-02 14:09:29.370     0     0 W         : [    7.456980@2] config_pmu_reg power on: before write A12=0x2a2c, A13=0xc0000006, A14=0x1, A15=0x6, A17=0x700, A18=0x1700, A20=0x0, A22=0x704
+10-02 14:09:29.401     0     0 W         : [    7.485688@1] config_pmu_reg wifi_pmu_status:0x6
+10-02 14:09:29.401     0     0 W         : [    7.486841@2] config_pmu_reg power on: after write A15=0x6, A17=0x700, A18=0x1700, A20=0x0, A22=0x704
+10-02 14:09:29.401     0     0 W         : [    7.486850@2] hal_priv->hal_call_back->dev_probe
+10-02 14:09:29.401     0     0 W         : [    7.488166@2] RG_SCFG_SRAM_FUNC ffffffff00000000
+10-02 14:09:29.405     0     0 W         : [    7.490998@2] bbpll power on -------------->
+10-02 14:09:29.405     0     0 W         : [    7.491006@2] 1, start inter Ido
+10-02 14:09:29.408     0     0 W         : [    7.493216@1] 2, start pll core
+10-02 14:09:29.411     0     0 W         : [    7.496430@0] 3, check
+10-02 14:09:29.411     0     0 W         : [    7.496721@0] bbpll done !
+10-02 14:09:29.411     0     0 W         : [    7.496756@0] bbpll  init ok!
+10-02 14:09:29.411     0     0 W         : [    7.497750@0] ++++++SRAM 64K++++++++++
+10-02 14:09:29.411     0     0 W [    7.497827@1] hal_download_wifi_fw_img(618): img len 0x28000, start download fw
+10-02 14:09:29.418     0     0 W         : [    7.503828@0] Host HAL: write ICCM SUCCESS!!!!
+10-02 14:09:29.422     0     0 W         : [    7.506176@1] set sram zero for simulation, total=0x2000
+10-02 14:09:29.422     0     0 W         : [    7.506919@0] RG_SCFG_REG_FUNC redata 0
+10-02 14:09:29.422     0     0 W [    7.507493@1] wifi_cpu_clk_switch(560): cpu_clk_reg=0x4f770033
+10-02 14:09:29.422     0     0 W         : [    7.507630@1] RG_WIFI_CPU_CTRL = 70b0 redata= 10000
+10-02 14:09:29.422     0     0 W         : [    7.508461@1] RG_PMU_A22 = f02058 redata= 700
+10-02 14:09:29.422     0     0 W         : [    7.508478@1] fw download success!
+10-02 14:09:29.422     0     0 W         : [    7.508483@1] Wifi_DeviceID = 0
+10-02 14:09:29.671     0     0 I [    7.755741@0] vout: hdmichecksum [invalidcrc], kernel hdmichecksum []
+10-02 14:09:29.698     0     0 I [    7.782575@2] snd_pcm: enter aml_pcm_open, stream:1
+10-02 14:09:29.698     0     0 I [    7.782585@2] snd_pcm: aml_pcm_timer_create
+10-02 14:09:29.698     0     0 I [    7.782919@2] snd_pcm: enter aml_pcm_close type: 1
+10-02 14:09:29.698     0     0 I [    7.785179@3] snd_spdif_dai: enterd aml_spdif_play,set_clock:4,sample_rate=4
+10-02 14:09:29.698     0     0 I [    7.785244@3] snd_spdif_dai: set 958 audio clk div 2
+10-02 14:09:29.722     0     0 I [    7.808366@3] snd_card_meson: audio speaker on
+10-02 14:09:29.744     0     0 W [    7.829699@0] audit: audit_lost=47 audit_rate_limit=5 audit_backlog_limit=64
+10-02 14:09:29.745     0     0 E [    7.829708@0] audit: rate limit exceeded
+10-02 14:09:29.834     0     0 I         : [    7.919142@3] sectoin 0, size 459776
+10-02 14:09:29.834     0     0 I [    7.919162@3] Wifi: bcmdhd_mem_prealloc: sectoin 11, size 459776
+10-02 14:09:29.834     0     0 W         : [    7.919250@3] Wifi_DeviceID = 0
+10-02 14:09:30.041     0     0 W         : [    8.125630@0] Wifi_DeviceID = 8888  already delayed=200ms
+10-02 14:09:30.044     0     0 W         : [    8.130047@1] efuse addr:00000008, chip_id is :31f7bae5
+10-02 14:09:30.050     0     0 W         : [    8.137842@0] efuse addr:00000009, chip_id is :3b1f0015
+10-02 14:09:30.051     0     0 W         : [    8.138825@0] openFile path:/data/vendor/wifi/wifimac.txt fp=ffffffc024ccfa00
+10-02 14:09:30.054     0     0 W         : [    8.139604@0] writeFile, ret:21
+10-02 14:09:30.055     0     0 W         : [    8.139612@0] write the chip_id to wifimac.txt
+10-02 14:09:30.055     0     0 W         : [    8.139618@0] for uart baudrate0x4c4b400
+10-02 14:09:30.055     0     0 W         : [    8.139821@0] uart mode 0x4c08=0x10ad
+10-02 14:09:30.055     0     0 W         : [    8.139925@0] set uart baudrate, apb_clk=80000000, addr=0x00004c08 data=0x000010ac
+10-02 14:09:30.055     0     0 W         : [    8.139987@1] hal_priv->beaconframeaddress  0xa107b8
+10-02 14:09:30.055     0     0 W         : [    8.139993@1] hal_priv->rxframeaddress     0x91c000
+10-02 14:09:30.055     0     0 W         : [    8.139997@1] hal_priv->txcompleteaddress  0xa1052c
+10-02 14:09:30.055     0     0 W         : [    8.140238@1] hal_priv->txPageFreeNum 0xe0
+10-02 14:09:30.061     0     0 W         : [    8.146295@1] aml wifi module SN:0321  the rf config: /vendor/etc/wifi/w1/aml_wifi_rf_fn_link.txt
+10-02 14:09:30.065     0     0 W         : [    8.150639@0] ======>>>>>> version = 1
+10-02 14:09:30.065     0     0 W         : [    8.150647@0] ======>>>>>> cali_config = 0
+10-02 14:09:30.065     0     0 W         : [    8.150651@0] ======>>>>>> freq_offset = 0
+10-02 14:09:30.065     0     0 W         : [    8.150655@0] ======>>>>>> htemp_freq_offset = 4
+10-02 14:09:30.065     0     0 W         : [    8.150658@0] ======>>>>>> cca_ed_det = 0
+10-02 14:09:30.065     0     0 W         : [    8.150663@0] ======>>>>>> tssi_2g_offset = 0xdf
+10-02 14:09:30.066     0     0 W         : [    8.150667@0] ======>>>>>> tssi_5g_offset_5200 = 0xe2
+10-02 14:09:30.066     0     0 W         : [    8.150671@0] ======>>>>>> tssi_5g_offset_5400 = 0xf1
+10-02 14:09:30.066     0     0 W         : [    8.150675@0] ======>>>>>> tssi_5g_offset_5600 = 0x2
+10-02 14:09:30.066     0     0 W         : [    8.150679@0] ======>>>>>> tssi_5g_offset_5800 = 0x6
+10-02 14:09:30.066     0     0 W         : [    8.150683@0] ======>>>>>> wf2g_spur_rmen = 0
+10-02 14:09:30.066     0     0 W         : [    8.150688@0] ======>>>>>> spur_freq = 24478
+10-02 14:09:30.066     0     0 W         : [    8.150692@0] ======>>>>>> rf_count = 2
+10-02 14:09:30.066     0     0 W         : [    8.150696@0] ======>>>>>> wftx_pwrtbl_en = 1
+10-02 14:09:30.066     0     0 W         : [    8.150700@0] ======>>>>>> platform_versionid = 0
+10-02 14:09:30.066     0     0 W         : [    8.150703@0] ======>>>>>> wftx_power_change_enable = 0
+10-02 14:09:30.066     0     0 W         : [    8.150707@0] ======>>>>>> initial_gain_change_enable = 0
+10-02 14:09:30.066     0     0 W         : [    8.150792@0] ======>>>>>> parse_tx_power_param ===>>> aml_wifi_rf txt => 2g 20/40 5g 20/40/80
+10-02 14:09:30.066     0     0 W         : [    8.150797@0] rf_cout is: 2
+10-02 14:09:30.066     0     0 W         : [    8.150808@0] calibration parameter: version 1, config 0, freq_offset 0, tssi_2g 223, tssi_5g 226 241 2 6 tx_en 1
+10-02 14:09:30.066     0     0 W [    8.150813@0] hal_cfg_cali_param: 2039, set calibration parameter
+10-02 14:09:30.066     0     0 W         : [    8.151324@0] hal_probe(1944) hal_priv->bhalOpen 0x0
+10-02 14:09:30.066     0     0 W         : [    8.151400@0] openFile path:/data/vendor/wifi/wifimac.txt fp=ffffffc024ccfd00
+10-02 14:09:30.066     0     0 W         : [    8.151415@0] readFile, ret:48
+10-02 14:09:30.066     0     0 W         : [    8.151427@0] drv_dev_probe(2300) mac_addr set done.MAC_ADDR=f4:3c:3b:63:e5:f0
+10-02 14:09:30.066     0     0 W         : [    8.151432@0] enter Here aml_driv_attach 1327
+10-02 14:09:30.066     0     0 W         : [    8.151442@0] drv_hal_workitem_inital hal_priv->WorkFifo:ffffff800257c778
+10-02 14:09:30.066     0     0 W         : [    8.151447@0] hal_reg_task taskid 0
+10-02 14:09:30.066     0     0 W         : [    8.151453@0] <running> aml_driv_attach 1352 insmod country: CN
+10-02 14:09:30.066     0     0 W         : [    8.151459@0] drv_set_config(24) id 0x1a data 0x6464
+10-02 14:09:30.066     0     0 W         : [    8.151464@0] ************>set_long_retry_limit 100
+10-02 14:09:30.066     0     0 W         : [    8.151714@2] ************>phy_set_sretry_limit 100
+10-02 14:09:30.066     0     0 W         : [    8.151919@0] drv_channel_init 132
+10-02 14:09:30.066     0     0 W         : [    8.151927@0] wifi_mac_chan_setup(1083) country code 0x2e, support num 10
+10-02 14:09:30.066     0     0 W         : [    8.152015@0] <running> aml_driv_attach 1436  drv_priv->drv_ratectrl_size = 0
+10-02 14:09:30.066     0     0 W         : [    8.152027@0] wifi_mac_rate_init 810 maxrates 30 mode 14
+10-02 14:09:30.066     0     0 W         : [    8.152167@2] <running> wifi_mac_entry 1628++
+10-02 14:09:30.071     0     0 W         : [    8.155991@1] wifi_mac_scan_timeout is ffffff80024822f0
+10-02 14:09:30.071     0     0 W         : [    8.156007@1] <running> wifi_mac_cap_attach 1533
+10-02 14:09:30.071     0     0 I         : [    8.156013@1] sectoin 1, size 256000
+10-02 14:09:30.071     0     0 I [    8.156018@1] Wifi: bcmdhd_mem_prealloc: sectoin 20, size 256000
+10-02 14:09:30.071     0     0 W         : [    8.156143@1]  wifi_mac_create_vmac 3666 cp.vm_param_opmode=1 vm_param_name wlan0 vid = 0
+10-02 14:09:30.072     0     0 W         : [    8.156189@1] <running> wifi_mac_alloc_ndev 88
+10-02 14:09:30.072     0     0 W         : [    8.156198@1] drv_add_wnet_vif(809) macaddr MAC_ADDR=f4:3c:3b:63:e5:f0
+10-02 14:09:30.072     0     0 W         : [    8.156198@1]
+10-02 14:09:30.072     0     0 W         : [    8.156203@1] <eth%d>  drv_add_wnet_vif 822 hal_opmode=1
+10-02 14:09:30.072     0     0 W [    8.156420@1] phy_set_mac_addr-->f4: 3c:3b:63:e5:f0
+10-02 14:09:30.072     0     0 W         : [    8.156427@1] phy_set_cam_mode 1
+10-02 14:09:30.072     0     0 W         : [    8.156560@1] <running> wifi_mac_setup 3212 opmode=1
+10-02 14:09:30.072     0     0 W         : [    8.156572@1] <eth%d> wifi_mac_sta_vattach wnet_vif->vm_mainsta=           (null)
+10-02 14:09:30.072     0     0 W         : [    8.156581@1] scan all chans
+10-02 14:09:30.072     0     0 W         : [    8.156590@1] vht cap init: sgi 0x1, ldpc 0x1, tx_stbc 0x0, rx_stbc 0x7
+10-02 14:09:30.072     0     0 W         : [    8.156597@1] vm_cfg80211_get_parent_dev 304
+10-02 14:09:30.072     0     0 W         : [    8.156602@1] wifi_mac_alloc_wdev 6339
+10-02 14:09:30.072     0     0 W         : [    8.156625@1] wifi_mac_alloc_wdev 6372 pwdev_priv->scan_request=          (null) wnet_vif_id=0
+10-02 14:09:30.072     0     0 W         : [    8.156636@1] AML INFO:before register vendor cmd!!!
+10-02 14:09:30.072     0     0 W         : [    8.156636@1]  vm_register_cfg80211_vnd_cmd 6271
+10-02 14:09:30.072     0     0 W         : [    8.156645@1] vm_p2p_attach ++
+10-02 14:09:30.072     0     0 W         : [    8.156649@1] vm_p2p_initial
+10-02 14:09:30.072     0     0 W         : [    8.156658@1] wifi_mac_alloc_wdev 6395 ffffffc0243a907a 1 wdev->iftype  2
+10-02 14:09:30.072     0     0 W         : [    8.157516@1] <running> vm_wlan_net_vif_register 3347
+10-02 14:09:30.072     0     0 W         : [    8.158308@1] enter vm_cfg80211_get_channel, no support yet
+10-02 14:09:30.072     0     0 W         : [    8.158317@1] vm_cfg80211_get_tx_power 2265
+10-02 14:09:30.072     0     0 W [    8.158322@1] ---drv_curtxpower: -64
+10-02 14:09:30.072     0     0 W         : [    8.158599@1] wifi_mac_mode_vattach_ex wnet_vif->vm_mac_mode=14
+10-02 14:09:30.072     0     0 W         : [    8.158642@1] wifi_mac_create_vmac wnet_vif->vm_mac_mode=14, wnet_vif:ffffffc0243a88c0
+10-02 14:09:30.072     0     0 W         : [    8.158650@1]  wifi_mac_create_vmac 3666 cp.vm_param_opmode=7 vm_param_name p2p0 vid = 1
+10-02 14:09:30.072     0     0 W         : [    8.158699@1] <running> wifi_mac_alloc_ndev 88
+10-02 14:09:30.072     0     0 W         : [    8.158707@1] drv_add_wnet_vif(809) macaddr MAC_ADDR=f4:3c:4b:63:e5:f0
+10-02 14:09:30.072     0     0 W         : [    8.158707@1]
+10-02 14:09:30.072     0     0 W         : [    8.158712@1] <eth%d>  drv_add_wnet_vif 822 hal_opmode=1
+10-02 14:09:30.080     0     0 W [    8.160534@1] phy_set_mac_addr-->f4: 3c:4b:63:e5:f0
+10-02 14:09:30.080     0     0 W         : [    8.160544@1] phy_set_cam_mode 1
+10-02 14:09:30.080     0     0 W         : [    8.160760@1] <running> wifi_mac_setup 3212 opmode=1
+10-02 14:09:30.080     0     0 W         : [    8.160772@1] <eth%d> wifi_mac_sta_vattach wnet_vif->vm_mainsta=           (null)
+10-02 14:09:30.080     0     0 W         : [    8.160782@1] scan all chans
+10-02 14:09:30.080     0     0 W         : [    8.160791@1] vht cap init: sgi 0x1, ldpc 0x1, tx_stbc 0x0, rx_stbc 0x7
+10-02 14:09:30.080     0     0 W         : [    8.160798@1] vm_cfg80211_get_parent_dev 304
+10-02 14:09:30.080     0     0 W         : [    8.160803@1] wifi_mac_alloc_wdev 6339
+10-02 14:09:30.080     0     0 W         : [    8.160823@1] wifi_mac_alloc_wdev 6372 pwdev_priv->scan_request=          (null) wnet_vif_id=1
+10-02 14:09:30.080     0     0 W         : [    8.160831@1] AML INFO:before register vendor cmd!!!
+10-02 14:09:30.080     0     0 W         : [    8.160831@1]  vm_register_cfg80211_vnd_cmd 6271
+10-02 14:09:30.080     0     0 W         : [    8.160841@1] vm_p2p_attach ++
+10-02 14:09:30.080     0     0 W         : [    8.160845@1] vm_p2p_initial
+10-02 14:09:30.080     0     0 W         : [    8.160854@1] wifi_mac_alloc_wdev 6395 ffffffc0279d507a 1 wdev->iftype  2
+10-02 14:09:30.080     0     0 W         : [    8.161625@1] <running> vm_wlan_net_vif_register 3347
+10-02 14:09:30.080     0     0 W         : [    8.162355@1] enter vm_cfg80211_get_channel, no support yet
+10-02 14:09:30.080     0     0 W         : [    8.162366@1] vm_cfg80211_get_tx_power 2265
+10-02 14:09:30.080     0     0 W [    8.162370@1] ---drv_curtxpower: -64
+10-02 14:09:30.080     0     0 W         : [    8.162658@1] wifi_mac_mode_vattach_ex wnet_vif->vm_mac_mode=6
+10-02 14:09:30.080     0     0 W         : [    8.162667@1] wifi_mac_create_vmac wnet_vif->vm_mac_mode=6, wnet_vif:ffffffc0279d48c0
+10-02 14:09:30.080     0     0 W         : [    8.162674@1] wifi_mac_station_init 25
+10-02 14:09:30.080     0     0 W         : [    8.162678@1] wifi_mac_rst_bss, wnet_vif->wnet_vif_id= 0
+10-02 14:09:30.080     0     0 W         : [    8.162730@1] <running> wifi_mac_alloc_amsdu_node (638) amsdu_max_length=7935
+10-02 14:09:30.080     0     0 W         : [    8.162736@1] alloc_sta_node vid:0, sta:ffffffc024e9e000
+10-02 14:09:30.080     0     0 W         : [    8.162742@1] wifi_mac_rst_bss add vm_mainsta:ffffffc024e9e000
+10-02 14:09:30.081     0     0 W         : [    8.162746@1] wifi_mac_station_init 25
+10-02 14:09:30.081     0     0 W         : [    8.162750@1] wifi_mac_rst_bss, wnet_vif->wnet_vif_id= 1
+10-02 14:09:30.081     0     0 W         : [    8.162769@1] <running> wifi_mac_alloc_amsdu_node (638) amsdu_max_length=7935
+10-02 14:09:30.081     0     0 W         : [    8.162774@1] alloc_sta_node vid:1, sta:ffffffc024e9f000
+10-02 14:09:30.081     0     0 W         : [    8.162779@1] wifi_mac_rst_bss add vm_mainsta:ffffffc024e9f000
+10-02 14:09:30.081     0     0 W [    8.162788@1] phy_set_bmfm_info: 1316, group id null
+10-02 14:09:30.081     0     0 W [    8.162793@1] phy_set_coexist_en: 1356, phy_set_coexist_en, enable 1
+10-02 14:09:30.081     0     0 W [    8.163085@1] aml_sdio_init(1506): sg ops init
+10-02 14:09:30.081     0     0 W [    8.163344@1] amlhal_gpio_open(1159): -----------0x5C register=0x0
+10-02 14:09:30.081     0     0 W         : [    8.163392@1] SDIO GPIO IRQ CONFIG REG=0xfff
+10-02 14:09:30.081     0     0 W [    8.163396@1] aml_sdio_irq_path: b_gpio=1
+10-02 14:09:30.081     0     0 W         : [    8.163435@1]  SDIO_CCCR_IEN=0x0
+10-02 14:09:30.081     0     0 W         : [    8.163478@1]  SDIO CCCR IEN=0x0
+10-02 14:09:30.081     0     0 W         : [    8.163623@1] aml_sdio_irq_path(1117) ck_reg 0x80000000
+10-02 14:09:30.081     0     0 W         : [    8.163629@1] aml_sdio_probe-- ret 0
+10-02 14:09:30.081     0     0 W         : [    8.163635@1] aml_insmod(968) start...
+10-02 14:09:30.176     0     0 I [    8.262245@0] vout: hdmichecksum [invalidcrc], kernel hdmichecksum []
+10-02 14:09:30.684     0     0 I [    8.768921@0] vout: hdmichecksum [invalidcrc], kernel hdmichecksum []
+10-02 14:09:30.748     0     0 W [    8.834256@2] audit: audit_lost=53 audit_rate_limit=5 audit_backlog_limit=64
+10-02 14:09:30.748     0     0 E [    8.834266@2] audit: rate limit exceeded
+10-02 14:09:31.181     0     0 I [    9.268041@1] fb: osd[1] enable: 0 scale:0x0 (HwBinder:3006_2)
+10-02 14:09:31.181     0     0 I [    9.268050@1] fb: osd[0] enable: 1 scale:0x10001 (HwBinder:3006_2)
+10-02 14:09:31.185     0     0 I [    9.270241@1] fb: free_scale_switch to fb0, mode: 0x10001
+10-02 14:09:31.185     0     0 I [    9.270300@1] fb: set logo loaded
+10-02 14:09:31.191     0     0 I [    9.275684@0] vout: hdmichecksum [invalidcrc], kernel hdmichecksum []
+10-02 14:09:31.698     0     0 I [    9.782297@0] vout: hdmichecksum [invalidcrc], kernel hdmichecksum []
+10-02 14:09:31.752     0     0 W [    9.839569@3] audit: audit_lost=58 audit_rate_limit=5 audit_backlog_limit=64
+10-02 14:09:31.754     0     0 E [    9.839583@3] audit: rate limit exceeded
+10-02 14:09:32.204     0     0 I [   10.288948@0] vout: hdmichecksum [invalidcrc], kernel hdmichecksum []
+10-02 14:09:32.711     0     0 I [   10.795629@0] vout: hdmichecksum [invalidcrc], kernel hdmichecksum []
+10-02 14:09:32.888     0     0 I [   10.975165@3] hdmitx: system: set hdcp_pwr 1
+10-02 14:09:32.931     0     0 I [   11.017613@3] hdmitx: system: restore hdcp_pwr 0
+10-02 14:09:32.932     0     0 W         : [   11.017704@3] amhdmitx amhdmitx0: hdmitx20: stop14
+10-02 14:09:32.933     0     0 W         : [   11.020725@1] amhdmitx amhdmitx0: hdmitx20: stop22
+10-02 14:09:32.938     0     0 I [   11.023212@3] hdmitx: system: hdcp: set mode as 1
+10-02 14:09:32.938     0     0 I [   11.023710@0] hdmitx: system: irq 80000001 0
+10-02 14:09:32.951     0     0 I [   11.035614@3] hdmitx: hdcp14: instat: 0x11
+10-02 14:09:32.951     0     0 I [   11.038193@1] capability: warning: `main' uses 32-bit capabilities (legacy support in use)
+10-02 14:09:33.218     0     0 I [   11.302339@0] vout: hdmichecksum [invalidcrc], kernel hdmichecksum []
+10-02 14:09:33.724     0     0 I [   11.809103@0] vout: hdmichecksum [invalidcrc], kernel hdmichecksum []
+10-02 14:09:34.231     0     0 I [   12.315627@0] vout: hdmichecksum [invalidcrc], kernel hdmichecksum []
+10-02 14:09:34.535     0     0 W [   12.621368@2] healthd: battery l=42 v=4 t=42.4 h=2 st=2 c=1 fc=10000000 chg=u
+10-02 14:09:34.738     0     0 I [   12.822298@0] vout: hdmichecksum [invalidcrc], kernel hdmichecksum []
+10-02 14:09:35.038     0     0 I         : [   13.125463@3] early_suspend_state=0
+10-02 14:09:35.245     0     0 I [   13.328962@0] vout: hdmichecksum [invalidcrc], kernel hdmichecksum []
+10-02 14:09:35.751     0     0 I [   13.835906@0] vout: hdmichecksum [invalidcrc], kernel hdmichecksum []
+10-02 14:09:36.258     0     0 I [   14.342398@0] vout: hdmichecksum [invalidcrc], kernel hdmichecksum []
+10-02 14:09:36.769     0     0 I [   14.848970@0] vout: hdmichecksum [invalidcrc], kernel hdmichecksum []
+10-02 14:09:37.270     0     0 I [   15.355620@0] vout: hdmichecksum [invalidcrc], kernel hdmichecksum []
+10-02 14:09:37.778     0     0 I [   15.862407@0] vout: hdmichecksum [invalidcrc], kernel hdmichecksum []
+10-02 14:09:38.284     0     0 I [   16.369019@0] vout: hdmichecksum [invalidcrc], kernel hdmichecksum []
+10-02 14:09:38.508     0     0 W [   16.592565@2] healthd: battery l=42 v=4 t=42.4 h=2 st=2 c=1 fc=10000000 chg=u
+10-02 14:09:38.514     0     0 W [   16.599593@0] healthd: battery l=42 v=4 t=42.4 h=2 st=2 c=1 fc=10000000 chg=u
+10-02 14:09:38.788     0     0 I [   16.875820@0] vout: hdmichecksum [invalidcrc], kernel hdmichecksum []
+10-02 14:09:39.298     0     0 I [   17.382419@0] vout: hdmichecksum [invalidcrc], kernel hdmichecksum []
+10-02 14:09:39.804     0     0 I [   17.888934@0] vout: hdmichecksum [invalidcrc], kernel hdmichecksum []
+10-02 14:09:40.138     0     0 E         : [   18.220130@2] cectx c810023c.aocec: init_cec_port_info phy_addr:2000, port num:1
+10-02 14:09:40.138     0     0 E         : [   18.220139@2] cectx c810023c.aocec: port_seq=0x0
+10-02 14:09:40.138     0     0 E         : [   18.220145@2] cectx c810023c.aocec: portinfo id:0 arc:0 phy:2100,type:0
+10-02 14:09:40.311     0     0 I [   18.395621@0] vout: hdmichecksum [invalidcrc], kernel hdmichecksum []
+10-02 14:09:40.320     0     0 W         : [   18.404342@0] enter vm_cfg80211_get_channel, no support yet
+10-02 14:09:40.320     0     0 W         : [   18.404355@0] vm_cfg80211_get_tx_power 2265
+10-02 14:09:40.320     0     0 W [   18.404359@0] ---drv_curtxpower: -128
+10-02 14:09:40.818     0     0 I [   18.902278@0] vout: hdmichecksum [invalidcrc], kernel hdmichecksum []
+10-02 14:09:41.075     0     0 I         : [   19.161189@3] sdcardfs version 2.0
+10-02 14:09:41.075     0     0 I [   19.161207@3] sdcardfs: dev_name -> /data/media
+10-02 14:09:41.075     0     0 I [   19.161212@3] sdcardfs: options -> fsuid=1023,fsgid=1023,multiuser,derive_gid,default_normal,mask=6,userid=0,gid=1015
+10-02 14:09:41.075     0     0 I [   19.161221@3] sdcardfs: mnt -> ffffffc015c1b360
+10-02 14:09:41.075     0     0 I [   19.161341@3] sdcardfs: mounted on top of /data/media type ext4
+10-02 14:09:41.084     0     0 I         : [   19.171292@3] Remount options were mask=23,gid=9997 for vfsmnt ffffffc015ce63a0.
+10-02 14:09:41.085     0     0 I [   19.171309@3] sdcardfs: options - debug:1
+10-02 14:09:41.085     0     0 I [   19.171340@3] sdcardfs: options - gid:9997
+10-02 14:09:41.085     0     0 I [   19.171345@3] sdcardfs: options - mask:23
+10-02 14:09:41.086     0     0 I         : [   19.172162@3] Remount options were mask=7,gid=9997 for vfsmnt ffffffc015ce6e20.
+10-02 14:09:41.089     0     0 I [   19.172180@3] sdcardfs: options - debug:1
+10-02 14:09:41.089     0     0 I [   19.172185@3] sdcardfs: options - gid:9997
+10-02 14:09:41.089     0     0 I [   19.172189@3] sdcardfs: options - mask:7
+10-02 14:09:41.162     0     0 I [   19.248063@3] hdmitx: system: hdcp: set mode as 1
+10-02 14:09:41.162     0     0 I [   19.248574@3] hdmitx: store_avmute -1
+10-02 14:09:41.162     0     0 I [   19.248579@0] hdmitx: system: irq 80000001 0
+10-02 14:09:41.162     0     0 I [   19.248587@3] hdmitx: hw: avmute set to 1
+10-02 14:09:41.325     0     0 I [   19.408976@0] vout: hdmichecksum [invalidcrc], kernel hdmichecksum []
+10-02 14:09:41.395     0     0 W         : [   19.480369@1] <running> wifi_mac_open 2291 dev = ffffffc0243a8000
+10-02 14:09:41.395     0     0 W [   19.480378@1] <wlan0>: <running> wifi_mac_initial
+10-02 14:09:41.395     0     0 W         : [   19.480384@1] wifi_mac_preempt_scan 6701 try to preempt scan
+10-02 14:09:41.395     0     0 W [   19.480394@1] <wlan0>: wifi_mac_initial wm_nopened =0
+10-02 14:09:41.395     0     0 W         : [   19.480419@1] hal_tx_flush copy remain:0, queueid:0
+10-02 14:09:41.395     0     0 W         : [   19.480422@1] hal_tx_flush copy remain:0, queueid:1
+10-02 14:09:41.395     0     0 W         : [   19.480424@1] hal_tx_flush copy remain:0, queueid:2
+10-02 14:09:41.395     0     0 W         : [   19.480427@1] hal_tx_flush copy remain:0, queueid:3
+10-02 14:09:41.395     0     0 W         : [   19.480430@1] hal_tx_flush copy remain:0, queueid:4
+10-02 14:09:41.395     0     0 W         : [   19.480432@1] hal_tx_flush copy remain:0, queueid:5
+10-02 14:09:41.395     0     0 W         : [   19.480435@1] hal_tx_flush copy remain:0, queueid:6
+10-02 14:09:41.395     0     0 W         : [   19.480437@1] hal_tx_flush copy remain:0, queueid:7
+10-02 14:09:41.395     0     0 W         : [   19.480441@1] recover bhaltxdrop to 0, tx_frames_map:0, 0, page:224, vid:3
+10-02 14:09:41.395     0     0 W         : [   19.480446@1] hal_open++
+10-02 14:09:41.395     0     0 W         : [   19.480451@1] hal_open(1815) bhalOpen 0x1
+10-02 14:09:41.395     0     0 W         : [   19.480563@2] hal_open-- && clear irq 0x60
+10-02 14:09:41.395     0     0 W         : [   19.480576@2] wifi_mac_netdev_open(1297)
+10-02 14:09:41.395     0     0 W [   19.480968@2] phy_interface_enable: 1551, vid 0, enable 1
+10-02 14:09:41.395     0     0 W [   19.480978@2] <wlan0>: vm_cfg80211_up 6500
+10-02 14:09:41.395     0     0 W [   19.480982@2] vm_cfg80211_up: 6504, config 2G ht
+10-02 14:09:41.395     0     0 W         : [   19.480986@2] vm_cfg80211_init_ht_capab(5314)
+10-02 14:09:41.395     0     0 W [   19.480991@2] vm_cfg80211_up: 6506, config 2G vht
+10-02 14:09:41.395     0     0 W         : [   19.480995@2] vm_cfg80211_init_vht_capab(5272)
+10-02 14:09:41.395     0     0 W [   19.480999@2] vm_cfg80211_up: 6513, config 5G ht
+10-02 14:09:41.395     0     0 W         : [   19.481003@2] vm_cfg80211_init_ht_capab(5314)
+10-02 14:09:41.395     0     0 W [   19.481007@2] vm_cfg80211_up: 6515, config 5G vht
+10-02 14:09:41.395     0     0 W         : [   19.481011@2] vm_cfg80211_init_vht_capab(5272)
+10-02 14:09:41.395     0     0 W         : [   19.481019@2] <wlan0> wifi_mac_sub_sm 2550  wifi_mac_sub_sm state INIT->SCAN
+10-02 14:09:41.395     0     0 W         : [   19.481127@2] vm_cfg80211_set_power_mgmt 2612 <wlan0> enabled=0 timeout=-1
+10-02 14:09:41.541     0     0 W         : [   19.626811@0] enter vm_cfg80211_get_channel, no support yet
+10-02 14:09:41.541     0     0 W         : [   19.626827@0] vm_cfg80211_get_tx_power 2265
+10-02 14:09:41.541     0     0 W [   19.626832@0] ---drv_curtxpower: -128
+10-02 14:09:41.644     0     0 W         : [   19.731630@0] enter vm_cfg80211_get_channel, no support yet
+10-02 14:09:41.645     0     0 W         : [   19.731642@0] vm_cfg80211_get_tx_power 2265
+10-02 14:09:41.645     0     0 W [   19.731647@0] ---drv_curtxpower: 0
+10-02 14:09:41.645     0     0 W         : [   19.731818@0] enter vm_cfg80211_get_channel, no support yet
+10-02 14:09:41.645     0     0 W         : [   19.731827@0] vm_cfg80211_get_tx_power 2265
+10-02 14:09:41.645     0     0 W [   19.731831@0] ---drv_curtxpower: 0
+10-02 14:09:41.649     0     0 W         : [   19.732789@0] enter vm_cfg80211_get_channel, no support yet
+10-02 14:09:41.649     0     0 W         : [   19.732803@0] vm_cfg80211_get_tx_power 2265
+10-02 14:09:41.649     0     0 W [   19.732808@0] ---drv_curtxpower: 0
+10-02 14:09:41.649     0     0 W         : [   19.732965@0] enter vm_cfg80211_get_channel, no support yet
+10-02 14:09:41.649     0     0 W         : [   19.732976@0] vm_cfg80211_get_tx_power 2265
+10-02 14:09:41.649     0     0 W [   19.732980@0] ---drv_curtxpower: 0
+10-02 14:09:41.671     0     0 W         : [   19.745712@1] enter vm_cfg80211_get_channel, no support yet
+10-02 14:09:41.671     0     0 W         : [   19.758525@1] vm_cfg80211_get_tx_power 2265
+10-02 14:09:41.671     0     0 W [   19.758530@1] ---drv_curtxpower: 0
+10-02 14:09:41.704     0     0 W         : [   19.790757@2] aml_cfg80211_flush_pmksa
+10-02 14:09:41.828     0     0 I [   19.915612@0] vout: hdmichecksum [invalidcrc], kernel hdmichecksum []
+10-02 14:09:41.841     0     0 W         : [   19.927055@2] aml_android_priv_cmd cmd_len 4096 16
+10-02 14:09:41.841     0     0 W [   19.927095@2] aml_android_priv_cmd: Android private cmd "COUNTRY US" on wlan0
+10-02 14:09:41.841     0     0 W         : [   19.927106@2] wifi_mac_preempt_scan 6701 try to preempt scan
+10-02 14:09:41.841     0     0 W         : [   19.927116@2] <running> drv_set_country 1075 222
+10-02 14:09:41.841     0     0 W         : [   19.927122@2] wifi_mac_chan_setup(1083) country code 0xde, support num 19
+10-02 14:09:41.844     0     0 W         : [   19.930170@2] aml_android_priv_cmd cmd_len 4096 16
+10-02 14:09:41.844     0     0 W [   19.930184@2] aml_android_priv_cmd: Android private cmd "COUNTRY BR" on wlan0
+10-02 14:09:41.844     0     0 W         : [   19.930193@2] wifi_mac_preempt_scan 6701 try to preempt scan
+10-02 14:09:41.845     0     0 W         : [   19.930202@2] <running> drv_set_country 1075 29
+10-02 14:09:41.845     0     0 W         : [   19.930206@2] wifi_mac_chan_setup(1083) country code 0x1d, support num 16
+10-02 14:09:41.868     0     0 W         : [   19.955218@2] aml_android_priv_cmd cmd_len 4096 16
+10-02 14:09:41.868     0     0 W [   19.955236@2] aml_android_priv_cmd: Android private cmd "SETSUSPENDMODE 0" on wlan0
+10-02 14:09:41.878     0     0 W         : [   19.963714@0] vm_cfg80211_set_power_mgmt 2612 <wlan0> enabled=1 timeout=-1
+10-02 14:09:42.325     0     0 D         : [   20.411978@1] the demux           clock on, ref cnt: 1
+10-02 14:09:42.325     0     0 D         : [   20.411991@1] the parser_top      clock on, ref cnt: 1
+10-02 14:09:42.325     0     0 D         : [   20.411998@1] the vdec            clock on, ref cnt: 1
+10-02 14:09:42.325     0     0 D         : [   20.412025@1] the clk_hevc_mux    clock on, ref cnt: 1
+10-02 14:09:42.325     0     0 D         : [   20.412040@1] hevc mux clock is 500000000 Hz
+10-02 14:09:42.325     0     0 D         : [   20.412163@1] vdec_create instance ffffff8015a73000, total 1
+10-02 14:09:42.328     0     0 D         : [   20.412657@1] vdec_release instance ffffff8015a73000, total 1
+10-02 14:09:42.328     0     0 D         : [   20.412804@1] the clk_hevc_mux    clock off, ref cnt: 0
+10-02 14:09:42.328     0     0 D         : [   20.412815@1] the vdec            clock off, ref cnt: 0
+10-02 14:09:42.328     0     0 D         : [   20.412822@1] the parser_top      clock off, ref cnt: 0
+10-02 14:09:42.328     0     0 D         : [   20.412830@1] the demux           clock off, ref cnt: 0
+10-02 14:09:42.328     0     0 D         : [   20.413180@1] the demux           clock on, ref cnt: 1
+10-02 14:09:42.328     0     0 D         : [   20.413216@1] the parser_top      clock on, ref cnt: 1
+10-02 14:09:42.328     0     0 D         : [   20.413223@1] the vdec            clock on, ref cnt: 1
+10-02 14:09:42.328     0     0 D         : [   20.413248@1] the clk_vdec_mux    clock on, ref cnt: 1
+10-02 14:09:42.328     0     0 D         : [   20.413287@1] vdec mux clock is 500000000 Hz
+10-02 14:09:42.328     0     0 D         : [   20.413412@1] vdec_create instance ffffff8015a86000, total 1
+10-02 14:09:42.328     0     0 D         : [   20.413446@1] vdec_release instance ffffff8015a86000, total 1
+10-02 14:09:42.328     0     0 D         : [   20.413555@1] the clk_vdec_mux    clock off, ref cnt: 0
+10-02 14:09:42.328     0     0 D         : [   20.413564@1] the vdec            clock off, ref cnt: 0
+10-02 14:09:42.328     0     0 D         : [   20.413571@1] the parser_top      clock off, ref cnt: 0
+10-02 14:09:42.328     0     0 D         : [   20.413578@1] the demux           clock off, ref cnt: 0
+10-02 14:09:42.328     0     0 D [   20.414049@1] ionvid: dbg: ionvideo open
+10-02 14:09:42.328     0     0 D [   20.414080@1] ionvid: dbg: vidioc_close!!!!
+10-02 14:09:42.328     0     0 D [   20.414127@1] ionvid: dbg: vidioc_close
+10-02 14:09:42.338     0     0 I [   20.422284@0] vout: hdmichecksum [invalidcrc], kernel hdmichecksum []
+10-02 14:09:42.355     0     0 D         : [   20.439245@3] the demux           clock on, ref cnt: 1
+10-02 14:09:42.359     0     0 D         : [   20.439257@3] the parser_top      clock on, ref cnt: 1
+10-02 14:09:42.364     0     0 D         : [   20.439264@3] the vdec            clock on, ref cnt: 1
+10-02 14:09:42.364     0     0 D         : [   20.439288@3] the clk_hevc_mux    clock on, ref cnt: 1
+10-02 14:09:42.364     0     0 D         : [   20.439301@3] hevc mux clock is 500000000 Hz
+10-02 14:09:42.364     0     0 D         : [   20.439384@3] vdec_create instance ffffff8015a9b000, total 1
+10-02 14:09:42.364     0     0 D         : [   20.439414@3] vdec_release instance ffffff8015a9b000, total 1
+10-02 14:09:42.364     0     0 D         : [   20.439449@3] the clk_hevc_mux    clock off, ref cnt: 0
+10-02 14:09:42.364     0     0 D         : [   20.439457@3] the vdec            clock off, ref cnt: 0
+10-02 14:09:42.364     0     0 D         : [   20.439464@3] the parser_top      clock off, ref cnt: 0
+10-02 14:09:42.364     0     0 D         : [   20.439470@3] the demux           clock off, ref cnt: 0
+10-02 14:09:42.364     0     0 D         : [   20.439609@3] the demux           clock on, ref cnt: 1
+10-02 14:09:42.364     0     0 D         : [   20.439619@3] the parser_top      clock on, ref cnt: 1
+10-02 14:09:42.364     0     0 D         : [   20.439625@3] the vdec            clock on, ref cnt: 1
+10-02 14:09:42.364     0     0 D         : [   20.439648@3] the clk_vdec_mux    clock on, ref cnt: 1
+10-02 14:09:42.364     0     0 D         : [   20.439662@3] vdec mux clock is 500000000 Hz
+10-02 14:09:42.364     0     0 D         : [   20.439731@3] vdec_create instance ffffff8015aae000, total 1
+10-02 14:09:42.364     0     0 D         : [   20.439759@3] vdec_release instance ffffff8015aae000, total 1
+10-02 14:09:42.364     0     0 D         : [   20.439806@3] the clk_vdec_mux    clock off, ref cnt: 0
+10-02 14:09:42.364     0     0 D         : [   20.439813@3] the vdec            clock off, ref cnt: 0
+10-02 14:09:42.365     0     0 D         : [   20.439820@3] the parser_top      clock off, ref cnt: 0
+10-02 14:09:42.365     0     0 D         : [   20.439826@3] the demux           clock off, ref cnt: 0
+10-02 14:09:42.365     0     0 D [   20.439998@3] ionvid: dbg: ionvideo open
+10-02 14:09:42.365     0     0 D [   20.440020@3] ionvid: dbg: vidioc_close!!!!
+10-02 14:09:42.365     0     0 D [   20.440033@3] ionvid: dbg: vidioc_close
+10-02 14:09:42.762     0     0 I         : [   20.847068@2] BT_RADIO going: on
+10-02 14:09:42.762     0     0 I [   20.847081@2] AML_BT: going ON,btpower_evt=2
+10-02 14:09:42.828     0     0 D         : [   20.913557@1] the demux           clock on, ref cnt: 1
+10-02 14:09:42.828     0     0 D         : [   20.913570@1] the parser_top      clock on, ref cnt: 1
+10-02 14:09:42.828     0     0 D         : [   20.913577@1] the vdec            clock on, ref cnt: 1
+10-02 14:09:42.828     0     0 D         : [   20.913601@1] the clk_hevc_mux    clock on, ref cnt: 1
+10-02 14:09:42.828     0     0 D         : [   20.913614@1] hevc mux clock is 500000000 Hz
+10-02 14:09:42.828     0     0 D         : [   20.913759@1] vdec_create instance ffffff8015dc4000, total 1
+10-02 14:09:42.828     0     0 D         : [   20.913795@1] vdec_release instance ffffff8015dc4000, total 1
+10-02 14:09:42.828     0     0 D         : [   20.913833@1] the clk_hevc_mux    clock off, ref cnt: 0
+10-02 14:09:42.828     0     0 D         : [   20.913841@1] the vdec            clock off, ref cnt: 0
+10-02 14:09:42.828     0     0 D         : [   20.913848@1] the parser_top      clock off, ref cnt: 0
+10-02 14:09:42.828     0     0 D         : [   20.913854@1] the demux           clock off, ref cnt: 0
+10-02 14:09:42.828     0     0 D         : [   20.914036@1] the demux           clock on, ref cnt: 1
+10-02 14:09:42.828     0     0 D         : [   20.914046@1] the parser_top      clock on, ref cnt: 1
+10-02 14:09:42.828     0     0 D         : [   20.914053@1] the vdec            clock on, ref cnt: 1
+10-02 14:09:42.828     0     0 D         : [   20.914076@1] the clk_vdec_mux    clock on, ref cnt: 1
+10-02 14:09:42.828     0     0 D         : [   20.914089@1] vdec mux clock is 500000000 Hz
+10-02 14:09:42.828     0     0 D         : [   20.914158@1] vdec_create instance ffffff8015dd7000, total 1
+10-02 14:09:42.828     0     0 D         : [   20.914184@1] vdec_release instance ffffff8015dd7000, total 1
+10-02 14:09:42.828     0     0 D         : [   20.914229@1] the clk_vdec_mux    clock off, ref cnt: 0
+10-02 14:09:42.828     0     0 D         : [   20.914237@1] the vdec            clock off, ref cnt: 0
+10-02 14:09:42.828     0     0 D         : [   20.914243@1] the parser_top      clock off, ref cnt: 0
+10-02 14:09:42.828     0     0 D         : [   20.914249@1] the demux           clock off, ref cnt: 0
+10-02 14:09:42.828     0     0 D [   20.914438@1] ionvid: dbg: ionvideo open
+10-02 14:09:42.828     0     0 D [   20.914461@1] ionvid: dbg: vidioc_close!!!!
+10-02 14:09:42.828     0     0 D [   20.914477@1] ionvid: dbg: vidioc_close
+10-02 14:09:42.850     0     0 I [   20.932480@0] vout: hdmichecksum [invalidcrc], kernel hdmichecksum []
+10-02 14:09:42.968     0     0 I         : [   21.052331@0] aml_wifi wifi: [usb_power_control] Set BT power on !
+10-02 14:09:42.968     0     0 I         : [   21.052345@0] BT_RADIO going: gpio_en = 486
+10-02 14:09:43.003     0     0 D         : [   21.086324@2] the demux           clock on, ref cnt: 1
+10-02 14:09:43.003     0     0 D         : [   21.086336@2] the parser_top      clock on, ref cnt: 1
+10-02 14:09:43.003     0     0 D         : [   21.086344@2] the vdec            clock on, ref cnt: 1
+10-02 14:09:43.003     0     0 D         : [   21.086371@2] the clk_hevc_mux    clock on, ref cnt: 1
+10-02 14:09:43.003     0     0 D         : [   21.086388@2] hevc mux clock is 500000000 Hz
+10-02 14:09:43.003     0     0 D         : [   21.086495@2] vdec_create instance ffffff80175bc000, total 1
+10-02 14:09:43.004     0     0 D         : [   21.086529@2] vdec_release instance ffffff80175bc000, total 1
+10-02 14:09:43.004     0     0 D         : [   21.086564@2] the clk_hevc_mux    clock off, ref cnt: 0
+10-02 14:09:43.004     0     0 D         : [   21.086572@2] the vdec            clock off, ref cnt: 0
+10-02 14:09:43.004     0     0 D         : [   21.086579@2] the parser_top      clock off, ref cnt: 0
+10-02 14:09:43.004     0     0 D         : [   21.086586@2] the demux           clock off, ref cnt: 0
+10-02 14:09:43.004     0     0 D         : [   21.086744@2] the demux           clock on, ref cnt: 1
+10-02 14:09:43.004     0     0 D         : [   21.086753@2] the parser_top      clock on, ref cnt: 1
+10-02 14:09:43.004     0     0 D         : [   21.086759@2] the vdec            clock on, ref cnt: 1
+10-02 14:09:43.004     0     0 D         : [   21.086782@2] the clk_vdec_mux    clock on, ref cnt: 1
+10-02 14:09:43.004     0     0 D         : [   21.086796@2] vdec mux clock is 500000000 Hz
+10-02 14:09:43.004     0     0 D         : [   21.086867@2] vdec_create instance ffffff80175cf000, total 1
+10-02 14:09:43.004     0     0 D         : [   21.086898@2] vdec_release instance ffffff80175cf000, total 1
+10-02 14:09:43.004     0     0 D         : [   21.086946@2] the clk_vdec_mux    clock off, ref cnt: 0
+10-02 14:09:43.004     0     0 D         : [   21.086953@2] the vdec            clock off, ref cnt: 0
+10-02 14:09:43.004     0     0 D         : [   21.086959@2] the parser_top      clock off, ref cnt: 0
+10-02 14:09:43.004     0     0 D         : [   21.086965@2] the demux           clock off, ref cnt: 0
+10-02 14:09:43.004     0     0 D [   21.087175@2] ionvid: dbg: ionvideo open
+10-02 14:09:43.004     0     0 D [   21.087198@2] ionvid: dbg: vidioc_close!!!!
+10-02 14:09:43.004     0     0 D [   21.087211@2] ionvid: dbg: vidioc_close
+10-02 14:09:43.101     0     0 D         : [   21.184536@0] the demux           clock on, ref cnt: 1
+10-02 14:09:43.101     0     0 D         : [   21.184548@0] the parser_top      clock on, ref cnt: 1
+10-02 14:09:43.101     0     0 D         : [   21.184555@0] the vdec            clock on, ref cnt: 1
+10-02 14:09:43.101     0     0 D         : [   21.184582@0] the clk_hevc_mux    clock on, ref cnt: 1
+10-02 14:09:43.101     0     0 D         : [   21.184597@0] hevc mux clock is 500000000 Hz
+10-02 14:09:43.101     0     0 D         : [   21.184693@0] vdec_create instance ffffff8017600000, total 1
+10-02 14:09:43.101     0     0 D         : [   21.184725@0] vdec_release instance ffffff8017600000, total 1
+10-02 14:09:43.101     0     0 D         : [   21.184764@0] the clk_hevc_mux    clock off, ref cnt: 0
+10-02 14:09:43.101     0     0 D         : [   21.184773@0] the vdec            clock off, ref cnt: 0
+10-02 14:09:43.101     0     0 D         : [   21.184779@0] the parser_top      clock off, ref cnt: 0
+10-02 14:09:43.101     0     0 D         : [   21.184785@0] the demux           clock off, ref cnt: 0
+10-02 14:09:43.101     0     0 D         : [   21.184944@0] the demux           clock on, ref cnt: 1
+10-02 14:09:43.101     0     0 D         : [   21.184953@0] the parser_top      clock on, ref cnt: 1
+10-02 14:09:43.101     0     0 D         : [   21.184963@0] the vdec            clock on, ref cnt: 1
+10-02 14:09:43.101     0     0 D         : [   21.184987@0] the clk_vdec_mux    clock on, ref cnt: 1
+10-02 14:09:43.101     0     0 D         : [   21.185001@0] vdec mux clock is 500000000 Hz
+10-02 14:09:43.101     0     0 D         : [   21.185077@0] vdec_create instance ffffff8017613000, total 1
+10-02 14:09:43.101     0     0 D         : [   21.185105@0] vdec_release instance ffffff8017613000, total 1
+10-02 14:09:43.103     0     0 D         : [   21.185148@0] the clk_vdec_mux    clock off, ref cnt: 0
+10-02 14:09:43.103     0     0 D         : [   21.185156@0] the vdec            clock off, ref cnt: 0
+10-02 14:09:43.103     0     0 D         : [   21.185162@0] the parser_top      clock off, ref cnt: 0
+10-02 14:09:43.103     0     0 D         : [   21.185168@0] the demux           clock off, ref cnt: 0
+10-02 14:09:43.103     0     0 D [   21.185329@0] ionvid: dbg: ionvideo open
+10-02 14:09:43.103     0     0 D [   21.185348@0] ionvid: dbg: vidioc_close!!!!
+10-02 14:09:43.103     0     0 D [   21.185361@0] ionvid: dbg: vidioc_close
+10-02 14:09:43.125     0     0 D         : [   21.209052@2] the demux           clock on, ref cnt: 1
+10-02 14:09:43.125     0     0 D         : [   21.209066@2] the parser_top      clock on, ref cnt: 1
+10-02 14:09:43.125     0     0 D         : [   21.209074@2] the vdec            clock on, ref cnt: 1
+10-02 14:09:43.125     0     0 D         : [   21.209101@2] the clk_hevc_mux    clock on, ref cnt: 1
+10-02 14:09:43.125     0     0 D         : [   21.209114@2] hevc mux clock is 500000000 Hz
+10-02 14:09:43.125     0     0 D         : [   21.209223@2] vdec_create instance ffffff8017626000, total 1
+10-02 14:09:43.125     0     0 D         : [   21.209259@2] vdec_release instance ffffff8017626000, total 1
+10-02 14:09:43.125     0     0 D         : [   21.209301@2] the clk_hevc_mux    clock off, ref cnt: 0
+10-02 14:09:43.125     0     0 D         : [   21.209309@2] the vdec            clock off, ref cnt: 0
+10-02 14:09:43.125     0     0 D         : [   21.209316@2] the parser_top      clock off, ref cnt: 0
+10-02 14:09:43.125     0     0 D         : [   21.209322@2] the demux           clock off, ref cnt: 0
+10-02 14:09:43.125     0     0 D         : [   21.209498@2] the demux           clock on, ref cnt: 1
+10-02 14:09:43.125     0     0 D         : [   21.209510@2] the parser_top      clock on, ref cnt: 1
+10-02 14:09:43.125     0     0 D         : [   21.209516@2] the vdec            clock on, ref cnt: 1
+10-02 14:09:43.125     0     0 D         : [   21.209541@2] the clk_vdec_mux    clock on, ref cnt: 1
+10-02 14:09:43.125     0     0 D         : [   21.209555@2] vdec mux clock is 500000000 Hz
+10-02 14:09:43.125     0     0 D         : [   21.209635@2] vdec_create instance ffffff8017639000, total 1
+10-02 14:09:43.125     0     0 D         : [   21.209664@2] vdec_release instance ffffff8017639000, total 1
+10-02 14:09:43.125     0     0 D         : [   21.209714@2] the clk_vdec_mux    clock off, ref cnt: 0
+10-02 14:09:43.125     0     0 D         : [   21.209721@2] the vdec            clock off, ref cnt: 0
+10-02 14:09:43.125     0     0 D         : [   21.209728@2] the parser_top      clock off, ref cnt: 0
+10-02 14:09:43.125     0     0 D         : [   21.209733@2] the demux           clock off, ref cnt: 0
+10-02 14:09:43.125     0     0 D [   21.209909@2] ionvid: dbg: ionvideo open
+10-02 14:09:43.125     0     0 D [   21.209933@2] ionvid: dbg: vidioc_close!!!!
+10-02 14:09:43.126     0     0 D [   21.209945@2] ionvid: dbg: vidioc_close
+10-02 14:09:43.199     0     0 W         : [   21.283490@0]
+10-02 14:09:43.199     0     0 W         : [   21.283498@0]
+10-02 14:09:43.199     0     0 W         : [   21.283502@0]
+10-02 14:09:43.199     0     0 W         : [   21.283506@0] btHAL->++++++sdio bt driver insmod start.++++++
+10-02 14:09:43.199     0     0 W         : [   21.283516@0] btHAL->BTAML_init
+10-02 14:09:43.199     0     0 W         : [   21.283535@0] btHAL->major number:494
+10-02 14:09:43.199     0     0 W         : [   21.283548@0] btHAL->BT_sdiodev driver(major 494) installed.
+10-02 14:09:43.199     0     0 W [   21.285116@0] btHAL->BTAML_init: BT_major 494
+10-02 14:09:43.199     0     0 W [   21.285137@0] btHAL->BTAML_init: devID 517996544
+10-02 14:09:43.199     0     0 W         : [   21.285147@0] w1_sdio->Insmod BT sdio driver!
+10-02 14:09:43.199     0     0 W         : [   21.285266@0] btHAL->host_req_status = 0x0
+10-02 14:09:43.211     0     0 W         : [   21.298187@2] btHAL->BT power on: before write A12=0x2a2c, A13=0xc0000006, A14=0x1, A15=0x6, A16=0x0, A17=0x700, A18=0x1700, A20=0x0, A22=0x704
+10-02 14:09:43.215     0     0 W         : [   21.299149@0] btHAL->BT power on:RG_BT_PMU_A14 = 0x1f
+10-02 14:09:43.216     0     0 W         : [   21.301649@0] btHAL->btaml_fops_open reg_config_complete is 0 return
+10-02 14:09:43.228     0     0 I [   21.313739@0] hdmitx: system: irq 80000004 0
+10-02 14:09:43.235     0     0 W         : [   21.321913@0] btHAL->btaml_fops_open reg_config_complete is 0 return
+10-02 14:09:43.241     0     0 W         : [   21.325634@0] btHAL->BT power on:RG_BT_PMU_A17 = 0x700
+10-02 14:09:43.252     0     0 W         : [   21.335630@3] btHAL->BT power on:RG_BT_PMU_A20 = 0x0
+10-02 14:09:43.252     0     0 I [   21.337834@0] hdmitx: system: plugout
+10-02 14:09:43.252     0     0 I [   21.337848@0] hdmitx: hdmitx_set_hdr10plus_pkt: null vsif
+10-02 14:09:43.254     0     0 W         : [   21.340006@3] btHAL->BT power on: config_bt_pmu_reg, line=89
+10-02 14:09:43.254     0     0 I [   21.340039@0] hdmitx: system: update physcial size: 16 9
+10-02 14:09:43.254     0     0 I [   21.340055@0] hdmitx: system: update rx hdr info 0
+10-02 14:09:43.255     0     0 W         : [   21.342186@0] btHAL->btaml_fops_open reg_config_complete is 0 return
+10-02 14:09:43.258     0     0 I [   21.343983@3] hdmitx: store_avmute 1
+10-02 14:09:43.258     0     0 I [   21.343995@3] hdmitx: hw: avmute set to 2
+10-02 14:09:43.258     0     0 I [   21.344164@3] hdmitx: system: set hdcp_pwr 1
+10-02 14:09:43.264     0     0 W         : [   21.348994@1] btHAL->BT power on:RG_BT_PMU_A18 = 0x1700
+10-02 14:09:43.278     0     0 W         : [   21.362513@2] btHAL->btaml_fops_open reg_config_complete is 0 return
+10-02 14:09:43.285     0     0 W         : [   21.368992@2] btHAL->BT power on:RG_BT_PMU_A22 = 0x704
+10-02 14:09:43.298     0     0 W         : [   21.382867@2] btHAL->btaml_fops_open reg_config_complete is 0 return
+10-02 14:09:43.318     0     0 W         : [   21.403214@2] btHAL->btaml_fops_open reg_config_complete is 0 return
+10-02 14:09:43.324     0     0 W         : [   21.409000@0] btHAL->BT power on:RG_BT_PMU_A12 = 0x2a2c
+10-02 14:09:43.339     0     0 W         : [   21.423504@2] btHAL->btaml_fops_open reg_config_complete is 0 return
+10-02 14:09:43.352     0     0 E [   21.435641@0] vout: error: refresh_tvout_mode: no matched cur_mode: 576cvbs, force to invalid
+10-02 14:09:43.352     0     0 I [   21.435650@0] vout: refresh_tvout_mode: mode chang to invalid
+10-02 14:09:43.357     0     0 I [   21.435655@0] vout: vmode set to invalid
+10-02 14:09:43.357     0     0 I [   21.435860@0] fb: current vmode=1080p60hz, cmd: 0x10000
+10-02 14:09:43.357     0     0 I [   21.435937@0] vout: new mode invalid set ok
+10-02 14:09:43.357     0     0 I [   21.435943@0] fb: current vmode=invalid, cmd: 0x20000
+10-02 14:09:43.360     0     0 W         : [   21.443778@2] btHAL->btaml_fops_open reg_config_complete is 0 return
+10-02 14:09:43.360     0     0 W         : [   21.444175@3] btHAL->config_bt_pmu_reg bt_pmu_status:0x6
+10-02 14:09:43.378     0     0 W         : [   21.463955@2] btHAL->btaml_fops_open reg_config_complete is 0 return
+10-02 14:09:43.381     0     0 W         : [   21.467647@2] btHAL->BT power on: after write A12=0x2a2c, A13=0xc0000006, A14=0x1f, A15=0x6, A16=0x0, A17=0x700, A18=0x1700, A20=0x0, A22=0x704
+10-02 14:09:43.382     0     0 W         : [   21.467735@2] btHAL->------sdio bt driver insmod end.------
+10-02 14:09:43.399     0     0 W         : [   21.484190@0] btHAL->btaml_fops_open reg_config_complete is 1
+10-02 14:09:43.399     0     0 W         : [   21.484206@0]
+10-02 14:09:43.399     0     0 W         : [   21.484210@0]
+10-02 14:09:43.399     0     0 W         : [   21.484213@0]
+10-02 14:09:43.399     0     0 I         : [   21.484625@0] meson_uart c11084c0.serial: ttyS1 use xtal(8M) 24000000 change 0 to 9600
+10-02 14:09:43.400     0     0 I         : [   21.484739@0] meson_uart c11084c0.serial: ttyS1 use xtal(8M) 24000000 change 9600 to 9600
+10-02 14:09:43.400     0     0 I         : [   21.484775@0] meson_uart c11084c0.serial: ttyS1 use xtal(8M) 24000000 change 9600 to 115200
+10-02 14:09:43.405     0     0 I         : [   21.488054@1] meson_uart c11084c0.serial: ttyS1 use xtal(8M) 24000000 change 115200 to 4000000
+10-02 14:09:43.406     0     0 I [   21.490218@0] hdmitx: system: restore hdcp_pwr 0
+10-02 14:09:43.406     0     0 W         : [   21.490373@0] amhdmitx amhdmitx0: hdmitx20: stop14
+10-02 14:09:43.406     0     0 W         : [   21.492919@0] amhdmitx amhdmitx0: hdmitx20: stop22
+10-02 14:09:43.411     0     0 I [   21.496203@1] vout: vmode set to null
+10-02 14:09:43.416     0     0 I [   21.496412@1] fb: current vmode=null, cmd: 0x10000
+10-02 14:09:43.416     0     0 I [   21.496427@1] vout: new mode null set ok
+10-02 14:09:43.416     0     0 I [   21.496431@1] fb: current vmode=null, cmd: 0x20000
+10-02 14:09:43.416     0     0 I [   21.496684@1] vout: vmode set to 576cvbs
+10-02 14:09:43.416     0     0 E [   21.496711@1] vout: error: no matched vout mode, exit
+10-02 14:09:43.618     0     0 E         : [   21.702555@0] ion_dev ion_dev: Fail to allocate buffer
+10-02 14:09:43.679     0     0 I [   21.766484@0] hdmitx: system: irq 80000002 0
+10-02 14:09:43.685     0     0 E         : [   21.769970@3] ion_dev ion_dev: Fail to allocate buffer
+10-02 14:09:43.707     0     0 E         : [   21.789907@0] ion_dev ion_dev: Fail to allocate buffer
+10-02 14:09:43.858     0     0 I [   21.942275@0] vout: aml_tvout_mode_work: monitor stop
+10-02 14:09:44.018     0     0 D [   22.105313@0] logd: logdr: UID=1000 GID=1007 PID=3652 n tail=0 logMask=80 pid=0 start=0ns timeout=0ns
+10-02 14:09:44.159     0     0 I [   22.244352@1] selinux: SELinux: Skipping restorecon_recursive(/data/system_ce/0)
+10-02 14:09:44.159     0     0 I         : [   22.244352@1]
+10-02 14:09:44.162     0     0 I [   22.249124@1] selinux: SELinux: Skipping restorecon_recursive(/data/misc_ce/0)
+10-02 14:09:44.164     0     0 I         : [   22.249124@1]
+10-02 14:09:44.197     0     0 W [   22.284145@1] <wlan0>: vm_cfg80211_scan vm_opmode:1, vm_state:1, connect_status:0, nssids:1
+10-02 14:09:44.197     0     0 W         : [   22.284157@1] vm_cfg80211_scan lnssids 0, lssidlen 0, n_channels:51
+10-02 14:09:44.197     0     0 W         : [   22.284163@1] wifi_mac_start_scan vm_scanchan_rssi:0
+10-02 14:09:44.197     0     0 W         : [   22.284169@1] wifi_mac_get_channel_rssi_before_scan last rssi:0
+10-02 14:09:44.197     0     0 W         : [   22.284173@1] wifi_mac_get_channel_rssi_before_scan current rssi:-65
+10-02 14:09:44.197     0     0 W         : [   22.284178@1] wifi_mac_set_channel_rssi channnel rssi:191
+10-02 14:09:44.197     0     0 W         : [   22.284205@1] <running> wifi_mac_scan_flush 436
+10-02 14:09:44.197     0     0 W         : [   22.284211@1] wifi_mac_start_scan vid:0---> scan start, CfgFlags is:0000000f, ss->ss_nssid:0
+10-02 14:09:44.197     0     0 W         : [   22.284223@2] phy_set_channel_rssi channnel rssi:191
+10-02 14:09:44.198     0     0 W         : [   22.284912@2] scan all chans
+10-02 14:09:44.198     0     0 W         : [   22.284929@2] scan_start_task wm_nrunning:0
+10-02 14:09:44.205     0     0 I [   22.288938@0] hdmitx: system: plugin
+10-02 14:09:44.371     0     0 I [   22.457860@0] hdmitx: edid: EDID Parser:
+10-02 14:09:44.371     0     0 I [   22.457867@0] hdmitx: edid: PLUGIN_DVI_OUT
+10-02 14:09:44.371     0     0 I [   22.457872@0] hdmitx: hdmitx: reach vesa idx MAX
+10-02 14:09:44.371     0     0 I [   22.457876@0] hdmitx: hdmitx: reach vesa idx MAX
+10-02 14:09:44.371     0     0 I [   22.457880@0] hdmitx: hdmitx: reach vesa idx MAX
+10-02 14:09:44.371     0     0 I [   22.457921@0] hdmitx: edid: not find IEEEOUT
+10-02 14:09:44.372     0     0 I [   22.457925@0] hdmitx: edid: set default vic
+10-02 14:09:44.372     0     0 I [   22.457949@0] hdmitx: edid: check sum invalid
+10-02 14:09:44.372     0     0 I [   22.457956@0] hdmitx: edid: check sum invalid
+10-02 14:09:44.372     0     0 I [   22.457962@0] hdmitx: edid: blk0 raw data
+10-02 14:09:44.372     0     0 I [   22.458005@0] hdmitx: edid:
+10-02 14:09:44.372     0     0 I         : [   22.458005@0] 00ffffffffffff0000ffffffffffff0000ffffffffffff0000ffffffffffff00
+10-02 14:09:44.372     0     0 I chatty  : uid=0(root) logd identical 2 lines
+10-02 14:09:44.372     0     0 I         : [   22.458005@0] 00ffffffffffff0000ffffffffffff0000ffffffffffff0000ffffffffffff00
+10-02 14:09:44.372     0     0 I         : [   22.458005@0]
+10-02 14:09:44.372     0     0 I         : [   22.458005@0]
+10-02 14:09:44.372     0     0 I [   22.458013@0] hdmitx: system: update physcial size: 2550 2550
+10-02 14:09:44.373     0     0 I [   22.460129@0] hdmitx: hdmitx: ddc rd8b error 0x50 0x00 0x00
+10-02 14:09:44.378     0     0 I [   22.465182@0] hdmitx: hw: set audio
+10-02 14:09:44.378     0     0 I [   22.465192@0] hdmitx: hw: hdmitx tx_aud_src = 0
+10-02 14:09:44.378     0     0 I [   22.465223@0] hdmitx: fs = 3, cd = 6, tmds_clk = 0
+10-02 14:09:44.378     0     0 I [   22.465228@0] hdmitx: hw: aud_n_para = 6144
+10-02 14:09:44.383     0     0 I [   22.465245@0] hdmitx: hw: set channel status
+10-02 14:09:44.383     0     0 I [   22.465295@0] hdmitx: audio: Audio Type: PCM
+10-02 14:09:44.388     0     0 I [   22.473501@1] hdmitx: store_avmute 1
+10-02 14:09:44.388     0     0 I [   22.473515@1] hdmitx: hw: avmute set to 2
+10-02 14:09:44.388     0     0 I [   22.475479@0] hdmitx: system: set hdcp_pwr 1
+10-02 14:09:44.432     0     0 I [   22.517910@2] hdmitx: system: restore hdcp_pwr 0
+10-02 14:09:44.432     0     0 W         : [   22.518034@2] amhdmitx amhdmitx0: hdmitx20: stop14
+10-02 14:09:44.435     0     0 W         : [   22.519772@3] amhdmitx amhdmitx0: hdmitx20: stop22
+10-02 14:09:44.438     0     0 I [   22.524978@2] hdmitx: system: sname = 720p60hz
+10-02 14:09:44.439     0     0 I [   22.524989@2] hdmitx: system: char_clk = 74250
+10-02 14:09:44.439     0     0 I [   22.524994@2] hdmitx: system: cd = 4
+10-02 14:09:44.439     0     0 I [   22.524998@2] hdmitx: system: cs = 0
+10-02 14:09:44.439     0     0 I [   22.525004@2] hdmitx: RX tmds clk: 150   Calc clk: 74
+10-02 14:09:44.439     0     0 I [   22.525200@2] vout: vmode set to null
+10-02 14:09:44.439     0     0 I [   22.525208@2] vout: don't set the same mode as current, exit
+10-02 14:09:44.441     0     0 I [   22.528046@3] vout: vmode set to 720p60hz
+10-02 14:09:44.450     0     0 I [   22.534369@1] fb: current vmode=null, cmd: 0x10000
+10-02 14:09:44.450     0     0 I [   22.534387@1] hdmitx: hdmitx_set_current_vmode[3944]
+10-02 14:09:44.450     0     0 I [   22.534392@1] hdmitx: system: recalc before 720p60hz 60 1
+10-02 14:09:44.450     0     0 I [   22.534399@1] hdmitx: system: recalc after 720p60hz 60 1
+10-02 14:09:44.450     0     0 I [   22.534415@1] hdmitx: system: get current mode: 720p60hz
+10-02 14:09:44.450     0     0 I [   22.534421@1] hdmitx: system: update physcial size: 2550 2550
+10-02 14:09:44.450     0     0 I [   22.535825@0] hdmitx: video: already init VIC = 0  Now VIC = 4
+10-02 14:09:44.450     0     0 I [   22.535833@0] hdmitx: video: rx edid only support RGB format
+10-02 14:09:44.450     0     0 I [   22.535838@0] hdmitx: hw: div40: 0
+10-02 14:09:44.478     0     0 I [   22.564541@0] hdmitx: ddc w1b error 0x54 0x20 0x00
+10-02 14:09:44.478     0     0 I [   22.564557@0] hdmitx: frac_rate = 0
+10-02 14:09:44.478     0     0 I [   22.564567@0] hdmitx: config HPLL = 5940000 frac_rate = 0
+10-02 14:09:44.478     0     0 I [   22.564625@0] hdmitx: HPLL: 0xc000027b
+10-02 14:09:44.478     0     0 I [   22.564629@0] hdmitx: config HPLL done
+10-02 14:09:44.478     0     0 I [   22.564637@0] hdmitx: set_hpll_od3_clk_div[643] div = 6
+10-02 14:09:44.478     0     0 I [   22.564645@0] hdmitx: j = 2  vid_clk_div = 1
+10-02 14:09:44.478     0     0 I [   22.564659@0] hdmitx: set enc for VIC: 4
+10-02 14:09:44.518     0     0 I [   22.604538@0] hdmitx: hw:  config hdmitx IP vic = 4 cd:4 cs: 0
+10-02 14:09:44.531     0     0 I [   22.618151@3] hdmitx: video: Sink is HDMI device
+10-02 14:09:44.531     0     0 I [   22.618218@3] hdmitx: hw: set audio
+10-02 14:09:44.531     0     0 I [   22.618229@3] hdmitx: hw: hdmitx tx_aud_src = 0
+10-02 14:09:44.531     0     0 I [   22.618254@3] hdmitx: fs = 3, cd = 4, tmds_clk = 74250
+10-02 14:09:44.531     0     0 I [   22.618259@3] hdmitx: hw: aud_n_para = 6144
+10-02 14:09:44.531     0     0 I [   22.618275@3] hdmitx: hw: set channel status
+10-02 14:09:44.531     0     0 I [   22.618326@3] hdmitx: audio: Audio Type: PCM
+10-02 14:09:44.531     0     0 I [   22.618333@3] hdmitx: system: update rx hdr info 0
+10-02 14:09:44.531     0     0 I [   22.618340@3] vout: new mode 720p60hz set ok
+10-02 14:09:44.531     0     0 I [   22.618348@3] fb: current vmode=720p60hz, cmd: 0x20000
+10-02 14:09:44.531     0     0 I [   22.618356@3] fb: osd_update_disp_axis_hw:pan_data(0,0,0,0)
+10-02 14:09:44.531     0     0 I [   22.618359@3] fb: osd_update_disp_axis_hw:dispdata(0,0,1279,719)
+10-02 14:09:44.551     0     0 I [   22.637705@1] vout: vout_io_open
+10-02 14:09:44.551     0     0 I [   22.637722@1] vout: vout_ioctl: cmd_dir = 0x2, cmd_nr = 0x0
+10-02 14:09:44.551     0     0 I [   22.637734@1] vout: vout_io_release
+10-02 14:09:44.561     0     0 I [   22.645975@1] hdmitx: system: set frac_rate_policy as 0
+10-02 14:09:44.594     0     0 I [   22.681575@3] hdmitx: system: store_phy 1
+10-02 14:09:44.658     0     0 I [   22.742370@3] hdmitx: store_avmute -1
+10-02 14:09:44.659     0     0 I [   22.742382@3] hdmitx: hw: avmute set to 1
+10-02 14:09:44.659     0     0 I [   22.744078@0] hdmitx: system: set hdcp_pwr 1
+10-02 14:09:44.701     0     0 I [   22.785904@2] hdmitx: system: restore hdcp_pwr 0
+10-02 14:09:44.701     0     0 W         : [   22.786061@2] amhdmitx amhdmitx0: hdmitx20: stop14
+10-02 14:09:44.701     0     0 W         : [   22.788347@2] amhdmitx amhdmitx0: hdmitx20: stop22
+10-02 14:09:44.704     0     0 I [   22.791614@0] hdmitx: system: hdcp: set mode as 1
+10-02 14:09:44.705     0     0 I [   22.792130@0] hdmitx: system: irq 80000001 0
+10-02 14:09:47.029     0     0 I [   25.112799@3] input: virtual-search as /devices/virtual/input/input2
+10-02 14:09:47.591     0     0 W         : [   25.675662@2] vm_cfg80211_inform_bss 1343 pwdev_priv->scan_request=ffffffc015e77000 wnet_vif_id=0
+10-02 14:09:47.591     0     0 W         : [   25.675772@2] wifi_mac_scan_parse scan_res:6, chan_count:37, threshold:30, is_need_set_gain:0
+10-02 14:09:47.591     0     0 W         : [   25.675808@2] wifi_mac_end_scan---> scan finish, vid:0, clean vm_flags 0x4a500
+10-02 14:09:47.591     0     0 W         : [   25.676021@2] phy_set_channel_rssi channnel rssi:174
+10-02 14:09:47.728     0     0 W         : [   25.815214@3] vm_cfg80211_connect 2645 <wlan0> privacy=1, key=          (null), key_len=0, key_idx=0
+10-02 14:09:47.729     0     0 W         : [   25.815224@3] vm_cfg80211_connect 2653 vm opmode (1:Station,2: ap) :1
+10-02 14:09:47.729     0     0 W         : [   25.815231@3] vm_cfg80211_connect ssid=Fabio_5G, len=8
+10-02 14:09:47.729     0     0 W         : [   25.815235@3] clean roaming candidate channels
+10-02 14:09:47.729     0     0 W         : [   25.815243@3] vm_cfg80211_connect 2716 bssid=b4:c0:c3:12:ec:42
+10-02 14:09:47.733     0     0 W         : [   25.815248@3] vm_cfg80211_connect 2723  wnet_vif->vm_flags=0x43510
+10-02 14:09:47.733     0     0 W         : [   25.815253@3] vm_cfg80211_connect 2766 lsme->auth_type=0, sta_authmode=1
+10-02 14:09:47.733     0     0 W         : [   25.815257@3] vm_cfg80211_connect 2770 wpa_versions=0x02
+10-02 14:09:47.733     0     0 W         : [   25.815262@3] vm_cfg80211_connect 2793 ciphers_pairwise[0]=0xfac04
+10-02 14:09:47.733     0     0 W         : [   25.815267@3] vm_cfg80211_connect 2814 cipher_group=0xfac04
+10-02 14:09:47.733     0     0 W         : [   25.815272@3] vm_cfg80211_connect 2835 akm_suites[0]=0xfac02
+10-02 14:09:47.733     0     0 W         : [   25.815276@3] vm_cfg80211_connect NL80211_MFP_NO
+10-02 14:09:47.733     0     0 W         : [   25.815280@3] vm_cfg80211_connect 2867 lsme->ie_len=45
+10-02 14:09:47.733     0     0 W         : [   25.815287@3] vm_p2p_set_wpsp2pie 1146 <wlan0> type=5
+10-02 14:09:47.733     0     0 W         : [   25.815294@3] vm_cfg80211_connect 2902 connect_timeout=8000 ms
+10-02 14:09:47.733     0     0 W         : [   25.815303@3] vm_cfg80211_connect 2918
+10-02 14:09:47.733     0     0 W [   25.815308@3] <wlan0>: <running> wifi_mac_initial
+10-02 14:09:47.733     0     0 W         : [   25.815313@3] wifi_mac_preempt_scan 6701 try to preempt scan
+10-02 14:09:47.733     0     0 W         : [   25.815323@3] <wlan0> wifi_mac_sub_sm 2550  wifi_mac_sub_sm state SCAN->SCAN
+10-02 14:09:47.733     0     0 W         : [   25.815328@3] <wlan0> wifi_mac_sub_sm 2678  wifi_mac_sub_sm(2678) sm:scan/connecting/auth/assoc:
+10-02 14:09:47.733     0     0 W         : [   25.815331@3] wifi_mac_chk_scan flags:0000000a
+10-02 14:09:47.733     0     0 W         : [   25.815354@3] match_bss flag = 0x0, ssid=Fabio_5G, chan_pri_num=40, SI_rssi =206, vm_flags=1043510 bssid=b4:c0:c3:12:ec:42 chan_flags=0x8000
+10-02 14:09:47.733     0     0 W         : [   25.815364@3] wifi_mac_start_scan vm_scanchan_rssi:-49
+10-02 14:09:47.733     0     0 W         : [   25.815395@3] wifi_mac_start_scan vid:0---> scan start, CfgFlags is:0000010a, ss->ss_nssid:1
+10-02 14:09:47.733     0     0 W         : [   25.815401@3] vm_cfg80211_connect 2923
+10-02 14:09:47.733     0     0 W         : [   25.815663@2] add scan connect chans:40
+10-02 14:09:47.733     0     0 W         : [   25.815676@2] scan_start_task wm_nrunning:0
+10-02 14:09:47.768     0     0 W         : [   25.852303@2] wifi_mac_scan_timeout find connect ap
+10-02 14:09:47.768     0     0 W         : [   25.852345@2] match_bss flag = 0x0, ssid=Fabio_5G, chan_pri_num=40, SI_rssi =208, vm_flags=1043510 bssid=b4:c0:c3:12:ec:42 chan_flags=0x8000
+10-02 14:09:47.768     0     0 W         : [   25.852350@2] wifi_mac_connect 249
+10-02 14:09:47.768     0     0 W         : [   25.852395@2] <running> wifi_mac_alloc_amsdu_node (638) amsdu_max_length=7935
+10-02 14:09:47.768     0     0 W         : [   25.852402@2] alloc_sta_node vid:0, sta:ffffffc00bc30800
+10-02 14:09:47.768     0     0 W         : [   25.852434@2] wifi_mac_connect start connect to ssid:Fabio_5G, pri_channel:40, center_chan:5210, bw:2, BSSID:b4:c0:c3:12:ec:42, mode:14
+10-02 14:09:47.768     0     0 W         : [   25.852443@2] wifi_mac_end_scan---> scan finish, vid:0, clean vm_flags 0x4a500
+10-02 14:09:47.768     0     0 W         : [   25.852646@2] wifi_mac_start_bss_ex ori:ffffffc024e9e000, add main_sta:ffffffc00bc30800
+10-02 14:09:47.768     0     0 W         : [   25.852654@2] wifi_mac_start_bss_ex, obss:ffffffc024e9e000
+10-02 14:09:47.769     0     0 W         : [   25.852663@2] wifi_mac_free_sta sta:ffffffc024e9e000, new:1
+10-02 14:09:47.769     0     0 W         : [   25.852696@2] <running> nsta_cleanup sta:ffffffc024e9e000
+10-02 14:09:47.769     0     0 W [   25.853127@2] wifi_mac_ChangeChannel: 040 2
+10-02 14:09:47.769     0     0 W         : [   25.853148@2] <wlan0> wifi_mac_sub_sm 2550  wifi_mac_sub_sm state SCAN->AUTH
+10-02 14:09:47.771     0     0 W         : [   25.853195@2] drv_to_hal hal_priv->bhaltxdrop:0
+10-02 14:09:47.771     0     0 W [   25.853206@2]  connect_start: 3006
+10-02 14:09:47.772     0     0 W [   25.853216@2] phy_set_ac_param-->wnet_vif_id: 0, aifsn:2, cwminmax:a4 txop:0
+10-02 14:09:47.878     0     0 W [   25.963424@2] phy_set_ac_param-->wnet_vif_id: 0, aifsn:7, cwminmax:a4 txop:0
+10-02 14:09:47.878     0     0 W [   25.963681@2] phy_set_ac_param-->wnet_vif_id: 0, aifsn:2, cwminmax:43 txop:94
+10-02 14:09:47.878     0     0 W [   25.963834@2] phy_set_ac_param-->wnet_vif_id: 0, aifsn:2, cwminmax:32 txop:47
+10-02 14:09:47.897     0     0 W         : [   25.976093@0] <wlan0> wifi_mac_recv_auth 3695 mac[b4:c0:c3:12:ec:42] recv auth frame with algorithm 0 seq 2
+10-02 14:09:47.897     0     0 W         : [   25.976103@0] <running> wifi_mac_auth_open 1159
+10-02 14:09:47.897     0     0 W         : [   25.976118@0] <wlan0> wifi_mac_sub_sm 2550  wifi_mac_sub_sm state AUTH->ASSOC
+10-02 14:09:47.897     0     0 W         : [   25.978213@0] wifi_mac_recv_assoc_rsp assoc status code:0
+10-02 14:09:47.897     0     0 W [   25.978276@2] phy_set_ac_param-->wnet_vif_id: 0, aifsn:3, cwminmax:a2 txop:0
+10-02 14:09:47.897     0     0 W         : [   25.978288@0] <wlan0> wifi_mac_sub_sm 2550  wifi_mac_sub_sm state ASSOC->CONNECTED
+10-02 14:09:47.897     0     0 W         : [   25.978305@0] ****************************************************
+10-02 14:09:47.897     0     0 W         : [   25.978309@0] sta connect ok!!! AP CHANNEL:40, BW:2, SSID:Fabio_5G, BSSID:b4:c0:c3:12:ec:42
+10-02 14:09:47.897     0     0 W         : [   25.978311@0] ****************************************************
+10-02 14:09:47.897     0     0 W         : [   25.978315@0] wifi_mac_top_sm(2965) wm_running=1, wnet_vif_mode 14 vm_bandwidth:2
+10-02 14:09:47.897     0     0 W [   25.978324@0] wifi_mac_top_sm(3012): connect end =1, wnet_vif_mode 14
+10-02 14:09:47.897     0     0 W         : [   25.978361@0] vm_cfg80211_indicate_connect 1414 <wlan0>
+10-02 14:09:47.897     0     0 W         : [   25.978366@0] vm_cfg80211_indicate_connect 1430 wnet_vif->vm_opt_ie_len=45 add req_ie_len
+10-02 14:09:47.897     0     0 W         : [   25.978371@0] vm_cfg80211_indicate_connect 1436 wnet_vif->vm_state=5 pwdev->iftype =2
+10-02 14:09:47.897     0     0 W [   25.978405@2] phy_set_ac_param-->wnet_vif_id: 0, aifsn:7, cwminmax:a2 txop:0
+10-02 14:09:47.897     0     0 W         : [   25.978411@0] vm_cfg80211_indicate_connect 1462 wnet_vif->vm_state=5
+10-02 14:09:47.897     0     0 W [   25.978426@0] aml_minstrel_init(512): channel_band=1, rate_mode=2
+10-02 14:09:47.897     0     0 W         : [   25.978432@0] support_legacy_rate_init, 320 channel_band=1, bit_val=0x0ff0
+10-02 14:09:47.897     0     0 W         : [   25.978440@0] aml_minstrel_init, ht_supported:1, minstel_pri=ffffffc023f07a40, p_ieee_sta=ffffffc00bc30d38
+10-02 14:09:47.897     0     0 W         : [   25.978494@0] minstrel_init_start_stats rate_index:7, bw:1
+10-02 14:09:47.897     0     0 W         : [   25.978499@0] minstrel_init_start_stats rate_index:7, bw:1
+10-02 14:09:47.897     0     0 W [   25.978530@0] aml_minstrel_init: sta:ffffffc00bc30800, sta_minstrel_ht_priv:ffffffc00aa12000
+10-02 14:09:47.897     0     0 W         : [   25.978564@0] vm_cfg80211_notify_mgmt_rx 4472 <wlan0> fc0=0x10, fc1=0x0, channel:40, freq=5200
+10-02 14:09:47.897     0     0 W         : [   25.978569@0] vm_cfg80211_notify_mgmt_rx 4546 call cfg80211_rx_mgmt
+10-02 14:09:47.897     0     0 W         : [   25.978600@0] <wlan0> wifi_mac_recv_action 4480  mac[b4:c0:c3:12:ec:42] action mgt frame (cat 3, act 2)
+10-02 14:09:47.897     0     0 W         : [   25.978616@0] phy_delt_ba_ok StaAid 1,TID 4,AuthRole=1
+10-02 14:09:47.897     0     0 W [   25.978685@2] phy_set_ac_param-->wnet_vif_id: 0, aifsn:2, cwminmax:42 txop:94
+10-02 14:09:47.897     0     0 W         : [   25.979045@0] <wlan0> wifi_mac_recv_action 4480  mac[b4:c0:c3:12:ec:42] action mgt frame (cat 3, act 2)
+10-02 14:09:47.897     0     0 W         : [   25.979073@0] phy_delt_ba_ok StaAid 1,TID 6,AuthRole=1
+10-02 14:09:47.897     0     0 W [   25.979312@2] phy_set_ac_param-->wnet_vif_id: 0, aifsn:2, cwminmax:32 txop:47
+10-02 14:09:47.897     0     0 W         : [   25.979562@0] <wlan0> wifi_mac_recv_action 4480  mac[b4:c0:c3:12:ec:42] action mgt frame (cat 3, act 2)
+10-02 14:09:47.897     0     0 W         : [   25.979571@0] phy_delt_ba_ok StaAid 1,TID 6,AuthRole=0
+10-02 14:09:47.897     0     0 W         : [   25.980246@2] phy_vmac_connect(471)
+10-02 14:09:47.897     0     0 W [   25.980342@2]  phy_set_mac_bssid: wnet_vif_id= 0 bssid=b4:c0:c3:12:ec:42
+10-02 14:09:47.897     0     0 W         : [   25.980347@2] ++phy_register_sta_id
+10-02 14:09:47.897     0     0 W         : [   25.980352@2] phy_register_sta_id b4c0c312ec42
+10-02 14:09:47.897     0     0 W         : [   25.980356@2] ====>phy_register_sta_id StaAid 19 wnet_vif_id=0
+10-02 14:09:47.897     0     0 W         : [   25.980484@2] drv_wnet_vif_connect_ex 562 sta id registered, allow to send pkt
+10-02 14:09:47.898     0     0 W         : [   25.980838@2] <running> drv_bcn_init 346
+10-02 14:09:47.941     0     0 W         : [   26.026444@0] mic_err = 0, keymiss_err 1 wnet_vif_id 0
+10-02 14:09:47.998     0     0 W         : [   26.084771@2] eapol frame send
+10-02 14:09:48.001     0     0 W         : [   26.087609@1] eapol frame send
+10-02 14:09:48.002     0     0 W         : [   26.088644@1] vm_cfg80211_add_key adding key for <wlan0> vm_state=5, cipher=0xfac04 key_len=16 seq_len=6 kid=0, pariwise:1
+10-02 14:09:48.002     0     0 W         : [   26.088718@1] key is ec:e7:be:ff:99:8f:c1:d9:66:66:f6:24:48:73:82:f5:
+10-02 14:09:48.002     0     0 W [   26.088724@1] mac_addr: b4:c0:c3:12:ec:42
+10-02 14:09:48.002     0     0 W         : [   26.089090@2] phy_set_ucast_key wnet_vif_id 0 encryType=4 StaAid 1
+10-02 14:09:48.002     0     0 W [   26.089101@2] vm_cfg80211_add_key(2506): 0
+10-02 14:09:48.003     0     0 W         : [   26.089321@2] vm_cfg80211_config_default_key<wlan0>, index:0, uni:1, mul:0
+10-02 14:09:48.007     0     0 W         : [   26.090591@2] vm_cfg80211_add_key adding key for <wlan0> vm_state=5, cipher=0xfac04 key_len=16 seq_len=6 kid=1, pariwise:0
+10-02 14:09:48.012     0     0 W         : [   26.090604@2] key is 58:ec:7e:79:df:bf:fa:f1:58:58:fc:97:f7:de:7d:af:
+10-02 14:09:48.012     0     0 W         : [   26.090656@2] Multicast_Key_Set_Cmd wnet_vif_id 0 encryType 4 keyId 1
+10-02 14:09:48.012     0     0 W         : [   26.091538@3] vm_cfg80211_add_key set vm_def_txkey=1
+10-02 14:09:48.012     0     0 W [   26.091548@3] vm_cfg80211_add_key(2506): 0
+10-02 14:09:48.013     0     0 W         : [   26.100052@3] vm_cfg80211_change_station 4140 <wlan0>
+10-02 14:09:48.013     0     0 W [   26.100061@3] mac=b4: c0:c3:12:ec:42
+10-02 14:09:48.013     0     0 W         : [   26.100066@3] ---find sta, not support yet
+10-02 14:09:48.014     0     0 W         : [   26.100714@3] phy_set_rekey_data wnet_vif_id 0 StaAid 1
+10-02 14:09:48.074     0     0 W         : [   26.156733@1] <running> wifi_mac_tx_addba_check 554 tid_index = 0
+10-02 14:09:48.075     0     0 W         : [   26.159118@0] <wlan0> wifi_mac_recv_action 4480  mac[b4:c0:c3:12:ec:42] action mgt frame (cat 3, act 1)
+10-02 14:09:48.121     0     0 W         : [   26.208391@0] aml_android_priv_cmd cmd_len 4096 16
+10-02 14:09:48.121     0     0 W [   26.208409@0] aml_android_priv_cmd: Android private cmd "SETSUSPENDMODE 0" on wlan0
+10-02 14:09:48.124     0     0 W         : [   26.209228@3] vm_cfg80211_set_power_mgmt 2612 <wlan0> enabled=0 timeout=-1
+10-02 14:09:48.157     0     0 W         : [   26.242923@2] dhcp send status : 1
+10-02 14:09:48.161     0     0 W         : [   26.247243@0] dhcp recv state : 2
+10-02 14:09:48.162     0     0 W         : [   26.248386@0] dhcp recv state : 2
+10-02 14:09:48.174     0     0 W         : [   26.261708@0] <wlan0> wifi_mac_recv_action 4480  mac[b4:c0:c3:12:ec:42] action mgt frame (cat 3, act 0)
+10-02 14:09:48.174     0     0 W [   26.261719@0] wifi_mac_recv_action: ADDBA request . TID 0, buffer size 64  vm_state 5
+10-02 14:09:48.175     0     0 W [   26.261885@0] wifi_mac_send_actionframe: ADDBA response action mgt frame. TID 0, buffer size 64, status 0
+10-02 14:09:48.218     0     0 W         : [   26.304171@3] dhcp send status : 3

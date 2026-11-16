@@ -162,3 +162,49 @@ refuting evidence, current document, final state.
 - Refuted by: some CRCs are config-derived (`kmalloc_caches`, `dev_err`); split not measured per-symbol; 190 is upper bound on what config could recover.
 - Current: `reports/vendor-modules.md` §3 caveat, `reports/rebuilt-kernel.md` §4.
 - Final: SUPERSEDED. Upper bound only.
+
+## 21. template-side `EnableSelinux` reaches Linux via `storeargs`
+
+- Original: poking the final `bootargs` failed (E1 round48), but the template var `EnableSelinux` plus `run storeargs` rebuilds `bootargs` with the marker, since `storeargs` text holds `androidboot.selinux=${EnableSelinux}`.
+- Plausible because: the reference is literally in the live script, and the 9 B WRITE reads back with neighbors intact.
+- Refuted by: round49 hardware run. WRITE `enforcing`->`permissiv` @ `0x33e1d6c4` with readback, pre-storeargs state `EnableSelinux=permissiv` / `bootargs` still `enforcing`, `run storeargs` -> `success` yet `bootargs` 832 B byte-identical `enforcing`. Functional control (`setenv EnableSelinux permissiv` + `run storeargs`, both `success`) also left `bootargs` identical, so it is not a WRITE-visibility artifact. No boot run: nothing new to transport.
+- Round51 correction: both round49 observations read the stale arena (`0x33e1d6c4` / `0x33e1d73f`), never the htab. Round51 hardware oracle proves `setenv` flips `test ${EnableSelinux}` while WRITE to the arena does not, with entry `0x33e2ff40` data `0x33e32910` vs arena `0x33e1d6c4`. So: os experimentos anteriores nao atingiram o objeto runtime autoritativo; seus vereditos sobre o consumo do valor devem ser reinterpretados conforme o novo oracle.
+- Round52 overturn: the htab `bootargs` with `permissiv` produced by round49's control run was still present at round52 entry (832 B sha `df6c9576`, single-field diff vs arena), and round52 re-ran the leg controlled both directions (`df6c9576` byte-identical rebuild + `c5a4b5e3` restore, pointer moves each rebuild). Live `preboot` contains `run storeargs`, the boot-time rebuilder. `0x33e18000` is a stale/shadow copy observed experimentally and must not be used as oracle post-`setenv`.
+- Current: `reports/round49-bootargs-template-selinux.md`, `reports/round51-env-htab-oracle.md`, `reports/round52-write-htab-template.md`.
+- Final: REFUTED for the stale-oracle observation; REPRODUCED through the htab (`setenv`/WRITE -> htab -> `storeargs` -> htab `bootargs`). Kernel transport tested round53 and REFUTED for every env form tried (arena direct, arena template-stale, htab authoritative); no cmdline-to-Linux demonstrated; root unchanged.
+
+## 22. htab `bootargs` reaches Linux verbatim via `bootm`
+
+- Original: round52 proved parser consumption, so handing the verified htab value to the E4-proven `imgread`+`bootm` pair should surface the marker in `ro.boot.*`.
+- Plausible because: the string was byte-verified (`df6c9576`) one step before `bootm`, and round50 disasm shows `bootm`/`fdt_chosen` reading the same htab.
+- Refuted by: round53 hardware run. `imgread` success + `bootm`, stock Android return ~15 s, but `ro.boot.selinux=enforcing` + `reboot_mode normal` vs verified `permissiv`+`fastboot` (E1 double-field signature, now vs authoritative bytes).
+- Round54 offline follow-up: 9/9 `bootargs`-name consumers re-derived, all BL33 writers use the env string (bootm/bootvx appends only); kernel entry is an EL2->EL1 eret (`x2`=FDT), no secure handoff at entry; running `/proc/config.gz` (5691 lines) says bootloader-cmdline-only; fixup target == handoff blob with room to spare. One link left: whether `fdt_chosen` ran+succeeded on this path.
+- Current: `reports/round53-htab-transport.md`, `reports/round54-offline-fdt-path.md`.
+- Final: REFUTED for this form, one run + full static map. No more boots until a static read predicts the pair.
+- Side finding: `setenv` does not rewrite the `0x33e18000` blob (import image vs hash store); blob restored by WRITE, final verify stock-identical. `0x33e18000` is a stale/shadow copy observed experimentally and must not be used as oracle post-`setenv`.
+- Current: `reports/round49-bootargs-template-selinux.md`, `reports/round51-env-htab-oracle.md`.
+- Final: REFUTED for the stale-oracle observation on this build. No script-consumption of a mutated env value has ever been observed here.
+
+## 23. `bootm` re-runs `storeargs`, which is why the marker reverts
+
+- Original: `bootm` reaches the boot-decision script set and `preboot` contains `run storeargs`, so a rebuilt `bootargs` from the template would explain the whole-string revert seen in rounds 53/56/58.
+- Plausible because: `bootm` demonstrably calls `parse_stream` and demonstrably mutates the env, and `storeargs` is the only thing that rebuilds `bootargs`.
+- Refuted by: static census of every `parse_stream` call inside `bootm`'s direct-call closure. Twelve of them, and none is `preboot`, `storeargs` or `bootcmd`. Reproduce with `python3 tools/bootm_env_closure.py reports/round14-bl33-persist/bl33-37e18000.bin 0x37e18000`.
+- Current: `reports/ROOT_FINAL_ANALYSIS.md` N1, `reports/root-final-analysis/01-bootm-env-closure.txt`, `reports/CURRENT_STATE.md` BL33 table.
+- Final: REFUTED for the direct-call graph. Scoped negative, `blr` counted not followed.
+
+## 24. the environment was silently re-imported from the default env between our verified read and `fdt_chosen`
+
+- Original: round50 documented that `do_env_import` (`0x37e58c10`) and `set_default_env` (`0x37e58b24`) exist in the device binary and noted "a re-import path exists in-code", explicitly as a lead for a future round. Re-importing the compiled-in defenv would overwrite the whole htab with stock values, which is exactly the observed signature: every mutated field back to stock, including `boardid` back to `3` rather than the defenv `ff`.
+- Plausible because: the observed revert is whole-string and whole-table, which is what `himport_r` of the defenv blob would do, and no other single mechanism accounts for all four fields at once.
+- Refuted by: `himport_r` (`0x37eaa264`) has exactly three callers image-wide (`0x37e581a0`, `0x37e58b9c`, `0x37e58c9c`). `bootm`'s 236-function `bl` closure contains none of them, and `imgread`'s 28-function closure contains no env function at all. `env_relocate` (`0x37e58d94`, proven by its `!bad CRC` string and its `env_get("silent")` tail) has a single caller `0x37e24ad8`, inside a zero-direct-caller late-init function reached from the init function-pointer table, which runs before the burning session attaches.
+- Current: `reports/ROOT_FINAL_ANALYSIS.md` N2, `reports/root-final-analysis/01-bootm-env-closure.txt`, `reports/CURRENT_STATE.md` BL33 table.
+- Final: REFUTED for the direct-call graph of the tested path. Scoped: indirect `blr` edges and the indirect OS dispatch into the FDT fixup stage are not followed.
+
+## 25. round57 FDT-A: the delivered FDT comes from the boot image header at `0x1080000`
+
+- Original: round57's FDT candidate table lists FDT-A as "runtime, from image at `0x1080000` header parse", with `bootm_load_os` computing the address from the image header.
+- Plausible because: `bootm_load_os` does parse a header and does store `ft_addr`/`ft_len`, and the ramdisk and dtbo candidates are read from partitions the same way.
+- Refuted by: the DTB leg specifically. `bootm` executes the literal Hush command line `store dtb decrypt ${dtb_mem_addr}` at `0x37e25110`, and defenv has `dtb_mem_addr=0x1000000`. The board DTB is decrypted out of `dt.img` into RAM during `bootm`, which is also why the recovered dump at `0x01000000` has no `/chosen` node: it is the pre-fixup blob. This does not touch the ramdisk or dtbo legs, which are separate `store` invocations in the same sequence.
+- Current: `reports/ROOT_FINAL_ANALYSIS.md` N4, `reports/root-final-analysis/01-bootm-env-closure.txt` and `02-defenv-scripts.txt`.
+- Final: SUPERSEDED for the DTB row only. round57's pointer-identity conclusions are unaffected.

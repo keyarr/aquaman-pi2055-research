@@ -1,0 +1,1 @@
+run cmdline_keys;run bcb_cmd; run factory_reset_poweroff_protect;run upgrade_check;run init_display;run storeargs;bcb uboot-command;run switch_bootmode;

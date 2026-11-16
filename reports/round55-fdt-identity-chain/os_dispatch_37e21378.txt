@@ -1,0 +1,30 @@
+  0x37e21378  stp      x29, x30, [sp, #-0x30]!
+  0x37e2137c  mov      x29, sp
+  0x37e21380  stp      x19, x20, [sp, #0x10]
+  0x37e21384  ands     w19, w0, #0xc0
+  0x37e21388  mov      w1, w0
+  0x37e2138c  b.ne     #0x37e213dc
+  0x37e21390  and      w20, w0, #0x100
+  0x37e21394  tbz      w1, #8, #0x37e213a4
+  0x37e21398  mov      x0, x3
+  0x37e2139c  bl       #0x37e2122c
+  0x37e213a0  b        #0x37e213e0
+  0x37e213a4  ands     w19, w1, #0x600
+  0x37e213a8  mov      x0, x3
+  0x37e213ac  b.eq     #0x37e213bc
+  0x37e213b0  bl       #0x37e21284
+  0x37e213b4  mov      w19, w20
+  0x37e213b8  b        #0x37e213e0
+  0x37e213bc  str      x1, [x29, #0x20]
+  0x37e213c0  str      x3, [x29, #0x28]
+  0x37e213c4  bl       #0x37e2122c
+  0x37e213c8  ldr      x3, [x29, #0x28]
+  0x37e213cc  ldr      x1, [x29, #0x20]
+  0x37e213d0  mov      x0, x3
+  0x37e213d4  bl       #0x37e21284
+  0x37e213d8  b        #0x37e213e0
+  0x37e213dc  mov      w19, #-1
+  0x37e213e0  mov      w0, w19
+  0x37e213e4  ldp      x19, x20, [sp, #0x10]
+  0x37e213e8  ldp      x29, x30, [sp], #0x30
+  0x37e213ec  ret      
