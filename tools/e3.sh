@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # e3.sh - cold_boot vs normal, with and without the flag. four runs, one watcher.
 #
-# round 36 §5 predicts that once FORCE_USB_BOOT is armed, `reboot normal`
+# round 36 sec 5 predicts that once FORCE_USB_BOOT is armed, `reboot normal`
 # (PSCI x1=1) wedges exactly like `reboot cold_boot` (x1=0), because the mode
 # lands in RTI_STATUS_REG3[3:0] and SD_CFG15[15:12], and neither of bl2's two
 # gates reads either field. they read [15:12] and GP_CFG0[3:0].

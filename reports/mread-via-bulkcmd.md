@@ -5,7 +5,7 @@ date: 2026-09-29, round 6. the goal was the official Amlogic mread path,
 routine. **it works.** 1 MiB came out and matched `AM_REQ_READ_MEM` (0x02) byte
 for byte, 16384 control reads, zero mismatches. 64 MiB came out at 15 MiB/s.
 
-no write verb, no eMMC, no env, no flash, no 0x05, no 0x12. see §7 for the
+no write verb, no eMMC, no env, no flash, no 0x05, no 0x12. see sec 7 for the
 state of the stick.
 
 ## 0. TL;DR
@@ -16,13 +16,13 @@ state of the stick.
   deleted, along with `tools/rdlarge_test.py` and `tools/rdlarge_probe.py`.
   the old report stays as the record of the negative result.
 - **the framing was read out of the Amlogic host, not guessed.** the exact
-  setup packets are in §2, they come from `AmlLibusb.cpp`.
+  setup packets are in sec 2, they come from `AmlLibusb.cpp`.
 - **byproduct: 0x02 caps at 64 bytes on this build, not 512.** round 4 claimed
   512 and never tested it. measured 1..64 answer, 65+ time out. this makes the
-  cross-check path 8x more expensive than everyone thought, see §5.
+  cross-check path 8x more expensive than everyone thought, see sec 5.
 - **13 MiB/s.** the 512 MB window that was "off the table" in round 5 is now
   about 40 seconds of transfer. the blocker is gone.
-- the stick dropped off the bus when I pointed the scanner at 0x0, see §6. do
+- the stick dropped off the bus when I pointed the scanner at 0x0, see sec 6. do
   not do that. unmapped is worse than a wedge.
 
 ## 1. why 0x12 was the wrong door
@@ -249,7 +249,7 @@ len= 63 OK      len= 66 FAIL errno 110
 `_pcd_buff` is 64 bytes on this build. the official host agrees:
 `AmlLibusb.cpp:61` sends `min(ctrl.out_len, 64u)` for `READ_MEM`. **round 4
 never went above 64**, `do_probe` only ever read 64, so the 512 cap in
-`reports/optimus-ram-read.md` §1 is an assumption from the reference tree that
+`reports/optimus-ram-read.md` sec 1 is an assumption from the reference tree that
 was never tested. `MAX_RD` is now 64 and the comment says why.
 
 this is the real reason the 0x02 cross-check is slow: 1 MiB is 16384 control
@@ -309,7 +309,7 @@ band and the region between the Android bits.
 > DDR offset 512 MiB and 0x3f000000 is offset 1023 MiB. both scans above
 > looked at the top half of RAM, which is where the running Android heap is.
 > u-boot is at `CONFIG_SYS_TEXT_BASE` = 0x01000000, 512 MiB below the first
-> byte that was ever dumped. see `reports/bl33-offline-round7.md`.
+> byte that was ever dumped. see `reports/_archive/bl33-offline-round7.md`.
 
 ## 7. state of the stick, and residual risk
 
@@ -319,11 +319,11 @@ band and the region between the Android bits.
   expected state after it self-rebooted. re-enter with `fastboot oem update
   5000`.
 - 0x33 arms a bulk IN from an address the host chooses. a bad address does not
-  wedge the gadget, it **removes the device from the bus**, see §6. treat any
+  wedge the gadget, it **removes the device from the bus**, see sec 6. treat any
   address under 0x20000000 as hostile.
 - the 64 MiB read at 15 MiB/s means a 512 MB sweep is ~35s of transfer plus
   whatever the protocol overhead costs. that fits in the burning window now.
-  it did not in round 5. **the throughput blocker from round 5 §8 is
+  it did not in round 5. **the throughput blocker from round 5 sec 8 is
   resolved.**
 
 ## 8. phases, status
@@ -331,8 +331,8 @@ band and the region between the Android bits.
 | phase | status |
 |---|---|
 | 1. bulkcmd only | **done**, `echo hello` and `upload mem` both reply `success` |
-| 2. exact upload framing | **done**, from `AmlLibusb.cpp`, §2 |
+| 2. exact upload framing | **done**, from `AmlLibusb.cpp`, sec 2 |
 | 3. smallest mread, 0x200 vs 0x02 | **done**, byte for byte |
 | 4. 0x1000 / 0x10000 / 0x100000 | **done**, all byte for byte, plus 64 MiB |
-| 5. region scanner | **tool ready and run**, BL33 **not** found, §6 |
+| 5. region scanner | **tool ready and run**, BL33 **not** found, sec 6 |
 | 6. 0x12 retired | **done**, code and tools deleted |

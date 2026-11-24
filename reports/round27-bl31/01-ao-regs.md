@@ -1,4 +1,4 @@
-# 01 — AO regs: register -> decoder -> semantics -> DTB
+# 01 - AO regs: register -> decoder -> semantics -> DTB
 
 registers (`arch/arm/include/asm/arch-gxl/secure_apb.h:1602-1625`, FAMILY
 STRUCTURAL REFERENCE; byte-verified offsets):
@@ -33,7 +33,7 @@ then uses `w20=bl31_size w19=bl31_start w22=bl32_start w24=CFG3` to gate and
 emit the fdt-set commands below.
 
 source match: `.src/u-boot-khadas/common/cmd_rsvmem.c:53-57` (identical
-masks/shifts, same print order) — FAMILY STRUCTURAL REFERENCE.
+masks/shifts, same print order) - FAMILY STRUCTURAL REFERENCE.
 
 ## field extraction
 
@@ -43,7 +43,7 @@ CFG3 = 0x0c008000
   lo16 0x8000 << 10 = 0x02000000   bl32 reserved size
 CFG5 = 0x05000000   bl31 reserved start
 CFG4 = 0x05300000   bl32 reserved start
-check: CFG5 + bl31_size == CFG4  (0x05000000+0x00300000 = 0x05300000) ✓
+check: CFG5 + bl31_size == CFG4  (0x05000000+0x00300000 = 0x05300000) ok
 ```
 
 ## semantic meaning -> DTB property (run_command templates in the same dump)

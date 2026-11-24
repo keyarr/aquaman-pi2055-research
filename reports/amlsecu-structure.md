@@ -1,4 +1,4 @@
-# amlsecu-structure — formal layout of container 0x0905
+# amlsecu-structure - formal layout of container 0x0905
 
 tool: `tools/parse_amlsecu.py` (read-only). Outputs verified against `boot_unpack/kernel` and `recovery_unpack/kernel`.
 
@@ -10,12 +10,12 @@ tool: `tools/parse_amlsecu.py` (read-only). Outputs verified against `boot_unpac
 | +0x08 | 4 | version | u32 LE | `0x0905` | same |
 | +0x0C | 4 | nBlkCnt | u32 LE | 3 | 3 |
 | +0x10 | 16 | szTimeStamp | ascii | `2022090612544443` | `2022090613082318` |
-| +0x20 | 96 | amlKernel (t_aml_enc_blk) | — | see below | see below |
-| +0x80 | 96 | amlRamdisk (t_aml_enc_blk) | — | all zeroes | see below |
-| +0xE0 | 96 | amlDTB (t_aml_enc_blk) | — | see below | see below |
-| +0x140 | 1088 | reserved | — | zeroes | zeroes |
+| +0x20 | 96 | amlKernel (t_aml_enc_blk) | - | see below | see below |
+| +0x80 | 96 | amlRamdisk (t_aml_enc_blk) | - | all zeroes | see below |
+| +0xE0 | 96 | amlDTB (t_aml_enc_blk) | - | see below | see below |
+| +0x140 | 1088 | reserved | - | zeroes | zeroes |
 | +0x600 | 512 | image signature | opaque | `6f3a5499...` | `60735030...` (different) |
-| +0x800 | — | start of blk0 payload | — | ciphertext | ciphertext (differs from boot from byte 0) |
+| +0x800 | - | start of blk0 payload | - | ciphertext | ciphertext (differs from boot from byte 0) |
 
 total header `0x800`. For Android 9, U-Boot uses base 4096 and places the info at +2048 (`(secureKernelImgSz>>1)`), with `reserve4ImgHdr[2048]`. `COMPILE_TYPE_ASSERT(2048 >= sizeof(...))` in pre-9 sources became 4096 in the 9 variant. The magic at file offset `0x800` (after the Android header page) is a direct consequence of this, not a coincidence.
 

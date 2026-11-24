@@ -1,4 +1,4 @@
-# ghostlock h16 source control — pi_state->pi_mutex origin
+# ghostlock h16 source control - pi_state->pi_mutex origin
 
 > DIRECTION (2026-10-02, see `reports/CURRENT_STATE.md`): principal is
 > post-free stack reuse + disclosure; H16 live retarget is secondary;
@@ -172,7 +172,7 @@ key-compared (`match_futex`); bucket reuse never merges states.
 (`fixup_pi_state_owner` updates owner only; `requeue_futex` updates
 `q->key`, never `pi_state->key`). Same pi_state cannot represent another
 target. Pointing CMP_REQUEUE at f_alt births H16=f_alt but moves the WHOLE
-graph (owner A, key f_alt), not H16 alone — changes the experiment, not the
+graph (owner A, key f_alt), not H16 alone - changes the experiment, not the
 pointer. EVIDENCE: OFFLINE_ONLY for structure; HARDWARE_REFUTED for natural
 retarget (sec. 10).
 
@@ -233,16 +233,16 @@ A decides, B ignored. EVIDENCE: HARDWARE_REPRODUCED.
 
 ## 9. Hardware Experiment
 
-FASE 0 mandatory `h16_static` executed FIRST on stock before widening analysis
-(sec. 1, 2x + controls). No new corruption probe: FASE 3-8 found zero
-candidates, so FASE 10 candidate-write test is NOT APPLICABLE (no candidate).
+PHASE 0 mandatory `h16_static` executed FIRST on stock before widening analysis
+(sec. 1, 2x + controls). No new corruption probe: PHASE 3-8 found zero
+candidates, so PHASE 10 candidate-write test is NOT APPLICABLE (no candidate).
 Protocol when one appears (pre-registered): (1) write to a SAFE legitimate
 kernel target with observable effect first, then (2) `[W_waiter+0x38] ->
 &f_alt`. No crash-target probing. Stock-first rule honored: offline minimal ->
 physical test as soon as baseline meaningful -> offline interpret -> repeat
 (2x identical). No contradiction between binary and stock on the baseline.
 EVIDENCE: HARDWARE_REPRODUCED (baseline); INCONCLUSIVE (candidate write,
-by design — nothing to run).
+by design - nothing to run).
 
 ## 10. Retarget Result
 
@@ -252,7 +252,7 @@ Decisive semantic test (no stack write, legitimate objects only):
   round): EDEADLK_CYCLE errno=35 0ms. EVIDENCE: HARDWARE_REPRODUCED.
 * Alternative `waiter->lock = &f_alt.pi_mutex` naturally: alt_only
   (f_target empty, f_alt occupied, alt_parked=1): TIMEOUT_BLOCK errno=110
-  3000ms — walk IGNORES occupied f_alt, follows empty f_target.
+  3000ms - walk IGNORES occupied f_alt, follows empty f_target.
   EVIDENCE: HARDWARE_REPRODUCED (this round + 2x history).
 * `h16_static` double probe: TIMEOUT+TIMEOUT, same frame. EVIDENCE:
   HARDWARE_REPRODUCED (2x).
@@ -260,7 +260,7 @@ Decisive semantic test (no stack write, legitimate objects only):
   chainwalk of each object): f_target path coherent per heap-consumption
   report (trylock heap, leftmost gate, owner O, EDEADLK vs TIMEOUT tied to
   f_target occupancy); f_alt path under the walk never observed (walk never
-  consumed f_alt) — signature defined, never observed. Timing alone not
+  consumed f_alt) - signature defined, never observed. Timing alone not
   accepted; the discriminator here is occupancy-gated verdict (EDEADLK vs
   TIMEOUT), which IS a semantic field of the consumed object (leftmost
   existence + owner cycle). EVIDENCE: HARDWARE_REPRODUCED for f_target path;
@@ -286,16 +286,16 @@ EVIDENCE: OFFLINE_ONLY (derivation above).
 
 ## 12. Minimum Required Corruption
 
-DESTINO: `[W_waiter+0x38]` (W FWRQ frame, lab-relative SP0-0x2b0+0x38; stock
-absolute STOCK UNKNOWN, frame alive while W sleeps). TAMANHO: 8 bytes, single
-word (wider risks frame). VALOR: `&f_alt.pi_mutex` (heap, learned not guessed;
+DESTINATION: `[W_waiter+0x38]` (W FWRQ frame, lab-relative SP0-0x2b0+0x38; stock
+absolute STOCK UNKNOWN, frame alive while W sleeps). SIZE: 8 bytes, single
+word (wider risks frame). VALUE: `&f_alt.pi_mutex` (heap, learned not guessed;
 f_alt valid+contended per alt_base). LIFETIME: frame alive between trigger
 return and consumer walk; stable across BOTH H16.4 (`0x52fc` x25) AND H16.7
-(`0x4df0` + `cmp @0x4df4`) — mismatch bails at `+0x4df8`. VALOR ANTERIOR:
-`&f_target.pi_mutex`. VALOR NOVO: `&f_alt.pi_mutex`. PRIMEIRO LEITOR APOS A
-CORRUPCAO: H16.4 (consumer entry `ldr x25,[x0,#0x38]`), then H16.7 gate.
+(`0x4df0` + `cmp @0x4df4`) - mismatch bails at `+0x4df8`. OLD VALUE:
+`&f_target.pi_mutex`. NEW VALUE: `&f_alt.pi_mutex`. FIRST READER AFTER THE
+CORRUPTION: H16.4 (consumer entry `ldr x25,[x0,#0x38]`), then H16.7 gate.
 Constraints (all OFFLINE_ONLY): f_alt top->lock BUG_ON must hold (true iff
-f_alt occupied by a consistent waiter — arm altocc); f_alt+0x00 trylock must
+f_alt occupied by a consistent waiter - arm altocc); f_alt+0x00 trylock must
 succeed or the walk spins; owner A must stay consistent or H11 bails.
 EVIDENCE: OFFLINE_ONLY (offsets/insns) + HARDWARE_REPRODUCED (window alive
 via double TIMEOUT).
@@ -321,7 +321,7 @@ dest can reach live kernel stack + value can equal kernel pointer`:
   EVIDENCE: OFFLINE_ONLY.
 * PI-path composition (trylock, pi_lock, usage INC, enqueue, waiter+0x40/+0x48,
   hash/pi_state/task stores): all dests fixed natural addrs; owner+0x28 INC
-  base is O task_struct (heap) with fixed off 0x28, value +1 — provably not
+  base is O task_struct (heap) with fixed off 0x28, value +1 - provably not
   steerable to `[W_waiter,#0x38]` (type + binary base trace `ldr x19,[x20,#0x18]`).
   Discarded in dataflow. EVIDENCE: OFFLINE_ONLY.
 * Async/alias: signal/timers/workqueue/completion targets are own structs;
@@ -370,7 +370,7 @@ word, then rerun alt_tgt-vs-alt_only as L0-vs-L1. If the analysis holds:
 * `H16 SOURCE CONTROL: NATURALLY IMPOSSIBLE (OFFLINE_ONLY structure)`,
 * `SECOND WRITE PRIMITIVE: NOT FOUND`,
 * next step is a fresh primitive search OUTSIDE the surfaces closed here
-  (new syscall family, new driver, or heap+stack disclosure first — do not
+  (new syscall family, new driver, or heap+stack disclosure first - do not
   repeat the spill window as-is).
 
 ---

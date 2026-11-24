@@ -20,7 +20,7 @@ deadlock, never touches another task's waiter.
 
 Compiled with gcc and run on kernel 7.0.9 x86_64 (patched):
 7/7 PASS. Expected: these checks are pre-corruption, identical on vulnerable
-and patched kernels. The probe DOES NOT distinguish vulnerable from patched —
+and patched kernels. The probe DOES NOT distinguish vulnerable from patched -
 it merely confirms "path reachable from shell". The distinction derives from Phase 1
 (source analysis) + EDEADLK race test below.
 
@@ -29,7 +29,7 @@ it merely confirms "path reachable from shell". The distinction derives from Pha
 Kernel: 4.9.113 #1 SMP PREEMPT Tue Sep 6 12:53:43 CST 2022 armv8l
 (gcc Linaro 6.3.1 20170109, jenkins@c5-mitv-cm-build06.bj).
 Result: 7/7 PASS, exit 0. Device remains healthy.
-Status: PATH REACHABLE — CONFIRMED ON AQUAMAN KERNEL.
+Status: PATH REACHABLE - CONFIRMED ON AQUAMAN KERNEL.
 
 ## Race EDEADLK (tools/ghostlock_race_stats.c, step 2 of progression)
 
@@ -37,7 +37,7 @@ Status: PATH REACHABLE — CONFIRMED ON AQUAMAN KERNEL.
 rt_mutex_start_proxy_lock via CMP_REQUEUE_PI and returned through the
 remove_waiter rollback with waiter->task != current. Device healthy, uptime
 continuous, no reboot. Equivalent to --race/--dry-run in dnlid.
-Status: ROLLBACK REACHABLE — CONFIRMED ON AQUAMAN KERNEL.
+Status: ROLLBACK REACHABLE - CONFIRMED ON AQUAMAN KERNEL.
 Next: offline lab (Phase 11) before any trigger with reclaim.
 
 ## Risk

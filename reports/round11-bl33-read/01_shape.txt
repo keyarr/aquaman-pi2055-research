@@ -16,28 +16,28 @@ b'set_usb_boot'        ABSENT
 b'usb_pcd'             ABSENT
 b'Wrong Image Format'  ABSENT
 b'reset'               67 hit(s)
-      abs 0x01004518  in run 0x01000518..0x01080518  align 0
-      abs 0x01004544  in run 0x01000544..0x01080544  align 0
-      abs 0x0100bbfb  in run 0x01000bfb..0x01080bfb  align 3
-      abs 0x0100cead  in run 0x01000ead..0x01080ead  align 1
-      abs 0x0100cec3  in run 0x01000ec3..0x01080ec3  align 3
-      abs 0x0100d0df  in run 0x010000df..0x010b00df  align 3
-      abs 0x0100d1c5  in run 0x010001c5..0x010b01c5  align 1
-      abs 0x0100d364  in run 0x01000364..0x01080364  align 0
-      abs 0x0100d48e  in run 0x0100048e..0x0108048e  align 2
-      abs 0x0100d810  in run 0x01000810..0x01080810  align 0
-      abs 0x0100d817  in run 0x01000817..0x01080817  align 3
-      abs 0x01084518  in run 0x01081518..0x010b0518  align 0
+      abs 0x01004518 in run 0x01000518..0x01080518  align 0
+      abs 0x01004544 in run 0x01000544..0x01080544  align 0
+      abs 0x0100bbfb in run 0x01000bfb..0x01080bfb  align 3
+      abs 0x0100cead in run 0x01000ead..0x01080ead  align 1
+      abs 0x0100cec3 in run 0x01000ec3..0x01080ec3  align 3
+      abs 0x0100d0df in run 0x010000df..0x010b00df  align 3
+      abs 0x0100d1c5 in run 0x010001c5..0x010b01c5  align 1
+      abs 0x0100d364 in run 0x01000364..0x01080364  align 0
+      abs 0x0100d48e in run 0x0100048e..0x0108048e  align 2
+      abs 0x0100d810 in run 0x01000810..0x01080810  align 0
+      abs 0x0100d817 in run 0x01000817..0x01080817  align 3
+      abs 0x01084518 in run 0x01081518..0x010b0518  align 0
       ... 55 more
 b'reboot'              8 hit(s)
-      abs 0x010055f8  in run 0x010005f8..0x010805f8  align 0
-      abs 0x01005611  in run 0x01000611..0x01080611  align 1
-      abs 0x010855f8  in run 0x010815f8..0x010b05f8  align 0
-      abs 0x01085611  in run 0x01081611..0x010b0611  align 1
-      abs 0x01dc904e  in run 0x01dbf04e..0x01fff04e  align 2
-      abs 0x01e84bd5  in run 0x01dbfbd5..0x01fffbd5  align 1
-      abs 0x01e84ca0  in run 0x01dbfca0..0x01fffca0  align 0
-      abs 0x01eb05a1  in run 0x01dbf5a1..0x01fff5a1  align 1
+      abs 0x010055f8 in run 0x010005f8..0x010805f8  align 0
+      abs 0x01005611 in run 0x01000611..0x01080611  align 1
+      abs 0x010855f8 in run 0x010815f8..0x010b05f8  align 0
+      abs 0x01085611 in run 0x01081611..0x010b0611  align 1
+      abs 0x01dc904e in run 0x01dbf04e..0x01fff04e  align 2
+      abs 0x01e84bd5 in run 0x01dbfbd5..0x01fffbd5  align 1
+      abs 0x01e84ca0 in run 0x01dbfca0..0x01fffca0  align 0
+      abs 0x01eb05a1 in run 0x01dbf5a1..0x01fff5a1  align 1
 
 opcode census per 64 KiB  (b/bl/adrp are unaligned-word counts)
 

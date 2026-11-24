@@ -1,4 +1,4 @@
-# ghostlock reference comparison 2026-10-01 — archaeology, no device run
+# ghostlock reference comparison 2026-10-01 - archaeology, no device run
 
 > DIRECTION (2026-10-02, see `reports/CURRENT_STATE.md`): principal is
 > post-free stack reuse + disclosure; H16 live retarget is secondary;

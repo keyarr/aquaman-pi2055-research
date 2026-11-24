@@ -1,5 +1,5 @@
 entry: no hardware. device left in stock Android by round53; untouched this session.
-method: `tools/bl33_audit.Img` on `reports/round14-bl33-persist/bl33-37e18000.bin` (sha `664fb34a…`),
+method: `tools/bl33_audit.Img` on `reports/round14-bl33-persist/bl33-37e18000.bin` (sha `664fb34a...`),
 `adb shell cat /proc/config.gz` (running kernel ground truth), saved hunt bins, `artifacts/aquaman.dtb`.
 
 == 9/9 bootargs-name consumer census (ADRP+ADD to 0x37ebf453, re-derived) ==

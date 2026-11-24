@@ -15,7 +15,7 @@ import sys
 import binascii
 
 X_DEFAULT = 0x01080000  # runtime-proven 2026-09-29: BUF==loadaddr on this
-# build (see reports/buffer-equals-loadaddr-proof.md). the old 0x10200000
+# build (see reports/_archive/buffer-equals-loadaddr-proof.md). the old 0x10200000
 # came from the khadas reference header only, refuted on-device.
 X_REF_KHADAS = 0x10200000
 Y_DEFAULT = 0x01080000  # loadaddr env default (gxl_p241_v1.h:90)

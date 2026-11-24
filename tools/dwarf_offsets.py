@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""dwarf_offsets.py — extracts struct offsets from vmlinux via readelf DWARF.
+"""dwarf_offsets.py - extracts struct offsets from vmlinux via readelf DWARF.
 
 Usage: python3 tools/dwarf_offsets.py build-aq/vmlinux
 Streams DW_TAG_structure_type / DW_TAG_member from --debug-dump=info

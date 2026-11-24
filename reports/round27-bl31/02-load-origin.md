@@ -1,4 +1,4 @@
-# 02 — load origin: who produced the bytes at [0x05100000, 0x05300000)
+# 02 - load origin: who produced the bytes at [0x05100000, 0x05300000)
 
 answer: **BL2 loads BL31 from the eMMC FIP at 0x05100000**; the layout is
 declared twice in the family FIP files that ship inside this repo.
@@ -20,13 +20,13 @@ declared twice in the family FIP files that ship inside this repo.
 record = `u64 load_addr; char name[8]; u32 0; u32 next_uuid_w0; u64 0; u64 0`,
 stride 0x28; the uuid word0 chain matches `gxlimg/fip.c uuid_list` exactly
 (bl30 97 66 fd 3d / bl301 dd cc bb aa / bl31 47 d4 08 6d / bl32 05 d0 e1 89 /
-bl33 d6 d0 ee a7). this is BL2's resident load table — **bl31 -> 0x05100000,
+bl33 d6 d0 ee a7). this is BL2's resident load table - **bl31 -> 0x05100000,
 bl32 -> 0x05300000**.
 
 ## (b) bl31.img wrapper header (FAMILY STRUCTURAL REFERENCE)
 
 `.src/u-boot-khadas/fip/gxl/bl31.img` and `gxb/bl31.img`, header @0x00
-(0x50 bytes; gxlimg `fip.c gi_fip_add`: read at file offset 0x100? no —
+(0x50 bytes; gxlimg `fip.c gi_fip_add`: read at file offset 0x100? no -
 `bl31.img` head, `BL31_MAGIC 0x12348765`, copied into the FIP at
 `FTE_BL31HDR_OFF(n) = 0x430 + 0x50*n`; comment: *"BL31 binary store
 information about load address and entry point in the FIP data"*):
@@ -42,10 +42,10 @@ information about load address and entry point in the FIP data"*):
 +0x30.. 0x00
 ```
 
-both gxl and gxb carry identical values — a fixed platform layout, not a
+both gxl and gxb carry identical values - a fixed platform layout, not a
 per-board choice.
 
-## writers of CFG3/4/5 — exhaustive negative results
+## writers of CFG3/4/5 - exhaustive negative results
 
 ```text
 EXACT BL33 dump:      every ldr/str/ldp/stp/stur/adrp+add with disp
@@ -56,7 +56,7 @@ gxl bl31.bin:         17 AO movz/movk constants (0xc8100228 x2, 0xda10023c,
                       0xc81004c0 x2): watchdog, JTAG, GPIO, clock. none at
                       0x24c/0x250/0x254.
 gxb bl31.bin:         no AO movz/movk pair at all.
-u-boot tree (full):   no writel(P_AO_SEC_GP_CFG[3-5]) — grep over all of
+u-boot tree (full):   no writel(P_AO_SEC_GP_CFG[3-5]) - grep over all of
                       .src/u-boot-khadas (164 matches for the symbol, all
                       secure_apb.h defines + readers in cmd_rsvmem.c,
                       aml_v2_burning.c CFG0/CFG7 reads, board files CFG0).
@@ -67,7 +67,7 @@ therefore the writer is the pre-BL33 chain (BootROM/BL2/BL30), and BL2 is
 demonstrated to carry the exact numbers (a). The at-rest aquaman equivalent
 is encrypted: `bootloader.img` has no plaintext FIP table (round18: no
 `01 00 64 AA` magic, only a ciphertext `TOC` fragment at 0x4bebe; no
-`bl30/bl301/bl31/bl32/bl33` name strings; magic 0x12348765 = 0 hits) — the
+`bl30/bl301/bl31/bl32/bl33` name strings; magic 0x12348765 = 0 hits) - the
 aquaman values themselves are UNRECOVERABLE without decrypting the FIP, but
 the platform is the same GXL family and the live AO values match the family
 constants exactly.

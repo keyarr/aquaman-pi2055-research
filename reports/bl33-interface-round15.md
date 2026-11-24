@@ -4,7 +4,7 @@ date: 2026-09-30, round 15. **strictly static, offline, no device.**
 no USB, no `AM_REQ_RUN_IN_ADDR (0x05)`, no RAM write, no eMMC write,
 no destructive fuzzing, no reset. every address below comes from the
 round-14 image (`reports/round14-bl33-persist/bl33-37e18000.bin`,
-sha256 `664fb34a…`, `[0x37e18000, 0x37ff0000)`) plus the reference
+sha256 `664fb34a...`, `[0x37e18000, 0x37ff0000)`) plus the reference
 source in `.src/u-boot-khadas`. prior artifacts untouched; new evidence
 in `reports/round15-bl33-interface/`, new tool `tools/bl33_round15.py`,
 new tests `TestBl33Round15` in `tools/run_tests.py` (11 tests, pass).
@@ -28,15 +28,15 @@ or any BL31 vulnerability. details below.
 
 ```text
 image                   0x37e18000 .. 0x37ff0000 (0x1d8000, sha256 664fb34a...)
-cmd_tbl                 80 slots (15-char max name, 48 B stride, §A)
-top-level md/mw/cp/go   ABSENT (build has no CONFIG_CMD_MEMORY etc, §A.1)
+cmd_tbl                 80 slots (15-char max name, 48 B stride, sec A)
+top-level md/mw/cp/go   ABSENT (build has no CONFIG_CMD_MEMORY etc, sec A.1)
 run_command             0x37e5e968 (unchanged from round 14)
-cb_oem frame            0x50 B; local buf x29+0x20, 0x30 B; copy max 33 B (E2, §D)
+cb_oem frame            0x50 B; local buf x29+0x20, 0x30 B; copy max 33 B (E2, sec D)
 E2 verdict              REFUTED as a primitive (truncation/over-read only)
 HIGH RAM primitives     mmc read 0x37e2d890 (eMMC->RAM) / ddr_test_copy 0x37e3d1b0 (RAM->RAM)
-E3 SMC                  X0=0x820000ff X1=0x40 X2=user_addr X3=0x1800000 X4=7 (§E)
-BL31 validation         UNPROVEN from available artifacts (§F)
-second SMC 0xb2000016   host-reachable via oem, log-level only, no secboot link (§H)
+E3 SMC                  X0=0x820000ff X1=0x40 X2=user_addr X3=0x1800000 X4=7 (sec E)
+BL31 validation         UNPROVEN from available artifacts (sec F)
+second SMC 0xb2000016   host-reachable via oem, log-level only, no secboot link (sec H)
 ```
 
 ## A. the real run_command universe (80 commands)
@@ -95,7 +95,7 @@ echo               0x37e28000  text                  no              no         
 efuse              0x37e56804  none (empty stub)     no              no              no    MED
 efuse_user         0x37e72ef0  op+addr/size          OTP via SMC (writes use verified path per round 14) no no MED-HIGH
 emmc               0x37e2f0ec  subcmd+args           sub-dependent (storage) no      no    MED
-env                0x37e57d6c  subcmd (8, §B.3)      YES via set / eMMC via save YES via run no HIGH(disp)/MED-HIGH(eff)
+env                0x37e57d6c  subcmd (8, sec B.3)      YES via set / eMMC via save YES via run no HIGH(disp)/MED-HIGH(eff)
 exit               0x37e280e4  code                  no              no (script exit) no   MED
 ext4size           0x37e2811c  dev:file              no              no              no    MED
 false              0x37e36764  none                  no              no              no    HIGH
@@ -115,7 +115,7 @@ irblaster          0x37e27c30  subcmd+args           no              no         
 itest              0x37e2b348  expr                  no              no (br x2 = bounded op dispatch) no MED-HIGH
 keyman             0x37e74290  subcmd+args           sub-dependent (key areas) no    no    MED
 keyunify           0x37e73c84  op+name/addr          POSSIBLE (secure/normal/efuse backends) no no MED-HIGH
-mmc                0x37e2ca3c  subcmd (14, §B.2)     YES via read (RAM) / write (eMMC) no no HIGH(disp)/HIGH(eff)
+mmc                0x37e2ca3c  subcmd (14, sec B.2)     YES via read (RAM) / write (eMMC) no no HIGH(disp)/HIGH(eff)
 mmcinfo            0x37e2cbf0  none                  no              no              no    MED
 monitor_bt_cmdline 0x37e63e44  args                  no evidenced    table blr (bounded) no MED
 open_scp_log       0x37e60864  level                 no              no              no    MED
@@ -132,13 +132,13 @@ run                0x37e5ea04  var names             no              YES (env sc
 set_active_slot    0x37e2bd60  slot (no-op stub)     no              no              no    MED
 set_trim_base      0x37e56d40  numeric               no evidenced    no              no    MED
 set_usb_boot       0x37e607e8  value (hex, unvalidated) no          no (SMC 0x82000043 x1=val) no HIGH
-                                                             (only FORCE_USB_BOOT arm path in the build, r31 §3.4)
+                                                             (only FORCE_USB_BOOT arm path in the build, r31 sec 3.4)
 setenv             0x37e58470  name [value]          YES (env RAM)   no              no    HIGH
 setkeys            0x37e219f0  ids                   env vars (2x setenv backend) no no   MED-HIGH
 showvar            0x37e22aa8  [names]               no              no              no    MED
 silent             0x37e59300  flag                  no              no              no    MED
 sleep              0x37e2c9b8  seconds               no              no              no    MED
-store              0x37e33900  subcmd (14, §B.2)     YES via write (eMMC), RAM via read no no HIGH(disp)/MED-HIGH(eff)
+store              0x37e33900  subcmd (14, sec B.2)     YES via write (eMMC), RAM via read no no HIGH(disp)/MED-HIGH(eff)
 systemoff          0x37e6084c  none                  no              no (SMC system-off) no HIGH
 tee_log_level      0x37e63534  level (decimal)       no              no (SMC 0xb2000016) no HIGH
 temp_triming       0x37e56d80  trim base             no              run_command x3 (constant strings) no MED-HIGH
@@ -238,9 +238,9 @@ bounded buffer, not at a host address. MEDIUM-HIGH, not a general write.
 
 ## C. control transfer without do_bootm (no new jump primitive found)
 
-- `go/booti/bootz/source` do not exist in this build (§A.1). no handler
+- `go/booti/bootz/source` do not exist in this build (sec A.1). no handler
   contains a host-address `br/blr` to a parsed address: every `blr x4`
-  in dispatchers (`mmc/store/env/amlmmc/avb/...`) calls a subcommand
+ in dispatchers (`mmc/store/env/amlmmc/avb/...`) calls a subcommand
   function pointer returned by `find_cmd` (table-bounded); `br x0/x2` in
   `test/itest` and `br x1/x3` in `get_rebootmode/read_temp` are bounded
   operator/table dispatches, not address jumps (`02_memscan.txt` lists
@@ -252,7 +252,7 @@ bounded buffer, not at a host address. MEDIUM-HIGH, not a general write.
   UNPROVEN (not executed).
 - `bootm`: the verified path (fails closed, `Sig Check %d`, round 14 E6).
 - `update`: burning protocol re-enters `bootm` on downloaded images
-  (round 14 §D.3); INDIRECT transfer, needs protocol steps.
+  (round 14 sec D.3); INDIRECT transfer, needs protocol steps.
 - `temp_triming`/`ddr_tune_dqs_step`/`get_rebootmode` call `run_command`
   with constant/table strings, not host addresses.
 - verdict: no equivalent of `go`/raw-jump exists; transfers go through
@@ -328,12 +328,12 @@ or image header before `0x37e24cf0`). return handling fails closed
   exist in BL31 crypto/storage code, NOT that `AML_DATA_PROCESS`
   validates the caller buffer range. the link is unproven.
 - no `0x820000ff` literal, no `0x1800000` literal, no `movk ...#0x8200`
-  in either binary; the two `cmp w0,#0xff` sites are DER-length loops
+ in either binary; the two `cmp w0,#0xff` sites are DER-length loops
   (`ldrb [x25],#1` / `ldrb [x19],#1` terminators), not SMC dispatch.
   SiP dispatch compares table-loaded IDs, so the handler was not
   isolated to function level this round. stated plainly instead of
   inferred.
-- verdict: `BL33 does not validate` (HIGH, §E) + `BL31 unknown from
+- verdict: `BL33 does not validate` (HIGH, sec E) + `BL31 unknown from
   available artifacts` = POSSIBLE BUT UNPROVEN validation gap. the
   `BL31 validates correctly` alternative is equally unproven. no BL31
   vulnerability is claimed.

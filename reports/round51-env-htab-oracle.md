@@ -57,7 +57,7 @@ Then restored arena with WRITE `enforcing`, readback verified, final oracle sane
 Result: `CONFIRMED_SHADOW_COPY`.
 
 ```text
-WRITE na arena stale -> nao altera env_htab -> env_get continua enxergando enforcing
+WRITE to the stale arena -> does not change env_htab -> env_get keeps seeing enforcing
 ```
 
 ## Pointer correlation
@@ -92,7 +92,7 @@ No WRITE was done to the htab data pointer in this session, per rule.
 
 Round48 poked the expanded `bootargs` value inside the arena and round49 poked `EnableSelinux` in the arena plus a `setenv` control, but both observed via fixed arena addresses (`0x33e1d73f`, `0x33e1d6c4`). This session shows `setenv` does not rewrite the arena and the parser does not read the arena, so:
 
-> os experimentos anteriores nao atingiram o objeto runtime autoritativo; seus vereditos sobre o consumo do valor devem ser reinterpretados conforme o novo oracle.
+> the previous experiments did not reach the authoritative runtime object; their verdicts about value consumption must be reinterpreted according to the new oracle.
 
 History preserved: round48 stays REFUTED for the direct-arena-poke form, round49 stays REFUTED for the stale-oracle observation, with the caveat that the effective htab leg (`setenv -> htab -> storeargs -> htab bootargs`) was never measured through an htab-reading oracle and remains open, not refuted. No claim is made about `bootargs` reaching Linux or about root.
 

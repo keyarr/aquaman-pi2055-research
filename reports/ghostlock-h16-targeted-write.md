@@ -1,4 +1,4 @@
-# ghostlock h16 targeted write — stock-relative stack rewrite search
+# ghostlock h16 targeted write - stock-relative stack rewrite search
 
 > DIRECTION (2026-10-02, see `reports/CURRENT_STATE.md`): principal is
 > post-free stack reuse + disclosure; H16 live retarget is secondary;
@@ -125,7 +125,7 @@ value must also fit (sec. 6). EVIDENCE: OFFLINE_ONLY.
 
 ## 6. Kernel Pointer Carrier Search
 
-Value classes per store (FASE 4): KERNEL_POINTER > USER_POINTER >
+Value classes per store (PHASE 4): KERNEL_POINTER > USER_POINTER >
 UNKNOWN > KERNEL_DERIVED_INTEGER > INTEGER. Priority is KERNEL_POINTER
 so no heap leak is needed. Sources treated as KERNEL_POINTER:
 pi_state->pi_mutex (LEA +0x10 sites), rt_mutex *, task_struct *,
@@ -165,7 +165,7 @@ reusable stack slot. EVIDENCE: OFFLINE_ONLY.
 
 ## 8. Frame-Reuse Candidates
 
-Ranked by FASE 10 (same task, same page, near H16, KPTR source, low side
+Ranked by PHASE 10 (same task, same page, near H16, KPTR source, low side
 effects, fast, graph-safe). Exact-delta-0 KPTR hits (lab-relative,
 H16_REL=0x290), each rejected for stamper use:
 
@@ -230,7 +230,7 @@ zero panic, zero reboot).
 ## 11. GhostLock Integration
 
 Not executed with a stamper (no value-carrier exists). Baseline
-`h16_static` re-ran first on stock this round (FASE 0, sec. 13). The
+`h16_static` re-ran first on stock this round (PHASE 0, sec. 13). The
 P0-P7 ghost+stamp protocol (P0 READY, P1 FWRQ, P2 EDEADLK, P3
 GRAPH_PRESERVED, P4 CANDIDATE_STAMP, P5 LOCK_PI(f_chain), P6 RESULT, P7
 CLASSIFICATION) is defined but gated on finding a carrier; running it
@@ -321,7 +321,7 @@ value = `&f_alt.pi_mutex` (heap disclosure first, not guess); window =
 trigger return to consumer walk; consumer = FUTEX_LOCK_PI(f_chain) FULL;
 mechanism = any existing path with dest+value control (none found in
 audited surface; new syscall family, new driver, heap+stack disclosure,
-or stack-address-derived destination needed — do not repeat the same
+or stack-address-derived destination needed - do not repeat the same
 window as-is). If the analysis holds:
 
 * `H16 CONTROL: HARDWARE_REFUTED NATURALLY`,

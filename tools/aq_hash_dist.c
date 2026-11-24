@@ -1,5 +1,5 @@
 /*
- * aq_hash_dist.c — host-only hash distribution over the physical universe.
+ * aq_hash_dist.c - host-only hash distribution over the physical universe.
  *
  * Usage:
  *   gcc -O2 -Wall -Wextra -o /tmp/aq_hash_dist tools/aq_hash_dist.c

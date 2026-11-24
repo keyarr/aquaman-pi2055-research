@@ -49,7 +49,7 @@ WIN = 0x40
 _disasm_cache = {}
 _frame_cache = {}
 _full_cache = None
-FULL_ASM = "/tmp/opencode/aq_full.asm"
+FULL_ASM = "/tmp/aq_full.asm"
 
 COPY_FNS = {"__arch_copy_from_user", "_copy_from_user", "__copy_from_user",
             "copy_from_user", "copyin", "_copy_to_user", "__copy_to_user",

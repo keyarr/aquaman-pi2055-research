@@ -1,5 +1,5 @@
 /*
- * ghostlock_leak_cal.c — step 3 of the ladder (timing-only calibrator).
+ * ghostlock_leak_cal.c - step 3 of the ladder (timing-only calibrator).
  *
  * Measures ONLY syscall timings on paths already proven safe:
  *  - CMP_REQUEUE_PI with diverging cmpval -> EAGAIN (reachability check 3,

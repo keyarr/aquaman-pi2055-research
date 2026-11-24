@@ -11,7 +11,7 @@ callers of a target list), `tools/bl31_ao_census.py` (MMIO census by register
 name). none of this is test-pinned yet.
 
 this round exists because the previous answer to "why does `set_usb_boot 2` hang
-the box" was built on a premise that turns out to be false. see §1.
+the box" was built on a premise that turns out to be false. see sec 1.
 
 ## 0. answer block
 
@@ -42,7 +42,7 @@ the family gxl bl31.bin     = a PARTIAL image. it references 0xc5000,
 
 ## 1. the premise that was wrong
 
-`usb-entry-aquaman.md:373-375` concluded "wrong reset mode -> REFUTADO ...
+`reports/_archive/usb-entry-aquaman.md:373-375` concluded "wrong reset mode -> REFUTADO ...
 three different reset paths, one outcome". two of those three paths do not
 reset the chip.
 
@@ -76,15 +76,15 @@ what the two live calls actually are, so nobody has to re-derive them:
   the image (150+ call sites), so the argument is a duration, not a page count.
   **this is a delay, and it is not evidence of corruption.**
 - `0x37e1a0c0(0)` is `aml_watchdog_read_reg(0)`: it calls `0x37e1a058`, which
-  busy-waits on the **watchdog** block at `0xc11098d0` — the exact `reg` of the
+  busy-waits on the **watchdog** block at `0xc11098d0` - the exact `reg` of the
   DTB `/watchdog` node (`artifacts/aquaman.dts:323`,
-  `compatible = "amlogic, meson-wdt"`) — sets `bit 0x40000`, spins 100 times,
+  `compatible = "amlogic, meson-wdt"`) - sets `bit 0x40000`, spins 100 times,
   then reads the register back through `0x37e1a0c0`, whose setter twin
   `0x37e1a0d8` (`str w1,[x0]`) has ~200 call sites.
 
 so `do_reset` is: print, delay, two no-ops, poke the watchdog, return 0. it may
 well stop feeding or reconfigure the watchdog. **whether that alone kills the
-fastboot session is UNKNOWN** — but note that a watchdog-driven reset would
+fastboot session is UNKNOWN** - but note that a watchdog-driven reset would
 reboot the SoC, and no reboot was observed, so the box did not simply wedge
 silently for a watchdog reason either. legs 2 and 3 end with the device gone
 from the bus and the log silent, which is consistent with a BL33 that stopped
@@ -189,7 +189,7 @@ command handler `0x37e607e8`: `simple_strtoul(argv[1], NULL, 0x10)` at
 same for `GP_CFG0` (2 refs, both ldr), `AO_SEC_SD_CFG15` (`0x37e604a4`, ldr) and
 `AO_SEC_SD_CFG10` (`0x37e72790`, ldr). GP_CFG7 is multi-purpose in this SoC:
 `[7:0]` boot field cleared on reset, bit 22 = rpmb state, bit 31 = force usb
-boot, bits 8+ indexed pin flags (§4.2).
+boot, bits 8+ indexed pin flags (sec 4.2).
 
 ### 3.3 the flag consumer is in BL33, and it CLEARS
 
@@ -236,7 +236,7 @@ the v2 burning control-request path.
 **this is the falsifiable prediction.** had the flag been armed and survived into
 BL33, the sequence would be: BL33 sees `GP_CFG7[31]` -> clears it over SMC -> enters
 optimus USB produce -> enumerates `1b8e:c003` **as BL33** (bcdDevice `0.07`, no
-string descriptors, MaxPower 2 mA, the descriptor round 3 §2.5 already captured).
+string descriptors, MaxPower 2 mA, the descriptor round 3 sec 2.5 already captured).
 it never appeared, under a 4 ms poll over 600 s.
 
 ### 3.4 nothing in this build arms FORCE_USB_BOOT
@@ -279,7 +279,7 @@ what the 181 KB of text does contain, named (`tools/bl31_ao_census.py`):
 |---|---|---|
 | `0xda10025c` | 6 | `AO_SEC_GP_CFG7` (secure alias of `0xc810025c`) |
 | `0xda10001c` | 5 | `AO_RTI_STATUS_REG3` |
-| `0xda10023c` | 1 | `AO_SEC_SD_CFG15` — **read only** |
+| `0xda10023c` | 1 | `AO_SEC_SD_CFG15` - **read only** |
 | `0xda100248` / `0xda100140` | 1 / 1 | `AO_SEC_GP_CFG2` / `AO_REG0` |
 | `0xc8100228` | 2 | `AO_SEC_SD_CFG10` |
 | `0xda83c408/428/42c` | 1/1/2 | `HIU_MAILBOX_STAT_0/SET_3/STAT_3` (SCP) |
@@ -292,7 +292,7 @@ all six GP_CFG7 accesses are read-modify-write and none sets bit 31 directly:
 0x019184             orr  w4,cur,(1<<(idx+8)) ; str ; set   flag idx
 ```
 
-`idx = 0x24a50(x) = (x&0xff) + ((x&0xff00)>>6)` — a **pin/pad index decoder**.
+`idx = 0x24a50(x) = (x&0xff) + ((x&0xff00)>>6)` - a **pin/pad index decoder**.
 bits 8+ are pin state, not boot state.
 
 `0x18ddc` is the reboot-reason writer, and it has an explicit usb clear:
@@ -337,8 +337,8 @@ handler `0x18d3c(power_state)`:
 ```
 
 `0xc4301000/0xc4302000` is the GIC (confirmed `mesongxl.dtsi:157-158` and
-`artifacts/aquaman.dts:230`). `AO_SEC_SD_CFG15[15:12]` — the ROM-visible reboot
-mode that BL33's `do_get_rebootmode` reads at `0x37e604a4` — is **read-only in
+`artifacts/aquaman.dts:230`). `AO_SEC_SD_CFG15[15:12]` - the ROM-visible reboot
+mode that BL33's `do_get_rebootmode` reads at `0x37e604a4` - is **read-only in
 the family BL31** (polled at `0x1886c`). **BL30/SCP writes it, not BL31 and not
 BL33.** the handoff `BL33 -> BL31 -> BL30 -> AO_SEC_SD_CFG15 -> BootROM` has
 three hops and none of them is observable from BL33.
@@ -402,7 +402,7 @@ set_usb_boot 2
 
 `[F3]` exists because the trial-1 splash means something with a display ran.
 BL1 has no splash. if BL33 ran with the flag armed we would have seen
-`1b8e:c003` (§3.3) and we did not; if BL33 ran with the flag clear, `cold_boot`
+`1b8e:c003` (sec 3.3) and we did not; if BL33 ran with the flag clear, `cold_boot`
 mode would have reached android in 15-20 s and it did not. a kernel-side splash
 and a kernel-side USB hang is the remaining reading, and nobody ever looked,
 because that leg had no monitor.
@@ -414,7 +414,7 @@ because that leg had no monitor.
 it never worked, and there was no way to tell. the BL33 wrapper is
 `mov x1,x0; mov x0,#0x82000043; smc #0; ret` with the return discarded, and the
 `usb flag: 2` printf goes to a console proven invisible in
-`usb-entry-aquaman.md` §2.2. "works" is the absence of a visible error on a path
+`reports/_archive/usb-entry-aquaman.md` sec 2.2. "works" is the absence of a visible error on a path
 that cannot produce one. zero evidence in either direction about whether BL31
 answered.
 
@@ -424,14 +424,14 @@ for two of the three legs, neither: the chip was never reset. `do_reset` is a
 stub, the box sat in BL33 until a power cycle, and the ROM was never entered. no
 BootROM, no BL31, no reset. why BL33 stopped answering is not pinned.
 
-for the one real reset, ROM-in-USB-then-fail is close to eliminated — a ROM
+for the one real reset, ROM-in-USB-then-fail is close to eliminated - a ROM
 sitting in its USB window holds `1b8e:c003` indefinitely with a host present
-(round 3 §2.4 measured exactly that behaviour on the BL33 path), and a 4 ms poll
+(round 3 sec 2.4 measured exactly that behaviour on the BL33 path), and a 4 ms poll
 missed nothing. BL31/reset transition stuck is then the stronger of the two
 proposed readings, but by elimination only, with no artifact behind it. `[F3]`
 is the third reading and it was never instrumented.
 
-**the power-cycle argument breaks down on legs 2 and 3.** round 3 §2.6 used
+**the power-cycle argument breaks down on legs 2 and 3.** round 3 sec 2.6 used
 "only a power cycle brings it back" as evidence that the flag had been set.
 GP_CFG7 is cleared by whoever writes it, not by a power cycle, and with no reset
 there is no clear. that argument only survives on leg 1, which has no bus
@@ -440,11 +440,11 @@ watcher.
 ## 8. what would settle it, ranked
 
 1. **read `0xc810025c` and `0xc810023c` from inside BL33, before and after the
-   SMC.** `READ_MEM 0x02` already worked on `0xc810024c/50/54` (round 26 §1,
+   SMC.** `READ_MEM 0x02` already worked on `0xc810024c/50/54` (round 26 sec 1,
    live). if `GP_CFG7` does not change after `set_usb_boot 2`, item B is closed
    and the rest of this file is moot. one `oem`, two reads, no reset, no risk.
    **cheapest and most decisive thing available and it has never been done.**
-2. **a 4 ms bus watcher around `oem reboot cold_boot`** — the one leg that
+2. **a 4 ms bus watcher around `oem reboot cold_boot`** - the one leg that
    touches the ROM and the only one with no coverage.
 3. **a `oem reboot cold_boot` baseline with no `set_usb_boot 2` first.** if the
    baseline is also slow, the problem is the reset and the FORCE_USB_BOOT
@@ -453,7 +453,7 @@ watcher.
    PSCI, the shortest real reset reachable from BL33.
 5. the FID class map at `0xcb040` and the `std_svc_table` at `0xc5ec0` of the
    real BL31. blocked on the key. not needed for the diagnosis, only to close
-   §3.1.
+   sec 3.1.
 
 ## 9. continuity
 

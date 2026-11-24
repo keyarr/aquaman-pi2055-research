@@ -1,4 +1,4 @@
-# round29 / 03 — what `bootloader.img` is, and what it is not
+# round29 / 03 - what `bootloader.img` is, and what it is not
 
 ## the contradiction, resolved
 
@@ -45,8 +45,8 @@ bl2_new.bin = bl2 + acs + bl21 (blx_fix.sh)
 ```
 
 So the answer to *is `bootloader.img` the direct output of
-`aml_encrypt_gxl`?* is: **YES — of `--bootsig --aeskey enable`, the
-composition, not of `--bl2enc` or of bare `--bootmk`** — with the caveat
+`aml_encrypt_gxl`?* is: **YES - of `--bootsig --aeskey enable`, the
+composition, not of `--bl2enc` or of bare `--bootmk`** - with the caveat
 that three structural details of the at-rest file do not match the
 in-tree v1.3 binary exactly (below). The tool that made this file is this
 family, but a build configuration (and likely tool version) whose exact
@@ -87,7 +87,7 @@ sizes 0x4000 / 0x10000 / 0x2C000 / 0x40000 / 0xBC200 now have a *mechanism*:
 they are the **five --bootmk streams** (header + BL30 + BL31 + BL32 +
 BL33) from the round-28 reading B, and the shared record is the ctrl/timestamp
 field area at stream+0x80 (`aml_set_blk_time_stamp` writes ctrl+0x88 /
-+0xb0 — inside the observed 128-byte window) under one common key.
++0xb0 - inside the observed 128-byte window) under one common key.
 
 ## same family as boot/dt?
 

@@ -1,12 +1,12 @@
 image reports/round14-bl33-persist/bl33-37e18000.bin  base 0x37e18000  size 0x1d8000
 
 === references to 0x37ebf453
-  0x37e2123c  adrp+add   in 0x37e2122c           
-  0x37e24e84  adrp+add   in 0x37e24c00 bootm     
-  0x37e26280  adrp+add   in 0x37e26210           
-  0x37e26400  adrp+add   in 0x37e26348           
-  0x37e264d4  adrp+add   in 0x37e2646c           
-  0x37e29808  adrp+add   in 0x37e297b8           
+  0x37e2123c  adrp+add in 0x37e2122c           
+  0x37e24e84  adrp+add in 0x37e24c00 bootm     
+  0x37e26280  adrp+add in 0x37e26210           
+  0x37e26400  adrp+add in 0x37e26348           
+  0x37e264d4  adrp+add in 0x37e2646c           
+  0x37e29808  adrp+add in 0x37e297b8           
 image reports/round14-bl33-persist/bl33-37e18000.bin  base 0x37e18000  size 0x1d8000
 
 === callers of 0x37e297b8 

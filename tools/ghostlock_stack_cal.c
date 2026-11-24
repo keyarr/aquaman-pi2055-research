@@ -1,5 +1,5 @@
 /*
- * ghostlock_stack_cal.c — stack reclaim calibration (GhostLock/aquaman).
+ * ghostlock_stack_cal.c - stack reclaim calibration (GhostLock/aquaman).
  *
  * Question: how deep into the user stack must the pselect() stamp go before it
  * lands on the waiter's rt_mutex_waiter (the futex_wait_requeue_pi frame)?

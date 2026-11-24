@@ -27,11 +27,11 @@ gaps in the container map:
                             "AVBf" footer in the last 0x40 bytes with
                             vendor-deviant BE u32 fields. s1 s7.
 3  dt.img structure         32-byte PLAINTEXT szSHA2KeyID prefix
-                            (ef8996bd…1492 == all four AMLSECU! descriptors
+                            (ef8996bd...1492 == all four AMLSECU! descriptors
                             of boot+recovery) + 0xE800 uniform ciphertext;
                             same plaintext as boot.img's dtb object but a
                             different ciphertext (203/59424 bytes coincide,
-                            chance level) — direct corroboration of the
+                            chance level) - direct corroboration of the
                             per-object random key scheme. s1 s7.
 4  no KeyID in bootloader   the five 128-byte records do not embed the
                             firmware KeyID in any 16-byte slice; the two
@@ -106,7 +106,7 @@ root keys          aml_check_root_key_sha2_with_efuse hardcodes three 32-byte
 ## 2. bootloader.img at rest
 
 ```text
-0x148200 bytes, sha256 c7b8eea6…3424
+0x148200 bytes, sha256 c7b8eea6...3424
 whole-file chi2 = 226.6 (df=255)
 per-4KiB chi2    min 200.0  median 253.9  max 314.9, 0/329 blocks deviant
 11 magics searched (ToC, AMLC, @AML, 6 uuid words, bl31 magic, ANDROID!)
@@ -168,7 +168,7 @@ all-zero, all-0xff, and sha256 of `aml`, `amlogic`, `Amlogic`, `aml_encrypt`,
 
 One thing, and it is not more offline analysis: a legitimate copy of the
 per-OEM `aml user key` package for MiTV-AESP0/aquaman PI.2055. With it the
-procedure is already complete — one AES-256-CBC pass, zero IV, over
+procedure is already complete - one AES-256-CBC pass, zero IV, over
 `[0, 0xC000)`, then the ToC, then the BL2 table, then the bl31.img header,
 then the BL31 object. Everything downstream of the key is specified.
 
@@ -177,11 +177,11 @@ then the BL31 object. Everything downstream of the key is specified.
 | field | value | source | exact-aquaman | confidence |
 |---|---|---|---|---|
 | container format | unknown, uniform ciphertext | s1 | YES | HIGH |
-| FIP location | unknown | s1 s2 | — | — |
+| FIP location | unknown | s1 s2 | - | - |
 | BL31 object offset | 0x20000 | s2 s6 | no | LOW-MED |
 | BL31 object size | 0x2C000 | s2 s6 | no | LOW-MED |
 | BL31 load address | 0x05100000 | AO CFG5 + BL33 derivation | YES | HIGH |
-| BL31 entrypoint | unknown | s4 | — | — |
+| BL31 entrypoint | unknown | s4 | - | - |
 | BL31 reservation | 0x05000000 + 0x300000 | AO CFG5/CFG3 + DTB | YES | HIGH |
 | BL31 secure window | 0x05100000 + 0x200000 | live fault boundary | YES | HIGH |
 | BL32 base / size | 0x05300000 / 0x2000000 | AO CFG4/CFG3-lo + DTB | YES | HIGH |
@@ -193,7 +193,7 @@ then the BL31 object. Everything downstream of the key is specified.
 | ToC layout | 0x10 header, 0x28 entries | fip_create run | no | HIGH |
 | ctrl block | 0x200, AMLC at +0x0c/+0xfc | aml_ctrl_blk_check | no | HIGH |
 | key source | aml user key pkg, last 32 B | aml_bl2_enc_file | no | HIGH |
-| key material | secure-only | s6 | — | HIGH |
+| key material | secure-only | s6 | - | HIGH |
 | per-image key | random, exported `.key.pxp` | aml_bl3_enc_file | no | HIGH |
 | ECB | refuted for BL33 | s1 s5 | YES | HIGH |
 | 128B record | 5 sites, 0x80 mod 0x10000 | s1 | YES | HIGH |
@@ -201,7 +201,7 @@ then the BL31 object. Everything downstream of the key is specified.
 | AMLSECU! producer | --imgsig -> aml_bl3_enc_file, random per-object key | s5b | no | HIGH |
 | boot.img payload map | kernel 0x1000-0x95a000, dtb 0x95a000-0x969000 | s1 s7 | YES | HIGH |
 | dt.img structure | keyid32 plaintext + 0xE800 ciphertext | s1 s7 | YES | HIGH |
-| firmware KeyID | ef8996bd…1492, constant across boot+recovery | s1 s7 | YES | HIGH |
+| firmware KeyID | ef8996bd...1492, constant across boot+recovery | s1 s7 | YES | HIGH |
 | bootloader record vs KeyID | no KeyID bytes in any slice | s1 s7 | YES | HIGH |
 
 ## 7. continuity: the chain, traversed to its end
@@ -239,7 +239,7 @@ tools/round28_fip.py               parsers, crypto contract, census, probes
 tools/round28_vendor_summ.py       per-function call/constant summary of
                                    aml_encrypt_gxl, reproduces the s5/s6 evidence
 tools/fip_probe.sh                 rebuilds the reference FIP + ToC fixture
-reports/round28-fip/ref5-toc.bin   256B ToC fixture, sha256 7c114a2e…
+reports/round28-fip/ref5-toc.bin   256B ToC fixture, sha256 7c114a2e...
 tools/run_tests.py                 TestRound28Fip, 9 tests
 reports/round28-fip/01..08.md      per-section detail
 ```

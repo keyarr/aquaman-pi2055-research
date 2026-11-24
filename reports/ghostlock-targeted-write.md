@@ -1,4 +1,4 @@
-# ghostlock targeted write — H16 8B stock-relative search
+# ghostlock targeted write - H16 8B stock-relative search
 
 Date: 2026-10-01. Authority: PI.2055 hardware decides runtime.
 Lab (build-aq/vmlinux + .src/linux-amlogic) is OFFLINE_ONLY:
@@ -10,7 +10,7 @@ Tools, this phase:
 --verify/--all, per-candidate SYSCALL/FUNCTION/STORE_VA/STORE_INSTR/
 DESTINATION/DEST_DELTA_FROM_FWRQ/VALUE_REGISTER/VALUE_ORIGIN/VALUE_CLASS/
 LIFETIME/SIDE_EFFECTS/STOCK_STATUS) +
-`tools/ghostlock_deref_chain.py --target` (new: FASE 7 destination x value
+`tools/ghostlock_deref_chain.py --target` (new: PHASE 7 destination x value
 ruler, --disclosure/--emit preserved) +
 `tools/ghostlock_chain.c` (header-only delta, P0-P8 unchanged, no new mode,
 no memory touched).
@@ -67,7 +67,7 @@ swapon 35, mincore 34. EXACT_H16 (delta==0,w==8): 33 total = 9 KPTR, 0 UPTR,
 ## 5. Value Carrier Search
 
 `--carrier` (OFFLINE_ONLY): KPTR 8B in window 154, EXACT 9. Finer value
-classes (FASE 7): TARGET_RT_MUTEX (pi_mutex/+0x10/rt_mutex 8B kptr) = 0 at
+classes (PHASE 7): TARGET_RT_MUTEX (pi_mutex/+0x10/rt_mutex 8B kptr) = 0 at
 EXACT; OTHER_KERNEL_POINTER = 9 at EXACT (all heavy/privileged/transient,
 sec. 9); USER_POINTER 0 at EXACT; rest INTEGER/UNKNOWN. So no exact store
 carries an rt_mutex *; the 9 exact KPTR carry task/heap/code words in MM/
@@ -130,7 +130,7 @@ OTHER_KERNEL_POINTER) only. Exact 33, each REJECTED as stamper:
   none is a kptr carrier. REJECT (not pointers).
 * SyS_ioctl chain (depth 4): 1 near 8B (`locks_mandatory_area`, delta -48),
   0 exact; vendor f_op past depth 4 INCONCLUSIVE (not claimed covered).
-* No FASE 16 fixed-value 8B at EXACT that is a legitimate kptr with a fast
+* No PHASE 16 fixed-value 8B at EXACT that is a legitimate kptr with a fast
   lifetime (fixed values at EXACT are ints/derived). EVIDENCE: OFFLINE_ONLY.
 
 ## 10. Hardware Geometry Probe

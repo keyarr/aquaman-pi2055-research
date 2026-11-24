@@ -1,4 +1,4 @@
-# GhostLock breakthrough — the Aquaman form
+# GhostLock breakthrough - the Aquaman form
 
 Date: 2026-09-30. Offline analysis against `.src/linux-amlogic` (4.9.113,
 Amlogic, arm64, SCHED_DEADLINE backport) and `build-aq/vmlinux` (matching ELF
@@ -197,7 +197,7 @@ bug (the waiter giving up `f_chain`):
    object: `put_pi_state()` parks it on the freeing thread's per-thread cache
    (see section 6).
 2. The waiter is left in `hb1` (`f_wait`'s bucket) with `q.rt_waiter != NULL`
-   and `q.pi_state == NULL` — `futex_requeue` explicitly sets
+   and `q.pi_state == NULL` - `futex_requeue` explicitly sets
    `this->pi_state = NULL; put_pi_state(pi_state); break;` at futex.c:1985-1987
    on the EDEADLK path. The waiter then wakes through
    `handle_early_requeue_pi_wakeup`, which is only saved by the
@@ -296,7 +296,7 @@ On the wake mechanism (mission variant E). The rollback path that produces
 EDEADLK is `remove_waiter()` inside `rt_mutex_start_proxy_lock()`, and it only
 runs on the `FUTEX_CMP_REQUEUE_PI` path. `timeout` and `FUTEX_WAKE` and
 `FUTEX_UNLOCK_PI` never call `rt_mutex_start_proxy_lock`, so they cannot
-produce the bug at all — they are not alternatives to compare, they are simply
+produce the bug at all - they are not alternatives to compare, they are simply
 not triggers. Within the CMP geometry the only free variable is *when the
 waiter returns*, and the answer is "never": keeping the waiter parked in
 `futex_wait_queue_me` leaves the least PI residue, because the futex_q stays
@@ -327,7 +327,7 @@ rt_waiter = SP_syscall_entry - 0x330 + 0x80 = SP_syscall_entry - 0x2b0
 `arch/arm64/include/asm/thread_info.h:32` give `THREAD_SIZE = 0x4000`,
 `THREAD_START_SP = 0x3ff0`. So the syscall entry SP is in `[0x3c60, 0x3ff0]` and
 the `rt_waiter` lives at **page offset 0xc60..0xd40 of the top kernel stack
-page** — a 4 KB page, 80 bytes inside it.
+page** - a 4 KB page, 80 bytes inside it.
 
 Consequences:
 
@@ -341,13 +341,13 @@ Consequences:
   `x29+0x90`, i.e. `SP_psel - 0x190`. With `SP_psel = SP_futex - PAD` the
   controlled window is `[SP_futex-PAD-0x190, SP_futex-PAD-0xa0]`, 0xf0 bytes.
   The `rt_waiter` is 0x50 bytes at `[SP_futex-0x2b0, SP_futex-0x260]`, fully
-  covered for `PAD ∈ [0x120, 0x1c0]`, window aligned to the waiter's base at
+  covered for `PAD in [0x120, 0x1c0]`, window aligned to the waiter's base at
   `PAD = 0x120`.
 * Both fields we need are at window bytes `0x38` and `0x40`, both inside
   `stack_fds[0]` (the `readfds` slot, `copy_from_user`'d verbatim). The three
   `memset(0)` result slots start at window `+0x78`, so they do not touch the
   waiter. **The deep/shallow pselect pair in `ghostlock_oracle_v2.c` is not
-  needed for a 0x120 stamp** — it exists only to reach a payload that hangs off
+  needed for a 0x120 stamp** - it exists only to reach a payload that hangs off
   the `task_struct` fake, which we no longer need.
 
 The one thing the previous rounds got right and I am keeping: the PAD sweep has
@@ -369,8 +369,8 @@ Three independent reasons:
 
 1. **Wrong object.** The dangling pointer is `waiter_task->pi_blocked_on`,
    which points at a `rt_mutex_waiter` on a *kernel stack*, not at anything in
-   `mm_cachep`. Reclaiming the `mm_struct` slab page — Hazel's approach as
-   summarised in `ghostlock-port-comparison.md` — does not put our bytes where
+   `mm_cachep`. Reclaiming the `mm_struct` slab page - Hazel's approach as
+   summarised in `ghostlock-port-comparison.md` - does not put our bytes where
    this kernel will read them. The `futex_pi_state` object is the only heap
    object on the chain, and it is kept alive on purpose here.
 2. **Wrong value.** We do not need to read a kernel pointer out of the reclaim;
@@ -389,7 +389,7 @@ futex-hash timing oracle are all **dropped from this line of work**. Section 5's
 stack offset is the only calibration left, and it is a byte constant that a
 PAD sweep resolves without a reboot.
 
-`CONFIG_RANDOMIZE_BASE=y` is set in `aquaman-config`, so KASLR is on for text —
+`CONFIG_RANDOMIZE_BASE=y` is set in `aquaman-config`, so KASLR is on for text -
 irrelevant here, because we never dereference a kernel VA. Flagged for the
 record so nobody re-opens it.
 
@@ -552,12 +552,12 @@ threads:  waiter   -> FLPI(f_chain); FWRQ(f_wait -> f_target, 30s timeout)
 |---|---|
 | `+0x10` nonzero and the write equals `&fake_waiter + 0x00` | HIT. The chain is real, `FUTEX_LOCK_PI` consumed the dangling pointer |
 | `+0x10` still 0, `FLPI(f_chain)` returned promptly | the walk stopped before the enqueue. Expected sub-cases: wrong PAD, or `waiter->prio == 120` |
-| `FLPI(f_chain)` never returns, no reboot | `raw_spin_trylock` failed and the kernel is in the `cpu_relax(); goto again` loop at 0xffffff8009104e4c. Also a HIT — it proves the fake lock was dereferenced |
+| `FLPI(f_chain)` never returns, no reboot | `raw_spin_trylock` failed and the kernel is in the `cpu_relax(); goto again` loop at 0xffffff8009104e4c. Also a HIT - it proves the fake lock was dereferenced |
 | reboot | the fake lock address was not where we thought |
 | some runs hit, some miss, same PAD | window clobbered by preemption, not a wrong offset |
 
 Both non-crash outcomes are evidence. The reboot is the only lossy one, and it is
-the only one that tells us the offset is wrong — which is a 1-byte sweep on
+the only one that tells us the offset is wrong - which is a 1-byte sweep on
 `PAD`, not a redesign.
 
 Hard constraints on the harness, taken from what killed the previous nine
@@ -631,15 +631,15 @@ per-hop instructions in section 2 and section 8 when the count matters.
 
 ## Status against the success criteria
 
-* **A. stable consumer reading a controlled value** — not yet, but the consumer
+* **A. stable consumer reading a controlled value** - not yet, but the consumer
   is now identified, deterministic, unprivileged, one syscall, and the value it
   reads is written by us into a page we already own. Experiment 9 is the test.
-* **B. controlled reclaim without the timing oracle** — achieved. Section 5.
+* **B. controlled reclaim without the timing oracle** - achieved. Section 5.
   The reclaim target is a kernel stack slot at a compile-time offset; the mm
   leak, the SLUB geometry and the futex hash are all dropped.
-* **C. alternative path from the dangling waiter to kernel R/W** — identified
+* **C. alternative path from the dangling waiter to kernel R/W** - identified
   and disassembled, section 8. Eight write/deref sites, all reachable from one
   `FUTEX_LOCK_PI`.
-* **D. an earlier step removed** — achieved, twice. The `FUPI(f_chain)` teardown
+* **D. an earlier step removed** - achieved, twice. The `FUPI(f_chain)` teardown
   that made the bug unreachable is gone, and the whole `mm_struct` leak stage
   is gone.

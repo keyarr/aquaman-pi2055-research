@@ -1,7 +1,7 @@
-# round29 / 07 — summary and decision
+# round29 / 07 - summary and decision
 
 Question of the round: *how much of `bootloader.img` can be reconstructed
-offline without the secure-only secret?* — asked after round 28 closed
+offline without the secure-only secret?* - asked after round 28 closed
 the crypto as CASE C but before the pipeline itself was fully
 reconstructed.
 
@@ -41,7 +41,7 @@ BL31 object boundary = 0x20000 + 0x2C000   (MEDIUM-HIGH, mechanism-backed:
     bootmk stream order + exact tail closure 0x8C000+0xBC200=0x148200)
 BL31 payload ciphertext = inside stream 2, uniform
 BL31 header recoverable = NO offline (the 0x12348765 header is plaintext
-    in v1.3 objects, but the production envelope encrypts it; the header
+ in v1.3 objects, but the production envelope encrypts it; the header
     CONTENT is known from the family fixture: load 0x05100000,
     secure 0x05100000+0x200000, rsv 0x05000000+0x300000)
 offline decrypt path = NO
@@ -67,7 +67,7 @@ blocking dependency = the 32-byte aeskey tail of the MiTV-AESP0/aquaman
    first-block oracle applied; all negative (documented, pinned, not
    to be repeated).
 5  record128 explained           deterministic metadata at stream+0x80
-   encrypted under one common key across all five streams — eliminates
+   encrypted under one common key across all five streams - eliminates
    any useful plaintext metadata alongside the ciphertext.
 6  three contradictions pinned   v1.3 plaintext ctrl copy @0xFE00 absent;
    no plaintext 0x12348765 header; record128 incompatible with per-
@@ -84,15 +84,15 @@ blocking dependency = the 32-byte aeskey tail of the MiTV-AESP0/aquaman
 AES-256-CBC            known
 IV                     0 (stage 1) / pkg[0:16] (v3 header)
 window(s)              [0,0xC000) + [0xC000,0xFE00|0x10000) + streams
-key source             pkg tail32 — KNOWN FORMAT
-key package producer   aml_key_bnd — KNOWN
-aeskey file producer   --rsagen / OEM build input — KNOWN SHAPE
-the aeskey itself      MiTV-AESP0 OEM secret — ABSENT FROM REPO   [STOP]
+key source             pkg tail32 - KNOWN FORMAT
+key package producer   aml_key_bnd - KNOWN
+aeskey file producer   --rsagen / OEM build input - KNOWN SHAPE
+the aeskey itself      MiTV-AESP0 OEM secret - ABSENT FROM REPO   [STOP]
 efuse binding          --efsgen fingerprint + secure-world ladder   [STOP]
 ```
 
 The opaque link moved: it is no longer "unknown derivation inside the
-secure world" — it is a **32-byte file the OEM build consumed and did
+secure world" - it is a **32-byte file the OEM build consumed and did
 not ship**. Everything else between ciphertext and plaintext is now
 specified to the byte.
 
@@ -106,13 +106,13 @@ can be reconstructed offline today
                                                            aquaman bytes)
     the BL2 object layout                                  HIGH
 cannot be reconstructed offline
-    any plaintext byte of bootloader.img                   —
+    any plaintext byte of bootloader.img                   -
 ```
 
 ## closure
 
 ```text
-OFFLINE PATH CLOSED — round 29
+OFFLINE PATH CLOSED - round 29
 
 blocking dependency (unchanged in kind, narrowed in form):
     32-byte secret = tail32 of the aquaman aml-user-key.sig build input
@@ -122,6 +122,6 @@ blocking dependency (unchanged in kind, narrowed in form):
 ```
 
 The one legitimate acquisition that would reopen everything is a copy of
-the OEM key package (from the OEM/build side — not from the device, which
-remains out of scope). With it, the documented procedure (round 28 §5,
+the OEM key package (from the OEM/build side - not from the device, which
+remains out of scope). With it, the documented procedure (round 28 sec 5,
 now with the corrected stage list) applies directly.

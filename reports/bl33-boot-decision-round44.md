@@ -5,7 +5,7 @@ no RUN/MODIFY/reset/update/flash in this session. no secure-boot bypass attempt.
 
 base:
 - image `reports/round14-bl33-persist/bl33-37e18000.bin` (base 0x37e18000,
-  `[0x37e18000,0x37ff0000)`, sha256 `664fb34a…`), capstone disasm this session.
+  `[0x37e18000,0x37ff0000)`, sha256 `664fb34a...`), capstone disasm this session.
 - inherited live: round39 (WRITE 0x01), round40 (double consumption), round41 (116-cmd
   map), round42 (false->true), round43 (test->true, env print->true,
   FILL 0x03, RUN wedge, live env in `reports/round43-campaign/hunt_33e18000_32k.bin`).
@@ -92,7 +92,7 @@ rodata script `0x37eb71f2` (live in arena). live offsets this session:
 |---|---|---|---|---|
 | `active_slot` | `0x33e1d6da`=`normal` | `get_valid_slot 0x37e2bb7c` | `test != normal`, `= _a`, `= _b` (`test 0x37e36774`) | `slot_suffix`, `root=mmcblk0p23/24` |
 | `avb2` | `0x33e1d6e6`=`1` | `get_avb_mode 0x37e2b820` | `test = 0` | picks `root=` when 0 |
-| `system_mode` | no scalar in dump | `get_system_as_root_mode 0x37e2b7ac` (`setenv 0/1`, strs `0x37ec2dcd`,`0x37eccb38`,`0x37ecdd94`) | `test = 1` at head | `fs_type ro…` + `run storeargs` |
+| `system_mode` | no scalar in dump | `get_system_as_root_mode 0x37e2b7ac` (`setenv 0/1`, strs `0x37ec2dcd`,`0x37eccb38`,`0x37ecdd94`) | `test = 1` at head | `fs_type ro...` + `run storeargs` |
 | `boot_part` | `0x33e1d731`=`boot` | default | `imgread kernel ${boot_part} ${loadaddr}` (`0x37e356d0`) | which partition loads |
 | `loadaddr` | `0x33e1e0ef`=`1080000` | default | `imgread` dst + `bootm` src (`0x37e24c00`) | where it lands / where it boots from |
 | `bootargs` | `0x33e1d73f` 832B | `storeargs` + `bootm` | concatenation | kernel cmdline |
@@ -136,7 +136,7 @@ no path loads-and-executes without `aml_sec_boot_check`. static check;
 
 ## 7. ranking
 
-### Path 1 — HARDWARE_REPRODUCED
+### Path 1 - HARDWARE_REPRODUCED
 
 ```
 FILL 1 pair (or WRITE 8B) -> test 0x37f62180 -> true
@@ -144,7 +144,7 @@ FILL 1 pair (or WRITE 8B) -> test 0x37f62180 -> true
   -> oracle failed:->success -> restore -> failed:
 ```
 
-### Path 2 — PROBABLE
+### Path 2 - PROBABLE
 
 ```
 WRITE/FILL -> live env 0x33e1xxxx or run/get_rebootmode slot
@@ -153,7 +153,7 @@ WRITE/FILL -> live env 0x33e1xxxx or run/get_rebootmode slot
 
 read-only location OFFLINE_ONLY; poke NOT PROVEN.
 
-### Path 3 — limit, BLOCKED
+### Path 3 - limit, BLOCKED
 
 ```
 WRITE/FILL -> RUN 0x05 -> USB wedge (T7/T8 round43)

@@ -1,4 +1,4 @@
-# ghostlock consumer FUTEX_LOCK_PI(f_chain) — stale pi_blocked_on differential
+# ghostlock consumer FUTEX_LOCK_PI(f_chain) - stale pi_blocked_on differential
 
 > DIRECTION (2026-10-02, see `reports/CURRENT_STATE.md`): principal is
 > post-free stack reuse + disclosure; H16 live retarget is secondary;
@@ -161,7 +161,7 @@ Consumer always timed FUTEX_LOCK_PI(f_chain) ABS +3s. Same boot
 L1==TIMEOUT proves occupied f_target alone does not create EDEADLK.
 U0==TIMEOUT proves stale alone does not create EDEADLK. Only the AND
 (U1) gives EDEADLK 0ms. alt_only vs alt_tgt with f_alt held constant:
-result follows f_target, f_alt ignored — walk consumes the birth value
+result follows f_target, f_alt ignored - walk consumes the birth value
 &f_target.pi_mutex (H16 fidelity), not any occupied mutex. No cell
 assumed; direction matched the offline predicate.
 

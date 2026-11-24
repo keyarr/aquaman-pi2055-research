@@ -1,5 +1,5 @@
 /*
- * ghostlock_oracle_v2.c — GhostLock/aquaman, value oracle (1 trial proc).
+ * ghostlock_oracle_v2.c - GhostLock/aquaman, value oracle (1 trial proc).
  *
  * One trial per execution. Usage:
  *   ghostlock_oracle_v2 nostamp          (i) control, no stamp

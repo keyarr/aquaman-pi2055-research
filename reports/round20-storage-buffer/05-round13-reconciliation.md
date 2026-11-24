@@ -34,7 +34,7 @@ CURRENTLY VERIFIED (no round19+ read of any of these six slots).
 
 - DTB `linux,secmon alloc-ranges <0x5000000 0x400000>` ->
   window 0x05000000..0x05400000. all six stale values fall inside it:
-  in 0x05000000, out 0x05040000 (+0x40000), block 0x05080000 (+0x80000,
+ in 0x05000000, out 0x05040000 (+0x40000), block 0x05080000 (+0x80000,
   size 0x40000 -> ends 0x050c0000), secmon-in/out 0x050fe000/0x050ff000
   (top 8 KiB). layout is non-overlapping and 0x40000-aligned. tidy, which
   is why the snapshot *looks* right - but tidiness is not verification.

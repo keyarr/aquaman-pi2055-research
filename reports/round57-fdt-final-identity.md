@@ -16,7 +16,7 @@ explain the revert. Everything after `fdt_chosen` is in place on the same blob.
 
 ## Executive conclusion
 
-Existe no BL33 um ponto estatico que explique a reversao do FDT? NAO.
+Is there a static point in BL33 that explains the FDT revert? NO.
 
 What closed this round (all OFFLINE_ONLY, device binary):
 
@@ -180,7 +180,7 @@ Parameters (PROVEN by call sites + prologue moves):
 
 Key pointer flow inside (PROVEN disasm, file `reloc_37e5bda4.txt`):
 
-| offset | instruction | base | destino | interpretacao |
+| offset | instruction | base | destination | interpretation |
 |---|---|---|---|---|
 | `0x37e5bdb4` | `ldr x0,[x2]` | `x2`=len-ptr | `x0`=old len | load `*ft_len`; `cbz` empty-len path returns `w22=0` without rewrite |
 | `0x37e5bdcc` | `ldr x19,[x1]` | `x1`=addr-ptr | `x19`=old FDT | load `ft_addr` value; this is the blob under test |
@@ -275,7 +275,7 @@ list in `image_setup_37e5c324.txt`).
   `fdt_find_or_add_subnode(fdt,0,chosen)` + `env_get(bootargs)@0x37e29814` +
   `fdt_setprop@0x37e29840`. Null env -> return 0 no write. `setprop==0` ->
   return 0. Else WARNING + errno. This is the ONLY `/chosen/bootargs` writer
-  in the Linux path.
+ in the Linux path.
 * `do_bootvx_fdt@0x37e2646c` (called in bootvx dispatch, not Linux path):
   same env string (`0x37e264d8` adrp bootargs + `env_get`), writes under
   `/chosen@0x37ec09d0` via `0x37e294c0`-family. Same content even if taken,
@@ -386,7 +386,7 @@ identity IS proven; only bytes/runtime remain open).
 
 Case mapping asked for:
 
-* Case A (`modificado == final`, no copy/substitution): HOLDS for the
+* Case A (`modified == final`, no copy/substitution): HOLDS for the
   post-`fdt_chosen` segment (no copy/swap found). Does not close runtime bytes.
 * Case B (copy before, FDT-B misses change): copy exists but sits BEFORE
   `fdt_chosen`, so it is the modified object itself, not a missed fork.
@@ -402,15 +402,15 @@ Case mapping asked for:
 Only this bridge:
 
 ```text
-BL33 arbitrary write -> FDT efetivo -> Linux
+BL33 arbitrary write -> effective FDT -> Linux
 ```
 
 Nothing here advances to root. `WRITE -> HARDWARE_REPRODUCED`,
 `env_htab -> HARDWARE_REPRODUCED`, `storeargs -> HARDWARE_REPRODUCED`,
 `htab -> bootargs -> HARDWARE_REPRODUCED`,
-`bootargs -> Linux -> REFUTED nesta forma` (round53 + round56 whole-string
+`bootargs -> Linux -> REFUTED in this form` (round53 + round56 whole-string
 revert), `FDT identity -> SAME_OBJECT_UNKNOWN_BYTES` (pointer PROVEN same
-field, bytes UNKNOWN), `root -> NAO DEMONSTRADO`. No `uid=0`, no SMC bypass,
+field, bytes UNKNOWN), `root -> NOT DEMONSTRATED`. No `uid=0`, no SMC bypass,
 no init payload, no `.text` patch, no flash/saveenv. Do not promote.
 
 ## Next experiment (max one, NOT executed, only if hypothesis accepted)

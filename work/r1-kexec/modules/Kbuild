@@ -1,0 +1,5 @@
+# PREPARATION ONLY - DO NOT EXECUTE ON DEVICE
+obj-m := r1_kexec.o
+r1_kexec-objs := r1_main.o r1_asm.o
+
+ccflags-y := -Wno-unused-function

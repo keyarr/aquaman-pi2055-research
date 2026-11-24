@@ -1,4 +1,4 @@
-# round29 / 02 — the `aml user key` package
+# round29 / 02 - the `aml user key` package
 
 ## producers
 
@@ -35,10 +35,10 @@ branch A (no --ukey):  the last 0x20 of the rootkeymax file (which, if it
                        is a 0x1B40 package, is its aeskey tail32)
 branch B (with ukey):  the last 0x20 of the AES key file
                        ("--rsagen ... aes : AES key file without IV,
-                        GX series used only" — help text 0xe6ec1)
+                        GX series used only" - help text 0xe6ec1)
 ```
 
-Total size check: 0x1248 + ukey + 0x20 = 0x1B40 ⇒ ukey blob = **0x8D8**.
+Total size check: 0x1248 + ukey + 0x20 = 0x1B40 => ukey blob = **0x8D8**.
 Both consumers and `aml_key_bnd` itself accept exactly `0x20` (bare AES
 key) or `0x1B40` (full package).
 
@@ -52,10 +52,10 @@ key) or `0x1B40` (full package).
                                      AES KEY FILE, VERBATIM
 ```
 
-No magic, no version field, no checksum over the whole package — the only
+No magic, no version field, no checksum over the whole package - the only
 internal structure is the rootkeymax blob itself (which carries its own
 AMLSECU-era RSA signature format). The 32-byte tail is **key material
-direct** — a build-time input copied into place by `aml_key_bnd`, not a
+direct** - a build-time input copied into place by `aml_key_bnd`, not a
 wrapped key, not a derived key, not device- or efuse-derived at package
 construction time. It is however *enrolled* later: `--efsgen`
 (`aml_efuse_process`/`aml_efuse_gen` 0x418515/0x417d8a) computes the
@@ -75,7 +75,7 @@ Correction to the round-28 statement *"rooted in an efuse-bound root
 key"*: at **package construction** the AES tail32 is an ordinary build
 input. The eFuse binding enters through the rootkeymax blob (RSA root
 key, whose SHA-2 fingerprints are hardcoded at 0x4064ce) and through the
-`--efsgen` enrollment step — the host-side AES tail itself is only ever
+`--efsgen` enrollment step - the host-side AES tail itself is only ever
 compared/used as raw bytes. The secure world independently holds its own
 key ladder; the host AES key and the efuse ladder are two legs of the
 same secure-boot design that must be equal for boot to succeed, but the
@@ -88,7 +88,7 @@ provenance of bootloader.img's AES key = last 32B of the MiTV-AESP0 /
 aquaman PI.2055 build's aml-user-key.sig / aeskey input
 present in repo = NO (see 05)
 fixture set = 32 board aml-user-key.sig files in the vendor tree, all
-              0x1B40, sharing ONE tail32 (02bc96a2…e7cae6ee) — the
+              0x1B40, sharing ONE tail32 (02bc96a2...e7cae6ee) - the
               Amlogic reference key. This is the demonstration that the
               tail32 is the operative AES secret.
 ```

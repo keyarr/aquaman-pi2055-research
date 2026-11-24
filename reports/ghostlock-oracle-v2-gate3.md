@@ -1,4 +1,4 @@
-oracle_v2 device phase — GATE v3, zombie + heartbeat (3 of 3 reboots, BUDGET BLOWN)
+oracle_v2 device phase - GATE v3, zombie + heartbeat (3 of 3 reboots, BUDGET BLOWN)
 
 table trial -> (final heartbeat, f18_post, f19, survived, uptime)
 
@@ -45,13 +45,13 @@ trial 2). Reboots: 3 of 3. Budget blown.
    owner frees the task_struct and the consumer walk (__sched_setscheduler ->
    adjust_pi) steps on freed heap". gate3 dropped the join (owner became a
    zombie, task_struct provably alive, printed by the binary itself) and the
-   device died ANYWAY — 2 to 2.5s later, with the consumer never even called.
+   device died ANYWAY - 2 to 2.5s later, with the consumer never even called.
    the consumer walk was not the cause. it was the most obvious vector, not
    the only one.
 
 2. WHY THIS CHANGES THE DIAGNOSIS
 
-   in nostamp mode there IS NO stamp, there IS NO pselect, and the consumer
+ in nostamp mode there IS NO stamp, there IS NO pselect, and the consumer
    NEVER RAN (it died before [consumer-before]). still the device dies ~2s
    after teardown ends. so the crash is ASYNC and goes through neither the
    consumer nor the stamp: it is the kernel, alone, walking some path that
@@ -70,7 +70,7 @@ trial 2). Reboots: 3 of 3. Budget blown.
    strongest hypothesis: the crash comes from the PROCESS EXIT (which unlocks
    the zombie owner and walks the stale PI tree), not from the consumer.
 
-   in other words: via the attempted path so far, the gate did not go green —
+ in other words: via the attempted path so far, the gate did not go green -
    the process's final teardown looked like part of the problem, not a
    cleanup. (LATER NOTE: the exit hypothesis was REFUTED by the HOLD round,
    where the process died alive with no exit() ever called; see

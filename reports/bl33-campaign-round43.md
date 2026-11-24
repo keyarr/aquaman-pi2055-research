@@ -100,7 +100,7 @@ compatible calling convention (cmdtp,flag,argc,argv).
 ## 4. sinks (static, capstone, 352 sites)
 
 total `ldr xN,[xM,#off]` + `blr/br xN` delta<=32B same func: 352 (blr 351,
-br 1) in 199 funcs. full list in subagent ses_f063e628 (archived).
+br 1) in 199 funcs. full list archived separately.
 main ones:
 
 ```text
@@ -118,7 +118,7 @@ hook 0x37ee2710 (blr x0 at 0x37e19848)
 clusters >=4 slots (gap<=0x40): 39. dense regions 0x37ee59a8..67d0 (mmc+store),
 0x37ee70f8..7b10 (env+heap), 0x37f60df8..24e0 (embedded cmd_tbl, 475 ptrs).
 
-## 5. handlers by capability (static, detail ses_f0638c36)
+## 5. handlers by capability (static, detail in archived notes)
 
 ```text
 display-only, no storage/reset/smc (safe targets for redirect):
@@ -260,4 +260,4 @@ S2 ended wedged (RUN); S1 ended in android-reboot (MODIFY). nothing persistent.
 
 logs: `reports/round43-campaign/` (battery.log, battery3.log, ro_cmdtbl_full.bin).
 repro: `sudo python3 tools/optimus.py identify/mread/bulkcmd`,
-scripts in `/tmp/opencode/{campaign_ro,bsshunt,dump_sub2,baseline,battery2,battery3}.py`.
+scripts in `/tmp/{campaign_ro,bsshunt,dump_sub2,baseline,battery2,battery3}.py`.

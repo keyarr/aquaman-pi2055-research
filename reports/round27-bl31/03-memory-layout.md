@@ -1,4 +1,4 @@
-# 03 — memory layout: reservation, share area, image window
+# 03 - memory layout: reservation, share area, image window
 
 ## composed map (round26 live + round27 structure)
 
@@ -12,9 +12,9 @@
      │     │   secmon OUT (SMC 0x21)    @0x050ff000
      ▼     │
 0x05100000 ┤ ================= FAULT BOUNDARY =================
-0x05300000 │ BL31 IMAGE WINDOW (Secure) — 2 MiB, unreadable from NS
-0x05300000 ┤ BL32 RESERVATION — 32 MiB, no-map, status=disable (dead on this build)
-0x05400000 │   (DTB pool end — no HW meaning; 0x05400000+ round19 fault covered
+0x05300000 │ BL31 IMAGE WINDOW (Secure) - 2 MiB, unreadable from NS
+0x05300000 ┤ BL32 RESERVATION - 32 MiB, no-map, status=disable (dead on this build)
+0x05400000 │   (DTB pool end - no HW meaning; 0x05400000+ round19 fault covered
 0x07300000 │    by the secos slot from 0x05300000)
 ```
 
@@ -49,7 +49,7 @@ evidence for option 3:
 `(bl31_size + 0x400000 - 1)/0x400000*0x400000` (source line 108; aquaman
 disasm 0x37e633c8-0x37e633ec `add +0x3ff,000; and #0xfc00000`). so
 `linux,secmon size = 0x400000` while the HW reservation is 0x300000. the
-extra MiB (0x05300000..0x05400000) overlaps the secos `reg` — DTB-declared
+extra MiB (0x05300000..0x05400000) overlaps the secos `reg` - DTB-declared
 only; on HW it is the first MiB of the bl32 no-map slot. already flagged in
 round26; now fully explained by the two-in-one CMA branch (secos start ==
 secmon end -> single enlarged pool instead of separate reservations).
@@ -62,7 +62,7 @@ secmon end -> single enlarged pool instead of separate reservations).
 /secmon                       : amlogic,secmon, memory-region phandle 0xf,
                                 in/out_base_func 0x82000020/21,
                                 reserve_mem_size 0x300000
-                                (clear_range: absent on aquaman — see 05)
+                                (clear_range: absent on aquaman - see 05)
 /reserved-memory/linux,secos  : aml_secos_memory, reg 0x05300000+0x2000000,
                                 no-map, status=disable
 ```

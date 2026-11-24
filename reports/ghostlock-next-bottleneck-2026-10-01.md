@@ -1,4 +1,4 @@
-# ghostlock next bottleneck — disclosure check (2026-10-01)
+# ghostlock next bottleneck - disclosure check (2026-10-01)
 
 > DIRECTION (2026-10-02, see `reports/CURRENT_STATE.md`): principal is
 > post-free stack reuse + disclosure; H16 live retarget is secondary;
@@ -76,15 +76,15 @@ Not reopened this round, cited with reason:
 
 * H16 writer depth<=3: 33 EXACT (9 KPTR heavy/priv/transient, 2 INT,
   1 DERIVED, 21 UNKNOWN spills), atomics 0, ioctl 0 exact,
-  poll table/current GEOMETRY_ONLY valor errado (task/code/small-int),
-  PI `+0x10` LEA register-only zero spills. Veredito: NOT_FOUND.
+  poll table/current GEOMETRY_ONLY wrong value (task/code/small-int),
+  PI `+0x10` LEA register-only zero spills. Verdict: NOT_FOUND.
 * reclaim / MSG_PEEK / buddyinfo / slab guessing: `mm_reclaim_probe`
   A/B/control FAIL `reclaim_hits=0`, plumbing 512/512 PASS in all 3 modes.
   PEEK is plumbing, not reuse. buddyinfo errno=13, slabinfo missing,
   slab attrs 0400. BLOCKED / REFUTED as proof.
 * Mali: GET/QUERY read-only HARDWARE_REFUTED for disclosure;
-  stateful 34 handlers BOUNDED_COPY+VALIDATED ou SCALAR/NO_EMIT,
-  open/close e get/put balanceados. Zero OOB/UAF/KPTR provado.
+  stateful 34 handlers BOUNDED_COPY+VALIDATED or SCALAR/NO_EMIT,
+  open/close and get/put balanced. Zero OOB/UAF/KPTR proven.
   Blind ioctl without source forbidden, not executed.
 * geometry-only / stack coincidence / poll-select without writer:
   `dist=0` proves page/SP reuse, not absolute address nor
@@ -96,11 +96,11 @@ Not reopened this round, cited with reason:
 * ashmem/configfs: needs fake fops + tolerant dentry; without demonstrated
   leak, not disclosure.
 * ge2d / vfm / ionvideo / amvideo / vndbinder / cec:
-  shell-unreachable (errno=13) ou DISABLED (-EIO). INDEX/fd apenas.
+  shell-unreachable (errno=13) or DISABLED (-EIO). INDEX/fd only.
 
 ## Disclosure candidates
 
-Formato exigido: TARGET / VALUE / ENVIRONMENT / STATUS.
+Required format: TARGET / VALUE / ENVIRONMENT / STATUS.
 Runs-on-VM = static analysis. Runs-on-DEVICE = real probe on this boot
 or history with BOOT_ID. Everything else OFFLINE_ONLY.
 
@@ -142,7 +142,7 @@ status: MASKED 0 / INDEX_ONLY, NOT_FOUND
 
 candidate: S9 kallsyms + S10 dmesg/kmsg/pstore + S11-S13 slab/debugfs/sys
 source: %pK kptr_restrict, dmesg_restrict, SELinux
-runs on VM?: yes (config KALLSYMS=y mas gated)
+runs on VM?: yes (config KALLSYMS=y but gated)
 runs on DEVICE?: yes (T5-T7 this boot)
 target value: slide / symbol / slab addr
 status: PERMISSION_DENIED, NOT_FOUND
@@ -156,7 +156,7 @@ status: USER_ECHO_ZEROS is_kptr=0, NOT_FOUND
 
 candidate: C2 ashmem SIZE + GET_NAME
 source: ashmem.c:575 USER string
-runs on VM?: yes (magic 0x77 corrigido via source)
+runs on VM?: yes (magic 0x77 corrected via source)
 runs on DEVICE?: yes (T9: size 0, name dev/ashmem)
 target value: heap ptr
 status: SCALAR + USER_STRING, NOT_FOUND
@@ -169,7 +169,7 @@ target value: heap VA via heap id
 status: INDEX + SCALAR is_kptr=0, NOT_FOUND
 
 candidate: PI futex.c + rtmutex.c copy_to_user
-source: grep 0 hits ambos
+source: grep 0 hits both
 runs on VM?: yes
 runs on DEVICE?: yes (emit_pi fstat index-only)
 target value: pi_state / pi_mutex / waiter*
@@ -191,15 +191,15 @@ status: REGISTER_ONLY OFFLINE_ONLY, NOT_FOUND as leak
 
 candidate: mali ioctls beyond open + vendor f_op depth>3 + unaudited /dev
 source: mali.ko out-of-tree, amlogic KOs unreachable
-runs on VM?: partial (census 34 stateful OFFLINE_ONLY-negativo)
-runs on DEVICE?: no (open census apenas; blind ioctl proibido)
+runs on VM?: partial (census 34 stateful OFFLINE_ONLY-negative)
+runs on DEVICE?: no (open census only; blind ioctl forbidden)
 target value: any kptr
 status: UNKNOWN / NOT_COVERED, not a candidate, explicit gap
 
 candidate: pagemap PFN / maps / smaps
-source: USER VMAs, PFN precisa priv
+source: USER VMAs, PFN needs priv
 runs on VM?: yes
-runs on DEVICE?: partial (hexdump ausente no stock; maps = USER)
+runs on DEVICE?: partial (hexdump absent on stock; maps = USER)
 target value: kernel VA via PFN
 status: PFN 0 / USER_ONLY, NOT_FOUND
 ```
@@ -223,7 +223,7 @@ T1 STACK:
 
 ```text
 COMMAND_EXECUTED_ON_DEVICE: adb -s 26919800005844922 shell 'cat /proc/self/stack'
-RESULT: 9 linhas [<0000000000000000>] walk_stackframe/proc_pid_stack/seq_read/SyS_read/el0_svc_naked. Zero kptr. MASKED.
+RESULT: 9 lines [<0000000000000000>] walk_stackframe/proc_pid_stack/seq_read/SyS_read/el0_svc_naked. Zero kptr. MASKED.
 STATIC_ANALYSIS: base.c:472 %pK gating predicts zeros. DEVICE_TEST confirms. CONCLUSION: no STACK_DISCLOSURE here.
 ```
 
@@ -231,7 +231,7 @@ T2 WCHAN:
 
 ```text
 COMMAND_EXECUTED_ON_DEVICE: adb -s 26919800005844922 shell 'cat /proc/self/wchan'
-RESULT: "0". Sem simbolo, sem endereco.
+RESULT: "0". No symbol, no address.
 STATIC_ANALYSIS: base.c:411 symbol-or-0. DEVICE_TEST confirms. CONCLUSION: not disclosure.
 ```
 
@@ -239,7 +239,7 @@ T3 SYSCALL:
 
 ```text
 COMMAND_EXECUTED_ON_DEVICE: adb -s 26919800005844922 shell 'cat /proc/self/syscall'
-RESULT: "3 0x3 0xb87cdc80 ..." user regs apenas.
+RESULT: "3 0x3 0xb87cdc80 ..." user regs only.
 STATIC_ANALYSIS: base.c:642 user sp/pc. DEVICE_TEST confirms. CONCLUSION: USER_ONLY.
 ```
 
@@ -247,7 +247,7 @@ T4 STAT:
 
 ```text
 COMMAND_EXECUTED_ON_DEVICE: adb -s 26919800005844922 shell 'cat /proc/self/stat'
-RESULT: campos 29/30 = 0 0 (kstkesp/kstkeip zerados).
+RESULT: fields 29/30 = 0 0 (kstkesp/kstkeip zeroed).
 STATIC_ANALYSIS: array.c:436 PF_DUMPCORE gate. DEVICE_TEST confirms. CONCLUSION: not disclosure.
 ```
 
@@ -255,11 +255,11 @@ T5-T7 DENIALS:
 
 ```text
 COMMAND_EXECUTED_ON_DEVICE: cat /proc/kallsyms; ls /sys/kernel/slab/; ls /sys/kernel/debug/
-RESULT: Permission denied / Permission denied / Permission denied (slab lista parcial sem attrs uteis).
+RESULT: Permission denied / Permission denied / Permission denied (slab partial list without useful attrs).
 STATIC_ANALYSIS: kptr_restrict + SELinux + DEBUG_FS gated. DEVICE_TEST confirms. CONCLUSION: unreachable for shell.
 ```
 
-T9 EMIT C1/C2/C3 (re-run do binario ja presente, sem push novo):
+T9 EMIT C1/C2/C3 (re-run of binary already present, no new push):
 
 ```text
 COMMAND_EXECUTED_ON_DEVICE: adb -s 26919800005844922 shell '/data/local/tmp/ghostlock_emit_probe all'

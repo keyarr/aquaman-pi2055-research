@@ -1,4 +1,4 @@
-# magisk boot test — signed kernel + patched ramdisk rejected (2026-10-01)
+# magisk boot test - signed kernel + patched ramdisk rejected (2026-10-01)
 
 Date: 2026-10-01. Device: Xiaomi Mi TV Stick 1080p (aquaman, S805Y/GXL,
 Android 9 PI.2055, 4.9.113). Bootloader: `unlocked: yes`, `secure: no`

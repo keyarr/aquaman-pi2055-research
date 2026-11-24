@@ -80,7 +80,7 @@ b'reboot_mode' at 0x37ebf910: b'reboot_mode}; if itest ${upgrade_step} == 1; the
 b'reboot_mode' at 0x37ec016f: b'reboot_mode'
 
 === references to 0x37ec016f
-  0x37e24eb4  adrp+add   in 0x37e24c00 bootm     
+  0x37e24eb4  adrp+add in 0x37e24c00 bootm     
 b'reboot_mode' at 0x37ed2838: b"reboot_mode'\nget_rebootmode\n"
 
 === references to 0x37ed2838

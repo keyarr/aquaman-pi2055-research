@@ -1,5 +1,5 @@
 /*
- * ghostlock_chain.c — GhostLock chainwalk validation harness (phase mode).
+ * ghostlock_chain.c - GhostLock chainwalk validation harness (phase mode).
  *
  * One trial per execution, one question:
  *   does FUTEX_LOCK_PI(f_chain) from a 4th thread read waiter->lock out of

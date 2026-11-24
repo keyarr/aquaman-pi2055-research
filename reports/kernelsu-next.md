@@ -1,8 +1,8 @@
-# kernelsu-next — FEASIBILITY: VIABLE WITH SOURCE (manual integration, without kprobes)
+# kernelsu-next - FEASIBILITY: VIABLE WITH SOURCE (manual integration, without kprobes)
 
 docs: https://kernelsu-next.github.io/webpage/pages/how-to-integrate-for-non-gki.html, https://github.com/KernelSU-Next/KernelSU-Next
 
-support: kernels 4.4–6.12, arm64 ok. 4.9.113 is supported. <4.14 only built-in driver (no LKM/prebuilt), with backports possible.
+support: kernels 4.4-6.12, arm64 ok. 4.9.113 is supported. <4.14 only built-in driver (no LKM/prebuilt), with backports possible.
 
 kprobe method: BLOCKED here. Requires CONFIG_KPROBES=y + KPROBE_EVENTS=y + KSU_KPROBE_HOOKS=y. Device has CONFIG_KPROBES=n. Docs suggest enabling it, but on Amlogic BSPs kprobes frequently causes bootloops (debug: comment out ksu_sucompat_init/ksu_ksud_init; boots = broken kprobes).
 

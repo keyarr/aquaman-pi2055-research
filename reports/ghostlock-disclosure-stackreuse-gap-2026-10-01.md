@@ -57,7 +57,7 @@ Tabela exigida: project / source / object leaked / required condition.
 | OPPO | two-stage: (a) boot_id pre-leak (`exploit/src/slide.c:slide_read_stext` reads /proc/sys/kernel/random/boot_id, parses 16B as LE pointer, checks >>48==0xffff, subtracts `p0_alias_image_offset(SLIDE_NFULNL_LOGGER)` = stext); (b) fops verify (`exploit/src/fops.c:leak_kernel_base` reads ashmem_fops open/ioctl/mmap/release slots via configfs primitive, checks against `text_addr()` expectations, derives base) + Kernelsnitch mm leak (`exploit/src/util.c:prepare_kernel_page`, same family as Hazel, order-3 32K window, retries over mm sizes 0x370-0x400) | (a) kernel data pointer (nfulnl logger alias) -> KASLR base; (b) kernel text pointers via fops slots; mm page base via Kernelsnitch | world-readable boot_id path + pre-shaped kernel page (`prepare_good_kernel_page(PAGE_PAYLOAD_SLIDE)`) before route; fops stage needs reclaimed page already working. Same primitive family as Hazel, variation = boot_id shortcut + verify pass. |
 | Shield | fixed-base or slide-mcast full-lock (`PORT_STATUS.md`: link `_text 0xffffff8008080000`, runtime offset disabled; env `GHOSTLOCK_FIXED_BASE=1`, `GHOSTLOCK_MAIN_ROUTE=slide-mcast`, `GHOSTLOCK_SLIDE_FULL_LOCK=1`) | kernel text base (trivial if fixed) or slide-derived base; order-2 mm page base via shaped reclaim (README-level) | no-KASLR build collapses disclosure; otherwise same slide family. Code-level source not audited this round. |
 
-Answers Fase 1:
+Answers Phase 1:
 
 - NebuSec: leaked info = text slide + physmap base, not waiter bytes. Syscall/path = prefetch timing loop in userspace, no syscall produces bytes. Class: neither stack/heap/task copy; timing oracle yielding KERNEL text + direct-map alias (used as known storage address).
 - Hazel: leak before reclaim = mm_struct heap address via futex-hash timing. Correlation to waiter = none directly; leak gives reclaim page base for fake objects, waiter forged separately by stack stamp. Files above.
@@ -144,7 +144,7 @@ Why this one and not the others:
   (`CONFIG_CHECKPOINT_RESTORE is not set`, `kernel/sys.c:prctl_set_mm_map`
   behind ifdef), so even the x86 reuse carrier is absent at Kconfig level.
 
-Fase 4 lifetime (source-only, no device):
+Phase 4 lifetime (source-only, no device):
 
 - Birth: `futex_wait_requeue_pi` stack local `rt_waiter` (`kernel/futex.c`
   ~2858, comment waiter allocated on our stack, manipulated by requeue while
@@ -165,7 +165,7 @@ Fase 4 lifetime (source-only, no device):
 NO_ADDRESS_SOURCE_FOUND
 ```
 
-Fase 5 re-target (not W_waiter+0x38): sought kernel stack base or any VA
+Phase 5 re-target (not W_waiter+0x38): sought kernel stack base or any VA
 locating freed storage. Result on audited surface:
 
 ```text
@@ -185,7 +185,7 @@ One only:
   byte; then re-run disclosure ruler before any reuse geometry thinking.
   No device run executed this round; matrix below is hypothesis-only.
 
-Fase 6 matrix (no test executed, comparison only):
+Phase 6 matrix (no test executed, comparison only):
 
 ```text
 candidate | why exists | test | result

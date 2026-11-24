@@ -237,7 +237,7 @@ def start(path):
     """_start scan at 4-byte granularity.
 
     round 7 and round 8 stepped in 64-byte strides, which cannot miss anything
-    in a real image but wastes the check on a stride nobody justified.
+ in a real image but wastes the check on a stride nobody justified.
     """
     d = open(path, "rb").read()
     base = 0x01000000

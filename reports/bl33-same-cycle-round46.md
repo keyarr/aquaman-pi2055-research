@@ -69,7 +69,7 @@ for env value.
   `loadaddr=1080000` @`0x33e1e0ef`, `upgrade_step=2` @`0x33e1f1d8`,
   `reboot_mode=fastboot` @`0x33e1e1df`.
 * `dtb_header_01000000.bin`: magic `d00dfeed`, totalsize 58280. DTB readable
-  in RAM, never poked. own validation exists in code (`0x37e2a030`:
+ in RAM, never poked. own validation exists in code (`0x37e2a030`:
   `Decrypt dtb: Sig Check`, `check_valid_dts`).
 
 ## verdict

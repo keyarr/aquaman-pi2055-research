@@ -1,4 +1,4 @@
-# ghostlock stale-pointer validation — no-stamp trigger vs stock geometry
+# ghostlock stale-pointer validation - no-stamp trigger vs stock geometry
 
 Date: 2026-10-01. Device: Xiaomi Mi TV Stick 1080p (aquaman, S805Y/GXL,
 Android 9, PI.2055, 4.9.113 arm64, PREEMPT=y, shell uid=2000, no root,

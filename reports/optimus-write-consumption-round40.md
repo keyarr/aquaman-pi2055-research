@@ -1,10 +1,10 @@
 # Optimus WRITE consumption round 40: BL33 consumed host-written bytes, twice
 
-date: 2026-10-01. live, on device. BL33 em RAM, `1b8e:c003`, stage 16.
-build: aquaman_9_PI_2055, U-Boot 2015.01. entrada: `fastboot oem update 5000`.
+date: 2026-10-01. live, on device. BL33 in RAM, `1b8e:c003`, stage 16.
+build: aquaman_9_PI_2055, U-Boot 2015.01. entry: `fastboot oem update 5000`.
 base: round39 (`reports/optimus-write-mem-round39.md`) proved WRITE_MEM 0x01
 in arena. this round proves consumption: BL33 read back via its own path,
-not only 0x02 readback. detalhe: `reports/round40-optimus-consumption/`.
+not only 0x02 readback. detail: `reports/round40-optimus-consumption/`.
 
 ## 0. answer
 
@@ -34,7 +34,7 @@ page table 0x37ff0000: descriptors, DO NOT TOUCH
 
 correction: cmd_tbl base is 0x37f60eb0 (entry 0 aml_sysrecovery).
 0x37f60fd0 is entry 6 bootm. 116 entries, stride 0x30, consumer
-ldr x4,[x19,#0x10] em 0x37e5f6e8 + blr x4 em 0x37e5f6fc, 64b.
+ldr x4,[x19,#0x10] at 0x37e5f6e8 + blr x4 at 0x37e5f6fc, 64b.
 the old "80 slots" were a short-name filter that breaks on
 ddr_dqs_window_step. round38 already closed this.
 
@@ -46,7 +46,7 @@ ddr_dqs_window_step. round38 already closed this.
 BEFORE 0x02: 00 *16, PRE mread: 00 *16, match02=True
 WRITE 0x01 <- a5 a5 5a 5a
 AFTER 0x02: a5 a5 5a 5a ..., POST mread: a5 a5 5a 5a ...
-RESULT: CONSUMO CONFIRMADO via memcpy do BL33
+RESULT: CONSUMPTION CONFIRMED via BL33 memcpy
 RESTORE verify 0x02 OK, RESTORE mread verify OK
 ```
 
@@ -65,39 +65,39 @@ MID readback ok, POST trigger -> b'FXAXed:'
 RESTORE verify OK, trigger -> b'failed:' OK
 ```
 
-o log diz INCONCLUSIVO por constante esperada errada no script
-(`FAXXed:` vs `FXAXed:`). evidencia e HARDWARE_REPRODUCED: reply acompanhou
-os 4B escritos e voltou no restore.
+the log says INCONCLUSIVE because of a wrong expected constant in the script
+(`FAXXed:` vs `FXAXed:`). evidence is HARDWARE_REPRODUCED: reply followed
+the written 4B and returned on restore.
 
-## 4. wedge sem escrita, aviso
+## 4. wedge without write, warning
 
-`03_bulk_probe.txt`. bulkcmd `upload` sem args derrubou 1b8e:c003
-do barramento (Errno 19, disconnect no dmesg). `foo` sozinho e seguro.
-regra: so comandos completos; `upload mem <addr> normal <size>` sempre
-com drain via 0x33.
+`03_bulk_probe.txt`. bulkcmd `upload` without args dropped 1b8e:c003
+off the bus (Errno 19, disconnect in dmesg). `foo` alone is safe.
+rule: only complete commands; `upload mem <addr> normal <size>` always
+with drain via 0x33.
 
-## 5. o que isso prova
+## 5. what this proves
 
 HARDWARE_REPRODUCED:
 
-* 0x01 escreve e BL33 consome por dois caminhos independentes
-  (upload memcpy, bulk reply), com restore verificado nos dois.
-* cmd_tbl vivo e o offline, 116 entradas, sem escrita.
-* sessao incompleta de bulk derruba o gadget mesmo sem write.
+* 0x01 writes and BL33 consumes via two independent paths
+  (upload memcpy, bulk reply), with restore verified in both.
+* live cmd_tbl equals offline, 116 entries, no write.
+* incomplete bulk session drops the gadget even without write.
 
-NAO HARDWARE_REPRODUCED:
+NOT HARDWARE_REPRODUCED:
 
-* write inside codigo, cmd_tbl, page table. nao tentado.
-* alteracao de fluxo, RUN_IN_ADDR, bypass secure boot.
+* write inside code, cmd_tbl, page table. not attempted.
+* flow alteration, RUN_IN_ADDR, secure boot bypass.
 * persistence across reboot. session only.
 
-## 6. proximo honesto
+## 6. honest next step
 
-survey read-only de ponteiros 64b + gd/env live via 0x02/mread.
-sem escrita ate o mapa de consumers estar fechado.
+read-only survey of 64b pointers + live gd/env via 0x02/mread.
+no write until the consumer map is closed.
 
-## 7. risco
+## 7. risk
 
-aparelho em `1b8e:c003` stage 16 ao fim de E2, verificado com identify.
-nada persistente deixado: arena restaurada a zero, `failed:` restaurado.
-nao deixar host grudado em optimus; esperar timeout ou power-cycle.
+device at `1b8e:c003` stage 16 at the end of E2, verified with identify.
+nothing persistent left: arena restored to zero, `failed:` restored.
+do not leave host stuck on optimus; wait for timeout or power-cycle.

@@ -1,3 +1,9 @@
+> Scope: this census ran as `uid=2000(shell)` `u:r:shell:s0`. `NO_READ_SURFACE_FOUND`
+> is not a statement about the ODM root domain. As root in `u:r:dumpstate:s0`
+> the kernel log, `/proc/cmdline`, `/proc/buddyinfo`, `/proc/meminfo` and pstore
+> are readable, while `/proc/kallsyms`, slab attrs, debugfs and the DT cmdline
+> node stay denied. See `reports/root-read-surface-2026-11-23.md` (2026-11-23).
+
 RESULT: NO_READ_SURFACE_FOUND
 BOOT_ID: 3ec336a5-439f-497f-b9f7-08fd7441b174
 DEVICES_SCANNED: 499
@@ -18,7 +24,7 @@ Raw logs: out/logs/dev_census_boot3ec336a5.log (499 paths),
 out/logs/dev_read_probe_boot3ec336a5.log,
 out/logs/dev_emit_rerun_boot3ec336a5.log.
 Tools: /data/local/tmp/dev_census, /data/local/tmp/dev_read_probe
-(source /tmp/opencode/dev_census.c, dev_read_probe.c),
+(source /tmp/dev_census.c, dev_read_probe.c),
 tools/ghostlock_emit_probe.c (re-run, no rebuild).
 
 ## 1. Environment
@@ -115,7 +121,7 @@ ion             ioctl           ion_ioctl HEAP_QUERY                       yes  
 ion             mmap            (none; buffers via dma-buf fds)            n/a    NO_DATA
 mali            ioctl           mali_ioctl (34 wrappers, utgard)          yes*   SCALAR_ONLY / USER_ECHO / PHYS (offline binary audit; *no safe hardware ioctl without source, not probed)
 mali            mmap            mali_mmap                                  yes    NO_DATA (user GPU mapping)
-mali            poll/read       (no .read; poll wait-queue)                yes    NO_DATA (poll=1, read=EINVAL, §4)
+mali            poll/read       (no .read; poll wait-queue)                yes    NO_DATA (poll=1, read=EINVAL, sec 4)
 uhid            read            uhid_char_read                             yes    USER_INPUT_ECHO_OR_EMPTY (EAGAIN empty; queued OUTPUT echo when created)
 uhid            poll            uhid_char_poll                             yes    STATE_QUERY (empty=0, no struct)
 evdev x6        read            evdev_read                                 yes    SCALAR_ONLY (input_event type/code/value) / EMPTY (EAGAIN)

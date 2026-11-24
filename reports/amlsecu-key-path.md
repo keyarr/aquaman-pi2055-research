@@ -1,4 +1,4 @@
-# amlsecu-key-path — where the user-key comes from
+# amlsecu-key-path - where the user-key comes from
 
 ## what the user-key is (STRONG EVIDENCE)
 
@@ -28,15 +28,15 @@ The SHA256 hash of the RSA keys goes into the eFuse (`0x140-0x160 rsa hash of al
 
 ## the 9 questions of PHASE 4
 
-1. Fixed per model — WEAK EVIDENCE (identical KeyID in boot+recovery of the same build; Xiaomi generates a user-key per product/line, but without a leaked `aml-user-key.sig` there is no definitive proof).
-2. Fixed per firmware — WEAK EVIDENCE (same KeyID in both PI.2055 images; expected if the key is per product).
-3. Per device — NOT PROVEN (nothing in the container varies by serial; chipid exists in eFuse `0x04-0x20` but no header field references it).
-4. Derived from eFuse — STRONG EVIDENCE (verification root is OTP bits; aeskey lives in eFuse).
-5. eFuse + salt — NOT PROVEN.
-6. Obtained from TEE — STRONG EVIDENCE as the executor (SMC/BL32), but "obtain" is the wrong verb: TEE does not hand it out, it uses it internally.
-7. Secure storage — WEAK EVIDENCE (unifykey `KEY_SECURE` exists in the kernel; role during early boot is undocumented).
-8. Key ladder — NOT PROVEN (term appears in BSP, without binding to `--imgsig` in public source).
-9. Combination — Honest inference: eFuse (AES key + RSA hash + secure level) + vendor RSA user-key + crypto inside secure world. The exact link between them is proprietary and closed.
+1. Fixed per model - WEAK EVIDENCE (identical KeyID in boot+recovery of the same build; Xiaomi generates a user-key per product/line, but without a leaked `aml-user-key.sig` there is no definitive proof).
+2. Fixed per firmware - WEAK EVIDENCE (same KeyID in both PI.2055 images; expected if the key is per product).
+3. Per device - NOT PROVEN (nothing in the container varies by serial; chipid exists in eFuse `0x04-0x20` but no header field references it).
+4. Derived from eFuse - STRONG EVIDENCE (verification root is OTP bits; aeskey lives in eFuse).
+5. eFuse + salt - NOT PROVEN.
+6. Obtained from TEE - STRONG EVIDENCE as the executor (SMC/BL32), but "obtain" is the wrong verb: TEE does not hand it out, it uses it internally.
+7. Secure storage - WEAK EVIDENCE (unifykey `KEY_SECURE` exists in the kernel; role during early boot is undocumented).
+8. Key ladder - NOT PROVEN (term appears in BSP, without binding to `--imgsig` in public source).
+9. Combination - Honest inference: eFuse (AES key + RSA hash + secure level) + vendor RSA user-key + crypto inside secure world. The exact link between them is proprietary and closed.
 
 ## practical consequence
 

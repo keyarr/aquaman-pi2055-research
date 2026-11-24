@@ -1,6 +1,6 @@
 # GhostLock aquaman plan (Phase 2 + Phase 13-17 + verdict)
 
-## Phase 2 — real config (aquaman-config, 5381 lines, arm64 4.9.113)
+## Phase 2 - real config (aquaman-config, 5381 lines, arm64 4.9.113)
 
 | Symbol | aquaman | Hazel 4.9 ARM32 | Aresin 4.14 ARM64 | Practical effect |
 |---|---|---|---|---|
@@ -24,7 +24,7 @@
 Runtime (/dev/ashmem, configfs mount, pstore): pending, checklist in
 `ghostlock-ashmem-configfs.md`. Config says "possible", not "present".
 
-## Phase 13 — escalation plan specific to aquaman 4.9.113 ARM64
+## Phase 13 - escalation plan specific to aquaman 4.9.113 ARM64
 
 Order, each step only after previous is green:
 1. Offsets: pahole on dangal-built vmlinux + runtime validation
@@ -40,25 +40,25 @@ Order, each step only after previous is green:
 7. SELinux: no bypass planned; ceiling = uid 0 in u:r:shell:s0
    (matching hazel). Sufficient for introspection.
 
-## Phase 14 — SELinux
+## Phase 14 - SELinux
 
 ro.debuggable=0 + Enforcing: uid 0 does not automatically become permissive and
 does not alter domain. Hazel proves that uid 0 in shell domain suffices for
 diagnostics and data collection, which is our target (Phase 16). Disabling enforcement
 or transitioning to init domain = out of scope for this stage.
 
-## Phase 15/16 — temporary root and extraction
+## Phase 15/16 - temporary root and extraction
 
 Only after Phase 12 progression is fully green. Read-only extraction listed in brief
 (kallsyms, config.gz, cmdline, devicetree, modules, iomem, pstore...).
 No flashing, nothing persistent.
 
-## Phase 17 — no KernelSU/APatch yet
+## Phase 17 - no KernelSU/APatch yet
 
 Temporary uid 0 feeds into the reconstruction of the 2022 kernel; persistence
 is evaluated afterwards, once the genuine kernel is available.
 
-## Final answers (13 questions) — updated 2026-09-29 with device data
+## Final answers (13 questions) - updated 2026-09-29 with device data
 
 1. CONFIG_FUTEX_PI enabled? YES by construction (FUTEX=y +
    RT_MUTEXES=y; no separate symbol in 4.9). CONFIRMED ON AQUAMAN KERNEL (config).
@@ -86,11 +86,11 @@ is evaluated afterwards, once the genuine kernel is available.
     CONFIRMED ON AQUAMAN KERNEL.
 12. Plausible path to temporary uid 0? YES, with listed adaptations;
     true probability known only after Phase 11 (lab) + trigger with reclaim.
-13. What does root unlock? kallsyms, config, dt, modules, iomem —
+13. What does root unlock? kallsyms, config, dt, modules, iomem -
     pstore NO (denied to shell; recheck as root). Baseline to
     reconstruct the 2022 kernel and evaluate KernelSU afterwards.
 
-## General classification — updated 2026-09-29
+## General classification - updated 2026-09-29
 
 CVE present + path reachable: CONFIRMED ON AQUAMAN KERNEL
 (probe 7/7, race EDEADLK 5/5, ashmem+configfs runtime OK).

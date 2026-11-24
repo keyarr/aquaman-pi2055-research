@@ -25,7 +25,7 @@ exactly one BL33 consumer chain, both call sites inside `0x37e8c1dc`
             (store_key_read backend check)
 0x37e8c27c: cbz w0 -> ok path
 0x37e8c280: x0 = [ctx]; w1 = w21; x2 = 0x100; bl memset (0x37eaae84)
-            ; memset(block_base, ?, 0x100) — only bounded use, 256 B
+            ; memset(block_base, ?, 0x100) - only bounded use, 256 B
 0x37e8c294..: [ctx+8] update; 0x37e8c2a0: bl 0x37e8bcfc (0x69 notify_ex, scalar)
 0x37e8c2a4: x0 = sp+0x34; bl 0x37e8bc84 again           ; re-get base+size
 0x37e8c2ac: str x0,[x19]

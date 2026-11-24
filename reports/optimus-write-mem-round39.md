@@ -1,9 +1,9 @@
 # Optimus WRITE_MEM round 39: real RAM write via 0x01
 
 date: 2026-10-01. live, on device. BL33 em RAM, `1b8e:c003`, stage 16.
-build: aquaman_9_PI_2055, U-Boot 2015.01. entrada: `fastboot oem update 5000`.
-verbo: `AM_REQ_WRITE_MEM` 0x01 (`ctrl OUT 0x01, wValue=addr>>16, wIndex=addr&0xffff, 4B`).
-leitura: `AM_REQ_READ_MEM` 0x02. detalhe: `reports/round39-optimus-write/00_session1.txt`, `01_session2.txt`.
+build: aquaman_9_PI_2055, U-Boot 2015.01. entry: `fastboot oem update 5000`.
+verb: `AM_REQ_WRITE_MEM` 0x01 (`ctrl OUT 0x01, wValue=addr>>16, wIndex=addr&0xffff, 4B`).
+read: `AM_REQ_READ_MEM` 0x02. detail: `reports/round39-optimus-write/00_session1.txt`, `01_session2.txt`.
 equivale a `tools/optimus.py poke` + `read`; the test used a one-process script only, to avoid burning the window.
 
 ## 0. answer
@@ -34,7 +34,7 @@ state: 1b8e:c003 stays enumerated and responsive, no hang
 BEFORE2 0x37801000: 00 *16
 WRITE2  0x37801000 <- 44 33 22 11
 AFTER2  0x37801000: 44 33 22 11 00 *12
-REREAD  +1s: igual, session-persistent
+REREAD  +1s: equal, session-persistent
 RESTORE2 verify 00 *16 OK
 CHECK1  0x37800000: 00 *16 clean (isolation between writes)
 ```
@@ -48,7 +48,7 @@ HARDWARE_REPRODUCED:
 * no hang, no wedge, no power-cycle needed. distinct from the unmapped-address wedge in round 4.
 * arena restored to zero after the test. nothing persistent left.
 
-NAO HARDWARE_REPRODUCED:
+NOT HARDWARE_REPRODUCED:
 
 * write inside `0x37e18000..0x37ff0000` (code, cmd_tbl, got). not attempted.
 * max size, non-4 alignment, cache flush, accepts-any-address. only aligned 4B tested.
@@ -58,10 +58,10 @@ NAO HARDWARE_REPRODUCED:
 
 ## 4. honest next step
 
-1. mapear limites ainda na arena: 8B/16B/64B, 1B unaligned em `0x37800001`, endereco no teto `0x37e17ffc` (ultimo antes de BL33).
-2. so depois: 4B em dado de controle inofensivo do BL33 com readback, sem executar.
-3. RUN_IN_ADDR continua gated: nao enviar ate escrita em BL33 estar caracterizada.
+1. map bounds still in the arena: 8B/16B/64B, 1B unaligned at `0x37800001`, address at the ceiling `0x37e17ffc` (last before BL33).
+2. only then: 4B in harmless BL33 control data with readback, without executing.
+3. RUN_IN_ADDR stays gated: do not send until the BL33 write is characterized.
 
-## 5. risco
+## 5. risk
 
-stick ficou em `1b8e:c003` ao fim das duas sessoes. ou espera o auto-burn timeout (volta sozinho a Android) ou power-cycle manual. nao deixar host grudado em optimus.
+stick stayed at `1b8e:c003` at the end of both sessions. either wait for the auto-burn timeout (returns to Android on its own) or manual power-cycle. do not leave host stuck on optimus.

@@ -1,18 +1,18 @@
-# apatch — FEASIBILITY: VIABLE WITH SOURCE (custom recompiled kernel)
+# apatch - FEASIBILITY: VIABLE WITH SOURCE (custom recompiled kernel)
 
 docs: https://apatch.dev/install.html, https://github.com/bmax121/APatch
 
-requirements: arm64 ONLY. Android kernel 3.18–6.12. KALLSYMS=y + (ALL=y or ALL=n with initial support). No kprobes requirement — KernelPatch resolves symbols via kallsyms at patch time.
+requirements: arm64 ONLY. Android kernel 3.18-6.12. KALLSYMS=y + (ALL=y or ALL=n with initial support). No kprobes requirement - KernelPatch resolves symbols via kallsyms at patch time.
 
-device: arm64 ok. 4.9.113 within 3.18–6.12 ok. KALLSYMS=y + ALL=y + BASE_RELATIVE=y ok. KPROBES=n is irrelevant for APatch.
+device: arm64 ok. 4.9.113 within 3.18-6.12 ok. KALLSYMS=y + ALL=y + BASE_RELATIVE=y ok. KPROBES=n is irrelevant for APatch.
 
-however: APatch does not solve AMLSECU. The stock kernel is ciphertext (magic AMLSECU! ver 0x905, 3 blocks, timestamp 2022090612544443, entropy 8.0) — direct patching of the stock boot.img is impossible. The flow would have to be: source + custom rebuild (maintaining KALLSYMS_ALL=y) + AMLSECU packaging + fastboot boot. To the question "Does APatch work on this kernel?", the answer is yes for a rebuild with matching config; for the current encrypted blob, injecting anything without the key is impossible.
+however: APatch does not solve AMLSECU. The stock kernel is ciphertext (magic AMLSECU! ver 0x905, 3 blocks, timestamp 2022090612544443, entropy 8.0) - direct patching of the stock boot.img is impossible. The flow would have to be: source + custom rebuild (maintaining KALLSYMS_ALL=y) + AMLSECU packaging + fastboot boot. To the question "Does APatch work on this kernel?", the answer is yes for a rebuild with matching config; for the current encrypted blob, injecting anything without the key is impossible.
 
-state as of 2026-09-29: plausible for a rebuilt kernel, still blocked on the same thing KernelSU is. The recovered DTB (`aquaman-dtb-extraction.md`) removed the DTB problem from the list. The U-Boot fragment at `0x01040000` (`bl33-offline-round10.md`) is the secure-storage interface, not the key, and `AML_DATA_PROCESS` (`0x820000ff`) is not in it. APatch still needs a path to run modified kernel code, and that path is still gated by `aml_sec_boot_check` → SMC → BL31.
+state as of 2026-09-29: plausible for a rebuilt kernel, still blocked on the same thing KernelSU is. The recovered DTB (`aquaman-dtb-extraction.md`) removed the DTB problem from the list. The U-Boot fragment at `0x01040000` (`bl33-offline-round10.md`) is the secure-storage interface, not the key, and `AML_DATA_PROCESS` (`0x820000ff`) is not in it. APatch still needs a path to run modified kernel code, and that path is still gated by `aml_sec_boot_check` -> SMC -> BL31.
 
 classification: VIABLE WITH SOURCE (custom rebuild + repackaging; never direct patch on current ciphertext blob).
 
-# amlsecu — what is missing (without attempting to break anything)
+# amlsecu - what is missing (without attempting to break anything)
 
 header (LE offsets, from cmd_imgread.c + local parser):
 magic 8s @0x00 = AMLSECU!, version u32 @0x08 = 0x905, nBlkCnt @0x0c = 3, timestamp ascii @0x10 (boot 2022090612544443, recovery 2022090613082318),

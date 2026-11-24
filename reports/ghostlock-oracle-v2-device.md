@@ -1,4 +1,4 @@
-oracle_v2 (device phase) — STOPPED AT FIRST DEVIATION, 1 of 3 reboots (2026-09-29)
+oracle_v2 (device phase) - STOPPED AT FIRST DEVIATION, 1 of 3 reboots (2026-09-29)
 
 table PAD -> (f18_pre, f18_post, f19, survived)
 
@@ -13,7 +13,7 @@ table PAD -> (f18_pre, f18_post, f19, survived)
 stop rule 1 fired: reboot on any trial = report PAD + f18 history and stop.
 The reboot budget was not what stopped us (only 1 of 3 used).
 
-1. stamp() REWRITTEN — real SP displacement, proven in asm
+1. stamp() REWRITTEN - real SP displacement, proven in asm
    tools/ghostlock_oracle_v2.c:stamp_at(). Compiles under -O2 -Wall -Wextra
    with no warnings; no -O0 needed on the file because the VLA is already
    runtime-sized. The VLA became `volatile unsigned char vla[pad]` with
@@ -27,7 +27,7 @@ The reboot budget was not what stopped us (only 1 of 3 used).
        217f24: bl   psel_with             ; pselect with SP = SP_frame - pad
        217f28: mov  sp, x29
    why SP varies now: in the old stamper the VLA had FIXED SIZE (MAX_PAD
-   4096) and only the memset changed len — the frame was always identical
+   4096) and only the memset changed len - the frame was always identical
    and the pselect entry SP identical for every PAD. Here the VLA sizeof
    only exists at runtime, the compiler cannot constant-fold, so it emits
    a dynamic sub/mov sp in the prologue. Touch every 64B + barriers
@@ -60,14 +60,14 @@ The reboot budget was not what stopped us (only 1 of 3 used).
    reboot,userrequested, which on MIUI is the default value and worthless.
 
    IMPORTANT: this trial is nostamp mode. Not one stamp byte was written
-   anywhere. The crash is NOT the stamp and NOT the overlap — it is the trio
+   anywhere. The crash is NOT the stamp and NOT the overlap - it is the trio
    itself, during teardown. The exact path between [pre] and [consumer] is:
    FUPI on f_target (wakes the waiter), PI tree teardown, stamp (a no-op in
    nostamp mode), sleep(60), then the consumer.
 
    This matches the already-known "leg3 crash" and the note from the previous
    scan (out/logs/scan_pads.log: 0x138 killed between baseline and trial, 1
-   in ~30, and 0x180 gave only 1 hit in 3 reps). So: the value oracle stays
+ in ~30, and 0x180 gave only 1 hit in 3 reps). So: the value oracle stays
    untested, but the device-phase base proved the trio teardown is unstable
    enough to kill the device for 1 reboot. Fixing that before any PAD is
    cheap: a stable trio (longer teardown time, or waking the waiter via

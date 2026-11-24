@@ -1,4 +1,4 @@
-# amlsecu-public-implementations — who uses the same format
+# amlsecu-public-implementations - who uses the same format
 
 ## 0x0905 and common Amlogic family (CONFIRMED)
 
@@ -21,7 +21,7 @@ GXL). Its presence on aquaman does not indicate a unique vendor fork.
   Encrypted ramdisk, `bad cpio header`, AIK fails to recognize. topjohnwu
   closed as unsupported: without the key, there is no decryption. Same conclusion
   as this report, 6 years prior, on another SoC in the same family.
-* AIK (osm0sis) documents: "Xiaomi Mi Box 3S, ZTE B860H STB — special
+* AIK (osm0sis) documents: "Xiaomi Mi Box 3S, ZTE B860H STB - special
   image signing adds AMLSECU! ... ramdisk cannot be unpacked or
   modified".
 * Antminer S19 XP (Bitmain, Amlogic control board): open source parser
@@ -37,7 +37,7 @@ GXL). Its presence on aquaman does not indicate a unique vendor fork.
 | tool | coverage | useful for aquaman? |
 |---|---|---|
 | `aml_encrypt_gx* --bootsig/--efsgen` (Amlogic binary, requires `aml-user-key.sig`) | FIP + eFuse pattern | only with Xiaomi's key |
-| `aml_encrypt_gx* --imgsig` (same) | AMLSECU! container | same — the missing piece |
+| `aml_encrypt_gx* --imgsig` (same) | AMLSECU! container | same - the missing piece |
 | `gxlimg` (repk, open) | bl2/bl3x/fip without key (GXL) | does not do imgsig |
 | `meson-tools amlbootsig/amlinfo` (afaerber) | unsigned/sha256 FIP | does not do imgsig |
 | `meson64-tools` (angerman) | G12B/G12A/SM1 | does not do imgsig |
@@ -54,6 +54,6 @@ Having the binary does not help without the key.
 Classification: C (secure world executes the entire decryption; U-Boot only
 measures size and executes flush_cache). The key never leaves the TEE/secure monitor
 in any documented flow. Offline re-implementation would require the key
-(`kernelaeskey` vector, cf. Raxone usbdl) or BL31 itself — both
+(`kernelaeskey` vector, cf. Raxone usbdl) or BL31 itself - both
 unreachable without USB reboot exploit (out of scope: requires power cycling
 and physical boot mode).

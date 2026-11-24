@@ -1,4 +1,4 @@
-# ghostlock spill search — controlled pointer to waiter->lock
+# ghostlock spill search - controlled pointer to waiter->lock
 
 Date: 2026-10-01. Device: Xiaomi Mi TV Stick 1080p (aquaman, S805Y/GXL,
 Android 9, PI.2055, 4.9.113 arm64, PREEMPT=y, shell uid=2000, no root,
@@ -109,7 +109,7 @@ exact `SP0-0x278` hits: 8. NO candidate survived review (section 6).
   CAP_SYS_ADMIN (shell has none). Privileged + ints.
 - 6e `cmsghdr_from_user_compat_to_kern` (hand-verified callsite at
   `___sys_sendmsg+0x1f0`): entry `x1` = `sock->...` (kernel heap),
-  `x2` = `x29+0x58` (own stack) — the tool's linear taint merged an
+  `x2` = `x29+0x58` (own stack) - the tool's linear taint merged an
   earlier `x1` definition with the callsite (path-insensitivity false
   positive, documented). Kernel pointers, plus a later `sock_sendmsg`
   (frame 0x30) prologue reuses `[SP0-0x270,SP0-0x240)`, clobbering the
@@ -159,7 +159,7 @@ overshoot. The honest result of this round is RESULT C (section 12).
 
 Same boot, VAR B fake, pad 0x0, rebuilt `ghostlock_chain` (adds `schedA`
 mode + waiter TID publish; `pipe()` gate fixed to `g_mode >= 4` after a
-first schedA run queued no fd — that run is discarded for the reach
+first schedA run queued no fd - that run is discarded for the reach
 question and noted here so the log is not misread):
 
 1. `pollNone`: P2 EDEADLK(35), P4 STAMP_SKIPPED, P5 entered, P6
@@ -185,7 +185,7 @@ the consumer side, not a spill.
 
 ## 11. Fault Interpretation
 
-No fault occurred in 4 runs, so there is nothing to correlate — and per
+No fault occurred in 4 runs, so there is nothing to correlate - and per
 PASSO 13 this is stated plainly: no `0x4141/0x425A` fault, no
 FULL_CHAINWALK proof, no fake consumption, no R/W primitive. The HANGs
 are ambiguous between (i) table missed the slot (stock frames differ
@@ -215,7 +215,7 @@ device. Concretely:
 ## 13. Next Bottleneck
 
 Prove or kill the stale pointer WITHOUT any stamper: the single cheapest
-discriminator left is a consumer that returns instead of blocking — e.g.
+discriminator left is a consumer that returns instead of blocking - e.g.
 consumer `FUTEX_LOCK_PI` with a timeout (`ETIMEDOUT` + return value
 distinguishes EDEADLK-bail from plain block), or walking the owner side
 (`FUTEX_UNLOCK_PI`/`WAKE` patterns that make `task_blocks` return

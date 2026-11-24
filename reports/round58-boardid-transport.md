@@ -74,8 +74,11 @@ That leaves the pair left open after this run:
    (some rebuilder between the verified htab read and `fdt_chosen`), or
 2. the blob reaching EL1 is not the blob `fdt_chosen` wrote (pointer proven
    same field statically, runtime value unobserved), or
-3. init/Linux does not consume `/chosen/bootargs` verbatim (no in-kernel oracle
-   on this build, so untested).
+3. init/Linux does not consume `/chosen/bootargs` verbatim. Untested in this
+   round: no in-kernel oracle for shell. Since 2026-11-23 the ODM root can read
+   `/proc/cmdline` and dmesg's identical cmdline line, but the DT node stays
+   denied and no marker boot has been re-run with that oracle; see
+   `reports/root-read-surface-2026-11-23.md`.
 
 Round58 does not move the boundary, it confirms the previous negative is not a
 field-specific artifact and that the reproducible signature is: any inert

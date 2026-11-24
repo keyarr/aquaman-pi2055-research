@@ -65,7 +65,7 @@ Reconstructed from the code and the logs, not from the prose summaries.
 6. The stack-stamp route is a dead end on hardware. 6 of 6 boots rebooted
    (`reports/ghostlock-oracle-v2-gate3.md:5-8`,
    `reports/ghostlock-oracle-v2-hold.md:9-12`). `f18_post` was never read once,
-   in any trial, on any boot. The value oracle is `UNTESTED` since inception.
+ in any trial, on any boot. The value oracle is `UNTESTED` since inception.
 7. The old "PAD 0x180 hit" is **not** evidence of a working stamp.
    `out/logs/scan_pads.log:119-127` records the hit, but
    `reports/ghostlock-value-oracle.md:18-24` shows why it is a false positive:
@@ -79,7 +79,7 @@ Reconstructed from the code and the logs, not from the prose summaries.
 8. Reclaim has never been attempted against a controlled object.
    `tools/ghostlock_reclaim_try.c` exists but its log is absent from `out/logs/`
    (only `cal_probe_0x120.log`, `frame_reconcile*.log`, the oracle logs and
-   `scan_*.log` are present). `reports/ghostlock-risk.md:26-27` still lists
+   `scan_*.log` are present). `reports/_archive/ghostlock-risk.md:26-27` still lists
    "reclaim + read-only validation" as PENDING.
 
 **Structural finding, new here**: the ancestral source is *not* vanilla
@@ -322,8 +322,8 @@ block at `slub.c:3455-3467`, none of which applies to this cache.
 
 `tools/ghostlock_target.h:227` records `GL_MM_SIZE 0x338`. The stride the
 kernel actually walks is `0x340`, and the slab is order 2 with 19 objects
-(derived in §3.3; a prior revision of this report said order 1 / 9 objects,
-which was wrong — see §3.3 correction).
+(derived in sec 3.3; a prior revision of this report said order 1 / 9 objects,
+which was wrong - see sec 3.3 correction).
 
 On the merge question, because a merged cache would break the whole grid:
 `find_mergeable` (`mm/slab_common.c:253-297`) rejects every `kmalloc-*`
@@ -337,7 +337,7 @@ rejects the larger ones outright (`1024 - 832 = 192 >= 8` for
 `SLAB_NOTRACK`/`SLAB_ACCOUNT` evaluate to `0` (`CONFIG_KMEMCHECK`/
 `CONFIG_MEMCG` unset in `aquaman-config`), and the align check
 (`slab_common.c:285`) also passes (`kmalloc-*` align is 64 on this tree via
-`ARCH_KMALLOC_MINALIGN=ARCH_DMA_MINALIGN=64`, not 8 — a prior revision of
+`ARCH_KMALLOC_MINALIGN=ARCH_DMA_MINALIGN=64`, not 8 - a prior revision of
 this report said 8, which was wrong). The size window is what rejects:
 a merge needs an existing cache with `s->size` in `[832, 839]`, and none
 exists. Non-kmalloc neighbours existing at `proc_caches_init()` time miss
@@ -377,20 +377,20 @@ min_objects = min(min_objects, max_objects);
   `androidboot.dtbo_idx=0 otg_device=1 buildvariant=user`);
   `debug_guardpage_minorder()` is 0 (`CONFIG_DEBUG_PAGEALLOC=n`,
   `aquaman-config:5250`); no vendor assignment to `slub_max_order` anywhere
-  in the tree (only `mm/slub.c`; the Amlogic `MEMORY_EXTEND` hooks touch
+ in the tree (only `mm/slub.c`; the Amlogic `MEMORY_EXTEND` hooks touch
   the `kmalloc_order` large path and `L1_CACHE_SHIFT`, not the order path).
 - `slub_min_objects` is a boot/module param, `0` by default
   (`CONFIG_SLUB_MIN_OBJECTS` does not exist in 4.9; confirmed absent from both
   configs and from the Kconfig). Same for `slub_min_order` (= 0).
 - `reserved = 0` (needs `SLAB_DESTROY_BY_RCU`; not set here).
 - `nr_cpu_ids = 4` at `proc_caches_init()` time: `setup_nr_cpu_ids()` runs
-  in `start_kernel` (`init/main.c:517`), long before `proc_caches_init()`
+ in `start_kernel` (`init/main.c:517`), long before `proc_caches_init()`
   (`init/main.c:642`); the runtime DTB (`artifacts/aquaman.dtb`) has 4 CPU
   nodes, so `nr_cpu_ids = find_last_bit(possible,8)+1 = 4`
   (`kernel/smp.c:541-544`). No `maxcpus=` to clamp it further.
 
 Objects per slab at each order, with `size = 0x340`, and the waste gate
-(`rem <= slab_size / fraction`, fraction tried as 16, then 8, then 4 —
+(`rem <= slab_size / fraction`, fraction tried as 16, then 8, then 4 -
 note: the divisor is the fraction itself, not `100/(100-fraction)`; a prior
 revision used the percentage form from newer kernels, which was wrong):
 
@@ -412,7 +412,7 @@ nr_cpu_ids=8 -> fls=4 -> min_objects=20 vs 39 -> 20
 ```
 
 (`min_objects` is a floor that sets the start order, not the final object
-count — see §3.6. A prior revision plugged `min(16, 9) = 9`, which only
+count - see sec 3.6. A prior revision plugged `min(16, 9) = 9`, which only
 holds under the refuted `max_order=1` premise.)
 
 Then the loop tries `fraction = 16, 8, 4` and `slab_order()`
@@ -475,7 +475,7 @@ The code uses it only as the loop floor:
 `for (order = max(min_order, get_order(min_objects * size + reserved)); ...)`.
 The final count is `order_objects(chosen order, size, reserved)`.
 Here `min_objects=16` forces the search to *start* at order 2 (room for 16),
-and order 2 fits 19. Floor 16, result 19 — no contradiction.
+and order 2 fits 19. Floor 16, result 19 - no contradiction.
 
 ### 3.5 The outcomes, and which one the code selects
 
@@ -812,8 +812,8 @@ the least evidence in the repo, so most entries are marked as such.
 | # | classification | verdict | evidence |
 |---|---|---|---|
 | 1 | bug in the experiment | **partly** | `tools/ghostlock_oracle_v2.c` was rewritten 3x mid-flight and each rewrite changed the geometry. The gate/rate/stop-rule churn is visible in `reports/ghostlock-oracle-v2-*.md`. Not a single-variable experiment. |
-| 2 | wrong offset | **plausible, unproven** | Stride is `0x340` (`GL_MM_STRIDE`), while `GL_MM_SIZE 0x338` stays as `sizeof` (§3.2). Does not affect the current oracle (which never reached the consumer), so this is a latent note, not a proven cause. |
-| 3 | wrong frame | **likely, and the strongest static finding** | §2.3: the oracle drives `rt_mutex_get_effective_prio`, which reads `task->pi_waiters` (the *owner's* tree). The dangling object is the *victim's* `pi_blocked_on`, read by `rt_mutex_adjust_pi` (`core.c:4401`) or the chain walk (`rtmutex.c:548`). These are different code paths. The oracle was pointed at a path that may never touch the freed frame. |
+| 2 | wrong offset | **plausible, unproven** | Stride is `0x340` (`GL_MM_STRIDE`), while `GL_MM_SIZE 0x338` stays as `sizeof` (sec 3.2). Does not affect the current oracle (which never reached the consumer), so this is a latent note, not a proven cause. |
+| 3 | wrong frame | **likely, and the strongest static finding** | sec 2.3: the oracle drives `rt_mutex_get_effective_prio`, which reads `task->pi_waiters` (the *owner's* tree). The dangling object is the *victim's* `pi_blocked_on`, read by `rt_mutex_adjust_pi` (`core.c:4401`) or the chain walk (`rtmutex.c:548`). These are different code paths. The oracle was pointed at a path that may never touch the freed frame. |
 | 4 | wrong timing | **ruled out for the observed deaths** | `ghostlock-oracle-v2-hold.md:29-35`: holdB died before the first heartbeat at `+0 ms` with a 250 ms settle, so the actor is faster than the settle. "Shorten the settle" was already tried. |
 | 5 | correct UAF, wrong primitive | **not excluded** | The reboot is consistent with a UAF read, but no log names the faulting path. A wrong-but-live consumer is as plausible as a stamp failure. |
 | 6 | right hypothesis, wrong oracle | **confirmed for the `0x180` "hit"** | `ghostlock-value-oracle.md:18-24`: fixed 4096 B VLA meant the user SP never moved, so the sweep was a no-op. The "hit" was stack-reuse luck. `rep_0x180.log` shows 9/9 "frame intocado". |
@@ -845,7 +845,7 @@ Hazel (4.9 ARM32, Fire OS 7), Aquaman current work (this repo).
 |---|---|---|---|---|
 | `trigger` | CONF | CONF | **CONF** | 7/7 dispatch + 5/5 EDEADLK on device |
 | `stack reuse` | CONF | CONF | **UNK** | reclaim code exists (`ghostlock_reclaim_try.c`) but never ran |
-| `stack stamp` | CONF (setsockopt) | CONF (setsockopt) | **INCOM/unknown** | `pselect` 6/6 reboots; the MCAST 40 B overlap is uncalculated (§8) |
+| `stack stamp` | CONF (setsockopt) | CONF (setsockopt) | **INCOM/unknown** | `pselect` 6/6 reboots; the MCAST 40 B overlap is uncalculated (sec 8) |
 | `mm_struct leak` | CONF (dedicated slide.c) | CONF (futex hash timing) | **UNK** | Hazel route needs a 4-word LP64 hash reimplementation; SoC timing untested |
 | `cross-cache` | CONF (pipe, `MM_ORDER 3`) | CONF (AF_UNIX 8 KiB) | **PLAUS** | geometry derived: order 2, 19 x `0x340`; step-5 reliability untested |
 | `controlled object` | CONF | CONF | **PLAUS** | 3872 B raw sum fits in 16384; offsets must be regenerated |
@@ -894,7 +894,7 @@ depths. This is a computation, not an experiment.
 
 1. **No stamp has ever succeeded.** The value oracle is `UNTESTED` after 6
    boots. Everything downstream of it is unproven.
-2. **The oracle may be pointed at the wrong consumer** (§6 #3). If correct,
+2. **The oracle may be pointed at the wrong consumer** (sec 6 #3). If correct,
    this invalidates the current design rather than a constant, and it is
    detectable statically. Cheapest possible win in the project.
 3. **The `mm_struct` grid in the tooling was wrong** (order 1 / 9 / 8192 B
@@ -923,7 +923,7 @@ depths. This is a computation, not an experiment.
 | H4 | hash timing is measurable on a quad A53 | **REFUTED (measured)**: 0-2 ns per node, below resolution; see the MM leak timing feasibility section |
 | H5 | 16 KiB unix send reclaims the released order-2 slab | UNK |
 | H6 | the orphan `pi_blocked_on` is what the reboot faults on | UNK |
-| H7 | the 40 B MCAST window covers the fields that matter | UNK (§8) |
+| H7 | the 40 B MCAST window covers the fields that matter | UNK (sec 8) |
 | H8 | configfs dentry tolerance survives an ashmem `f_op` swap | UNK |
 
 ---
@@ -1009,7 +1009,7 @@ attribute, so `s->offset` is not directly observable.
 - Hazel's `ks_hash` is **not** portable. It models a 3-word key
   `[mm, pad, addr]`; the Aquaman hashes 4 words
   `[word_lo, word_hi, mm_lo, mm_hi]` (`LAB`, from the `0xdeadbeff` immediate
-  in `hash_futex`). The `mm` must be recovered as a 64-bit value.
+ in `hash_futex`). The `mm` must be recovered as a 64-bit value.
 - The old order-1 grid (`tools/ghostlock_target.h`, `ghostlock_mm_enum.h`,
   `tools/ghostlock_leak_cal.c:77`) was wrong; the stride is `0x340` and the
   slab is order 2 with 19 objects, not order 1 with 9 (and not order 0
@@ -1025,7 +1025,7 @@ attribute, so `s->offset` is not directly observable.
 - Whether the stock 2022 kernel's `mm_struct` is still `0x338` (H1). The
   source is not public and the boot image is sealed.
 - Whether the 40-byte MCAST window covers `waiter->task`/`waiter->lock` (H7).
-  Deliberately not answered; §8 has the open computation.
+  Deliberately not answered; sec 8 has the open computation.
 - Which code path actually faults in the 6 observed reboots (H6).
 - Whether a 16 KiB unix send reliably captures the released slab page (H5).
 - Whether configfs tolerates an ashmem `f_op` swap on this build (H8), and
@@ -1087,7 +1087,7 @@ the private layout (`word` = aligned uaddr, `ptr` = `mm`).
 
 ### Physical geometry
 
-Derived in §3, recorded here as output:
+Derived in sec 3, recorded here as output:
 
 ```text
 sizeof 0x338, align 0x40, object_size 0x338, inuse 0x338
@@ -1247,7 +1247,7 @@ experiment was used for this.
   `/tmp/aq_hash_dist 0x12345000 1024` host-only. Pass means grid,
   reserves, conversion, and distribution are self-consistent.
 - D (reclaim geometry correct): single 16 KiB `AF_UNIX` `MSG_PEEK`
-  sentinel test from §11 (`0x5A5A5A5A` at `0x3FFC`). No UAF, no write,
+  sentinel test from sec 11 (`0x5A5A5A5A` at `0x3FFC`). No UAF, no write,
   clean exit on failure.
 
 No reboot, panic, cred overwrite, kernel write, root chain, or SELinux
@@ -1422,8 +1422,8 @@ woken bucket `delta_p50 = 0 ns`, `auc = 0.5000`.
 
 Labelled arms: `INVALID TEST` in both affinities, again from their own
 null controls, and this run pins the mechanism. Pairs 1 and 3 are flat
-(pair 1 auc 0.4962 split / 0.5020 same), but pair 2 separates — `+9 ns`
-split, `-9 ns` same — and its same-page null control
+(pair 1 auc 0.4962 split / 0.5020 same), but pair 2 separates - `+9 ns`
+split, `-9 ns` same - and its same-page null control
 `NULL_MISMATCH2_vs_MISMATCH2_2` separates even harder
 (auc 0.0252 / 0.9664, abs z ~105). A treatment whose sign flips between
 affinities while its own null control separates harder than the treatment
@@ -1512,7 +1512,7 @@ reason rather than an unknown one.**
   (measured)`, for the wake path, at 1 to 512 distinct addresses per bucket
   with the thread count held constant.
 - Host brute force over the 1.2M candidates still costs ~12 ms per hash
-  (`§Cost`). Unchanged, and still irrelevant: that is the cost of *asking* the
+  (`sec Cost`). Unchanged, and still irrelevant: that is the cost of *asking* the
   hash a question, not the cost of *answering* it. With no observable side
   channel the enumeration has nothing to filter with, and the 1.2M candidates
   cannot be reduced by timing.

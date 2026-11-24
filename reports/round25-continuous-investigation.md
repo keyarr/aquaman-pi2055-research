@@ -72,7 +72,7 @@ sn2      @0x37ebf6e6 : ref 0x37e21aa8 in setkeys 0x37e219f0 (see below). device-
 hdcp (DTS key_2)     : NOT hdcp2*; fixed hdcp2key@0x37ed7535 refs 0x37e748e4 (write) + 0x37e74fc4 (read),
                        hdcp2lc128@0x37ed74f4 refs 0x37e7488c + 0x37e75018, hdcp2@0x37ed72f7 ref 0x37e7424c
                        (type probe). parents key_manage_write/read <- do_keyman + optimus USB. display/HDCP.
-secure_boot_set      : refs 0x37e76200/0x37e762d8/0x37e7638c (efuse slots only, §6). boot-named, no boot consumer.
+secure_boot_set      : refs 0x37e76200/0x37e762d8/0x37e7638c (efuse slots only, sec 6). boot-named, no boot consumer.
 mn1/mn2              : 0 refs. generic only. factory-guess, unknown evidence.
 hdcp2_rx @0x37edb89f : 0 refs (sibs hdcp22_rx_private/_rx_fw/_rprx_fw/_rp_private/_rprp_fw also 0).
                        indirect only via aml_hdcp_key2.2@0x37edb4d0 refs 0x37e8213c/0x37e825f8/0x37e82738
@@ -167,7 +167,7 @@ in `0x37e904ac` boot/state machine (X1=1, selector `[0x37f60878]=2`, scalar, no 
 `0x6a SET_ENCTYPE 0x37e8c14c` sole caller `0x37e8c264` in `0x37e8c1dc`; `0x26/0x66/0x67/
 0x68/0x6b/0x6c` zero setup sites (never issued). BLOCK never touched on 0x60-65 paths.
 
-0x64 verify chain, followed to terminus (disasm this round, subagent + main re-check):
+0x64 verify chain, followed to terminus (disasm this round, independent re-check):
 
 ```text
 secukey_write 0x37e75e7c: bl 0x37e75590 (dev class) -> cset w21,eq (w21 = dev==2?)
@@ -290,7 +290,7 @@ hits `0x37e75d88/ac/d0` inside parser block. verdict: BL33 enforcement ABSENT
 write-only is enforced by strcmp name-checks (read refused via `0x37e762cc` cset-ne gate
 at device_read `0x134` / len_lookup `0x150`, write diverted via `0x37e761f0` to
 snprintf+run_command), NOT by a bit test. CONFIRMED distinct mechanism. during this
-round no new `+0x5c` consumer appeared; closing as BL33-absent per rule §5 and continuing.
+round no new `+0x5c` consumer appeared; closing as BL33-absent per rule sec 5 and continuing.
 
 `secure_boot_set`: read REFUSED (above), write = `0x37e761f0` strcmp-divert to
 `snprintf "efuse %s %p"` + `bl run_command` (env diversion, never reaches `0x37e72ca4`
@@ -355,7 +355,7 @@ into boot. classification of keyman vs boot: storage-only on demonstrated edges
 0x820000ff with BL31-side checks). indirect path (boot helper -> storage query -> key ->
 verify) searched, not found; (boot -> secure SMC -> shared storage -> key) searched,
 not found. per stop rule D, closing storage-only on static evidence and moving to next
-material lead (§8 live-locators + setkeys/optimus provisioning below).
+material lead (sec 8 live-locators + setkeys/optimus provisioning below).
 
 automatic (D) vs command (B+C) separation kept: `0x37e904ac -> 0x28` + `[0x37f60878]=2`,
 `amlkey_init 0x37e8c1dc` (getbuffer x2 + 0x6a + 0x69 + backend check, NO `bl` caller =
@@ -371,7 +371,7 @@ never counted as command reachability. YES via run_command remains exactly: keym
   reg/size/alloc-ranges`, `linux,secos`, ~15 `... set ... error` strings. after `rsvmem`
   runs, DTB `/reserved-memory/linux,secmon` holds the BL31 range. live locator #1.
 * share-mem: `0x37e8bbb8` init seq `0x23->...e60(IN) 0x24->...e58(OUT) 0x25->...e68(BLOCK)
-  0x27->...e48(SIZE)`, flag `...e50=±1`; `getbuffer 0x37e8bc84` (`bl 0x37e8bbb8`,
+  0x27->...e48(SIZE)`, flag `...e50=+/-1`; `getbuffer 0x37e8bc84` (`bl 0x37e8bbb8`,
   `bl smc(0x27)`) callers `0x37e8c234/0x37e8c294` in `amlkey_init 0x37e8c1dc`
   (printf, getbuffer x2, `0x37e8c14c->0x6a`, `0x37e350e8`, memset, `0x37e8bcfc->0x69`).
   `0x37e19d70` dispatcher caches `0x20->0x37f71480, 0x21->0x37f71488`
@@ -399,9 +399,9 @@ never counted as command reachability. YES via run_command remains exactly: keym
 CONFIRMED (code-exact): host->oem->run_command->keyman chain; 19-key table + backends
 (15 secure-vector incl 8 normal + 7 secure, 3 efuse + 1 diverted); per-key read 18 YES /
 1 NO (secure_boot_set refused) + write 19 accepted / 18 storage / 1 env-diverted;
-C1/C2 byte layouts (§4); READ sink = argv-RAM + secure len/content (unclamped memcpy);
+C1/C2 byte layouts (sec 4); READ sink = argv-RAM + secure len/content (unclamped memcpy);
 WRITE fmt validators + flags=0 + slot-internal; fmt tails (silent/UART-only/RAM-env-only);
-0x60-65 caller census + grouping (§3); 0x64 = write-back self-check, sole caller
+0x60-65 caller census + grouping (sec 3); 0x64 = write-back self-check, sole caller
 secukey_write, normal-class skips verify (cset w21); setkeys dual-backend (direct efuse
 + run_command-constructed keyman read) as shell-only provisioning; optimus USB as
 DTB/usb-material provisioning; fastboot shim fixed-`usid` as independent USB path;
@@ -421,7 +421,7 @@ on static evidence; `0x37f5e478` writers at runtime (link-time constants; DTS po
 the KEY ARRAY, not the vectors); round23 "generic hop never touches amlkey" at impl
 level (blr slot impls DO `bl amlkey_*`; dispatch stays runtime-selected).
 
-STOP NODES (per rule §12):
+STOP NODES (per rule sec 12):
 
 ```text
 last confirmed node : secukey_write memcmp(sp+0x110, sp+0xf0, 0x20) -> w20 (0 ok / 0x50 mismatch)
@@ -468,7 +468,7 @@ host
            |                   -> [secure-class only] SMC 0x64 verify (C1 name, C2 0x20B echo)
            |                   -> memcmp(sp+0x110, sp+0xf0, 0x20) -> 0 / 0x34 / 0x3e / 0x50
            |
-           +-> outros comandos
+           +-> other commands
                 |
                 +-> setkeys 0x37e219f0 (shell-only; direct efuse 0x37e7263c + setenv
                 |    + run_command("keyman read %s 1080000 str") constructor 0x37e21864)
@@ -499,7 +499,7 @@ RAM sink (read), status codes (write/verify), RAM-env (fmt=str), UART (fmt=hex),
 USB via INDEPENDENT fixed-name paths (fastboot `usid`, optimus HDCP). boot graph
 terminates at BL31 (`0x820000ff` with BL33-side validation absent). next material leads
 in the same artifacts: setkeys/optimus provisioning flows (factory HDCP/MAC behavior)
-and live rsvmem/share-mem locators for exact BL31 (§8). investigation continued past
+and live rsvmem/share-mem locators for exact BL31 (sec 8). investigation continued past
 every intermediate finding per the continuity rule; stopping here per A (bridge
 hypothesis closed as storage-only on static evidence), B (BL31 internals unreachable
 statically), D (no further plausible static edge).

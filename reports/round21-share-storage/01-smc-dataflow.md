@@ -96,5 +96,5 @@ entirely through `[[0x37fbde60]]`, response through `[[0x37fbde58]]`.
 - `0x37e8c14c`: `mov w1,w0; x0=0x8200006a; bl 0x37e8bba8`.
   caller `0x37e8c264` in `0x37e8c1dc`. scalar set_enctype, no sharemem.
 - `0x820000ff` wrapper `0x37e19ea8`: `mov x1,x7(buf); mov x2,x6(len);
-  mov x3,x5(opt); smc` — register-passed triple + post-SMC flush
+  mov x3,x5(opt); smc` - register-passed triple + post-SMC flush
   (`add x1,x6,x5; bl 0x37e19310`). separate channel, see 06.

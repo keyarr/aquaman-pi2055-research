@@ -1,5 +1,5 @@
 /*
- * ghostlock_uaf_check.c — Phase 3: UAF validator, RAM-only, 1 shot.
+ * ghostlock_uaf_check.c - Phase 3: UAF validator, RAM-only, 1 shot.
  *
  * Question: after EDEADLK rollback, does waiter's pi_blocked_on still
  * point to the freed frame (vulnerable) or was it cleared (fixed)?

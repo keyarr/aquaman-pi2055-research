@@ -99,7 +99,7 @@ overlap (`0x053..0x054`) is DTB-declared only; on HW it is bl32 `no-map`.
 readable from TPL = first 1M of bl31 (`0x050..0x051`); remaining 2M of the
 bl31 range faults. hypothesis "0x64 verifies boot" stays REFUTED (round25);
 new fact: storage IN == bl31 base is address reuse of the readable
-sub-window, not proof BL31 lives in readable bytes (bytes say otherwise, §6).
+sub-window, not proof BL31 lives in readable bytes (bytes say otherwise, sec 6).
 
 ## 4. secmon range scan (controlled, chunks, no 4M single request)
 
@@ -165,7 +165,7 @@ stands); branches ~1000/chunk with zero eret/SMC/EL3 = noise, not structure.
 | range | entropy | nonzero | strings | AArch64 | SMC/vector | class |
 |---|---|---|---|---|---|---|
 | 05000000 IN head | 8.00 | 0.996 | none | noise | 0/0 | DATA |
-| 05010000..05030000 | 8.00 | 0.996 | none | noise | 0/0 (+1 random `0x8200f0ee` singleton §8) | DATA |
+| 05010000..05030000 | 8.00 | 0.996 | none | noise | 0/0 (+1 random `0x8200f0ee` singleton sec 8) | DATA |
 | 05040000 OUT head | 8.00 | 0.996 | ascii digits `32363931...` (usid echo) | noise | 0/0 | DATA |
 | 05050000..05070000 | 8.00 | 0.996 | none | noise | 0/0 (+1 random `0x82001f06`) | DATA |
 | 05080000 BLOCK | 2.15 | 0.184 | `AMLSECURITY` x1 @0 | sparse hdr + 12 KiB crypto, rest zero | 0/0 | DATA |
@@ -196,7 +196,7 @@ chunks is noise, not a table. no compare/branch structure around them
 (branches are uniformly distributed skipdata noise). no entry -> no ID
 compare -> no handler to follow. SMC dispatcher found = NO.
 reference: BL33 holds only `mov+movk` IDs, no `0x8200xxxx` word table
-(round25 §8); the readable secmon window mirrors that: no table either.
+(round25 sec 8); the readable secmon window mirrors that: no table either.
 
 ## 9. eMMC firmware candidates (directed, metadata only, no dump)
 
@@ -221,12 +221,12 @@ with current primitives; the fault boundary is sharp at `0x05100000`.
 exact BL31 image: NOT FOUND. runtime code copy: NOT FOUND.
 `0xb2000016` (BL33 `tee_log_level` SMC, `0x37e635a0`): 0 hits in dump.
 
-stop assessment: §1-10 exhausted with sanctioned primitives.
+stop assessment: sec 1-10 exhausted with sanctioned primitives.
 readable region closed (proven DATA/ZERO). hole closed as UNREADABLE
 (needs a primitive that survives TrustZone/MMU abort: none of
 `0x02`/`0x34+0x33`/`0x12`-dead qualify). eMMC closed as metadata-only
-(ciphertext, no pointer). investigation stops per "provar que uma regiao
-nao contem" (1 MiB) + "faltar primitive" (3 MiB hole + eMMC crypto).
+(ciphertext, no pointer). investigation stops per "prove that a region
+does not contain" (1 MiB) + "missing primitive" (3 MiB hole + eMMC crypto).
 
 ```text
 BL31 runtime candidate      = 0x05100000..0x05300000 (bl31 tail, PROTECTED/UNREADABLE, weakest-possible)

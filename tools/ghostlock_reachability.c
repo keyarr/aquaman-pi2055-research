@@ -1,5 +1,5 @@
 /*
- * ghostlock_reachability.c — Phase 10, benign reachability probe.
+ * ghostlock_reachability.c - Phase 10, benign reachability probe.
  *
  * Tests ONLY that the FUTEX_WAIT_REQUEUE_PI / FUTEX_CMP_REQUEUE_PI paths
  * exist and respond as stock 4.9.113 should respond to invalid parameters.

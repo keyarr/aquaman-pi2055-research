@@ -1,4 +1,4 @@
-// M1 delay stub — proof of execution via fastboot boot (without UART).
+// M1 delay stub - proof of execution via fastboot boot (without UART).
 //
 // Layout: Linux ARM64 Image header (only what bootm checks: magic @0x38)
 // + delay in loop + PSCI SYSTEM_RESET via HVC. Position-independent,
@@ -23,13 +23,13 @@ _start:
 	.quad	0			// res2
 	.quad	0			// res3
 	.quad	0			// res4
-	.long	0x644d5241		// magic "ARM\x64" — ONLY field checked by bootm
+	.long	0x644d5241		// magic "ARM\x64" - ONLY field checked by bootm
 	.long	0			// res5 (header footer)
 #ifndef M1_OUTER
-#define M1_OUTER 0x0FA0		// 4000 → ~5-15 s (M1a)
+#define M1_OUTER 0x0FA0		// 4000 -> ~5-15 s (M1a)
 #endif
 entry:
-	// --- delay: nested loop, M1_OUTER × 1M iters ---
+	// --- delay: nested loop, M1_OUTER x 1M iters ---
 	mov	x1, #M1_OUTER		// outer
 1:	mov	x2, #0x4240		// inner lo = 0x4240
 	movk	x2, #0xF, lsl #16	// inner = 0xF4240 = 1,000,000

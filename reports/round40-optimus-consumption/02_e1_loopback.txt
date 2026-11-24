@@ -1,4 +1,4 @@
-$ sudo timeout 60 python3 /tmp/opencode/e1_loopback.py
+$ sudo timeout 60 python3 /tmp/e1_loopback.py
 [  0.017s] usb open ok
 [  0.017s] identify 00 07 00 10 stage=16
 [  0.017s] BEFORE 0x02: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00

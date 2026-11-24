@@ -6,7 +6,7 @@ no eMMC, no `setenv`/`saveenv`, no reset, no bootrom, no ghostlock, nothing belo
 
 headline: the stick was power-cycled and reconnected, and the band
 `0x37800000..0x38000000` was read again. the new 8 MiB dump is **byte-identical**
-to round 12, sha256 `3d2eca1d…`: the relocation is **deterministic**. the
+to round 12, sha256 `3d2eca1d...`: the relocation is **deterministic**. the
 relocated BL33 is at the same address (`0x37e18000`), with the same
 `do_bootm`, the same `aml_sec_boot_check`, the same boot-path SMC. round 12's
 addresses are confirmed across a cold boot, not an artifact of one session.
@@ -54,9 +54,9 @@ cmp reports/round12-reloc/mread_37800000_00800000.bin \
 
 two independent boots, two independent reads, one hash. U-Boot's Amlogic
 relocation is a fixed computation
-(`gd->relocaddr = usable_top − PGTABLE_SIZE − gd->mon_len`) and this proves the
+(`gd->relocaddr = usable_top - PGTABLE_SIZE - gd->mon_len`) and this proves the
 address is stable in practice: `0x37e18000` every time, not "near the top of RAM,
-± something".
++/- something".
 
 ## 3. re-pinning the boot path on the fresh dump
 
@@ -64,7 +64,7 @@ address is stable in practice: `0x37e18000` every time, not "near the top of RAM
 
 | marker | round 13 evidence |
 |---|---|
-| `_start` | `0x37e18000` — `b+0x28`, `.quad 0x01000000` = `CONFIG_SYS_TEXT_BASE` |
+| `_start` | `0x37e18000` - `b+0x28`, `.quad 0x01000000` = `CONFIG_SYS_TEXT_BASE` |
 | `AML_DATA_PROCESS` `0x820000ff` | `0x37e19ec4..0x37e19ec8` (the `movz`/`movk` pair) |
 | `GXB_IMG_LOAD_ADDR` `0x01080000` | 19 sites, first `0x37e24ce0` (inside `do_bootm`) |
 | secure-storage module | cluster `0x37e8bba0..0x37e8c144`, 4 stubs |
@@ -142,7 +142,7 @@ relocation address can be treated as a fixed constant of this firmware.
 **does not change: the secure boot blocker.** this is still a map, not a key.
 BL31/BL32 does the signature verification behind `smc #0`; nothing in this dump
 is BL31. `AML_DATA_PROCESS` is the request, the key and policy are in the closed
-BL31, and `amlsecu-key-path.md` still holds — the plaintext key never appears in
+BL31, and `amlsecu-key-path.md` still holds - the plaintext key never appears in
 U-Boot.
 
 - **no RAM was written, nothing executed, nothing patched.** reads only, via the
@@ -153,11 +153,11 @@ U-Boot.
 
 - `tools/reloc_dis.py`, new: offline capstone viewer for named addresses in a
   band, plus a `--vs` byte-diff against another dump. no USB.
-- `reports/round13-reloc-verify/00_session.txt` — the live window and the `cmp`.
-- `…/01_reloc_analyze.txt` — the shape analyzer over the fresh band.
-- `…/02_bootpath_dis.txt` — `--vs` byte-diff plus `_start`, `do_bootm`,
+- `reports/round13-reloc-verify/00_session.txt` - the live window and the `cmp`.
+- `.../01_reloc_analyze.txt` - the shape analyzer over the fresh band.
+- `.../02_bootpath_dis.txt` - `--vs` byte-diff plus `_start`, `do_bootm`,
   `aml_sec_boot_check` disassembly.
-- `…/mread_37800000_00800000.bin` — the 8 MiB band, sha256 `3d2eca1d…`
+- `.../mread_37800000_00800000.bin` - the 8 MiB band, sha256 `3d2eca1d...`
   (byte-identical to `reports/round12-reloc/mread_37800000_00800000.bin`).
 
 do not go below `0x00800000`. do not re-run `set_usb_boot`.

@@ -5,6 +5,11 @@ RESULT: NO_DISCLOSURE_FOUND
 > reclaim without verifier, audited live H16 writer search, fake object,
 > arbitrary R/W, cred/root are closed. Post-free reuse is not demonstrated
 > on Aquaman. Live-retarget was audited and not demonstrated.
+>
+> Scope (2026-11-23): all surface rows below are shell-scoped. Root now exists
+> from ODM, but it only adds dmesg/buddyinfo/pstore reads; kallsyms, slab attrs
+> and debugfs stay denied, so the no-kernel-pointer-from-the-audited-surface
+> result is unchanged. See `reports/root-read-surface-2026-11-23.md`.
 BOOT_ID: 3ec336a5-439f-497f-b9f7-08fd7441b174
 TARGET_POINTER: [W_waiter+0x38] (waiter->lock) / &f_alt.pi_mutex
 DISCLOSED_BYTES: none (0 bytes kernel pointer disclosed)
@@ -13,7 +18,7 @@ REPRODUCED: n/a
 REBOOTS: 0
 TESTS: 22
 
-# ghostlock stock disclosure 2026-10-01 — information only, no write
+# ghostlock stock disclosure 2026-10-01 - information only, no write
 
 Date: 2026-10-01. Device: MiTV-AESP0 aquaman S805Y, Android 9 PI.2055,
 kernel 4.9.113 #1 SMP PREEMPT 2022-09-06 armv8l, shell uid=2000
@@ -51,7 +56,7 @@ occ_tgt EDEADLK_CYCLE 35 0ms     (U1, trigger + f_target occupied)
 ```
 
 Full logs prior: out/logs/ghostlock_consumer_boot3ec336a5.log.
-Spot logs this round in §7. alt_only/alt_tgt fidelity (f_alt ignored,
+Spot logs this round in sec 7. alt_only/alt_tgt fidelity (f_alt ignored,
 walk follows f_target) cited, not re-run.
 
 Reclaim: FAIL closed, not reopened. H16 write hunt: NO_EXACT_WRITER_FOUND
@@ -87,18 +92,18 @@ explicitly NOT accepted. Must be stock bytes via shell-reachable surface.
 | /proc/net/unix,tcp | yes | Num/sk `0000000000000000`, inodes only | BLOCKED (masked/index-only) |
 | /proc/interrupts | yes | counters only, no pointers | AUXILIARY |
 | /proc/slabinfo | NO (absent, SLABINFO=n) | `No such file` | BLOCKED |
-| /proc/buddyinfo | NO (denied) | `Permission denied` | BLOCKED |
+| /proc/buddyinfo | NO (denied for shell) | `Permission denied` | BLOCKED for shell; readable as root since 2026-11-23 |
 | /proc/kallsyms | NO | `Permission denied` | BLOCKED |
 | /proc/sys/kernel/kptr_restrict,dmesg_restrict,ftrace_enabled | NO | `Permission denied` | BLOCKED |
-| dmesg/kmsg/pstore | NO | `klogctl: Operation not permitted` / denied | BLOCKED |
+| dmesg/kmsg/pstore | NO for shell | `klogctl: Operation not permitted` / denied | BLOCKED for shell; root dmesg and pstore readable since 2026-11-23, `/dev/kmsg` still denied |
 | /sys/kernel/slab/* | listing partial, every attr denied | `Permission denied` on slab_size etc | BLOCKED |
 | /sys/kernel/debug,/sys/kernel/debug/tracing,/d/tracing | NO | `Permission denied` | BLOCKED |
 | /sys/kernel/tracing | listing empty, trace/events absent | `No such file` | BLOCKED (DISABLED on stock) |
 | atrace/ftrace shell path | NO | no trace access, events dir absent | BLOCKED |
 | futex PI return/errno | yes (syscall reachable) | int errno only (35/110/0), no struct | FALSE_POSITIVE if errno called leak |
-| robust/sched_param/getsockname copy_to_user | yes | USER echo / scalars / addr bytes (see §4) | FALSE_POSITIVE |
+| robust/sched_param/getsockname copy_to_user | yes | USER echo / scalars / addr bytes (see sec 4) | FALSE_POSITIVE |
 | binder/hwbinder/ashmem open | yes (world rw) | handles/fds only, debug denied | BLOCKED as kptr (index-only) |
-| /dev/ion,/dev/mali open | yes (0666 system:graphics) | heap names/fds/counts, no kptr (see §6) | FALSE_POSITIVE |
+| /dev/ion,/dev/mali open | yes (0666 system:graphics) | heap names/fds/counts, no kptr (see sec 6) | FALSE_POSITIVE |
 | /dev/ge2d open | NO (0660 system:system, shell denied) | shell not in graphics/system | BLOCKED (unreachable) |
 | /dev/media.vfm,media.*,ppmgr,amstream_* | mixed perms, cat EPERM | VFM_GET disabled -EIO, ge2d fds only | BLOCKED / FALSE_POSITIVE |
 | disclose_stack probe (mode 23) | yes | zeros/user/scalar only, kptr=0 | PROOF of absence on probed surface |
@@ -147,7 +152,7 @@ build-aq/vmlinux --verify:
   4.9 %p without %pK hashes on stock with kptr_restrict. Class BLOCKED,
   not a shell disclosure.
 * trace_printk/pr_debug in PI path: none emitting waiter/mutex addr to
-  shell; ftrace/tracefs disabled/denied (see §5). Class BLOCKED/DISABLED.
+  shell; ftrace/tracefs disabled/denied (see sec 5). Class BLOCKED/DISABLED.
 * Return value / errno as oracle: EDEADLK 35 vs TIMEOUT 110 vs ACQUIRED 0
   is 2-bit state (LEVEL_2 differential). Contains zero pointer bytes.
   Per task rules: not a leak. Class FALSE_POSITIVE if claimed.
@@ -250,7 +255,7 @@ T10 kptr/dmesg_restrict read         -> denied. BLOCKED.
 T11 dmesg/kmsg read                  -> denied/EPERM. BLOCKED.
 T12 /sys/kernel/debug/tracing ls     -> denied/empty. BLOCKED/DISABLED.
 T13 /proc/self/task stack read       -> zeros. BLOCKED.
-T14 /dev perms + open (ion/mali/ge2d/amstream/vfm/ppmgr/binder) -> §6. BLOCKED/FALSE_POSITIVE.
+T14 /dev perms + open (ion/mali/ge2d/amstream/vfm/ppmgr/binder) -> sec 6. BLOCKED/FALSE_POSITIVE.
 T15 /proc/net/unix,tcp read          -> masked/index. BLOCKED.
 T16 buddyinfo/schedstat/fdinfo/slab attrs -> denied/ints. BLOCKED/AUXILIARY.
 T17 disclose_stack probe             -> P4 zeros/user/scalar kptr=0, RESULT DONE. PROOF of absence.
@@ -302,15 +307,15 @@ Probes show zeros. GhostLock delta remains errno-only.
 Useful negative: closes audited surface (proc/sys/net/futex/sched/signal/
 socket/binder/ion/ge2d/vfm + disclose 23/24 + --verify) on this boot.
 Does not claim unaudited corners (full /dev ioctl census beyond sample,
-f_op dispatch past BFS 3, novel async/alias emit) — those stay INCONCLUSIVE
+f_op dispatch past BFS 3, novel async/alias emit) - those stay INCONCLUSIVE
 explicitly, not proof of absence everywhere.
 
 ## 9. Next bottleneck
 
 One only: a read-only kernel-pointer source for EITHER address that
-survives stock masking — finish the /dev ioctl emit census for
+survives stock masking - finish the /dev ioctl emit census for
 shell-openable nodes (open test + per-ioctl struct-field audit, same
-copy_to_user discipline as §4/§6), then if found immediately re-run the
+copy_to_user discipline as sec 4/sec 6), then if found immediately re-run the
 disclosed-target -> known-consumer ruler (H16.7 x28 base vs x20 value,
 pi_state+0x10 + trylock/leftmost/owner checks) before any write thinking.
 Do not build stamper/fake/RW/cred until an address discloses; there is no

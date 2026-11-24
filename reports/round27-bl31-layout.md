@@ -30,7 +30,7 @@ BL31 image location  = 0x05100000..0x05300000 (2 MiB secure window)
 BL31 bytes readable  = NO
 reason               = window is Secure-only; TPL/BL33 runs in NS and every NS
                        read aborts (external abort class -> USB drop)
-family gxl bl31.bin  = PARTIAL IMAGE, round 31 §4.2. valid text to 0x2c398,
+family gxl bl31.bin  = PARTIAL IMAGE, round 31 sec 4.2. valid text to 0x2c398,
                        but it references data at 0xc5000 / 0xc5ec0 and a
                        128-byte FID class map at 0xcb040, all past the end of
                        the file. the SMC dispatch table and the 0x82000043
@@ -64,7 +64,7 @@ check 0x37e62f78 (do_rsvmem_check): same three reads, then
 ```
 
 Source match: `.src/u-boot-khadas/common/cmd_rsvmem.c:53-57`
-(`((data & 0xffff0000)>>16)<<10`, `(data & 0xffff)<<10`, CFG5, CFG4) —
+(`((data & 0xffff0000)>>16)<<10`, `(data & 0xffff)<<10`, CFG5, CFG4) -
 FAMILY STRUCTURAL REFERENCE whose binary the aquaman image carries.
 
 Semantics -> DTB (EXACT AQUAMAN chain, disasm + runtime DTB agree):
@@ -96,10 +96,10 @@ gxl bl31.bin:     movz/movk AO census (round 31, tools/bl31_ao_census.py,
                   *** the 6 GP_CFG7 refs are all read-modify-write: two clear
                   [7:0] (and #0xffff00ff), two are bit-indexed pin helpers
                   (1 << (idx+8), idx = (x&0xff)+((x&0xff00)>>6), a pad-index
-                  decoder at 0x24a50). NONE sets bit 31. round 31 §4.2. ***
+                  decoder at 0x24a50). NONE sets bit 31. round 31 sec 4.2. ***
                   CORRECTION: this census line previously read "17 constants,
                   0xda10025c x5, all watchdog/JTAG/GPIO/clock", which is wrong
-                  twice — the count is 6, and AO_SEC_GP_CFG7 is not a
+                  twice - the count is 6, and AO_SEC_GP_CFG7 is not a
                   watchdog/JTAG/GPIO/clock register. that mislabel is what let
                   the clear path stay invisible. the 0x18ddc function also holds
                   a literal "bl31 clear usb flag" printf.
@@ -108,10 +108,10 @@ u-boot source:    no writel(P_AO_SEC_GP_CFG[3-5]) anywhere.
 linux source:     no AO_SEC_GP_CFG writer (kernel only consumes DTB).
 ```
 
-Loader found — BL2 carries the addresses twice (FAMILY STRUCTURAL REFERENCE,
+Loader found - BL2 carries the addresses twice (FAMILY STRUCTURAL REFERENCE,
 gxl AND gxb identical; the aquaman equivalents are encrypted inside
 `bootloader.img`, whose only ToC fragment is ciphertext, so no EXACT header is
-available — classification in the final table reflects this):
+available - classification in the final table reflects this):
 
 ```text
 (a) bl2.bin tail, plaintext FIP image table (stride 0x28:
@@ -168,16 +168,16 @@ Resolved from the round-26 subregion map + the layout above:
 0x05040000  storage OUT (SMC 0x24)    > placed by BL31 inside the first MiB
 0x05080000  storage BLOCK (0x25)     /   of its own reservation
 0x050fe000/ff0000  secmon IN/OUT (0x20/21) share-mem ABI
-0x05100000  BL31 image base (Secure) —— protected
+0x05100000  BL31 image base (Secure) -- protected
 ```
 
-Answer to the three-way question: **option 3** — the reservation is a
+Answer to the three-way question: **option 3** - the reservation is a
 container whose first 1 MiB is, by design, the NS share area; the remaining
 2 MiB are the monitor image itself. Evidence: sharemem bases are *requested
 from* BL31 at runtime (SMC 0x82000020/21/23/24/25, rounds 14/26) and every
 returned base lands inside `[0x05000000, 0x05100000)`; the AO/BL2 layout
 declares exactly that split (s2b); the readable MiB is volatile storage
-content (round26 §6) while everything from the image base onward faults.
+content (round26 sec 6) while everything from the image base onward faults.
 `/secmon reserve_mem_size 0x300000 == AO bl31 size` is the same fact seen
 from Linux: the kernel is told the monitor's total reservation, and its
 driver (`drivers/amlogic/secmon/secmon.c`, GENERIC REFERENCE for the family)
@@ -199,13 +199,13 @@ derived in BL33 (EXACT) : do_rsvmem_check encodes
 declared by BL2 (FAMILY): bl31 load address in the FIP table = 0x05100000
 declared by BL31 (FAMILY): bl31.img secure-window start = 0x05100000
 family DTB parallel     : mesong12b.dtsi secmon clear_range = <0x05100000
-                          0x200000> — same boundary, 2 MiB long, i.e. the
+                          0x200000> - same boundary, 2 MiB long, i.e. the
                           same "image window" (GENERIC REFERENCE)
 live fault map (round26): 0x050fffc0 OK / 0x05100000+ FAULT, sharp at exactly
                           this address
 ```
 
-Verdict: **hard boundary** — it is the start of the secure image window,
+Verdict: **hard boundary** - it is the start of the secure image window,
 derived from `bl31_start+0x100000` by BL33 policy and pinned by the BL2/BL31
 headers of the family. The alternative ("page boundary coincidence") is
 refuted by the page-table decode below: BL33 maps the whole range, so a
@@ -213,7 +213,7 @@ refuted by the page-table decode below: BL33 maps the whole range, so a
 
 ## 6. protection mechanism
 
-MMU-unmapped REFUTED (EXACT evidence, from the persisted round-13 dump —
+MMU-unmapped REFUTED (EXACT evidence, from the persisted round-13 dump -
 BL33's page table at `0x37ff0000`, 64 KiB at dump offset `0x7f0000`):
 
 ```text
@@ -228,7 +228,7 @@ map, SECTION_SHIFT=29 (512 MiB per entry, cache_v8.c):
 ```
 
 (The 512 MiB sections also mean BL33 could not have a sub-2 MiB unmapped
-hole even if it wanted one, without switching to finer tables — it does not.)
+hole even if it wanted one, without switching to finer tables - it does not.)
 
 Mechanism class: **secure-memory protection set up before BL33 runs** (BL2
 marks the image window Secure in the platform's memory firewall / TZ
@@ -255,10 +255,10 @@ gxlimg fip.c: the FIP stores BL31 "load address and entry point". In the
 0x50-byte family header the only nonzero fields are +0x08..+0x2f (s2b); no
 separate entry word exists, so the family convention reads entry == load ==
 0x05100000 (BL2 jumps to the image base; RESET_TO_BL31=0 path in the
-embedded firmware tree passes plat params in x4/x5 — the reference bl31.bin
+embedded firmware tree passes plat params in x4/x5 - the reference bl31.bin
 first instructions consume exactly x4/x5, then clear SCTLR_EL3.M).
 handoff to BL33: ranges only (AO regs), plus the sharemem ABI
-(SMC 0x82000020/21) — no pointer/entry/vector ever crosses to NS. the
+(SMC 0x82000020/21) - no pointer/entry/vector ever crosses to NS. the
 SMC dispatcher that serves BL33's 15 smc sites (round 14) has only one
 place left to live: the protected window 0x05100000..0x05300000.
 ```
@@ -266,7 +266,7 @@ place left to live: the protected window 0x05100000..0x05300000.
 ## 8. BL32
 
 `[0x05300000, 0x07300000)`: CONFIRMED reserved (AO CFG4+CFG3-lo, DTB secos
-reg, BL2 table bl32→0x05300000), `no-map`+`status=disable` on this build, and
+reg, BL2 table bl32->0x05300000), `no-map`+`status=disable` on this build, and
 unreadable at its base (round19/26). Not further pursued per brief.
 
 ## 9. final table
@@ -282,7 +282,7 @@ unreadable at its base (round19/26). Not further pursued per brief.
 | protection mechanism | class CONFIRMED (secure firewall, pre-BL33); register UNKNOWN | PT decode refutes MMU; boundary == image base; no TZ reg in any artifact |
 | BL32 base | CONFIRMED `0x05300000` | AO CFG4 + DTB + BL2 table |
 | BL32 size | CONFIRMED `0x2000000` | AO CFG3 lo + DTB |
-| image source | boot0/boot1 hw partitions ← `bootloader.img` FIP (encrypted at rest) | rounds 18/26; plaintext table absent (TOC frag is ciphertext) |
+| image source | boot0/boot1 hw partitions <- `bootloader.img` FIP (encrypted at rest) | rounds 18/26; plaintext table absent (TOC frag is ciphertext) |
 | loader | BL2/BL30 chain (family design); exact aquaman str site UNKNOWN | BL2-only writer candidate; BL33/BL31/kernel all read-only, proven |
 | handoff | AO GP regs + sharemem SMC `0x82000020/21`; no pointers to NS | decoder disasm + DTB + round14 SMC census |
 
@@ -302,5 +302,5 @@ next static path     = decrypt bootloader.img (needs the vendor FIP key /
 ```
 
 no device was touched this round; no new probes were needed (brief s7
-optional probes not taken — the boundary question was answered offline).
+optional probes not taken - the boundary question was answered offline).
 aux evidence: `reports/round27-bl31/01..06`.

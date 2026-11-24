@@ -1,4 +1,4 @@
-# round29 / 01 — the `aml_encrypt_gxl` pipeline, reconstructed
+# round29 / 01 - the `aml_encrypt_gxl` pipeline, reconstructed
 
 Source: `.src/u-boot-khadas/fip/gxl/aml_encrypt_gxl`, ELF64 x86-64, static,
 not stripped, `debug_info`, build stamp `aml_encrypt_gxl.c Apr 25 2017
@@ -9,7 +9,7 @@ All addresses below are static VAs in that binary. No file was executed.
 
 `main` @0x41e74b builds a 30-entry `option` array on the stack (name
 pointers 0x4e892e..0x4e89d7), copies 30 handler pointers from
-`.data:0x4e8a00`, seeds `srandom(time(NULL))` (0x452580 — **rand() is the
+`.data:0x4e8a00`, seeds `srandom(time(NULL))` (0x452580 - **rand() is the
 key generator throughout**), then `getopt_long(argc, argv, optstring@
 0x4e6ca1, longopts, &idx)` and dispatches `handlers[idx](argc, argv)`.
 
@@ -35,10 +35,10 @@ idx  long option   handler              idx  long option   handler
 ## the crypto kernel
 
 `aml_file_aes(fp, len, key30, mode, rw)` @0x40159e:
-stat → size, `len` must be 16-aligned, `mbedtls_aes_setkey_enc(ctx,
+stat -> size, `len` must be 16-aligned, `mbedtls_aes_setkey_enc(ctx,
 key_info[0:0x20], 0x100)`; in-place: `fseek(fp,0)`, loop
-`fread(0x10000) → aes_crypt_cbc(MBEDTLS_AES_ENCRYPT, iv=key_info[0x20:0x30],
-... ) → fseek → fwrite → fflush`; returns to caller.
+`fread(0x10000) -> aes_crypt_cbc(MBEDTLS_AES_ENCRYPT, iv=key_info[0x20:0x30],
+... ) -> fseek -> fwrite -> fflush`; returns to caller.
 
 `aml_file_duplicate(src, dst, ...)` @0x40d07f makes the working copy that
 is encrypted in place (the tool never encrypts the user's input file).
@@ -46,7 +46,7 @@ is encrypted in place (the tool never encrypts the user's input file).
 byte; `aml_file_copy(src, dst, n)` @0x4018dc; `aml_file_sha2(fp, buf,
 fseek_to, len)` @0x40ce07.
 
-## --bl2enc → aml_bl2_enc_file (the round-28 finding, re-verified)
+## --bl2enc -> aml_bl2_enc_file (the round-28 finding, re-verified)
 
 `aml_bl2_enc` @0x418cdb (handler 17): 11-option getopt, then
 `aml_bl2_enc_file(opts)` @0x40d2a6:
@@ -62,11 +62,11 @@ aml_file_duplicate(input, dst, 0)                 <- never mutates input
 fopen(dst,"r+b"); aml_file_aes(fp, 0xC000, ...)   <- window [0, 0xC000)
 ```
 
-key = package tail 32B; `key_info[0x20:0x30]` stays zero → **IV = 0**.
+key = package tail 32B; `key_info[0x20:0x30]` stays zero -> **IV = 0**.
 
-## --bl3enc → aml_bl3_enc_file (per-object random key)
+## --bl3enc -> aml_bl3_enc_file (per-object random key)
 
-`aml_bl3_enc` @0x41b1a0 → `aml_bl3_enc_file(opts)` @0x40d57c:
+`aml_bl3_enc` @0x41b1a0 -> `aml_bl3_enc_file(opts)` @0x40d57c:
 
 ```text
 input stat; fopen; read 0x200 ctrl; aml_ctrl_blk_check(ctrl)   [0x4022ee]
@@ -118,7 +118,7 @@ rsv 0x05000000+0x300000, secure 0x05100000+0x200000) + `bl31.bin`
 byte-identical + 0x200 tail. **The bl31.img "header" is plaintext and was
 never inside the encrypted window of anything.**
 
-## --bootmk → aml_boot_make (assembles the whole file)
+## --bootmk -> aml_boot_make (assembles the whole file)
 
 `aml_boot_make` @0x41c9dd, options `bl2 bl30 bl31 bl32 bl33 bl3x output
 userkey input level` (table 0x4e8640, 11 entries):
@@ -155,7 +155,7 @@ So the v1.3 layout is: **BL2 [0,0xC000) encrypted under the userkey tail32
 payload streams from 0x10000, each with a plaintext ctrl header, second
 ctrl copy at 0xFE00.**
 
-## --bootmk3 → aml_boot_make_v3 @0x41d860
+## --bootmk3 -> aml_boot_make_v3 @0x41d860
 
 ```text
 header 0x4000: [0xC000]=0xAA640001, [0xC004]=0x00030001 (version 3)
@@ -178,10 +178,10 @@ fseek 0xC000; fwrite(header 0x4000)
 
 The v3 header carries the same UUIDs but stores per-stream SHA2 records
 (0x468-stride table) and the header itself is encrypted with the userkey
-package bytes **[0:16] as IV and [0:0x20] as key** — a different contract
+package bytes **[0:16] as IV and [0:0x20] as key** - a different contract
 from v1 (v1 header key = package TAIL, IV = 0).
 
-## --bootsig → aml_boot_sig_file @0x410fa2 (the Makefile's final step)
+## --bootsig -> aml_boot_sig_file @0x410fa2 (the Makefile's final step)
 
 ```text
 paths: input+".sig", ".pkg", ".enc", ".dec", tmp
@@ -199,14 +199,14 @@ cleanup: remove() every intermediate that exists
 ```
 
 `--bootsig --aeskey enable` therefore re-wraps every stream with the
-userkey package and re-assembles — the earlier `--bootmk` output is an
+userkey package and re-assembles - the earlier `--bootmk` output is an
 intermediate, not the final artifact. The final artifact's stream ctrl
 blocks are userkey-wrapped, not plaintext-keyed.
 
 ## uboot tail
 
 `aml_uboot_process` @0x40fcab (last call of bootmk/bootsig): works on the
-first 0xC000 bytes only — reads them, `.tmp` copies, one `rand()`-driven
+first 0xC000 bytes only - reads them, `.tmp` copies, one `rand()`-driven
 0x200 block, three further 0xC000 read/write passes with names built from
 0x4e799d/0x4e79a8/0x4e79b3. BL2-local processing; it never touches the
 payload region.
@@ -222,6 +222,6 @@ in-place                yes, always via aml_file_duplicate working copy
 --bootmk header enc     [0xC000,0xFE00), random key, key+IV plaintext @ctrl+0x40
 --bootmk3 header enc    [0xC000,0x10000), key = pkg[0:0x20], IV = pkg[0:0x10]
 --bl3enc object         [0x200, 0x200+size), key+IV plaintext @ctrl+0x40
-per-object keys         rand(), seeded from time(NULL) — host-side random
+per-object keys         rand(), seeded from time(NULL) - host-side random
 bl31.img header         PLAINTEXT 0x200, never encrypted (fixture-proven)
 ```

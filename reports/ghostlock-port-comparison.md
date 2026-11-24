@@ -47,7 +47,7 @@ Legend: identical / changed / non-existent / requires-adaptation.
   mm_struct -> skb page.
 - Aresin: pipe_buffer (pipe.c) + physmap write, alternative route.
 - Aquaman: requires-adaptation. AF_UNIX exists (CONFIG_UNIX=y) and pipe
-  exists, but geometry (slab size, objects per slab, freelist randomization —
+  exists, but geometry (slab size, objects per slab, freelist randomization -
   absent, good) must be measured on aquaman allocator. SLUB without
   FREELIST_RANDOM and without HARDENED favors deterministic reclaim.
   Do not assume socket reclaim behaves identically; pipe alternative is
@@ -89,9 +89,9 @@ Legend: identical / changed / non-existent / requires-adaptation.
 
 ## SELinux handling
 
-- Hazel: no bypass — Enforcing remains, daemon runs as
+- Hazel: no bypass - Enforcing remains, daemon runs as
   u:r:shell:s0 with uid 0. uid 0 without new domain.
-- Aresin: attempts setenforce/sid — in progress.
+- Aresin: attempts setenforce/sid - in progress.
 - Aquaman (ro.debuggable=0, Enforcing): expect the same ceiling as hazel:
   uid 0 in shell context. Sufficient for inspection (Phase 16). Do not presume
   SELinux bypass.

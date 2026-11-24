@@ -1,4 +1,4 @@
-# GhostLock source check — aquaman 4.9.113 (Phase 1)
+# GhostLock source check - aquaman 4.9.113 (Phase 1)
 
 Date: 2026-09-29. Offline analysis, without touching device.
 

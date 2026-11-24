@@ -62,7 +62,7 @@ so, for GXL:
     gd->relocaddr = 0x38000000
                     - 0x10000        (PGTABLE)
                     - gd->mon_len
-                    (rounded to 64 KiB then 4 KiB, ± LOGBUFF)
+                    (rounded to 64 KiB then 4 KiB, +/- LOGBUFF)
 
 4. gd->mon_len, bounded from the dump
 -------------------------------------

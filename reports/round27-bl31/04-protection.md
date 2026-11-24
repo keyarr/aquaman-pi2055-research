@@ -1,8 +1,8 @@
-# 04 — protection: why 0x05000000 reads and 0x05100000 faults
+# 04 - protection: why 0x05000000 reads and 0x05100000 faults
 
 ## step 1: rule out the reader's own MMU (EXACT evidence)
 
-the page table that BL33 executes against is at `0x37ff0000` (round15 §G) and
+the page table that BL33 executes against is at `0x37ff0000` (round15 sec G) and
 is inside the persisted round-13 dump (`0x37800000..0x38000000`, dump offset
 `0x7f0000`, 64 KiB). decode (`tools/round27_layout.py pt_census/pt_covers`):
 
@@ -18,7 +18,7 @@ cache_v8.c mmu_setup: PGTABLE_SIZE 0x10000, 512 MiB per entry):
 therefore:
 
 ```text
-0x05000000..0x053fffff  mapped, cached, normal — including BOTH the
+0x05000000..0x053fffff  mapped, cached, normal - including BOTH the
                         readable MiB and the faulting 0x05100000..0x05300000
 unmapped-hole hypothesis: REFUTED. a translation fault at 0x05100000 is
                         impossible in this table.
@@ -36,7 +36,7 @@ BL33 contains no SCR_EL3/VBAR_EL3/TTBR rewrites, no TZ controller access, no
 self-modifying of the page table after mmu_setup (round14 censuses; the table
 decoded above is a static single-level identity map). the `clear_range` BL33
 writes into the DTB (05-boundary.md) is a *kernel-side* pte-clear instruction,
-executed only by Linux later — it cannot affect BL33's own reads, and the
+executed only by Linux later - it cannot affect BL33's own reads, and the
 faults were observed in TPL before any kernel existed.
 
 ## step 3: what the evidence supports
@@ -49,7 +49,7 @@ class        : secure-memory protection (platform memory firewall / TZ
 evidence for : window == BL2's declared image base (02); marking must precede
                BL33 because BL33 boots with the boundary already effective;
                the fault behavior is an external abort (data abort taken to
-               EL3, gadget dies) — round26 Errno 5 then Errno 19 + bus drop;
+               EL3, gadget dies) - round26 Errno 5 then Errno 19 + bus drop;
                BL33 is Normal-world (EL1/EL2) and the readable/protected
                split follows Secure/NS exactly
 evidence out : concrete register UNKNOWN. no TZASC/TZPC node or driver
@@ -62,7 +62,7 @@ evidence out : concrete register UNKNOWN. no TZASC/TZPC node or driver
 round26's own stop condition said the same: "TrustZone protection vs
 TPL-MMU-unmapped vs device hole are indistinguishable with 0x02/mread alone".
 round27 closes two of the three from persisted evidence: it is NOT the MMU
-(step 1) and NOT a device hole (the image actually lives there — 02); it is
+(step 1) and NOT a device hole (the image actually lives there - 02); it is
 the security attribute.
 
 ## why Optimus can read 0x05000000 but not 0x05100000 (brief s6)
@@ -75,9 +75,9 @@ the gadget: the mechanism is not in the gadget.
 ## note on the G12B parallel (GENERIC REFERENCE)
 
 `mesong12b.dtsi` secmon node carries `clear_range = <0x05100000 0x200000>`
-with `cma_mmu_op(page, cnt, 0)` (pte_clear over the range, `mm/cma.c`) — the
+with `cma_mmu_op(page, cnt, 0)` (pte_clear over the range, `mm/cma.c`) - the
 family re-uses the same window/length pair (0x05100000 + 2 MiB) for
 "kernel must drop its ptes here". on aquaman the property is absent from the
-runtime DTB (the rsvmem clear_range write is skipped — see 05), but the
+runtime DTB (the rsvmem clear_range write is skipped - see 05), but the
 family DTS corroborates that this exact range is treated as untouchable by
 the kernel as well.

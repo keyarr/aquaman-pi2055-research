@@ -120,7 +120,7 @@ def sup_callers(data, s, e):
 
 
 def stale_copy(data):
-    """round 8 §3.1 read a duplicate DTB at +0x80000. it is a stale bitmap copy.
+    """round 8 sec 3.1 read a duplicate DTB at +0x80000. it is a stale bitmap copy.
 
     0x01010000 is byte identical to 0x01090000 for 114688 bytes, and
     0x01090000 is GXB_IMG_LOAD_ADDR + 0x10000, so the resource image was staged

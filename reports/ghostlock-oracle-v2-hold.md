@@ -1,4 +1,4 @@
-oracle_v2 — HOLD round + variation (2 of 2 boots, BUDGET BLOWN again)
+oracle_v2 - HOLD round + variation (2 of 2 boots, BUDGET BLOWN again)
 
 logs: out/logs/oracle_v2_holdA_nostamp.log       (BOOT A: nostamp + hold)
       out/logs/oracle_v2_holdB_stamp0120.log     (BOOT B: stamp 0x120 + hold)
@@ -23,7 +23,7 @@ logs: out/logs/oracle_v2_holdA_nostamp.log       (BOOT A: nostamp + hold)
      the main inside usleep(settle), with no exit() ever called, no
      consumer, no hold. Death comes BEFORE process teardown, so process
      teardown cannot be it. "[hold] entered" never appeared because there
-     was never time to get there — and irrelevant, the device was already
+     was never time to get there - and irrelevant, the device was already
      dead.
 
   b) the actor is not the settle: the actor's upper latency bound fell from
@@ -44,11 +44,14 @@ logs: out/logs/oracle_v2_holdA_nostamp.log       (BOOT A: nostamp + hold)
 
 3. WHAT I STOPPED TRYING (and why)
 
-  pstore: /sys/fs/pstore Permission denied for shell. dmesg blocked.
+  pstore: /sys/fs/pstore Permission denied for shell. dmesg blocked for shell.
   no free backtrace. No way to catch the culprit without spending boot.
+  (2026-11-23: root in `u:r:dumpstate:s0` can read pstore and dmesg, but
+  `/proc/kallsyms` and slab attrs stay denied; no symbol backtrace either.
+  See `reports/root-read-surface-2026-11-23.md`.)
 
   A trial with ~0 settle (consumer glued to the stamp) is the only
-  patch-shaped path. More honest alternative: invert the order — read
+  patch-shaped path. More honest alternative: invert the order - read
   f18_post BEFORE teardown and use teardown only as the trigger. Does not
   fit a small patch and touches the gate geometry.
 

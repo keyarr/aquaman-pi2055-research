@@ -1,4 +1,4 @@
-oracle_v2 device phase — STABILITY GATE (2 of 3 reboots, STOPPED)
+oracle_v2 device phase - STABILITY GATE (2 of 3 reboots, STOPPED)
 
 table trial -> (f18_post, f19, survived, uptime)
 
@@ -61,7 +61,7 @@ gate RED twice. Stop rule 1: no stamped trial was executed.
 
    (e) the owner is explicitly joined (pthread_join) before the settle.
        motive: in v1 the owner thread stayed blocked in FUPI f_chain forever
-       (nobody ever unlocked the owner) — a PI lock owner held forever, an
+       (nobody ever unlocked the owner) - a PI lock owner held forever, an
        obvious crash target when the consumer adjusts priority.
        secondary motive: v1 never reaped the owner.
 
@@ -70,7 +70,7 @@ gate RED twice. Stop rule 1: no stamped trial was executed.
        the consumer will meet later; doing FUPI f_chain first reduces kernel
        work between FWRQ and stamp.
 
-2. GATE v2 — what changed and what we learned
+2. GATE v2 - what changed and what we learned
 
    v2 ran the ENTIRE teardown and printed:
      [cmp] errno=35 EDEADLK ok, tid_waiter=5181
@@ -78,7 +78,7 @@ gate RED twice. Stop rule 1: no stamped trial was executed.
      [teardown] stamp done, settle 2.5s
    and died BEFORE [consumer]. gate v2 still RED.
 
-   reading: changes (a)..(e) fixed the [cmp]..[teardown] window — it now
+   reading: changes (a)..(e) fixed the [cmp]..[teardown] window - it now
    survives and is deterministic. the crash migrated to the consumer window,
    and is now consistently reproducible (v1 was an occasional race; v2 dies
    always in the same place: post-teardown, at the consumer).
@@ -94,8 +94,8 @@ gate RED twice. Stop rule 1: no stamped trial was executed.
 
    that is why the gate is red in nostamp mode: the stamp is not even needed
    for the consumer to find the dangling pointer. the value oracle (f18) only
-   makes sense if the consumer SURVIVES the walk, and it does not survive —
-   in v2 it dies before the store to p->prio, so the resulting f18 can never
+   makes sense if the consumer SURVIVES the walk, and it does not survive -
+ in v2 it dies before the store to p->prio, so the resulting f18 can never
    be read.
 
 3. WHY THIS BLOCKS THE OVERLAP PLAN (not just "instability")
@@ -108,7 +108,7 @@ gate RED twice. Stop rule 1: no stamped trial was executed.
    reads a controlled value instead of following the pointer to the freed
    task_struct. BUT the stamp only works if the consumer runs. and the
    consumer, in nostamp, dies walking the tree. in stamp mode the consumer
-   would read the fake (prio=0) instead of the dangling pointer — which is why
+   would read the fake (prio=0) instead of the dangling pointer - which is why
    trial (ii) WITH stamp is the one that matters, but it may only run AFTER a
    green gate, and the green gate (nostamp) is red.
 
@@ -118,26 +118,26 @@ gate RED twice. Stop rule 1: no stamped trial was executed.
    without stamp, which is the dangerous case". via the attempted path
    (consumer without stamp over the stale tree) the gate did not go green;
    with stamp, another trio geometry, or another actor, the result may
-   differ — untested in this gate, and nothing here says it is impossible.
+   differ - untested in this gate, and nothing here says it is impossible.
 
 4. PROPOSED FIX (for the next phase, not executed)
 
    the gate has to stop hitting the dangling pointer. two options, no pick
    made here:
 
-   option A — change the TRIO geometry so the dangling node does not exist
+   option A - change the TRIO geometry so the dangling node does not exist
    at the consumer. instead of the owner locking f_target (futex with wait
    tree) with the waiter dangling, make the waiter dangle and the owner hold
    the node the consumer will read. the consumer adjusts the WAITER's
    priority; the node that matters is the owner's in the f_chain tree. if the
    owner is not joined (stays alive, just blocked), its task_struct is not
-   freed and the consumer does not die — without stamp, the consumer reads
+   freed and the consumer does not die - without stamp, the consumer reads
    the live owner (real prio), the gate goes GREEN, and only then trial (ii)
    with stamp has a stable consumer to read the fake.
    cost: keep the owner blocked and skip the join; the stamp still applies
    (the ghostlock is the waiter's, not the owner's).
 
-   option B — don't join the owner. basically keep the owner alive.
+   option B - don't join the owner. basically keep the owner alive.
 
    both are the same idea: the gate needs a surviving consumer, and the
    consumer survives while the owner (the PI lock holder with a wait tree)

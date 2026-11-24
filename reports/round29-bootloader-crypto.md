@@ -1,4 +1,4 @@
-# round29: bootloader crypto closed out — pipeline reconstructed, package format solved
+# round29: bootloader crypto closed out - pipeline reconstructed, package format solved
 
 date 2026-09-30. **zero device I/O this round.** inputs: the bytes already
 in the repo, the not-stripped vendor `aml_encrypt_gxl` ELF, and the 32
@@ -46,11 +46,11 @@ blocking dependency = the 32-byte aeskey tail32 of the MiTV-AESP0 /
 
 `main` @0x41e74b: 30 `getopt_long` subcommands (table @0x4e8a00),
 `srandom(time(NULL))`, dispatch. The crypto kernel is `aml_file_aes`
-@0x40159e — mbedtls `aes_setkey_enc(key,0x100)` + `aes_crypt_cbc`,
+@0x40159e - mbedtls `aes_setkey_enc(key,0x100)` + `aes_crypt_cbc`,
 in-place over a `aml_file_duplicate` working copy.
 
 ```text
---bl2enc   aml_bl2_enc_file 0x40d2a6   pkg size ∈ {0x20,0x1B40};
+--bl2enc   aml_bl2_enc_file 0x40d2a6   pkg size in {0x20,0x1B40};
                                        key_info[0:0x20]=pkg TAIL 32B;
                                        IV stays zero; window [0,0xC000)
 --bl3enc   aml_bl3_enc_file 0x40d57c   per-object rand() key+IV 48B
@@ -71,9 +71,9 @@ in-place over a `aml_file_duplicate` working copy.
 --keybnd   aml_key_bnd      0x40af24  PRODUCER of the user-key package
 ```
 
-UUID table @0x716700 (v1) / 0x716760 (v3): TF-A UUIDs — BL2 `0becf95f…`,
-BL30 `3dfd6697…`, BL32 `6d08d447…`, BL31 `05d0e189…` (as round 28),
-plus BL33 `a7eed0d6…` (boot_sig_file comparators 0x4114f0..0x411524).
+UUID table @0x716700 (v1) / 0x716760 (v3): TF-A UUIDs - BL2 `0becf95f...`,
+BL30 `3dfd6697...`, BL32 `6d08d447...`, BL31 `05d0e189...` (as round 28),
+plus BL33 `a7eed0d6...` (boot_sig_file comparators 0x4114f0..0x411524).
 
 ## 2. resolving the round-28 contradiction (03)
 
@@ -102,20 +102,20 @@ the production build as the same family with header encryption folded in
 ```
 
 `aml_uboot_process` @0x40fcab (final call of bootmk/bootsig) touches only
-the first 0xC000 bytes — no additional payload stage exists.
+the first 0xC000 bytes - no additional payload stage exists.
 
 ## 3. the user-key package (02, 04)
 
 ```text
 0x0000..0x1248   rootkeymax blob   "sig-rsa-key" from --keysig,
                                    padded UP to 0x1248 if smaller
-0x1248..0x1B20   ukey blob         user RSA key (≤ 0x8D8)
+0x1248..0x1B20   ukey blob         user RSA key (<= 0x8D8)
 0x1B20..0x1B40   aeskey tail32     LAST 32 BYTES OF THE BUILD-TIME AES
                                    KEY FILE, VERBATIM ("AES key file
                                    without IV, GX series used only")
 ```
 
-The tail32 is **key material direct** — a build input copied into place
+The tail32 is **key material direct** - a build input copied into place
 by `aml_key_bnd`. Not wrapped, not derived, not device/efuse-derived at
 construction. Correction to round 28: the package is not "rooted in an
 efuse-bound root key" at construction; the efuse enters via the
@@ -126,10 +126,10 @@ Producers: `aml_key_bnd` only; the aeskey file comes from `--rsagen
 ## 4. fixtures and the oracle (05)
 
 32 `aml-user-key.sig` fixtures (one per reference board), each 0x1B40,
-**one unique tail32** `02bc96a2…e7cae6ee` (the Amlogic reference AES
+**one unique tail32** `02bc96a2...e7cae6ee` (the Amlogic reference AES
 key). The first-block oracle (one AES ECB block per call, IV=0) was
 applied to every structurally-derived candidate against both candidate
-sites — `ct[0x0000]` (BL2/ToC per round 28) and `ct[0xC000]` (the bootmk
+sites - `ct[0x0000]` (BL2/ToC per round 28) and `ct[0xC000]` (the bootmk
 header, where the ToC actually sits):
 
 ```text
@@ -149,9 +149,9 @@ possible.
 ## 5. record128 (06)
 
 Five identical 128-byte records at 0xC080/0x10080/0x20080/0x4C080/
-0x8C080 — all ≡ 0x80 mod 0x10000 (stream+0x80). CBC requires identical
+0x8C080 - all = 0x80 mod 0x10000 (stream+0x80). CBC requires identical
 plaintext AND one common key+IV across all five streams. The window is
-deterministic build metadata — the ctrl/timestamp area
+deterministic build metadata - the ctrl/timestamp area
 (`aml_set_blk_time_stamp` writes ctrl+0x88/+0xb0, inside the observed
 window). It is not parseable, not the KeyID, not a plaintext transport
 header, and it leaks nothing without the key. The possibility of useful
@@ -171,7 +171,7 @@ stream  base      size      content                   ends
 ```
 
 `0x8C000 + 0xBC200 = 0x148200` exactly. Stream order = bootmk getopt
-order. BL31 boundary upgraded LOW-MEDIUM → MEDIUM-HIGH.
+order. BL31 boundary upgraded LOW-MEDIUM -> MEDIUM-HIGH.
 
 ## 7. relation to boot/dt (10 of the brief)
 
@@ -179,7 +179,7 @@ Same toolchain, different branch: boot/recovery/dt use the AMLSECU!
 per-object random-key scheme (`aml_bl3_enc_file`, host `rand()`, keys
 exported to `.key.pxp` at packaging; plaintext KeyID in dt.img);
 bootloader.img uses the bootmk/bootsig userkey scheme (no KeyID, no
-per-object key identity — the key identity IS the OEM package). The KeyID
+per-object key identity - the key identity IS the OEM package). The KeyID
 of dt/boot is irrelevant to bootloader.img, as round 28 already showed.
 
 ## 8. continuity: the chain to its end
@@ -188,9 +188,9 @@ of dt/boot is irrelevant to bootloader.img, as round 28 already showed.
 AES-256-CBC            known
 IV                     0 (stage1) / pkg[0:16] (v3 header)
 windows                [0,0xC000) + [0xC000,0xFE00|0x10000) + streams
-key source             pkg tail32 — format KNOWN
-package producer       aml_key_bnd — KNOWN
-aeskey file producer   --rsagen --aes / OEM input — KNOWN SHAPE
+key source             pkg tail32 - format KNOWN
+package producer       aml_key_bnd - KNOWN
+aeskey file producer   --rsagen --aes / OEM input - KNOWN SHAPE
 the aeskey itself      OEM secret, absent from repo         [STOPS HERE]
 efuse binding          --efsgen fingerprint + secure ladder [STOPS HERE]
 ```
@@ -199,7 +199,7 @@ The opaque link narrowed from "unknown secure-world derivation" to a
 **32-byte file the OEM build consumed and did not ship**. Everything
 between ciphertext and plaintext is specified to the byte; the only
 missing element is the file itself, and the production build's header
-variant (X1–X3 in 03) which does not change the key question.
+variant (X1-X3 in 03) which does not change the key question.
 
 ## 9. final table
 
@@ -220,13 +220,13 @@ variant (X1–X3 in 03) which does not change the key question.
 ## 10. closure
 
 ```text
-OFFLINE PATH CLOSED — round 29
+OFFLINE PATH CLOSED - round 29
 ```
 
 Not with "the key comes from the secure world" but with the sharper
-statement the continuity rule asked for: the entire pipeline — parsing,
+statement the continuity rule asked for: the entire pipeline - parsing,
 assembly, per-stage windows, IV contracts, package format, producer,
-even the reference key material — is reconstructed and test-pinned; the
+even the reference key material - is reconstructed and test-pinned; the
 single missing element is a 32-byte build input that exists only inside
 the OEM's build environment. The secure-world ladder (round 28) remains
 the enforcement side; it is no longer the unknown.

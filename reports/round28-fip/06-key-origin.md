@@ -1,4 +1,4 @@
-# round28 s6: key origin — where the chain stops being observable
+# round28 s6: key origin - where the chain stops being observable
 
 offline. the key chain is reconstructed as far as static evidence goes, and
 the exact point where it becomes unobservable is named.

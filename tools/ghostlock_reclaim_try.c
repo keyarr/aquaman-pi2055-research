@@ -1,5 +1,5 @@
 /*
- * ghostlock_reclaim_try.c — Phase 4: controlled reclaim, 1 shot per boot.
+ * ghostlock_reclaim_try.c - Phase 4: controlled reclaim, 1 shot per boot.
  *
  * Binary question: is the freed waiter frame re-occupiable with our data,
  * and does the chain walk consume these values?

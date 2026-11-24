@@ -1,4 +1,4 @@
-$ sudo python3 /tmp/opencode/write_test2.py
+$ sudo python3 /tmp/write_test2.py
 [  0.018s] open ok
 [  0.019s] BEFORE2 0x37801000: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
 [  0.019s] WRITE2 0x37801000 <- 44 33 22 11 ok

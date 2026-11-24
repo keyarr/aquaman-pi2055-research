@@ -102,7 +102,7 @@ tested that either.
 
 ### 2.1 what clobbered what, and who told the vendor to do it
 
-| agent | address | why it is there |
+| writer | address | why it is there |
 |---|---|---|
 | the device tree | `0x01000000`, 58280 bytes | `CONFIG_DTB_MEM_ADDR 0x1000000` (`cpu.h:57`). **the same address as `CONFIG_SYS_TEXT_BASE` (`cpu.h:41`)**. Amlogic stages the DTB on top of U-Boot's own first 256 KiB |
 | the boot resource image | `0x01080000`, `AML_RES!`, 916352 bytes | `GXB_IMG_LOAD_ADDR (0x1080000)` (`bl31_apis.h:119`), the `bootm` image buffer |
@@ -110,7 +110,7 @@ tested that either.
 | zeros | `0x010b0000..0x010cffff`, 128 KiB | cleared, not overwritten with anything. the highest data reference, `0x010cbf80`, is inside this range |
 
 the ordering is not measured and does not matter for the question at hand. what
-matters is that all three agents wrote to addresses the vendor's own reference
+matters is that all three writers wrote to addresses the vendor's own reference
 config names, and that all three landed inside the footprint the surviving code
 claims for its image.
 
@@ -183,7 +183,7 @@ what it is still not shown to be: the entrypoint, and the whole of BL33.
 
 ## 4. relocation: closed for this dump
 
-round 10 §5 reported a "relocation smell" and a delta hint, and explicitly said
+round 10 sec 5 reported a "relocation smell" and a delta hint, and explicitly said
 `0x40000` is NOT PROVEN with 47413 candidates. that method was wrong and this
 round replaces it.
 
@@ -228,7 +228,7 @@ has exactly one region that is bootloader-shaped:
 | **`0x01040000..0x0107ffff`** | **the surviving window** |
 | `0x01080000..0x01139fff` | `AML_RES!` image + bitmaps |
 | `0x0113906c..0x01391fff` | zero, 2403 KiB |
-| `0x01392000..0x013e7291` | the 12-byte-pattern table of round 8 §3.4, entropy 0.28, no code |
+| `0x01392000..0x013e7291` | the 12-byte-pattern table of round 8 sec 3.4, entropy 0.28, no code |
 | `0x013e7292..0x0168dfff` | zero, 2779 KiB |
 | `0x0169e000..0x01ffffff` | intact, uncompressed Linux 4.9.113 |
 
@@ -238,7 +238,7 @@ U-Boot's relocation is a memcpy of the whole image, so **the live BL33 is not at
 `0x0169e000` or above.** and the 5.2 MiB of zeros at `0x0113906c..0x0168dfff`
 rules out everything between the resource image and the kernel. that leaves the
 live copy above `0x01ffffff` or below `0x01000000`, and the first one is what
-§11 proposes to read. the second one is off limits.
+sec 11 proposes to read. the second one is off limits.
 
 ## 5. do_bootm, aml_sec_boot_check, the SMC
 
@@ -257,7 +257,7 @@ time, register and literal pool. `0x82000023/24/25/27/28/60/61/62/63/64/65/69/6a
 all do appear, so the search works on this dump and on this window.
 
 **`aml_sec_boot_check` is not in these 16 MiB.** that is a real negative now, and
-round 10's §4.3 already had it right.
+round 10's sec 4.3 already had it right.
 
 **`do_bootm` is not in these 16 MiB either**, and there is finally a reason
 instead of a shrug. `do_bootm` in `bl31_apis.c` prints `aml log : Sig Check %d`.
@@ -286,7 +286,7 @@ strides. this round scans every 4-byte slot in all 16777216 bytes for
 all false positives, quads `0x08000000`, `0x03000000`, `0x0202020b`, `0x068bffff`,
 `0x04b00780`, `0x202020b`. none equals its own address, none equals `0x01000000`.
 
-**`_start` is not in the dump, and §2 says why it cannot be**: `start.S:22-29`
+**`_start` is not in the dump, and sec 2 says why it cannot be**: `start.S:22-29`
 puts `_start` at offset 0 of the image, and offset 0 of this image is now the
 aquaman's device tree. the signature was overwritten before anyone looked for it.
 
@@ -310,7 +310,7 @@ survived into the burning window. and the stick was sitting in `18d1:0d02`,
 Android fastboot, before round 8 entered burning mode, which means Android had
 run.
 
-if that is right then round 8 §3.5's "the running Linux kernel" is wrong wording,
+if that is right then round 8 sec 3.5's "the running Linux kernel" is wrong wording,
 and this round does not repeat it: there is a Linux kernel in RAM, from a boot
 that already finished.
 
@@ -350,13 +350,13 @@ fragment and it is the middle of an image whose base is 0x01000000.
   is strong and the config corroboration is strong, but both are consistent with
   a base of `0x01000000 - delta` for some `delta`. nothing in this dump
   constrains `delta`.
-- **is the copy in the dump the live one?** probably not (§7). if it is not, the
+- **is the copy in the dump the live one?** probably not (sec 7). if it is not, the
   BL33 that is answering our USB requests has never been dumped.
 - **U-Boot vs Optimus.** everything here is consistent with either. the window
   holds `secure storage` and Amlogic MMIO code; `do_bootm`, `fastboot`, `reset`
   and the `cmd_tbl` table are all still absent, and all of those live in U-Boot
-  proper rather than in the burning agent. **not distinguished.**
-- **the 1 KiB at `0x0100e400..0x0100e7ff`, entropy 7.82** (round 10 §7) is still
+  proper rather than in the burning tool. **not distinguished.**
+- **the 1 KiB at `0x0100e400..0x0100e7ff`, entropy 7.82** (round 10 sec 7) is still
   unexplained and sits inside the FDT's `totalsize` margin.
 - **`0x0104b5a0`, the `0xb2000016` SMC**, is still unidentified.
 - **the current blob at `0x0100a324` and the 39-target libc cluster at
@@ -375,8 +375,8 @@ fragment and it is the middle of an image whose base is 0x01000000.
   it.
 - `reports/round11-bl33-refs/01_footprint.txt`, `02_start.txt`, `03_ids.txt`,
   `04_reloc.txt`, `05_clobber.txt`, `06_mmio.txt`.
-- nothing else was touched. `reports/bl33-offline-round8.md` and
-  `-round10.md` are left as they are; this round supersedes round 10 §5 only.
+- nothing else was touched. `reports/_archive/bl33-offline-round8.md` and
+  `-round10.md` are left as they are; this round supersedes round 10 sec 5 only.
 
 ## 11. next step, and it is a decision not an analysis
 
@@ -398,7 +398,7 @@ the options, in the order I would take them:
    would be a different memory map, and `0x01000000` would then hold U-Boot text
    instead of the FDT.
 3. **do not** go below `0x00800000`. round 6 proved `0x00000000` drops the device
-   off the bus and recovery is a power cycle. §4's exclusion (`>= 0x0169e000`) is
+   off the bus and recovery is a power cycle. sec 4's exclusion (`>= 0x0169e000`) is
    a deduction, not permission to probe.
 
 option 1 is a device read and needs the stick in fastboot and a fresh

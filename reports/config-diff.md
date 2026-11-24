@@ -1,4 +1,4 @@
-# config-diff — aquaman-config vs defconfigs
+# config-diff - aquaman-config vs defconfigs
 
 tool: tools/config_fingerprint.py (stdlib, parse CONFIG_X=val + "# CONFIG_X is not set" as n, union/match/%/only/differ, --rank)
 raw: reports/config-diff/aquaman-vs-meson64.txt, aquaman-vs-smarthome.txt, aquaman-vs-defconfig.txt, ranking.txt
@@ -10,7 +10,7 @@ aquaman-config: 4447 parsed options (1650 CONFIG_*=, 2797 not-set). Header "Linu
 | candidate | opts | union | match | % | differ | only-A (device only) | only-B (repo only) |
 |---|---|---|---|---|---|---|---|
 | McMCCRU meson64_defconfig | 631 | 4447 | 625 | 14.05% | 6 | 3816 | 0 |
-| MiTV dangal meson64_defconfig | 633 | — | — | 14.07% | — | — | — |
+| MiTV dangal meson64_defconfig | 633 | - | - | 14.07% | - | - | - |
 | meson64_smarthome_defconfig | 547 | 4452 | 526 | 11.81% | 16 | 3905 | 5 |
 | generic defconfig | 465 | 4599 | 119 | 2.59% | 194 | 4134 | 152 |
 

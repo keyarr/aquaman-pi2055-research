@@ -61,21 +61,21 @@ exact-match on the fixed slots.
 
 ```text
 keyman write:
-  host controls name/data? YES, GATED (DTS cfg + type validators) — CONFIRMED
+  host controls name/data? YES, GATED (DTS cfg + type validators) - CONFIRMED
   reaches SMC 0x62? YES (hdcp fixed names direct; others via runtime
-    device vector) — CONFIRMED (mechanism), generic-name direct edge UNPROVEN
-  size bounded? YES (per-type exact/inequality clamps + 0x10000 numeric cap) — CONFIRMED
-  names restricted? YES (DTS cfg required; unknown => reject) — CONFIRMED
+    device vector) - CONFIRMED (mechanism), generic-name direct edge UNPROVEN
+  size bounded? YES (per-type exact/inequality clamps + 0x10000 numeric cap) - CONFIRMED
+  names restricted? YES (DTS cfg required; unknown => reject) - CONFIRMED
 
 keyman read:
-  host controls name? YES, GATED (same DTS gate; hint/len NOT argv) — CONFIRMED
+  host controls name? YES, GATED (same DTS gate; hint/len NOT argv) - CONFIRMED
   reaches SMC 0x61? YES (hdcp leg direct incl. caller-name 4-B read;
-    generic leg via runtime device vector) — CONFIRMED (mechanism)
+    generic leg via runtime device vector) - CONFIRMED (mechanism)
   output type? opaque blob (len+bytes shape CONFIRMED; plaintext vs
-    cipher UNPROVEN) — CONFIRMED as opaque blob
+    cipher UNPROVEN) - CONFIRMED as opaque blob
   output destination? caller RAM @argv addr (host-chosen) + freed heap
-    staging; optional console hexdump / env setenv with fmt word — CONFIRMED
-  host-readable through existing RAM-read path? UNKNOWN — UNPROVEN
+    staging; optional console hexdump / env setenv with fmt word - CONFIRMED
+  host-readable through existing RAM-read path? UNKNOWN - UNPROVEN
     (no live probe; depends on RAM-primitive windows, not on keyman)
 ```
 

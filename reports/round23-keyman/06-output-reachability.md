@@ -24,7 +24,7 @@ SMC 0x61
 so the FINAL address is not fixed/derivable by the image: the host
 chooses it per invocation. that is stronger than a fixed address: the
 host can aim the output at any RAM it can already read (e.g. a known
-readable window) — IF such a window exists — but the image itself hands
+readable window) - IF such a window exists - but the image itself hands
 no fixed address and no USB response. the blob's presence in RAM is
 CONFIRMED; its host-readability through `mread`/Optimus is a property
 of the RAM primitives' windows, not of keyman, and is UNKNOWN in this
@@ -47,7 +47,7 @@ other   | Err print, blob stays at argv addr.                       | CONFIRMED
 
 ## 6.3 stack vs heap vs chosen RAM
 
-- C2 slots: fixed globals (`0x05000000/0x05040000` runtime) — secure
+- C2 slots: fixed globals (`0x05000000/0x05040000` runtime) - secure
   world writes them, host cannot `mread` secure RAM, and BL33 never
   re-exposes the raw C2 after copying out. transient.
 - staging: `malloc(0x10000)` heap, freed (`0x37e59cd4`) before return

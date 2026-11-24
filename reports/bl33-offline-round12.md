@@ -7,7 +7,7 @@ no eMMC, no `setenv`/`saveenv`, no reset, no bootrom, no ghostlock, nothing belo
 headline: **BL33 is located.** round 11 derived that the executing U-Boot copy
 had to sit near the top of usable RAM and that the `0x01000000` copy is a stale
 load image. this round read `0x37800000..0x38000000` and found it at
-**`0x37e18000`** — the `_start`, the version banner, the full command table, and
+**`0x37e18000`** - the `_start`, the version banner, the full command table, and
 the two functions the whole research has been chasing:
 
 ```
@@ -41,7 +41,7 @@ confidence             = HIGH for every address above
 ## 1. the read
 
 round 11 derived `gd->relocaddr ~= 0x37d90000..0x37e10000` from the Amlogic
-relocation policy (`0x38000000` usable top − `PGTABLE_SIZE` − `mon_len`). the
+relocation policy (`0x38000000` usable top - `PGTABLE_SIZE` - `mon_len`). the
 band read is `0x37800000..0x38000000`, 8 MiB, with margin below the estimate.
 
 | item | value |
@@ -74,8 +74,8 @@ identical: True   diffs: 0
 => reloc_off = 0x37e8bba0 - 0x01073ba0 = 0x36e18000
 ```
 
-the whole 256 KiB fragment maps the same way: `0x01040000..0x0107ffff` ↔
-`0x37e58000..0x37e9ffff`, identical except for **3 bytes** — relocation fixups
+the whole 256 KiB fragment maps the same way: `0x01040000..0x0107ffff` <->
+`0x37e58000..0x37e9ffff`, identical except for **3 bytes** - relocation fixups
 (`CONFIG_NEEDS_MANUAL_RELOC` patching absolute pointers), which is what a copied
 image should show.
 
@@ -102,18 +102,18 @@ load base = 0x01000000        (round 11, stale copy)
 ## 3. what the relocated image is
 
 the image occupies `0x37e18000` upward; the non-zero content ends by
-`~0x37f80000`, so `~1.4 MiB` — a full U-Boot 2015.01 with fastboot, optimus and
+`~0x37f80000`, so `~1.4 MiB` - a full U-Boot 2015.01 with fastboot, optimus and
 the Amlogic vendor commands, not the 256 KiB fragment:
 
 | range | content |
 |---|---|
 | `0x37e18000` | `_start`, `reset` |
-| `0x37e19d00..0x37e1a200` | `bl31_apis.c` wrappers (§5) |
-| `0x37e24c00` | `do_bootm` (§4) |
-| `0x37ea0000..0x37ee0000` | `.rodata` — banner, format strings, help text |
+| `0x37e19d00..0x37e1a200` | `bl31_apis.c` wrappers (sec 5) |
+| `0x37e24c00` | `do_bootm` (sec 4) |
+| `0x37ea0000..0x37ee0000` | `.rodata` - banner, format strings, help text |
 | `0x37e8bba0..0x37e8c160` | `securestorage.c` module |
 | `0x37ee0000..0x37f50000` | more drivers |
-| `0x37f60fd0..` | `.u_boot_list` — `cmd_tbl` |
+| `0x37f60fd0..` | `.u_boot_list` - `cmd_tbl` |
 
 every brief string is present and readable, after being **absent from all 16 MiB
 of the load copy**:
@@ -145,7 +145,7 @@ found two ways, both pointing at the same code.
 ```
 
 the neighbouring slots are `fastboot` (`0x37e3a840`), `imgread` (`0x37e356d0`) and
-`update` (**`0x37e78ff8`, "Enter v2 usbburning mode"** — `do_v2_usbtool`).
+`update` (**`0x37e78ff8`, "Enter v2 usbburning mode"** - `do_v2_usbtool`).
 
 **(b) the sequence**, and it is the reference source instruction for instruction.
 `0x37e24c00` is a real function (`stp x29,x30,[sp,#-0x100]!`), and inside it:
@@ -222,14 +222,14 @@ cmd_tbl 'bootm' -> do_bootm (0x37e24c00) -> bl 0x37e19ea8 -> smc #0 @ 0x37e19ed8
 
 | address | x0 | name (`bl31_apis.h`) |
 |---|---|---|
-| `0x37e19e88` | `0x82000033` | — |
-| `0x37e19e9c` | `0x82000033` | — |
+| `0x37e19e88` | `0x82000033` | - |
+| `0x37e19e9c` | `0x82000033` | - |
 | **`0x37e19ed8`** | **`0x820000ff`** | **`AML_DATA_PROCESS`** |
 | `0x37e19f08` | `0x82000043` | `SET_USB_BOOT_FUNC` (the `set_usb_boot` command, `cmd_reboot.c:165`) |
-| `0x37e19fac` | `0x82000044` | — |
-| `0x37e1a148` | `0x82000018` | — |
-| `0x37e1a164` | `0x82000019` | — |
-| `0x37e1c7d4` | `0x82000012` | — |
+| `0x37e19fac` | `0x82000044` | - |
+| `0x37e1a148` | `0x82000018` | - |
+| `0x37e1a164` | `0x82000019` | - |
+| `0x37e1c7d4` | `0x82000012` | - |
 
 **15 BL callers of `aml_sec_boot_check`** exist in the image
 (`0x37e24cf0` is `do_bootm`; the others are the efuse / `imgread` / vendor
@@ -241,7 +241,7 @@ reported it absent (it lives in `bl31_apis.c`, not `securestorage.c`).
 
 ## 6. what this changes, and what it does not
 
-**changes:** the call graph the brief asked for is now complete and measured —
+**changes:** the call graph the brief asked for is now complete and measured -
 `cmd_tbl bootm -> do_bootm -> aml_sec_boot_check -> smc #0 -> BL31`, every hop at
 a known address, every constant matching the reference source. the two functions
 that were "not in the dump" for four rounds are located.
@@ -268,10 +268,10 @@ fragment is at `+0x40000`. the executing copy is `gd->relocaddr = 0x37e18000`.
 1. the BL33 map is complete for the boot path. anything further on the secure
    check is in **BL31**, not BL33: it is the closed binary behind `smc #0`, and
    there is no BL31 image in RAM to read (BL31 is at a secure address and is not
-   in `0x00000000..0x40000000` user DRAM).
+ in `0x00000000..0x40000000` user DRAM).
 2. if BL33 itself is still wanted as an artifact, dump `0x37e18000..0x37f80000`
    (1.4 MiB) and it is a complete, relocate-corrected U-Boot 2015.01-GXL image.
-3. `0x01f00000` (round 11 §6) and the unrelated tails remain open; neither is on
+3. `0x01f00000` (round 11 sec 6) and the unrelated tails remain open; neither is on
    the boot path.
 
 do not go below `0x00800000`. do not re-run `set_usb_boot`.
@@ -279,12 +279,12 @@ do not go below `0x00800000`. do not re-run `set_usb_boot`.
 ## 9. files
 
 - `tools/reloc_read.py`, new: read any DRAM band through optimus, read-only.
-- `tools/reloc_analyze.py`, new: offline — stub triples, brief strings, BL31 ids,
+- `tools/reloc_analyze.py`, new: offline - stub triples, brief strings, BL31 ids,
   `_start`, census, `cmd_tbl`, SMC census for an arbitrary band.
-- `reports/round12-reloc/00_session.txt` — the live window.
-- `…/01_reloc_analyze.txt` — the analyzer over `0x37800000..0x38000000`.
-- `…/02_bootm_hunt.txt` — relocation cross-check, strings, the SMC disassembly.
-- `…/03_do_bootm.txt` — callers of the wrappers, the `do_bootm` sequence.
-- `…/04_summary.txt` — extent, `cmd_tbl` for the boot commands.
-- `…/05_verify.txt` — the mapping cross-check and the decoded `bootm` slot.
-- `…/mread_37800000_00800000.bin` — the 8 MiB band, sha256 `3d2eca1d…`.
+- `reports/round12-reloc/00_session.txt` - the live window.
+- `.../01_reloc_analyze.txt` - the analyzer over `0x37800000..0x38000000`.
+- `.../02_bootm_hunt.txt` - relocation cross-check, strings, the SMC disassembly.
+- `.../03_do_bootm.txt` - callers of the wrappers, the `do_bootm` sequence.
+- `.../04_summary.txt` - extent, `cmd_tbl` for the boot commands.
+- `.../05_verify.txt` - the mapping cross-check and the decoded `bootm` slot.
+- `.../mread_37800000_00800000.bin` - the 8 MiB band, sha256 `3d2eca1d...`.

@@ -1,5 +1,5 @@
 /*
- * ghostlock_race_stats.c — step 2 of progression (equivalent to --race in dnlid).
+ * ghostlock_race_stats.c - step 2 of progression (equivalent to --race in dnlid).
  *
  * Sets up real PI pair (waiter/owner) and triggers CMP_REQUEUE_PI to reach
  * rt_mutex_start_proxy_lock + rollback with -EDEADLK. Counts how many times

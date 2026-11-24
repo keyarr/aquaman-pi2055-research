@@ -28,7 +28,7 @@ next          E2-bis in help/version string; maxargs in 2nd; flow stays vetoed
 live method (E0, round40, read-only):
 
 ```text
-tools/optimus.py mread 0x37f60eb0 0x15c0 > /tmp/opencode/cmd_tbl_live.bin
+tools/optimus.py mread 0x37f60eb0 0x15c0 > /tmp/cmd_tbl_live.bin
 # 0x15c0 = 5568 = 116 * 0x30; compare with offline bin slice
 tools/optimus.py mread 0x37e5f664 0x100  # call_cmd, consumer
 ```
@@ -206,7 +206,7 @@ NOT HARDWARE_REPRODUCED: exact address of live `env_t`, live `bootargs`, fastboo
 flags, `gd` pointer. read-only hunt, no write:
 
 ```text
-tools/optimus.py mread 0x37f80000 0x10000 > /tmp/opencode/bss_live.bin
+tools/optimus.py mread 0x37f80000 0x10000 > /tmp/bss_live.bin
 # grep bootdelay/bootargs in dump; never poke here in this step
 ```
 
@@ -256,10 +256,10 @@ sub-command, cipher/mmc ops, usb state, pagetable. map closes, write does not.
 3. flow: `cmd_tbl[i].cmd +0x10` or sub-table `+0x10`. vetoed now.
 4. best risk/return: E2-bis in `help`/`version`. minimal risk
    (rodata display-only), high return (2nd WRITE->consumption->restore proof
-   in documented structure, without the 16 KiB collateral of ddr_test_copy).
+ in documented structure, without the 16 KiB collateral of ddr_test_copy).
 
 real risk: do not touch BSS/env and pagetable; incomplete bulk (`upload` without
-args) already dropped the gadget once with no write (round40 §4). only
+args) already dropped the gadget once with no write (round40 sec 4). only
 complete command with drain via 0x33.
 
 ## 7. repro
@@ -267,5 +267,5 @@ complete command with drain via 0x33.
 ```text
 python3 tools/bl33_ctrl.py dump 0x37f60eb0  # offline neighborhood
 python3 -c "import struct; d=open('reports/round14-bl33-persist/bl33-37e18000.bin','rb').read(); ..."
-# table §1 generated from bin, handlers-inside + dups check by script, not by eye
+# table sec 1 generated from bin, handlers-inside + dups check by script, not by eye
 ```

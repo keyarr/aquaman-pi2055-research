@@ -1,4 +1,4 @@
-# repo-state — audit, updated 2026-10-02
+# repo-state - audit, updated 2026-10-02; index recheck 2026-11-19
 
 Current index: `reports/CURRENT_STATE.md` (verdicts),
 `reports/EVIDENCE_MATRIX.md` (evidence by subsystem),
@@ -96,15 +96,15 @@ comparison reproduced this session with `tools/config_fingerprint.py`:
 
 ```text
 aquaman-config vs meson64_defconfig (raw, unextended):
-  union 4447  match 625  differ 6  only-A 3816  only-B 0   → 14.05%
+  union 4447  match 625  differ 6  only-A 3816  only-B 0   -> 14.05%
 
 build-aq/.config (expanded) vs aquaman-config:
-  → 98.12% match, 48 differ, 7 only-A, 29 only-B
+  -> 98.12% match, 48 differ, 7 only-A, 29 only-B
 ```
 
 the 14.05% is the honest number for the raw defconfig (a defconfig is a
 minimum, the device config is fully expanded). the 98.12% is the meaningful
-one. both were re-derived and both reproduce. `reports/kernel-baseline.md`
+one. both were re-derived and both reproduce. `reports/_archive/kernel-baseline.md`
 is accurate.
 
 ### the three build deltas, and why there are three now
@@ -112,7 +112,7 @@ is accurate.
 | delta | direction | reason |
 |---|---|---|
 | `AMLOGIC_MEDIA_VDEC_VP9=n` | toward device | `gvs` undeclared at vvp9.c:6894/7820. does not compile at this tip. device has no VP9 either |
-| `AMLOGIC_VIDEOSYNC=y` | away from device | `video_sink/video.c:6566` calls `videosync_pcrscr_update` with no `#ifdef`; link fails without it. device has neither — Xiaomi reorganised the media Kconfig |
+| `AMLOGIC_VIDEOSYNC=y` | away from device | `video_sink/video.c:6566` calls `videosync_pcrscr_update` with no `#ifdef`; link fails without it. device has neither - Xiaomi reorganised the media Kconfig |
 | `AMLOGIC_DVB=n` | **away from device, new** | see below |
 
 the third one is new and it is the most important finding of this audit.
@@ -152,10 +152,10 @@ this is a real regression in McMCCRU HEAD, and it means:
 | `boot.img` 16 MiB | stock boot, **AMLSECU 0x0905 encrypted**, 3 blocks, entropy ~8.0 | no, key missing |
 | `recovery.img` 25 MiB | same scheme, different payload | no |
 | `bootloader.img` 1.3 MB | encrypted, zero strings | no |
-| `dt.img` 59 KB | encrypted DTB payload, **the board DTB is in here** | no — but see `aquaman-dtb-extraction.md`, the same DTB was recovered from DRAM |
+| `dt.img` 59 KB | encrypted DTB payload, **the board DTB is in here** | no - but see `aquaman-dtb-extraction.md`, the same DTB was recovered from DRAM |
 | `dtbo.img` 8 MiB | valid Android sparse header but 320 bytes non-zero in 8 MiB; empty overlay | effectively no |
 | `vbmeta.img` 4 KB | AVB, locked as far as we know | no |
-| `*.new.dat.br` | **system/vendor/product/odm sparse data + transfer lists** | **YES — this is where the real content is** |
+| `*.new.dat.br` | **system/vendor/product/odm sparse data + transfer lists** | **YES - this is where the real content is** |
 
 the last row is the one the repo had been missing. `vendor.new.dat.br` alone
 contained the 28 vendor kernel modules, extractable with no root, no device
@@ -173,13 +173,13 @@ Current verdicts live in `reports/CURRENT_STATE.md`. Summary, with evidence clas
    GPL request (MiBox_Kernel_OpenSource#11) open since 2025-01. Absence in
    searched material does not prove non-existence. [PROBABLE + scope guard]
 3. the baseline builds with `CONFIG_AMLOGIC_DVB=n` and produces a valid ARM64
-   `Image` (see `reports/rebuilt-kernel.md`). HEAD does not compile with
+   `Image` (see `reports/_archive/rebuilt-kernel.md`). HEAD does not compile with
    `CONFIG_AMLOGIC_DVB=y`. [HARDWARE_OBSERVED for build, PROVEN for breakage]
 4. the fastboot memory flow is mapped end to end
    (`reports/fastboot-memory-flow.md`). [OFFLINE_ONLY for static chain]
 5. `fastboot boot` does not execute unsigned payloads on this build, because
    BL31 is secure-fused and `aml_sec_boot_check` rejects them before any
-   format check (`fastboot-memory-flow.md` §6, from E1-E8).
+   format check (`fastboot-memory-flow.md` sec 6, from E1-E8).
    [HARDWARE_REPRODUCED]
 6. the download buffer overlaps the address `bootm` reads (E5 vs E6).
    Exact BUF unknown; `BUF == Y` as equality is INCONCLUSIVE.
@@ -190,8 +190,8 @@ Current verdicts live in `reports/CURRENT_STATE.md`. Summary, with evidence clas
 8. the vendor modules carry `vermagic 4.9.y`. **this is this tree's own
    doing, not a provenance clue**: `Makefile:1221` replaces the module version
    stamp with `<major>.<minor>.y` so modules do not pin the sublevel. got this
-   wrong on the first pass and the repo's own build disproved it — see
-   `reports/vendor-modules.md` §2. `ddr_window_64.ko` really is foreign
+   wrong on the first pass and the repo's own build disproved it - see
+   `reports/vendor-modules.md` sec 2. `ddr_window_64.ko` really is foreign
    (`3.14.29`). [PROVEN]
 9. the vendor modules will not load on a kernel built from McMCCRU: 13
    symbols missing, 190 CRCs differ (190 is upper bound, split unmeasured).
@@ -256,14 +256,14 @@ See `reports/CURRENT_STATE.md` for the full table. Open items:
 Old files that still mislead if read as current (use banners + this table,
 not the old wording):
 
-- `bootm-test-image.md` / `set-active-sink.md`: `X = 0x10200000` as device fact.
-- `buffer-equals-loadaddr-proof.md` title: `BUF == Y` as equality (overlap only).
-- `fastboot-boot-verdict.md` root cause: max-download-size argument.
-- `vendor-module-compat.md`: extraction needs root.
-- `kernel-build-env.md` / `kernel-smoke-test.md`: baseline compiles at HEAD.
-- `bl33-offline-round8.md` §§3.1/3.2/3.5/5/7: second DTB copy, 11 SMCs,
+- `reports/_archive/bootm-test-image.md` / `reports/_archive/set-active-sink.md`: `X = 0x10200000` as device fact.
+- `reports/_archive/buffer-equals-loadaddr-proof.md` title: `BUF == Y` as equality (overlap only).
+- `reports/_archive/fastboot-boot-verdict.md` root cause: max-download-size argument.
+- `reports/_archive/vendor-module-compat.md`: extraction needs root.
+- `reports/_archive/kernel-build-env.md` / `reports/_archive/kernel-smoke-test.md`: baseline compiles at HEAD.
+- `reports/_archive/bl33-offline-round8.md` sec sec 3.1/3.2/3.5/5/7: second DTB copy, 11 SMCs,
   0x01040000 unidentified, stock kernel at 0x0169e000, BL33-not-in-range.
-- `dts-analysis.md` / old `aquaman-dts-port.md` / `rebuilt-kernel.md` #16 old
+- `reports/_archive/dts-analysis.md` / old `reports/_archive/aquaman-dts-port.md` / `reports/_archive/rebuilt-kernel.md` #16 old
   wording: DTB sealed/unavailable (blob now recovered).
 - Any `BL33 is RWX` without descriptor caveat; any `env mutation alters boot`
   without consumption caveat; any `modules in use` from presence alone;
@@ -272,7 +272,7 @@ not the old wording):
 ## blockers, ranked
 
 1. **BL31 rejects unsigned images.** every RAM-only path funnels through
-   `do_bootm` → SMC. `booti` and `go` are not compiled in (E8, single-method).
+   `do_bootm` -> SMC. `booti` and `go` are not compiled in (E8, single-method).
    this blocks execution, and it is the reason to stop spending time on address hunting.
 2. **no exact source found in searched material.** so no exact config, no exact
    DTS source, and no CRC-compatible kernel. Does not prove non-existence.
@@ -291,11 +291,11 @@ not the old wording):
 the three source trees live in `.src/` (gitignored), not `/tmp`. `/tmp` is
 tmpfs and the previous session's clones did not survive; the references to
 temporary `/tmp/` paths in older reports were stale paths. the three that mattered
-for building are fixed in `reports/kernel-build-env.md`:
+for building are fixed in `reports/_archive/kernel-build-env.md`:
 `.src/linux-amlogic` (3d4ab79e), `.src/MiTV_OpenSource` (dangal-p-oss,
 carries the Linaro toolchain), `.src/u-boot-khadas` (khadas-vims-nougat,
-for the fastboot work). `reports/bootm-test-image.md` and
-`reports/aquaman-dts-port.md` also got their paths corrected.
+for the fastboot work). `reports/_archive/bootm-test-image.md` and
+`reports/_archive/aquaman-dts-port.md` also got their paths corrected.
 
 test suite: `python3 tools/run_tests.py`, 32 tests, no network, no device.
 `tools/build_aquaman_kernel.sh` regenerates everything from a clean tree and
@@ -309,45 +309,48 @@ things worth carrying into it, both found incidentally here:
 
 - `pstore_io_save` is missing from the rebuilt kernel, so a custom kernel
   could not write compressed pstore records even with root. that weakens the
-  post-mortem plan in `ghostlock-risk.md` step 2, which assumes pstore is
+  post-mortem plan in `reports/_archive/ghostlock-risk.md` step 2, which assumes pstore is
   usable for diagnosis.
 - the W1 Wi-Fi symbols are missing from the tree entirely, which is a separate
   gap from the missing `amvdec_*` CRCs and needs the same treatment.
 
 ## contradictions found between old and new reports
 
-rows 1-8 were listed and left alone at the time; rows 9-13 were added by the
-RAM-dump rounds and are already fixed in their own files.
+all 14 rows below are RESOLVED in their source files, so this table is a
+record of what was wrong, not a list of open tasks. Rows 1-4, 6-8 and 12-13
+carry in-place correction banners; row 5's file was removed; rows 9-11 and 14
+were refuted in their own files by the RAM-dump rounds. Checked again
+2026-11-19 against the current text of each file.
 
 | # | file | claim | status |
 |---|---|---|---|
-| 1 | `amlsecu-open-questions.md` §9 | "4096-byte plaintext boot.img was **accepted** via fastboot boot, executed the stub, returned to Android in ~30s" — labelled CONFIRMED | **WRONG.** revoked by `fastboot-boot-verdict.md` (M1a returned in 16-21 s with no delay = rejection). the same file's §10 builds on it, so §10 is wrong too |
-| 2 | `amlsecu-open-questions.md` §10 | "the real blocker is not AMLSECU packaging... what is missing is a functional kernel/DTB" | **superseded.** `buffer-equals-loadaddr-proof.md` shows BL31 is the blocker |
-| 3 | `bootm-test-image.md` §0, `bootm-buffer-execution-proof.md` | `X = 0x10200000` from khadas `include/g_dnl.h:18` | **REFUTED as a device fact.** never measured on this build. `inspect_test_image.py` already has a corrected comment; `bootm-test-image.md` still states it as fact |
-| 4 | `fastboot-boot-verdict.md` §root cause | "`max-download-size` 0x08000000 is incompatible with buffer at 0x1080000, which would leave ~900 MB free" | **ARITHMETICALLY VOID.** see below |
-| 5 | `bootm-buffer-execution-proof.md` | whole file, "status: PENDING", template not filled | **superseded** by `buffer-equals-loadaddr-proof.md`, which ran the experiment. leaving an unfilled template next to a completed one is a trap |
-| 6 | `vendor-module-compat.md` | "extraction blocked... requires root" | **WRONG.** the modules are in the OTA dumps in this repo |
-| 7 | `kernel-build-env.md` | "baseline compiles, EXIT=0" | **no longer true at HEAD.** `3d4ab79e` does not compile; see the `AMLOGIC_DVB` delta |
-| 8 | `kernel-baseline.md` §unknowns.1 | "video decode in stock is unknown (vendor modules?)" | **answered**, yes, 14 `.ko`. `reports/vendor-modules.md` |
-| 9 | `bl33-offline-round8.md` §3.1 | "a second copy of the whole tree at `+0x80000`" | **REFUTED.** `d00dfeed` appears once in 16 MiB; `0x01080000` is an `AML_RES!` image. `aquaman-dtb-extraction.md` §3, `bl33-offline-round10.md` §7 |
-| 10 | `bl33-offline-round8.md` §5 | "SMC sites, 11 in total" | **REFUTED.** the `smc` verb compares against `0xD4000000`, which is not a valid `svc`/`hvc`/`smc` opcode. 5 real in the code window, 4 real `svc #0` in the kernel, 16 words matched. `bl33-offline-round10.md` §3 |
-| 11 | `bl33-offline-round8.md` §3.2 | "`0x01040000..0x01080000`, ARM64 code, unidentified", rejected as U-Boot for having no strings and no `brk` | **REFUTED.** it matches `securestorage.c` on 13 BL31 ids. `bl33-offline-round10.md` §4 |
-| 12 | `bl33-offline-round8.md` §3.5 | "the kernel in RAM is the device's own **stock** kernel" and located "at 0x0169e000" | **partly wrong.** the banner is `-dirty`, so it is a modified tree, not stock. `0x0169e000` is a run boundary, the first non-zero byte is `0x0169e8bb` |
-| 13 | `dts-analysis.md`, `aquaman-dts-port.md`, `rebuilt-kernel.md` #16, `custom-kernel-execution.md` §5.1, this file §blockers | "the board DTB is sealed in `dt.img`, unavailable" | **OBSOLETE for the DTB.** recovered from DRAM at `0x01000000`, `artifacts/aquaman.dtb`. `dt.img` itself is still encrypted, so the vendor `.dts` source is still missing |
-| 14 | `bl33-offline-round8.md` §7 | "high confidence that BL33 is not in 0x01000000..0x02000000" | **REFUTED as a range claim.** true of `0x01000000`, false of the window: there is U-Boot at `0x01040000`. the original wording overreached from a single address |
+| 1 | `reports/_archive/amlsecu-open-questions.md` sec 9 | "4096-byte plaintext boot.img was **accepted** via fastboot boot, executed the stub, returned to Android in ~30s" - labelled CONFIRMED | **WRONG.** revoked by `reports/_archive/fastboot-boot-verdict.md` (M1a returned in 16-21 s with no delay = rejection). the same file's sec 10 builds on it, so sec 10 is wrong too |
+| 2 | `reports/_archive/amlsecu-open-questions.md` sec 10 | "the real blocker is not AMLSECU packaging... what is missing is a functional kernel/DTB" | **superseded.** `reports/_archive/buffer-equals-loadaddr-proof.md` shows BL31 is the blocker |
+| 3 | `reports/_archive/bootm-test-image.md` sec 0, `bootm-buffer-execution-proof.md` | `X = 0x10200000` from khadas `include/g_dnl.h:18` | **REFUTED as a device fact.** never measured on this build. `inspect_test_image.py` already has a corrected comment; `reports/_archive/bootm-test-image.md` still states it as fact |
+| 4 | `reports/_archive/fastboot-boot-verdict.md` sec root cause | "`max-download-size` 0x08000000 is incompatible with buffer at 0x1080000, which would leave ~900 MB free" | **ARITHMETICALLY VOID.** see below |
+| 5 | `bootm-buffer-execution-proof.md` | whole file, "status: PENDING", template not filled | **superseded** by `reports/_archive/buffer-equals-loadaddr-proof.md`, which ran the experiment. leaving an unfilled template next to a completed one is a trap |
+| 6 | `reports/_archive/vendor-module-compat.md` | "extraction blocked... requires root" | **WRONG.** the modules are in the OTA dumps in this repo |
+| 7 | `reports/_archive/kernel-build-env.md` | "baseline compiles, EXIT=0" | **no longer true at HEAD.** `3d4ab79e` does not compile; see the `AMLOGIC_DVB` delta |
+| 8 | `reports/_archive/kernel-baseline.md` sec unknowns.1 | "video decode in stock is unknown (vendor modules?)" | **answered**, yes, 14 `.ko`. `reports/vendor-modules.md` |
+| 9 | `reports/_archive/bl33-offline-round8.md` sec 3.1 | "a second copy of the whole tree at `+0x80000`" | **REFUTED.** `d00dfeed` appears once in 16 MiB; `0x01080000` is an `AML_RES!` image. `aquaman-dtb-extraction.md` sec 3, `bl33-offline-round10.md` sec 7 |
+| 10 | `reports/_archive/bl33-offline-round8.md` sec 5 | "SMC sites, 11 in total" | **REFUTED.** the `smc` verb compares against `0xD4000000`, which is not a valid `svc`/`hvc`/`smc` opcode. 5 real in the code window, 4 real `svc #0` in the kernel, 16 words matched. `bl33-offline-round10.md` sec 3 |
+| 11 | `reports/_archive/bl33-offline-round8.md` sec 3.2 | "`0x01040000..0x01080000`, ARM64 code, unidentified", rejected as U-Boot for having no strings and no `brk` | **REFUTED.** it matches `securestorage.c` on 13 BL31 ids. `bl33-offline-round10.md` sec 4 |
+| 12 | `reports/_archive/bl33-offline-round8.md` sec 3.5 | "the kernel in RAM is the device's own **stock** kernel" and located "at 0x0169e000" | **partly wrong.** the banner is `-dirty`, so it is a modified tree, not stock. `0x0169e000` is a run boundary, the first non-zero byte is `0x0169e8bb` |
+| 13 | `reports/_archive/dts-analysis.md`, `reports/_archive/aquaman-dts-port.md`, `reports/_archive/rebuilt-kernel.md` #16, `reports/_archive/custom-kernel-execution.md` sec 5.1, this file sec blockers | "the board DTB is sealed in `dt.img`, unavailable" | **OBSOLETE for the DTB.** recovered from DRAM at `0x01000000`, `artifacts/aquaman.dtb`. `dt.img` itself is still encrypted, so the vendor `.dts` source is still missing |
+| 14 | `reports/_archive/bl33-offline-round8.md` sec 7 | "high confidence that BL33 is not in 0x01000000..0x02000000" | **REFUTED as a range claim.** true of `0x01000000`, false of the window: there is U-Boot at `0x01040000`. the original wording overreached from a single address |
 
 on #4 specifically, because it is the one that carried a root cause:
 
 ```text
 ddr_size_usable(addr) = DRAM - 16M - addr - 64M - 128M
 
-BUF=0x10200000  →  max-download-size 0x22E00000 (558 MiB)
-BUF=0x01080000  →  max-download-size 0x31F80000 (799 MiB)
-device reported  →  0x08000000         (128 MiB)
+BUF=0x10200000  ->  max-download-size 0x22E00000 (558 MiB)
+BUF=0x01080000  ->  max-download-size 0x31F80000 (799 MiB)
+device reported  ->  0x08000000         (128 MiB)
 ```
 
 the reported number is produced by neither candidate. inverting gives
 `BUF = 0x2B000000`, which is neither. so the number cannot discriminate
 between the two hypotheses it was cited for, and the root cause built on it
-was unfounded. `reports/fastboot-memory-flow.md` §3 works this through.
+was unfounded. `reports/fastboot-memory-flow.md` sec 3 works this through.
 reproduce with `python3 tools/fastboot_addr.py`.

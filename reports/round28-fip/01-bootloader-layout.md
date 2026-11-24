@@ -129,7 +129,7 @@ headers are plaintext. All numbers measured, byte-pinned in
 `TestRound28Fip.test_boot_img_payload_map` / `.test_dt_img_is_keyid_plus_ciphertext`:
 
 ```text
-boot.img (0x1000000, sha256 7797e3df…00aad)
+boot.img (0x1000000, sha256 7797e3df...00aad)
   [0x000, 0x800)     Android boot header (ANDROID!)
   [0x800, 0x1000)    AMLSECU! 0x0905 header (ts 2022090612544443)
   [0x1000, 0x95a000) kernel object   (nTotal 0x959000, ciphertext)
@@ -146,8 +146,8 @@ boot.img (0x1000000, sha256 7797e3df…00aad)
 `dt.img` is the same DTB object packaged standalone:
 
 ```text
-dt.img (0xE820, sha256 ea2f4c65…a993)
-  [0x00, 0x20)  szSHA2KeyID, PLAINTEXT: ef8996bd5ce1740a…47601492
+dt.img (0xE820, sha256 ea2f4c65...a993)
+  [0x00, 0x20)  szSHA2KeyID, PLAINTEXT: ef8996bd5ce1740a...47601492
   [0x20, 0xE820) 0xE800 ciphertext, entropy 7.997, longest zero run 1
 ```
 

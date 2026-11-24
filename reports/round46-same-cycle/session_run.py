@@ -9,7 +9,7 @@ sys.path.insert(0, "tools")
 import optimus  # noqa: E402
 import usb.core  # noqa: E402
 
-OUT = "/tmp/opencode/exp_session"
+OUT = "/tmp/exp_session"
 TEST_SLOT = 0x37F62180
 TEST_ORIG = 0x37E36774
 TRUE_H = 0x37E3676C

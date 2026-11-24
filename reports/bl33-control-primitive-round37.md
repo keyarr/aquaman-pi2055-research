@@ -1,13 +1,13 @@
-# BL33 round 37: `ddr_test_copy` as a control primitive — write, target, consumer, and the 3-character wall
+# BL33 round 37: `ddr_test_copy` as a control primitive - write, target, consumer, and the 3-character wall
 
 date: 2026-09-30, round 37. **offline only.** no USB, no device, no command issued.
-image: `reports/round14-bl33-persist/bl33-37e18000.bin` (sha256 `664fb34a…`).
+image: `reports/round14-bl33-persist/bl33-37e18000.bin` (sha256 `664fb34a...`).
 page table + live DRAM: `reports/round12-reloc/mread_37800000_00800000.bin`.
 tool: `tools/bl33_ctrl.py` (`prim`, `pgtable`, `ptrtab`, `dump`, `collateral`,
 `reach`) and `tools/bl33_prov.py` (indirect-branch provenance).
 tests: `TestBl33Round37` in `tools/run_tests.py` (10 new, 121 total, pass).
 
-**verdict: B — WRITE → CONTROL DATA confirmed, the consumer is identified,
+**verdict: B - WRITE -> CONTROL DATA confirmed, the consumer is identified,
 unambiguous and reachable; the one remaining obstacle is that the only
 host-to-CLI channel in this firmware clamps the command to 28 characters and
 the write needs 31.**
@@ -47,7 +47,7 @@ verdict              B
 
 `do_ddr_test_copy` 0x37e3d1b0, cmd_tbl index 17 (`0x37f611e0`, maxargs 7).
 Argument parse (`0x37e3d218..0x37e3d2cc`): `argv[1..5]` through the 32-bit
-`strtoul32` 0x37e3cbb0 → `src`, `dst`, `size`, `loop`, `print`. `argc > 3`
+`strtoul32` 0x37e3cbb0 -> `src`, `dst`, `size`, `loop`, `print`. `argc > 3`
 required, else fixed defaults. One validity dance on `argv[3]`
 (`0x37e3d254..0x37e3d26c`): a non-empty argv[3] with trailing junk forces
 `size = 0x2000000`.
@@ -92,16 +92,16 @@ properties, each checked against the image and not only the source:
 |---|---|---|
 | argument convention | `ddr_test_copy <src> <dst> <size> [loop] [print]`, hex, 32-bit | 0x37e3d218..0x37e3d2cc, matches `cmd_ddr_test.c:1667` |
 | max length accepted | none; `size > 0xfff` kept verbatim | 0x37e3d26c `cmp w20,#0xfff` / 0x37e3d274 `csel` |
-| min length | floor: `size <= 0xfff` → `0x2000000` | 0x37e3d270 `mov w0,#0x2000000` |
+| min length | floor: `size <= 0xfff` -> `0x2000000` | 0x37e3d270 `mov w0,#0x2000000` |
 | granularity | 4 bytes, 16 B per iteration, no alignment requirement | 0x37e3aea0 `ldr/str w` |
 | effective length | `(size & ~3) * 4 * loop` | 0x37e3aea0, 4x factor is in the source too (`m_len = size/4`) |
 | `size < 0x1000` | replaced by 0x2000000, so L = 0x8000000 minimum for the short spellings | idem |
 | `src == dst` | copy is a no-op, fill wins, W = the pattern itself | phases are ordered, no re-read of the original |
-| effective direction | src → dst, `p_dest` first then `p_src`; forward only | 0x37e3aeb4..0x37e3aed8 |
+| effective direction | src -> dst, `p_dest` first then `p_src`; forward only | 0x37e3aeb4..0x37e3aed8 |
 | pattern fill after the copy | yes, same footprint, always 0x12345678 | 0x37e3d3f0..0x37e3d41c |
 | cache maintenance | **none anywhere in 0x37e3d1b0..0x37e3d52c** | no `dc civac`, no `ic ivau`, no `dsb`, no flush_cache |
 | error paths usable for different behaviour | no: `loop=0` underflows the copy loop to 2^64 iterations, `print=0` only gates `printf`, `*argv[3]==0` forces the default size | 0x37e3d364, 0x37e3d34c |
-| extra 32-bit range | the tail address is a 64-bit `x23 + x27`, so `A` can exceed 4 GiB; unmapped there → synchronous translation fault | 0x37e3d4b8 |
+| extra 32-bit range | the tail address is a 64-bit `x23 + x27`, so `A` can exceed 4 GiB; unmapped there -> synchronous translation fault | 0x37e3d4b8 |
 
 **the one that matters:** the last store writes a 32-bit value four times. There
 is no 64-bit store anywhere in the primitive. A 64-bit slot can still be built,
@@ -112,7 +112,7 @@ but only with two calls, and the second call's `W` has to be zero.
 ## 2. Memory map
 
 from the live page table at 0x37ff0000 (8192 descriptors, 2 MiB blocks,
-`reports/round12-reloc/…`, and the MMU builder at 0x37e19314..0x37e194fc):
+`reports/round12-reloc/...`, and the MMU builder at 0x37e19314..0x37e194fc):
 
 ```text
 MAIR_EL1  = 0xff440c0400   (0x37e19450..0x37e1945c)
@@ -176,13 +176,13 @@ The 14 static slots (`target | address | writable | consumer | attacker-controll
 |---|---|---|---|---|---|
 | fastboot `{cmd,cb}` slot 4/5 | 0x37eb5020 / 0x37eb5028 | yes (RWX) | 0x37e68f78 / 0x37e68fa0 `blr` | yes, but both fields in one 16 B window | HIGH |
 | `__reg_failure`-style hook | 0x37ee2710 | yes | 0x37e19848 `blr x0` | yes | HIGH |
-| storage cipher ops ×4 | 0x37f5e478/80/b8/c0 | yes | 0x37e73730/50/ec/0x37e73828 | yes | HIGH |
+| storage cipher ops x4 | 0x37f5e478/80/b8/c0 | yes | 0x37e73730/50/ec/0x37e73828 | yes | HIGH |
 | fastboot/partition state | 0x37f60cc0 | yes | 0x37e9b390 | yes | HIGH |
 | usb dev state | 0x37f62638 | yes | 0x37e93b80 | yes | HIGH |
-| video out ops ×3 | 0x37f716a0/a8/b8 | yes | 0x37e61514/6d0/758/7a4 | yes | HIGH |
-| mmc/block ops ×2 | 0x37fbc940 / 0x37fbc978 | yes | 0x37e8608c / 0x37e86084 | yes | HIGH |
-| **cmd_tbl[0].cmd** | **0x37f60ec0** | yes | **0x37e5f6e8 → 0x37e5f6fc `blr x4`** | **yes, 32-bit, unaligned window is harmless** | **HIGH** |
-| cmd_tbl[k].cmd, k ≥ 1 | 0x37f60eb0 + k*0x30 + 0x10 | yes | same | yes | HIGH |
+| video out ops x3 | 0x37f716a0/a8/b8 | yes | 0x37e61514/6d0/758/7a4 | yes | HIGH |
+| mmc/block ops x2 | 0x37fbc940 / 0x37fbc978 | yes | 0x37e8608c / 0x37e86084 | yes | HIGH |
+| **cmd_tbl[0].cmd** | **0x37f60ec0** | yes | **0x37e5f6e8 -> 0x37e5f6fc `blr x4`** | **yes, 32-bit, unaligned window is harmless** | **HIGH** |
+| cmd_tbl[k].cmd, k >= 1 | 0x37f60eb0 + k*0x30 + 0x10 | yes | same | yes | HIGH |
 
 **best target: `cmd_tbl[0].cmd` at 0x37f60ec0.** It is the only slot that is
 (a) hit on *every* `run_command`, (b) reached with no condition other than
@@ -248,12 +248,12 @@ host
          blr x4            -> 0x10200000                 (0x37e5f6fc)
 ```
 
-**why it works — the exact instruction sequence**
+**why it works - the exact instruction sequence**
 
 1. `cb_oem` 0x37e95630 hands the token to `run_command` 0x37e5e968 with no lock
-   check (round 14 §C.1; the lock helper 0x37e9593c is called by `flash`,
+   check (round 14 sec C.1; the lock helper 0x37e9593c is called by `flash`,
    `erase`, `flashall`, `set_active` and `getvar` only).
-2. `ddr_test_copy` writes the pattern and the tail exactly as in §1. No clamp
+2. `ddr_test_copy` writes the pattern and the tail exactly as in sec 1. No clamp
    on `dst` exists on the parse path (round 16 `03`, re-checked: the only
    `and`/`tst` between 0x37e3d218 and 0x37e3d348 is in `strtoul32`).
 3. `sconv` 0x37e5ee9c is a three-instruction thunk that materialises the table
@@ -275,7 +275,7 @@ host
 | table initialised | once, at link/relocation time; nothing rewrites it at runtime |
 | table read | on every `run_command`, i.e. on every fastboot request and every `oem` |
 | re-armable without reboot | yes, the write is repeatable, the table is not re-derived |
-| benign trigger | `oem <any surviving command name>` — e.g. `oem amlmmc`, 8 characters, no args, `argc = 1` |
+| benign trigger | `oem <any surviving command name>` - e.g. `oem amlmmc`, 8 characters, no args, `argc = 1` |
 | no reboot needed between write and trigger | correct, the two are separate fastboot requests |
 
 ---
@@ -287,11 +287,11 @@ host
 | **the 28-character budget** | **this is the blocker, and it is fatal today.** `cb_oem` does `strnlen(cmd, 32)`, `n = that + 1`, `memcpy(buf, cmd, n)` into `x29+0x20`, then one `strsep` and `run_command`. At `strlen(cmd) == 32` the NUL is copied and the token is 28 chars; at 33 the NUL is **not** copied and the token runs into 15 bytes of never-written frame plus the caller's frame. A correct chain needs 35. Reproduce with `python3 tools/bl33_ctrl.py reach` |
 | the floor makes short spellings worse | a 1-digit size is replaced by 0x2000000, so `L` becomes 0x8000000 (128 MiB) and `dst` is pinned to `A - 0x8000000`; the only `A` that keeps the fill out of BL33 is one below `0x37e18000`, i.e. the `gd`/stack area, whose slot is a 64-bit `x30` and whose `W` comes from unproven low DRAM |
 | two-call composition for a 64-bit slot | does work arithmetically (`A1 = P` then `A2 = P+4`, and `A2`'s fill stops at `P+4`), but needs `W2 == 0` and does not reduce the length |
-| d-cache vs the fetch unit | D-cache is on, I-cache is off, so an instruction fetch goes to memory while our bytes may be dirty in L1D. Mitigations exist and are reachable: `dcache` is cmd_tbl index 11, `icache` index 60. Not exercised — the budget stops the chain earlier |
+| d-cache vs the fetch unit | D-cache is on, I-cache is off, so an instruction fetch goes to memory while our bytes may be dirty in L1D. Mitigations exist and are reachable: `dcache` is cmd_tbl index 11, `icache` index 60. Not exercised - the budget stops the chain earlier |
 | D-cache coherency might just work | the descriptors are shareable (`SH=1`), so a snoop could serve the fetch from a dirty line. That would be a bonus, never a dependency. Assume the flush is needed |
 | collateral | 16 KiB of storage/key runtime data. Code, `.rodata`, printf formats, the fastboot table and 111 of 112 commands survive. `mmc`/`store`/`keyman`/`keyunify` die until reboot |
 | `strncasecmp` on a wild `name` | safe: 0x12345678 is mapped RW and inside the host's own buffer |
-| `maxargs` gate | helps us: 0x12345678 ≥ any `argc` |
+| `maxargs` gate | helps us: 0x12345678 >= any `argc` |
 | `call_cmd` also ANDs `->repeatable` into the caller state at 0x37e5f714 | harmless, our code returns before that matters, and 0x12345678 is non-zero so the value is only set, never tested |
 | watchdog | the fill is 16 KiB and the copy loop is 16 KiB; both finish in microseconds |
 | 4x length factor and the 0x7ffffff `ubfiz` | the factor is modelled; the `ubfiz` only truncates above `size = 0x20000000`, far outside anything used here |
@@ -347,16 +347,16 @@ first step that would be a real payload, and it is deliberately gated behind
 
 ## 7. Next step
 
-**one step: establish whether a ≤10-character host command reaches a
+**one step: establish whether a <=10-character host command reaches a
 host-controlled (src, dst, size) RAM write.**
 
 That is the exact arithmetic of the blocker: with `len(dst) = 8` and a 1-digit
-size, a command name of `n` characters needs `n + 3 + 6 + 8 + 1 ≤ 28`, i.e.
-`n ≤ 10`. `ddr_test_copy` is 13. The `cmd_tbl` recovered in §3 has 112 names and
-three of them are RAM writers with a host address — `mmc read` (8 with the
-subcommand), `ext4load`/`fatload` (8) — but all of them take their **data**
+size, a command name of `n` characters needs `n + 3 + 6 + 8 + 1 <= 28`, i.e.
+`n <= 10`. `ddr_test_copy` is 13. The `cmd_tbl` recovered in sec 3 has 112 names and
+three of them are RAM writers with a host address - `mmc read` (8 with the
+subcommand), `ext4load`/`fatload` (8) - but all of them take their **data**
 from eMMC, and no local artifact contains the 8 bytes `0x0000000010200000`
-anywhere in its first mebibyte. So the missing piece is one command of ≤10
+anywhere in its first mebibyte. So the missing piece is one command of <=10
 characters that writes host bytes, or one host string sink longer than 28
 bytes.
 
@@ -364,7 +364,7 @@ concretely, that means re-auditing these five candidates and nothing else:
 
 ```text
 mmc      0x37e2d890   mmc read 0x37e2d890 writes (cnt&0x7fffff)*512 eMMC bytes
-                       at a host dst and calls flush_cache — a cleaner primitive
+                       at a host dst and calls flush_cache - a cleaner primitive
                        than ddr_test_copy (no pattern, no 16 KiB floor) with the
                        same 28-char reach, and it composes with it
 ext4load / fatload            eMMC file -> host-chosen RAM address

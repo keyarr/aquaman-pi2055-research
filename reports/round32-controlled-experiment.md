@@ -1,6 +1,6 @@
 # round32: set_usb_boot / cold_boot, as a controlled experiment
 
-date 2026-09-30. **F1 executed, C0 and F2 still to run.** §0 is the live
+date 2026-09-30. **F1 executed, C0 and F2 still to run.** sec 0 is the live
 result. the rest is the runbook, kept because C0 and F2 depend on it.
 
 ## 0. answer block
@@ -20,7 +20,7 @@ result. the rest is the runbook, kept because C0 and F2 depend on it.
                                       the flag on the way in
 ```
 
-**COMPROVADO PELO TESTE:** `set_usb_boot 2` does not move `GP_CFG7[31]`, and
+**PROVEN BY TEST:** `set_usb_boot 2` does not move `GP_CFG7[31]`, and
 neither does `set_usb_boot 1`. The read is a real read: `0x02` returns four
 coherent bytes whose fields match the static map (bit 22 = `rpmb_state`, set;
 `[7:0]` = `0x07` boot field, the one BL31 family code clears on reset). Not a
@@ -30,21 +30,21 @@ reads. `GP_CFG0[3:0]` reads 1, so the flag was not redundant and the test was
 meaningful. `reports/f1/flagtest-2.txt` has the raw output.
 
 **the control is what makes this a result and not a null.** `set_usb_boot 1`
-is `CLEAR_USB_BOOT` — the one mode the burn-check path is known to actually
+is `CLEAR_USB_BOOT` - the one mode the burn-check path is known to actually
 send. It also produced `0 -> 0` with byte-identical register values. So the
 register is not merely failing to move for mode 2: nothing in this build
 touches `GP_CFG7` at all through this SMC. That kills the "BL31 sets it and
 something clears it in the 21 ms window" reading, which was the most charitable
 one available.
 
-**still HIPÓTESE, do not promote:** that BL31 "ignored" `0x82000043`. The
+**still HYPOTHESIS, do not promote:** that BL31 "ignored" `0x82000043`. The
 wrapper at `0x37e19efc` discards the return value, so there is no success
 signal, and `GP_CFG7` is only the register the *public* family implementation
 is documented to use. A BL31 that sets some other bit, or that routes through
 a different register, is not excluded by this test. What is excluded is the
 specific claim the round-31 tree was leaning on.
 
-**consequence for the runbook:** the runbook's own §8 row for `0->0` fires.
+**consequence for the runbook:** the runbook's own sec 8 row for `0->0` fires.
 The SMC question is closed as an observable, the FORCE_USB_BOOT line of
 investigation is not worth more device time on this stick, and **C0 becomes
 the primary test**, not the sanity check it was written to be. If `cold_boot`
@@ -80,12 +80,12 @@ v2 burning entry, whose control-request path calls
 `aml_burn_check_is_ready_for_burn` (`0x37e765d8`) -> `is_tpl_loaded_from_usb()`
 (`0x37e76510`) -> if `GP_CFG7[31]` is set it calls `set_usb_boot_function(1)`,
 **CLEAR_USB_BOOT**, over the same SMC, and enters optimus produce
-(`round31-usbboot-reset-path.md` §3.3). the flag is cleared by the act of
+(`round31-usbboot-reset-path.md` sec 3.3). the flag is cleared by the act of
 going back to look at it.
 
-**COMPROVADO PELO CÓDIGO:** the clear path, its caller chain, and the gating on
+**PROVEN BY CODE:** the clear path, its caller chain, and the gating on
 `PREG_STICKY_REG2` holding `0x1b8ec003`/`0x1b8ec004`.
-**INFERÊNCIA FORTE:** the entry sequence used by `optimus_enter.sh` goes
+**STRONG INFERENCE:** the entry sequence used by `optimus_enter.sh` goes
 through that caller. it was never disassembled end to end for this round.
 
 consequence: **phase 1 must be one process, one window**, read straddling the
@@ -100,13 +100,13 @@ the register question, phase 2 owns the behaviour question.
 
 ## 2. tools added
 
-`tools/usb_watch.py` — polls `/sys/bus/usb/devices` every 4 ms, no root, no
+`tools/usb_watch.py` - polls `/sys/bus/usb/devices` every 4 ms, no root, no
 `lsusb` fork. logs every VID:PID change with `bcdDevice`/`speed`/class on
 appearance, and marks the intervals with no Aquaman device on the bus. the
 round-3 watcher that produced the 168.9 s figure was an ad-hoc loop and was
 never committed, which is how "three resets, one outcome" ended up in the
 report with no instrument behind it. `bcdDevice` is logged specifically because
-`1b8e:c003` is **not** a BootROM signature on this stick: round 3 §2.5 captured
+`1b8e:c003` is **not** a BootROM signature on this stick: round 3 sec 2.5 captured
 it as BL33 optimus, and `update 5000` reproduces it.
 
 **no sudo, and the 4 ms interval is not aspirational.** verified on this host:
@@ -118,7 +118,7 @@ headroom; at 200 snapshots back to back the whole run is 77 ms. `journalctl
 credentials either. the password belongs to `optimus_enter.sh` only, which
 does need it to claim `1b8e:c003` for pyusb.
 
-`tools/flagtest.py` — identify, then read `GP_CFG7`/`GP_CFG0`/`SD_CFG15`, then
+`tools/flagtest.py` - identify, then read `GP_CFG7`/`GP_CFG0`/`SD_CFG15`, then
 `set_usb_boot 2` over bulkcmd `0x34`, then read again, in one process.
 `GP_CFG0` is read because `is_tpl_loaded_from_usb()` is
 `GP_CFG0[3:0]==5 || GP_CFG7[31]`: if `GP_CFG0` already reads 5 the flag is
@@ -150,7 +150,7 @@ C0. a dirty flag from a previous F1 makes every later reading ambiguous, and
 `flagtest.py` refuses to interpret `1 -> 1` anyway.
 
 fresh boot also clears the burning window. the observed one was 77 s
-(`optimus-ram-read.md` §5) with a much shorter clean part, so do not dawdle
+(`optimus-ram-read.md` sec 5) with a much shorter clean part, so do not dawdle
 between `update 5000` and the flagtest output.
 
 ## 4. phase 1
@@ -183,7 +183,7 @@ a `0 -> 0` result is a **real null, not a failed read**: `flagtest.py` reads
 `0x02` and prints the raw bytes, so if the register answers at all, the answer
 is trustworthy. but it does **not** license "BL31 ignored the SMC". the SMC
 return value is discarded by the wrapper and there is no other observable.
-mark it HIPÓTESE, leave it open.
+mark it HYPOTHESIS, leave it open.
 
 a `1 -> 1` result means the flag was already armed at entry, the run is void,
 power-cycle and repeat.
@@ -196,13 +196,13 @@ is not trustworthy.
 
 **now the primary test, not the sanity check.** F1 came back `0 -> 0`, so the
 flag was never the variable. What is left is whether `reboot cold_boot` works
-at all on this stick, and round 31 §8 item 3 predicted exactly this: if the
+at all on this stick, and round 31 sec 8 item 3 predicted exactly this: if the
 baseline is also broken, the reset is the problem and FORCE_USB_BOOT was
 noise all along.
 
 precondition changed: the stick is currently sitting in optimus `1b8e:c003`
 and **did not** self-recover after 300 s, which is longer than the 77 s
-burning window recorded in `optimus-ram-read.md` §5. Confirm whether that is
+burning window recorded in `optimus-ram-read.md` sec 5. Confirm whether that is
 the F1 probes holding the window open (the auto-burn timer is reset by
 `AM_REQ_IDENTIFY_HOST`, `usb_pcd.c`, and F1 called `identify` twice) or a
 genuine wedge. **power-cycle before C0 regardless**; C0 wants a clean boot.
@@ -268,7 +268,7 @@ fastboot oem reboot cold_boot
 both `run_command()`, same USB mode, no optimus in between. **do not use
 `fastboot reboot`, `oem reset`, or `reboot-bootloader`**: all three tail-branch
 into `do_reset` (`0x37e21684`), a 13-instruction stub with no SMC, no AO
-write, no PSCI (`round31` §1). they are not resets and using them produces
+write, no PSCI (`round31` sec 1). they are not resets and using them produces
 exactly the confusion this round exists to remove.
 
 accept of `set_usb_boot 2` is worth exactly as much as the round-3 evidence:
@@ -300,17 +300,17 @@ plug pulled is itself worth a line in C0's log.
 
 | F1 register | C0 | F2 | reading |
 |---|---|---|---|
-| `0->1` | clean, fast | identical to C0 | SMC works, reset works, but arming changes nothing visible. the flag is consumed somewhere BL33 cannot see, or the ROM does not honour it. **INFERÊNCIA FORTE** on "SMC works", **HIPÓTESE** on the rest. |
+| `0->1` | clean, fast | identical to C0 | SMC works, reset works, but arming changes nothing visible. the flag is consumed somewhere BL33 cannot see, or the ROM does not honour it. **STRONG INFERENCE** on "SMC works", **HYPOTHESIS** on the rest. |
 | `0->1` | clean, fast | no USB at all, needs power-cycle | case C. flag armed, reset issued, nothing enumerates. does not separate ROM-in-USB-failing from the reset wedging, because a ROM holding USB with a host present would show `1b8e:c003` and a 4 ms poll would not miss it. **that half is REFUTED by the C0+F2 poll pair**, which is why the watcher is mandatory. |
-| `0->1` | clean, fast | Amlogic stage, then BL33, then Android | case A. the flag did something and the chain completed. **COMPROVADO PELO TESTE.** |
+| `0->1` | clean, fast | Amlogic stage, then BL33, then Android | case A. the flag did something and the chain completed. **PROVEN BY TEST.** |
 | `0->0` | clean, fast | identical to C0 | case B. the observable expected state never appeared. this is the strongest single result, because it removes the whole SMC question without needing BL31. |
 | `0->0` | clean, fast | no USB, needs power-cycle | the reset is broken independently of the flag. control C0 did not establish this, so re-run C0 and check. suspect the test, not the theory. |
 | `0->1` | **slow or silent** | anything | **stop.** C0 failed. the baseline is broken and F2 says nothing until C0 is fixed. this is the single most likely outcome given the 168.9 s and 40.3 s gaps in `round3-usb-entry/setusbboot_usbwatch.log`, and the whole point of running C0 first. |
-| `1->1` | — | — | F1 void. power-cycle, repeat. |
+| `1->1` | - | - | F1 void. power-cycle, repeat. |
 | `0->1` | clean, fast | Linux/Android returns, USB does not enumerate | case D. the flag forced a USB stage that something downstream could not complete, or the kernel-side USB path is wedged. distinguishes from the ROM only via the absence of any Amlogic VID:PID during the gap. |
 
 `1b8e:c003` appearing in F2 is **not** by itself evidence the BootROM ran. on
-this stick that ID is BL33 optimus, reproduced by `update 5000` (round 3 §2.5).
+this stick that ID is BL33 optimus, reproduced by `update 5000` (round 3 sec 2.5).
 to claim BootROM you want an Amlogic device whose `bcdDevice`, descriptors and
 MaxPower differ from the round-3 capture, and the log line that records it.
 

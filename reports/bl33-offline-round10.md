@@ -1,8 +1,8 @@
 # BL33 offline, round 10: the 256 KiB window is U-Boot, matched on secure storage
 
-> **refined by `reports/bl33-offline-round11.md`.** §5's relocation question is
+> **refined by `reports/bl33-offline-round11.md`.** sec 5's relocation question is
 > answered: there is no second copy in the dump and no `0x40000` delta. the
-> window is the middle of a `0x01000000`-based load copy, and the §9 model line
+> window is the middle of a `0x01000000`-based load copy, and the sec 9 model line
 > "0x01040000 is the base/entrypoint" becomes "base is 0x01000000, the window is
 > at +0x40000". every measurement in this file stands.
 
@@ -18,7 +18,7 @@ research. it is still not a base address, still not proven to be the whole of
 BL33, and it does not touch the secure boot blocker.
 
 three things this round retracts outright, they are corrected in
-`bl33-offline-round8.md` and not left to coexist:
+`reports/_archive/bl33-offline-round8.md` and not left to coexist:
 
 | round 8 claim | status |
 |---|---|
@@ -51,7 +51,7 @@ figures reproducible.
 | `0x01000000..0x0100e3a7` | 58280 | DTB / FDT, `totalsize` from the header itself | PROVEN |
 | `0x0100e3a8..0x0100e3ff` | 88 | zero | PROVEN |
 | `0x0100e400..0x0100e7ff` | 1024 | high-entropy blob, entropy 7.82, unexplained | NOT IDENTIFIED |
-| `0x0100e800..0x0103ffff` | 202752 | stale bitmap pixels, see §7 | INFERRED |
+| `0x0100e800..0x0103ffff` | 202752 | stale bitmap pixels, see sec 7 | INFERRED |
 | **`0x01040000..0x0107ffff`** | **262144** | **AArch64 code, secure storage matched** | **STRONG EVIDENCE** |
 | `0x01080000..0x01139fff` | 761856 | `AML_RES!` resource image, 8 items | PROVEN |
 | `0x0169e000..0x01ffffff` | 9838592 | kernel region | PROVEN |
@@ -67,7 +67,7 @@ version 2, `imgSz` `0xdfb80` (916352), 8 items, align 16, declared end
 `GXB_IMG_LOAD_ADDR` (`bl31_apis.h:118`), round 8 already had this right.
 
 `d00dfeed` occurs **once** in the whole 16 MiB, at `0x01000000`. there is no
-second DTB. round 8 §3.1 said otherwise and is corrected.
+second DTB. round 8 sec 3.1 said otherwise and is corrected.
 
 ## 3. SMC census, and why round 8 got 11
 
@@ -213,7 +213,7 @@ the ids are `movz`/`movk` immediates, not strings, and `securestorage.c`
 itself contains no string literals. the absence of rodata is a **property of
 the matched code**, not evidence against it. the `adrp`/`add` pairs in the
 window point at pages inside `0x01080000..0x010d0000`, which is where the
-resource image and then zeros sit — the string data this window's code refers
+resource image and then zeros sit - the string data this window's code refers
 to is not in the 16 MiB we have.
 
 ### 4.5 `0x0104b5a0`, the fifth supervisor call
@@ -259,9 +259,9 @@ after `CONFIG_NEEDS_MANUAL_RELOC` (`cmd_bootm.c:97-110`, `board_r.c:892`). no
   proven to contain code that calls the Amlogic secure-storage API.
 - **the whole of BL33 is not proven to be present.** 256 KiB is a fragment.
   U-Boot 2015.01 GXL with fastboot, optimus and vendor commands does not fit
-  in 256 KiB of text.
+ in 256 KiB of text.
 - **the `download != boot source` hypothesis stays dead.**
-  `fastboot-memory-flow.md` §8 refuted it on device; nothing here revives it.
+  `fastboot-memory-flow.md` sec 8 refuted it on device; nothing here revives it.
 
 ## 7. an extra: a stale resource-image copy below the window
 
@@ -277,14 +277,14 @@ one KiB is not a finding and no claim is made about it.
 
 **INFERRED:** the resource image was staged at `0x01000000` at some earlier
 point and later at `0x01080000`, and other things were written over the older
-copy. **NOT PROVEN** — no ordering, no proof of which load wrote what, and it
+copy. **NOT PROVEN** - no ordering, no proof of which load wrote what, and it
 does not matter for the secure boot question either way.
 
 on the "second copy of the tree": there is **one** FDT in this dump.
 `d00dfeed` occurs once. the bytes at `0x01082000..0x0108e3a7` do happen to
-equal the bytes at `0x01002000..0x0100e3a7` — the struct block from `+0x1fc8`
+equal the bytes at `0x01002000..0x0100e3a7` - the struct block from `+0x1fc8`
 onward, and the whole 6404-byte strings block, are byte-identical, which
-`aquaman-dtb-extraction.md` §3 measured and documented — but that is leftover
+`aquaman-dtb-extraction.md` sec 3 measured and documented - but that is leftover
 DTB data sitting under a region that now begins with `AML_RES!`, not a second
 tree. `fdtdump` on those 58280 bytes returns `FATAL ERROR: header is not
 valid`. **do not describe a second DTB copy.**
@@ -316,7 +316,7 @@ starting point:
    now every caller is inside it, which means the window holds the storage
    module and nothing that uses it yet. the users are the interesting part:
    `hdcp`, `efusekey`, `unifykey`, `/defendkey` all exist in the recovered DTB
-   (`aquaman-dtb-extraction.md` §7).
+   (`aquaman-dtb-extraction.md` sec 7).
 2. **look for `aml_sec_boot_check` by its shape, not its strings.** the string
    `aml log : Sig Check %d` is still absent from 16 MiB, so it is either in
    another copy of BL33 or on a rodata page we do not have. `aml_sec_boot_check`
@@ -325,7 +325,7 @@ starting point:
 3. **search for `0x820000ff` built by any instruction pair**, not just
    `movz`+`movk`. `tools/bl33_match.py` covers `movz`/`movk`; `orr`/`movn`
    variants are not covered.
-4. **look for `cmd_tbl`** to get `gd->reloc_off`, §5.
+4. **look for `cmd_tbl`** to get `gd->reloc_off`, sec 5.
 5. **constants to grep for as raw literals**, they will appear in whatever
    copies we find next: `0x01080000` (`GXB_IMG_LOAD_ADDR`), `0x01800000`
    (`GXB_IMG_SIZE`), `0x820000ff`, `0x820000ff`'s `AML_D_P_IMG_DECRYPT = 0x40`,

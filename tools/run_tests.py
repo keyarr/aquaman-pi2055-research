@@ -159,7 +159,7 @@ class TestConfigFingerprint(unittest.TestCase):
 # ---------------------------------------------------------------- fastboot
 
 class TestFastbootAddressMath(unittest.TestCase):
-    """reports/fastboot-memory-flow.md §3: the max-download-size argument that
+    """reports/fastboot-memory-flow.md sec 3: the max-download-size argument that
     the old root cause relied on does not survive its own arithmetic."""
 
     def test_formula_matches_source(self):
@@ -188,7 +188,7 @@ class TestFastbootAddressMath(unittest.TestCase):
 
 
 class TestBootmInspector(unittest.TestCase):
-    """reports/bootm-test-image.md. The trap this guards is the one the old
+    """reports/_archive/bootm-test-image.md. The trap this guards is the one the old
     test fell into: a raw 4 KiB file is INVALID, not a bootable stub."""
 
     def test_raw_bytes_are_invalid(self):

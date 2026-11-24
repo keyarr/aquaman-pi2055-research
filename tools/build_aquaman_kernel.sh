@@ -66,7 +66,7 @@ if [ ! -f "$OBJ/.config" ]; then
 		>"$LOGDIR/01-defconfig.log" 2>&1 || fail "defconfig failed, see $LOGDIR/01-defconfig.log"
 fi
 
-# three deltas, all documented in reports/kernel-build-env.md
+# three deltas, all documented in reports/_archive/kernel-build-env.md
 #   VDEC_VP9  - broken at this tip (gvs undeclared in vvp9.c), device has no VP9
 #   VIDEOSYNC - video_sink calls videosync_pcrscr_update unguarded, link fails.
 #               device has neither: Xiaomi reorganised the media Kconfig

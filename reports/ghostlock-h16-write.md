@@ -1,4 +1,4 @@
-# ghostlock h16 write — targeted 8B store [W_waiter+0x38]=&f_alt.pi_mutex
+# ghostlock h16 write - targeted 8B store [W_waiter+0x38]=&f_alt.pi_mutex
 
 Date: 2026-10-01. Stock authority: Xiaomi Mi TV Stick 1080p (aquaman,
 S805Y/GXL, Android 9, PI.2055, 4.9.113 arm64). Lab: build-aq/vmlinux +
@@ -7,14 +7,14 @@ no spill, no stack spray, no poll/pselect stamp in the verdict path.
 Second legitimate rt_mutex only (f_alt).
 
 Tools: `tools/ghostlock_deref_chain.py --h16` (H16.0-H16.12, unchanged)
-+ `--h16-write` (new this round: FASE1 table + narrowed #0x38 store scan
-+ PI-path composition + FASE4/7/8 verdicts, live from the binary).
++ `--h16-write` (new this round: PHASE1 table + narrowed #0x38 store scan
++ PI-path composition + PHASE4/7/8 verdicts, live from the binary).
 `tools/ghostlock_chain.c` minimal delta: header documents the H16 write
 objective + new safe mode `h16_static` (mode 22, two sequential timed
 LOCK_PI(f_chain) probes on the same live frame, no corruption).
 P0-P8 protocol unchanged.
 
-Objective (FASE 11-12 gate): one controlled 64-bit store
+Objective (PHASE 11-12 gate): one controlled 64-bit store
 `[W_waiter+0x38] = &f_alt.pi_mutex`, then the natural chain must consume
 f_alt instead of f_target with a legitimate-PI signature. Nothing else
 (cred/root/RW/fops) is in scope until this word moves on stock.
@@ -72,7 +72,7 @@ source | destination`), NATURAL vs POTENTIAL split:
   | task_blocks | consumer entry | W_waiter | x25` and `LOAD | 0x4df0 |
   ldr x0,[x28,#0x38] | adjust_prio_chain | walk head gate | W_waiter |
   x0`. EVIDENCE: OFFLINE_ONLY.
-* POTENTIAL CORRUPT WRITERS: NONE FOUND (FASE3-8 below).
+* POTENTIAL CORRUPT WRITERS: NONE FOUND (PHASE3-8 below).
   EVIDENCE: OFFLINE_ONLY (scan) + INCONCLUSIVE on stock (not probed;
   no candidate to probe).
 
@@ -151,7 +151,7 @@ transform -> dest pointer -> store):
   pointer value. UNKNOWN: none left unclassified (each of the 8 exact
   hits hand-disassembled). EVIDENCE: OFFLINE_ONLY.
 
- survivors for FASE4: none. Only KERNEL_ONLY remains.
+ survivors for PHASE4: none. Only KERNEL_ONLY remains.
 
 ## 6. Value Taint
 
@@ -241,7 +241,7 @@ EVIDENCE: OFFLINE_ONLY.
 
 ## 9. Async/Alias Analysis
 
-* Overlap (FASE7): reuse/alias/`container_of`/union/wrapper examined.
+* Overlap (PHASE7): reuse/alias/`container_of`/union/wrapper examined.
   W FWRQ frame alive (W never returns; hrtimer is the only exit; main
   does not need W back). No second writer maps that stack. occ/altocc
   waiters are separate stacks, separate `waiter->lock` values
@@ -250,7 +250,7 @@ EVIDENCE: OFFLINE_ONLY.
   on pi_waiters trees, never store `waiter->lock`. No legitimate alias
   turns an existing write into an H16 write. EVIDENCE: OFFLINE_ONLY +
   HARDWARE_REPRODUCED (alt_only fidelity: f_alt ignored).
-* Async (FASE8): signal (`complete_signal` target is siginfo),
+* Async (PHASE8): signal (`complete_signal` target is siginfo),
   timers/hrtimer/task_work/completion/workqueue (targets are pool/work/
   timer structs), interrupt context, futex wake/requeue helpers
   (`futex_wake` refuses PI, `futex_requeue` copies keys, never stores
@@ -263,7 +263,7 @@ EVIDENCE: OFFLINE_ONLY.
 
 ## 10. Hardware Probe
 
-FASE2 safe observability design (no corruption yet). New harness mode
+PHASE2 safe observability design (no corruption yet). New harness mode
 `h16_static` (mode 22): same arming as alt_only (occ_n=0, f_alt held +
 1 parked waiter, W/O/C trio + trigger + in-window), but the consumer
 does TWO sequential timed LOCK_PI(f_chain) probes on the SAME live
@@ -290,8 +290,8 @@ double-probe has not executed. No dangerous target used; both probes
 are legitimate timed LOCK_PI on f_chain. EVIDENCE: INCONCLUSIVE
 (harness ready, hardware pending).
 
-Candidate-write minimal test (FASE10, gated on finding a candidate):
-none to run, because FASE3-8 found zero plausible candidates. The
+Candidate-write minimal test (PHASE10, gated on finding a candidate):
+none to run, because PHASE3-8 found zero plausible candidates. The
 protocol when one appears: (1) write to a SAFE legitimate kernel target
 with observable effect first, then (2) `[W_waiter+0x38] -> &f_alt`.
 No crash-target probing. Status: NOT APPLICABLE (no candidate).
@@ -306,7 +306,7 @@ Decisive test design (not executed, no candidate):
 * CASE B `waiter->lock = &f_alt.pi_mutex`: expect behavior of f_alt
   natural state (sec.12 signature; with occ_n=0 + f_alt occupied the
   natural analog is alt_only TIMEOUT, but under retarget the walk
-  consumes f_alt's leftmost/owner instead — the exact verdict depends
+  consumes f_alt's leftmost/owner instead - the exact verdict depends
   on f_alt occupancy armed for the run; pre-register occupancy before
   claiming).
 * CASE CONTROL no corruption: `&f_target` (same as A).
@@ -337,7 +337,7 @@ never observed (no retarget). EVIDENCE: INCONCLUSIVE.
 Zero H16 writes demonstrated. Counts: natural-writer scan 1/1, narrowed
 #0x38 scan 7/7 classified, spill 87+22 reviewed, PI RMWs 6/6 fixed,
 hardware H16 probes 0 new this round (prior: occ_tgt 7x total, occ2 3x,
-trg_inwin 2x, alt_tgt 1x, alt_only 2x, alt_base 1x — all stable, zero
+trg_inwin 2x, alt_tgt 1x, alt_only 2x, alt_base 1x - all stable, zero
 panic). Dest/size/prev/new/value-origin/insn/thread/reproductions for
 an 8-byte write: NOTHING TO RECORD (no write). Target claim `8-byte
 write = HARDWARE_REPRODUCED`: NOT MET. EVIDENCE: INCONCLUSIVE (offline
@@ -412,10 +412,10 @@ alt_tgt-vs-alt_only as L0-vs-L1. If the analysis holds:
 
 * `H16 CONTROL: HARDWARE_REFUTED NATURALLY` (this round re-confirms),
 * `SECOND WRITE PRIMITIVE: NOT FOUND` (this round),
-* next step is the safe `h16_static` double-probe on stock (FASE2),
+* next step is the safe `h16_static` double-probe on stock (PHASE2),
   then a fresh primitive search OUTSIDE the surfaces closed here
   (new syscall family, new driver, or heap-disclosure + stack-disclosure
-  first — do not repeat the spill window as-is).
+  first - do not repeat the spill window as-is).
 
 ---
 BOTTOM LINE (5-10 lines, per spec):

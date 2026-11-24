@@ -71,7 +71,7 @@ Current research state
 > orange (unlocked), confirming the flashing lock opened. `unlocked=yes /
 > secure=no` reflects that U-Boot env / flash-lock state, not the eFuse.
 > BL31 stays secure-fused and rejects unsigned via `aml_sec_boot_check` SMC.
-> See `reports/fastboot-boot-verdict.md` (M1/M1b/M2 all rejected, 16-21 s)
+> See `reports/_archive/fastboot-boot-verdict.md` (M1/M1b/M2 all rejected, 16-21 s)
 > and `reports/fastboot-memory-flow.md` sec 6 (E7 same addr, signed passes,
 > plaintext rejected). Do not use this file as proof of unsigned execution.
 

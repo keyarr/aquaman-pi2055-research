@@ -1,4 +1,4 @@
-# amlsecu-reverse — AMLSECU pipeline in U-Boot (public sources)
+# amlsecu-reverse - AMLSECU pipeline in U-Boot (public sources)
 
 firmware: aquaman PI.2055. container: `AMLSECU!` ver `0x0905`, nblk=3.
 no command was executed on the device. everything below is offline

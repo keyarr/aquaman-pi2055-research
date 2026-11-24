@@ -1,4 +1,4 @@
-# ghostlock deep emit — Mali + depth>3 dispatch (read-only pointer disclosure)
+# ghostlock deep emit - Mali + depth>3 dispatch (read-only pointer disclosure)
 
 Date: 2026-10-01. Authority: PI.2055 stock (MiTV-AESP0/aquaman, Android 9,
 4.9.113 arm64, shell uid 2000, SELinux Enforcing).
@@ -10,7 +10,7 @@ Tools: `tools/ghostlock_emit_search.py` extended (`--depth N`, `--deep`,
 old modes kept) + `tools/ghostlock_mali_probe.c` (3 read-only Mali queries).
 
 Prior state untouched: GhostLock, stale pi_blocked_on/waiter, H16 static
-baseline + immutability, C1/C2/C3 negatives — cited, not reopened.
+baseline + immutability, C1/C2/C3 negatives - cited, not reopened.
 
 ## 1. Objective
 
@@ -19,7 +19,7 @@ related interfaces, (B) any indirect dispatch chain deeper than the old
 depth-3 scanner. Mission is read-only only: kernel pointer -> emit ->
 userspace. No write/stack-corruption/fake-object/R-W/cred/root work.
 
-## 2. Stock Device Census (FASE 0)
+## 2. Stock Device Census (PHASE 0)
 
 Hardware (`adb -s 26919800005844922 shell`):
 
@@ -53,7 +53,7 @@ EVIDENCE: HARDWARE_OBSERVED (ls/open/cat) + OFFLINE_ONLY (module ident).
 One node only (sec. 2). No auxiliary mali interfaces exist on stock.
 EVIDENCE: HARDWARE_OBSERVED.
 
-## 4. Mali Dispatch (FASE 1)
+## 4. Mali Dispatch (PHASE 1)
 
 `mali_ioctl` (mali.ko `0xd228`, ~0x4b0 bytes) is a binary-search dispatch
 tree over the full 32-bit ioctl number (`mov w19,w1` at entry, then
@@ -96,7 +96,7 @@ Bl-census per read-only wrapper (reloc-resolved, `--mali`):
 
 EVIDENCE: OFFLINE_ONLY (mali.ko disasm + relocs).
 
-## 5. Deep Call Graph (FASE 2)
+## 5. Deep Call Graph (PHASE 2)
 
 `--depth N` / `--deep` BFS over `bl` edges from
 {binder_ioctl, ashmem_ioctl, ion_ioctl}: visited set, edge dedup,
@@ -111,7 +111,7 @@ DEPTH=12  nodes=1152 (+293) edges=4311 (+1258) emit_bl=6 callers=6
 
 Same 6 callers at every depth, ALL already classified in the prior
 census: binder_ioctl, binder_ioctl_write_read, binder_thread_read,
-get_name (ashmem), ion_ioctl, ion_query_heaps — each `bl
+get_name (ashmem), ion_ioctl, ion_query_heaps - each `bl
 __arch_copy_to_user` of USER-echo/scalar/index fields. Nodes (+379/+293)
 and edges (+1569/+1258) keep growing while emit_bl and callers stay
 FLAT: extra depth reaches only mem/lock/helper functions, never a new
@@ -119,7 +119,7 @@ emitter. Cap never hit (1152 < 6000), no pruning was even needed.
 
 EVIDENCE: OFFLINE_ONLY.
 
-## 6. Pointer Sources (FASE 3)
+## 6. Pointer Sources (PHASE 3)
 
 `--kptr` 64-bit-store screen + `--dispatch` field audit (kept):
 
@@ -143,7 +143,7 @@ exactly the 6 in sec. 5. Mali adds: settings-56B, pp-cores-16B,
 usage-24B, notification-104B, dump-table+header (all classified sec. 4/6).
 EVIDENCE: OFFLINE_ONLY.
 
-## 8. Private Data Paths (FASE 8)
+## 8. Private Data Paths (PHASE 8)
 
 `--private-data`: mali open->ioctl session flow proven in binary
 (sec. 2); binder proc/node, ashmem area, ion registry unchanged:
@@ -152,7 +152,7 @@ session-pointer FIELD is ever copied out on any probed/audited path.
 Candidate-strong pattern exists structurally, emits nothing.
 EVIDENCE: OFFLINE_ONLY.
 
-## 9. Struct Copy Paths (FASE 9)
+## 9. Struct Copy Paths (PHASE 9)
 
 `--struct-copy`: binder_version/put_user, node_debug_info-24B (USER echo),
 write_read (USER bufs), ashmem name[256], ion_heap_data-48B (id=INDEX),
@@ -160,9 +160,9 @@ mali 16/24/56/104B (scalars + USER echoes + phys). Padding rule kept:
 no padding word carries a proven KVA LOAD, so no padding leak is claimed.
 EVIDENCE: OFFLINE_ONLY.
 
-## 10. Candidate Commands (FASE 5/6)
+## 10. Candidate Commands (PHASE 5/6)
 
-READ-only, GET/QUERY/VERSION/INFO semantic, executed max-3 (FASE 11):
+READ-only, GET/QUERY/VERSION/INFO semantic, executed max-3 (PHASE 11):
 
 * M1 `0xc0108203` GET_API_VERSION_V2 (RDWR size16, version-query
   semantic): predicted const 0x03840384 at +8/+12.
@@ -172,12 +172,12 @@ READ-only, GET/QUERY/VERSION/INFO semantic, executed max-3 (FASE 11):
   value at +8.
 
 NOT executed (and why): submit/start/signal/alloc/free/bind/unbind/map
-(state change, banned by FASE 6); wait_for_notification (would BLOCK on
+(state change, banned by PHASE 6); wait_for_notification (would BLOCK on
 empty GPU queue); mem_dump (needs session allocation + buffer setup).
 Their offline verdicts stay OFFLINE_ONLY (sec. 4), explicitly not
 hardware claims.
 
-## 11. Hardware Probes (FASE 11/12)
+## 11. Hardware Probes (PHASE 11/12)
 
 `tools/ghostlock_mali_probe.c` (static, NDK clang), pushed to
 /data/local/tmp/mali_probe, ran once on 26919800005844922:
@@ -203,17 +203,17 @@ P6 RESULT=MALI_PROBE_DONE (read-only, no trigger, no write)
 * Untouched buffer bytes stay 0xaa: wrappers write ONLY the predicted
   words (4B/8B/4B), no wider struct copy, no adjacent pointer word.
 * is_kptr hits: 0 across all 3 outputs. Stability: single run (values
-  are device constants; repeat runs add nothing — documented, not hidden).
+  are device constants; repeat runs add nothing - documented, not hidden).
 
 No pointer-like value appeared, so per STOP rule no further Mali fuzzing
-was done. Classification: SINGLE_SOURCE not even reached — there is no
+was done. Classification: SINGLE_SOURCE not even reached - there is no
 source; all three are SCALAR_ONLY by construction + value.
 EVIDENCE: HARDWARE_REPRODUCED (values above).
 
 ## 12. Pointer Validation
 
 Ruler (FIELD+LOAD+COPY+USER+MASK): M1/M2/M3 have COPY+USER but their
-LOADs are immediates/device-reg constants, never kernel objects — they
+LOADs are immediates/device-reg constants, never kernel objects - they
 fail FIELD-as-pointer at the first bar. Zero 0xffffff words anywhere.
 Nothing is SINGLE_SOURCE; everything is negative by construction+value.
 EVIDENCE: OFFLINE_ONLY (ruler) + HARDWARE_REPRODUCED (zero hits).
@@ -257,7 +257,7 @@ promoted. KASLR slide: still INCONCLUSIVE (absent).
   not an emitter (rows sec. 5).
 * Re-cited closures (not reopened): binder C1, ashmem C2, ion C3, proc
   %pK-masked shows, PI index-only, fstat, poll stamper, spill search.
-* %p/%px/%pK/%pS (FASE 10): stock shows `[<0000000000000000>]` stack,
+* %p/%px/%pK/%pS (PHASE 10): stock shows `[<0000000000000000>]` stack,
   `0000000000000000` unix sk; kptr_restrict/dmesg_restrict/kallsyms all
   shell-denied; `%px` absent from reachable drivers/staging+amlogic
   (grep 0 hits); reachable `%pK/%pB/%ps/%p` are masked/symbol/user -
@@ -288,8 +288,8 @@ BOTTOM LINE (10 answers):
 * Reached hardware? YES: 3 Mali read-only queries (2x version + core).
 * Real pointer produced? NO: 900/900, 900, 0x0d070000; zero is_kptr.
 * private_data revealed anything? Structurally present (session flow
-  proven) but emits nothing — NO.
-* struct copy revealed anything? Only scalars/echoes/ids — NO.
+  proven) but emits nothing - NO.
+* struct copy revealed anything? Only scalars/echoes/ids - NO.
 * Mali closed or INCONCLUSIVE? CLOSED (GET/QUERY = HARDWARE_REFUTED;
   rest OFFLINE_ONLY-negative, submit paths unbothered by rule).
 * depth>3 closed or INCONCLUSIVE? CLOSED (emit callers flat 6-6-6).
@@ -298,7 +298,7 @@ BOTTOM LINE (10 answers):
 
 ## 18. What Is Not Proven
 
-* Any kernel pointer to shell (SUCESSO A/B/C/D all NO). INCONCLUSIVE-
+* Any kernel pointer to shell (SUCCESS A/B/C/D all NO). INCONCLUSIVE-
   as-absent on audited surface only.
 * H16 absolute / &f_alt.pi_mutex / KASLR slide. INCONCLUSIVE (absent).
 * Blocking/state-change Mali handlers (submit/alloc/dump-with-buf):

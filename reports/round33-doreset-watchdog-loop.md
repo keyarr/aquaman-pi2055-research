@@ -1,7 +1,7 @@
 # round33: what `do_reset` actually does, and why the round-3 legs hung
 
 date 2026-09-30. offline, no device I/O in this round. C0 and F1 were run
-earlier today and are in `reports/round32-controlled-experiment.md` §0.
+earlier today and are in `reports/round32-controlled-experiment.md` sec 0.
 
 ## 0. answer block
 
@@ -27,13 +27,13 @@ C0 first, because it is the one that retires the whole investigation:
   t= 30.341  2717:4e40  android    ON
 ```
 
-**COMPROVADO PELO TESTE:** `reboot cold_boot` is fine on this build. 17.5 s of
-silence, android comes back, and **nothing enumerates in between** — no
+**PROVEN BY TEST:** `reboot cold_boot` is fine on this build. 17.5 s of
+silence, android comes back, and **nothing enumerates in between** - no
 `1b8e:c003`, no second Amlogic VID:PID, at 4 ms resolution over the whole gap.
 raw: `reports/c0-usbwatch.log`, `reports/c0/c0.txt`.
 
 F1 already established that `set_usb_boot 2` does not move `GP_CFG7[31]`, and
-that `set_usb_boot 1` — the mode the burn-check path is known to send — does
+that `set_usb_boot 1` - the mode the burn-check path is known to send - does
 not either.
 
 Put together: **the flag was never the variable, and the real reset was never
@@ -91,7 +91,7 @@ and `0x37e1a058` has no exit:
  0x37e1a0bc  b    0x37e1a068                      ; UNCONDITIONAL, no exit
 ```
 
-**COMPROVADO PELO CÓDIGO:** `b 0x37e1a068` is an unconditional back-edge with
+**PROVEN BY CODE:** `b 0x37e1a068` is an unconditional back-edge with
 no compare, no timeout, no re-arm guard. `do_reset` cannot return. Any caller
 of it is stuck in BL33 forever, with the watchdog re-armed and re-kicked on
 every pass.
@@ -112,7 +112,7 @@ the register decode is not guesswork, the exact driver is in the tree
 `0x07a00003` = `CLKDIV_EN | CLK_EN | EE_RESET | DIV=3 | EN`, and the loop then
 ORs `EN` in again on every iteration. so the loop is "enable the watchdog,
 kick it, wait 100 reads, do it again, forever". that is a **watchdog
-enabling loop, not a watchdog feeding loop** — it is the shape of code that is
+enabling loop, not a watchdog feeding loop** - it is the shape of code that is
 *supposed* to be followed by a reset that never comes, because the reset path
 was compiled out of this build.
 
@@ -134,7 +134,7 @@ already proved both tail-branch into this same `do_reset`:
 
 so: fastboot command arrives, BL33 enters `do_reset`, spins forever, never
 services USB again, the gadget drops off the bus, the host sees a dead device.
-**COMPROVADO PELO CÓDIGO** for the reachability, **INFERÊNCIA FORTE** for the
+**PROVEN BY CODE** for the reachability, **STRONG INFERENCE** for the
 causal chain, because round 3 never ran with a watcher on legs 2 and 3.
 
 the read-only corroboration is that the other direct caller of the same loop
@@ -180,16 +180,16 @@ exit was the physical plug".
   is the flag "FORCE_USB_BOOT"        = the enum says so, nothing implements it
 ```
 
-**HIPÓTESE, explicitly not promoted:** that the intended design was "arm the
+**HYPOTHESIS, explicitly not promoted:** that the intended design was "arm the
 watchdog, then reset", and that the reset half is what got compiled out of
-this build. the shape fits — a non-returning enable loop guarded by nothing, in
+this build. the shape fits - a non-returning enable loop guarded by nothing, in
 a function that prints "stop here". but nothing in the artifact states intent,
 and the aquaman BL31 is still unavailable (rounds 18/26/27/28/29/30), so
 whether some earlier stage was supposed to catch this is not knowable here.
 
 **the one thing this predicts that is worth testing:** if `do_reset` really
 spins forever, then `fastboot reboot` and `oem reset` should produce a *silent
-bus, then nothing, indefinitely* — not a slow return to android. the round-3
+bus, then nothing, indefinitely* - not a slow return to android. the round-3
 40.3 s and 168.9 s gaps are both explicable as the user giving up and pulling
 the plug, but they were not watched, so it is untested. it is also the one
 prediction that costs a power cycle to check, which is why it was not run today.
@@ -208,7 +208,7 @@ F2 was cancelled at this point. **that was a mistake**, and round 34 corrects
 it. I argued the F1 null plus the C0 baseline meant F2 could only produce a
 null. That conflated the register named in the public enum with the observable
 behaviour. If BL31 arms some other bit or some other state, F1 reads `0 -> 0`
-and the device can still wedge — F1's own verdict text said exactly that and I
+and the device can still wedge - F1's own verdict text said exactly that and I
 did not carry it forward. F2 was also the only leg of the round-3 experiment
 that had never actually been run with a watcher. It wedges.
 `reports/round34-setusbboot-realreset.md`.

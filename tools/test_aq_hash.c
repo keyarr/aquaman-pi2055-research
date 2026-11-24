@@ -1,5 +1,5 @@
 /*
- * test_aq_hash.c — host-only audit of the Aquaman futex hash.
+ * test_aq_hash.c - host-only audit of the Aquaman futex hash.
  *
  * Aquaman hash_futex() (.src/linux-amlogic/kernel/futex.c:391-397) is:
  *   jhash2((u32*)&key->both.word,

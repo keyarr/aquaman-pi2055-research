@@ -38,7 +38,7 @@ WIN_LO, WIN_HI = 0x268, 0x288  # dest in [SP0-WIN_HI, SP0-WIN_LO]
 _disasm_cache = {}
 _frame_cache = {}
 _full_cache = None
-FULL_ASM = "/tmp/opencode/aq_full.asm"
+FULL_ASM = "/tmp/aq_full.asm"
 
 
 def _load_full():

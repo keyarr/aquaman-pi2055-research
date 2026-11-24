@@ -1,4 +1,4 @@
-# 05 — the 0x05100000 boundary
+# 05 - the 0x05100000 boundary
 
 ## every place 0x05100000 appears in reachable artifacts
 
@@ -18,7 +18,7 @@ live behavior (round26)                  : last readable byte 0x050fffff;
         first fault 0x05100000, deterministic across sessions/primitives.
 ```
 
-## derivation #1 — BL33 encodes clear_range = bl31_start + 0x100000 (EXACT)
+## derivation #1 - BL33 encodes clear_range = bl31_start + 0x100000 (EXACT)
 
 `do_rsvmem_check` disassembly (0x37e63310..0x37e63348), after successfully
 reading `/secmon clear_range`:
@@ -37,13 +37,13 @@ on aquaman: `bl31_size (0x300000) - 0x500000` = negative -> w3 wraps; the
 nonzero (property absent, matching the runtime DTB) so the whole block is
 skipped before the fdt-set runs (cbnz -> 0x37e63134). the arithmetic still
 proves where BL33's authors *expected* the secure window to start:
-`bl31_start + 1 MiB` — independent corroboration of the 1 MiB NS share split.
+`bl31_start + 1 MiB` - independent corroboration of the 1 MiB NS share split.
 
-## derivation #2 — BL2/BL31 headers pin the same address (FAMILY)
+## derivation #2 - BL2/BL31 headers pin the same address (FAMILY)
 
 see 02-load-origin.md: bl31 load = 0x05100000 (BL2 table), secure window
 start = 0x05100000 size 0x200000 (bl31.img header). the boundary between
-readable and unreadable is not "somewhere in the reservation" — it is the
+readable and unreadable is not "somewhere in the reservation" - it is the
 image base, declared by the producer chain.
 
 ## verdict

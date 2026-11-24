@@ -11,7 +11,7 @@ limit: aquaman BL2/BL30/BL31 are unrecoverable. `bootloader.img`
 (0x148200, sha256 c7b8ee...) is uniform ciphertext, no magic, no ToC
 (see `reports/round28-fip/01-bootloader-layout.md`). the BL2 here is the
 family build, proxy, not the device one. where the BL31 setter lives
-(`0x05100000`) is still missing on all 6 SoCs (round36 §3, index `0x42`
+(`0x05100000`) is still missing on all 6 SoCs (round36 sec 3, index `0x42`
 for `0x82000043`).
 
 ## 0. answer block
@@ -120,7 +120,7 @@ magic `0x434c4d41` -> entry -> sha/sig. any failure = error/spin.
 | FIP/sig | `0x73e0:0x76f0/0x78b4` | ret w20 | spin `0x7970` | no | no |
 | verify wrapper | `0x735c:0x738c` | print + `bl 0x72c8` | log only, ret err | log only | no |
 | DDR | `0x882a/0x8887` | reset | watchdog `0xa90` | no | no |
-| RTI==8 | `0x5598:0x55cc` | crash dump + `bl 0x7254` | — | no | no |
+| RTI==8 | `0x5598:0x55cc` | crash dump + `bl 0x7254` | - | no | no |
 
 ## 5. only USB handoff (`0x79b4`)
 
@@ -221,7 +221,7 @@ to close: run `usb_watch.py` logging ANY `(vid,pid)` + `journalctl -kf` during
 `set_usb_boot 2` + real PSCI reset. timings not invented; with no gadget in
 the binary, enumeration is UNLIKELY, not refuted.
 
-persistence note (corrects round36 §7 "battery-backed"): RTI is AO SRAM,
+persistence note (corrects round36 sec 7 "battery-backed"): RTI is AO SRAM,
 survives reset (masks only `[3:0]`/`[11:8]`), but loses on physical
 power-cycle (no battery in the stick). wedge until unplug + return after unplug
 is the expected behavior of the armed state, not a contradiction.

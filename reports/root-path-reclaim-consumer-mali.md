@@ -19,7 +19,9 @@ not run). No existing file modified.
   state (victim task->pi_blocked_on dangling at stack rt_waiter) is
   DERIVED_STATICALLY from `.src/linux-amlogic` (rtmutex.c:1099-1111 clears
   `current` not `waiter->task`); never observed on device (no post-mortem:
-  pstore denied, dmesg blocked).
+  pstore denied and dmesg blocked for shell; root can now read both
+  (`reports/root-read-surface-2026-11-23.md`), but no GhostLock post-mortem
+  has been captured with that access).
 - current blocker: no controlled reclaim demonstrated; no consumer walk
   proven to consume attacker bytes; no disclosure. Everything downstream
   of the dangling pointer is UNK on stock.
@@ -182,21 +184,21 @@ UAF read of reclaimed bytes or post-foothold
 are therefore EXPECTED to PASS on PEEK even with zero slab reuse;
 the control exists to demonstrate exactly that.
 
-### 2.6 Verdict table (task: CONFIRMADAS STOCK / LAB / DERIVADAS / NAO PROVADAS)
+### 2.6 Verdict table (task: CONFIRMED STOCK / LAB / DERIVED / NOT PROVEN)
 
 | item | verdict |
 |---|---|
-| trigger dispatch + EDEADLK rollback | CONFIRMADA NO STOCK (7/7 + 5/5, cited logs) |
-| waiter on FWRQ stack, q.rt_waiter points at it | CONFIRMADA APENAS NO LAB (DWARF+asm) |
-| victim pi_blocked_on dangles post-EDEADLK | DERIVADA STATICAMENTE (rtmutex.c:1099-1111); NAO PROVADA no stock |
-| mm 0x338/stride 0x340/order2/19/0x4000 | DERIVADA STATICAMENTE (closed derivation; stock binary sealed) |
-| hash 4-word LP64, Hazel ks_hash not portable | DERIVADA STATICAMENTE + LAB (0xdeadbeff imm) |
-| /proc/pid/mem hold same-uid | DERIVADA STATICAMENTE (SELinux self-rule needs 1 live open) |
-| counts 608/171/18/19, free->buddy, 16K send attempt-first | DERIVADA STATICAMENTE (mechanism); per-attempt success NAO PROVADA |
-| SO_SNDBUF/16K/PEEK unpriv | DERIVADA STATICAMENTE |
-| sentinel PASS = reclaim | REFUTADA como prova (plumbing only) |
-| fake pack 4288 fits 16384 | DERIVADA STATICAMENTE |
-| any UAF read / reclaim / disclosure on stock | NAO PROVADA |
+| trigger dispatch + EDEADLK rollback | CONFIRMED ON STOCK (7/7 + 5/5, cited logs) |
+| waiter on FWRQ stack, q.rt_waiter points at it | CONFIRMED ONLY IN LAB (DWARF+asm) |
+| victim pi_blocked_on dangles post-EDEADLK | DERIVED STATICALLY (rtmutex.c:1099-1111); NOT PROVEN on stock |
+| mm 0x338/stride 0x340/order2/19/0x4000 | DERIVED STATICALLY (closed derivation; stock binary sealed) |
+| hash 4-word LP64, Hazel ks_hash not portable | DERIVED STATICALLY + LAB (0xdeadbeff imm) |
+| /proc/pid/mem hold same-uid | DERIVED STATICALLY (SELinux self-rule needs 1 live open) |
+| counts 608/171/18/19, free->buddy, 16K send attempt-first | DERIVED STATICALLY (mechanism); per-attempt success NOT PROVEN |
+| SO_SNDBUF/16K/PEEK unpriv | DERIVED STATICALLY |
+| sentinel PASS = reclaim | REFUTED as proof (plumbing only) |
+| fake pack 4288 fits 16384 | DERIVED STATICALLY |
+| any UAF read / reclaim / disclosure on stock | NOT PROVEN |
 
 ## 3. VENDOR STATEFUL: MALI + AMLOGIC (second line)
 
@@ -269,7 +271,7 @@ ARBITRARY_RW_CANDIDATE proven. No HYPOTHESIS block promoted above
 INCONCLUSIVE/LAB_ONLY; none claimed as primitive (rule: memcpy alone
 is not exploitability).
 
-## 4. NAO CONFUNDIR "PODE TER" COM "TEM" (hypothesis log this round)
+## 4. DO NOT CONFUSE "MAY HAVE" WITH "HAS" (hypothesis log this round)
 
 HYPOTHESIS: FUTEX_LOCK_PI(f_chain) consumes the stale waiter.
 CODE PATH: futex_lock_pi (futex.c:2545) -> rt_mutex_timed_futex_lock ->
@@ -344,7 +346,7 @@ Cost of NOT doing offline first (already paid): 0 boots this round.
 ## 6. Deliverable checklist
 
 - [x] hazel chain re-derived func-by-func (sec 2) with
-  CONFIRMADA-STOCK / LAB / DERIVADA / NAO-PROVADA + REFUTADA marks.
+  CONFIRMED-STOCK / LAB / DERIVED / NOT-PROVEN + REFUTED marks.
 - [x] consumer table with first deref/reads/writes/shape/inputs/signal
   (sec 1), no subjective ranking; winner = FUTEX_LOCK_PI by mechanism,
   setschedparam refuted with gate evidence.

@@ -1,14 +1,14 @@
 /*
- * ghostlock_mm_enum.h — Aquaman mm_struct physical enumerator (host only).
+ * ghostlock_mm_enum.h - Aquaman mm_struct physical enumerator (host only).
  *
  * No device execution. No reboot. No futex race. No reclaim. Host-side
  * geometry only.
  *
  * Provenance tags used below:
- *   CONFIRMED_AQUAMAN — device DTB / aquaman-config / arch source
- *   LAB_DERIVED       — build-aq DWARF + .src/linux-amlogic code read
- *   INFERRED          — derived but with an open boot-time hypothesis
- *   UNKNOWN           — placement/value cannot be closed statically
+ *   CONFIRMED_AQUAMAN - device DTB / aquaman-config / arch source
+ *   LAB_DERIVED       - build-aq DWARF + .src/linux-amlogic code read
+ *   INFERRED          - derived but with an open boot-time hypothesis
+ *   UNKNOWN           - placement/value cannot be closed statically
  * HAZEL_ONLY constants (0x1c0, 18, 0xc0000000..0xf0000000) are NOT used.
  */
 #ifndef GHOSTLOCK_MM_ENUM_H
@@ -32,13 +32,13 @@
  *    L1_CACHE_BYTES=64 via CONFIG_AMLOGIC_MEMORY_EXTEND=y in both configs).
  *  stride 0x340: ALIGN(0x338,64) at slub.c:3501-3502; s->object_size stays
  *    0x338 (slab_common.c:341), s->inuse 0x338 (slub.c:3453).
- *  offset 0x0: LAB_DERIVED — only writer is slub.c:3455-3467 under
+ *  offset 0x0: LAB_DERIVED - only writer is slub.c:3455-3467 under
  *    SLAB_DESTROY_BY_RCU|SLAB_POISON|ctor, none of which apply to
  *    fork.c:2140 flags (HWCACHE_ALIGN|PANIC|NOTRACK|ACCOUNT, ctor NULL);
  *    create_cache uses kmem_cache_zalloc so offset starts zeroed;
  *    device has SLUB_DEBUG=n, KASAN=n, so no redzone/store_user path.
  *    SLAB_NOTRACK/SLAB_ACCOUNT evaluate to 0 (KMEMCHECK/MEMCG unset).
- *  order 2 / slab 0x4000 / objs 19: INFERRED — closed derivation from the
+ *  order 2 / slab 0x4000 / objs 19: INFERRED - closed derivation from the
  *    ancestral tree + device config/DTB/cmdline, stock binary still sealed:
  *    slub_max_order defaults to PAGE_ALLOC_COSTLY_ORDER=3 (slub.c:3175,
  *    mmzone.h:36, Documentation/vm/slub.txt:120); stock cmdline
@@ -65,14 +65,14 @@
 /* Futex hash. LAB_DERIVED + CONFIRMED source: kernel/futex.c:391-397 in
  * .src/linux-amlogic matches upstream 4.9.113 byte for byte; union futex_key
  * is LP64 (word 8 + ptr 8 + offset 4). 4 words, NOT Hazel's 3-word model.
- * futex_hashsize 1024: INFERRED — 256*num_possible_cpus, 4 CPUs per DTB;
+ * futex_hashsize 1024: INFERRED - 256*num_possible_cpus, 4 CPUs per DTB;
  * boot-time value via alloc_large_system_hash, readable only with kread. */
 #define AQ_FUTEX_HASHMASK 0x3ffu
 #define AQ_FUTEX_HASHSIZE 1024u
 
 /* Reserve entry. Bases with reg/alloc-ranges are CONFIRMED_AQUAMAN from
  * artifacts/aquaman.dts. Floating CMA pools carry size only; base UNKNOWN
- * so the address enumerator cannot exclude them — see aq_slab_excluded. */
+ * so the address enumerator cannot exclude them - see aq_slab_excluded. */
 struct aq_reserve {
     const char *name;
     uint64_t base;   /* valid only if has_base */
@@ -86,7 +86,7 @@ static const struct aq_reserve aq_reserves[] = {
     { "ramoops",     0x07400000ULL, 0x200000ULL,  1, 1, "CONFIRMED_AQUAMAN" },
     { "secmon",      0x05000000ULL, 0x400000ULL,  1, 1, "CONFIRMED_AQUAMAN" },
     { "framebuffer", 0x3f800000ULL, 0x800000ULL,  1, 1, "CONFIRMED_AQUAMAN" },
-    /* Floating CMA: size known, base UNKNOWN — listed but not address-excluded. */
+    /* Floating CMA: size known, base UNKNOWN - listed but not address-excluded. */
     { "di_cma",      0, 0x2000000ULL, 0, 0, "UNKNOWN" },
     { "ion",         0, 0x4c00000ULL, 0, 0, "UNKNOWN" },
     { "vdin",        0, 0x1000000ULL, 0, 0, "UNKNOWN" },

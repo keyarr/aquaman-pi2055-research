@@ -35,7 +35,7 @@ and `success` equal to true, no discrimination.
 
 ## 2. test
 
-log: /tmp/opencode/redirect_result.txt (single session, one process).
+log: /tmp/redirect_result.txt (single session, one process).
 
 ```text
 BEFORE slot 0x37f616d0 = 64 67 e3 37 00 00 00 00, full entry match offline

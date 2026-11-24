@@ -1,4 +1,4 @@
-# ghostlock heap consumption — first heap word past waiter->lock
+# ghostlock heap consumption - first heap word past waiter->lock
 
 Date: 2026-10-01. Stock: Xiaomi Mi TV Stick 1080p (aquaman, S805Y/GXL,
 Android 9, PI.2055, 4.9.113 arm64). Lab: build-aq/vmlinux + .src/linux-amlogic

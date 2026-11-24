@@ -98,7 +98,7 @@ def strings(data, base):
         print("%-22r %s" % (p, verdict))
         for i in hits[:12]:
             a, b = run_extent(data, base, i)
-            print("      abs 0x%08x  in run 0x%08x..0x%08x  align %d"
+            print("      abs 0x%08x in run 0x%08x..0x%08x  align %d"
                   % (base + i, a, b, (base + i) % 4))
         if len(hits) > 12:
             print("      ... %d more" % (len(hits) - 12))

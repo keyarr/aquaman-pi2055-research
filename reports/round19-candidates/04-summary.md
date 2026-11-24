@@ -1,4 +1,4 @@
-# round19 summary — EXECUTED live. C1 DATA_ONLY, C2 UNREADABLE, C3 not probed
+# round19 summary - EXECUTED live. C1 DATA_ONLY, C2 UNREADABLE, C3 not probed
 
 date: 2026-09-30 ~11:50-11:58 UTC. two Optimus stage-16 sessions, then
 device off-bus.

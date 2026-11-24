@@ -7,9 +7,9 @@ readable, and check the claim that there is a second identical copy of it.
 
 **why this extraction mattered.** everything the repo previously had about this
 DTB was inference: `dt.img` is encrypted, no vendor `.dts` is public, and the
-port map in `aquaman-dts-port.md` was written from `aquaman-config` plus the
+port map in `reports/_archive/aquaman-dts-port.md` was written from `aquaman-config` plus the
 2025 mainline file. this session replaced most of those inferences with data
-from the device. the DTB is not stock and it is not a reconstruction — it is
+from the device. the DTB is not stock and it is not a reconstruction - it is
 what the vendor booted. what is still missing is the source tree behind it.
 
 three files, all of them derived from one 16 MiB read that already existed:
@@ -23,7 +23,7 @@ artifacts/aquaman-plus0x80000-clobbered.bin  the "second copy", kept as evidence
 ## 1. where the bytes came from
 
 the read was not repeated. round 8
-(`reports/bl33-offline-round8.md`, `reports/round8-bl33-read/00_session.txt`)
+(`reports/_archive/bl33-offline-round8.md`, `reports/round8-bl33-read/00_session.txt`)
 already pulled 16 MiB from `0x01000000` with the same optimus v2 path this repo
 uses everywhere: `upload mem 0x01000000 normal 0x01000000` over the bulk IN
 endpoint, cross checked byte for byte against `AM_REQ_READ_MEM` (0x02) in the
@@ -38,7 +38,7 @@ read at   2026-09-29 19:04, device 1b8e:c003, identify 00 07 00 10 (stage 16, TP
 ```
 
 `artifacts/aquaman.dtb` is bytes `[0, 0xe3a8)` of that dump. the range end is
-not a guess, it is the `totalsize` field of the FDT header at offset 0, see §2.
+not a guess, it is the `totalsize` field of the FDT header at offset 0, see sec 2.
 nothing was appended, padded, relocated or resaved.
 
 ```
@@ -109,7 +109,7 @@ structural checks:
 
 the FDT memory reservation map at `0x28` is **empty**: one entry,
 `addr = 0, size = 0`, which is the terminator. every static reservation on this
-board comes from `/reserved-memory` instead, see §6.
+board comes from `/reserved-memory` instead, see sec 6.
 
 tree size: 376 nodes carrying at least one property, 1798 properties total, 108
 top level children, 208 entries in `/__symbols__`.
@@ -176,8 +176,8 @@ corroborating counts over the whole 16 MiB:
 **the round 8 conclusion that there is a second identical copy is retracted.**
 it was based on one duplicated string, `/thermal-zones/soc_thermal/trips/trip-point@0`
 showing up at `0x0100c508` and `0x0108c508`. one string is not a copy, and
-`0x01080000` is a resource image, not a tree. round 8 §3.3 got that address
-right and §3.1 got it wrong at the same time.
+`0x01080000` is a resource image, not a tree. round 8 sec 3.3 got that address
+right and sec 3.1 got it wrong at the same time.
 
 the raw 58280 bytes from `+0x80000` are kept as
 `artifacts/aquaman-plus0x80000-clobbered.bin` so the claim can be rechecked.
@@ -193,7 +193,7 @@ they are deliberately **not** named `.dtb`, because they are not one.
 
 `model` is the generic Amlogic string, not a product string. the board identity
 lives entirely in `amlogic-dt-id`, and the only other place the product name
-appears is `cec_osd_string` on `/aocec` (§8, CEC).
+appears is `cec_osd_string` on `/aocec` (sec 8, CEC).
 
 `compatible = "amlogic, Gxl"` is identical to the reference gxl tree. the aquaman
 does **not** claim an upstream compatible, there is no
@@ -219,7 +219,7 @@ does **not** claim an upstream compatible, there is no
 | usable window | base `0x00100000`, size `0x3ff00000` | measured, `/memory@00000000/linux,usable-memory` |
 | lowest usable address | `0x00100000` (1 MiB reserved below) | measured |
 | highest usable address | `0x40000000` (1 GiB) | measured |
-| FDT rsvmap | empty | measured, §2 |
+| FDT rsvmap | empty | measured, sec 2 |
 
 `linux,usable-memory` is a Linux-specific extension, and it is identical,
 byte for byte, in the reference gxl_p212_1g tree. so it does not distinguish the
@@ -285,7 +285,7 @@ pool is pinned to `0x05000000..0x05400000`. **`0x05300000` to `0x05400000` is
 claimed by both.** that is what the blob says, it is not a typo on my side and
 it is not something to correct. `secos` is `status = "disable"` in this tree, so
 in practice the kernel should not create it and the collision may be dead code
-on this build. recorded as an anomaly, §11.
+on this build. recorded as an anomaly, sec 11.
 
 `linux,secos` at `0x05300000` + 32 MiB ends exactly at `0x07300000`, and
 `ramoops` starts at `0x07400000`. there is a 1 MiB hole at `0x07300000`. not
@@ -375,7 +375,7 @@ reference too.
 | `serial4` | `/serial@c81004e0` | `0xc81004e0`/0x18 | gic0/197 | `disable` (not `disabled`) | `<&xtal>` | 0x40 |
 
 `serial1` running off the xtal fixed clock instead of gxl-clkc 0x23 is a real
-difference from the reference tree, see §10.
+difference from the reference tree, see sec 10.
 
 **mmc / storage.** three `amlogic, meson-mmc-gxl` controllers, all three
 `okay`:
@@ -394,10 +394,10 @@ the eMMC node carries `caps` with `MMC_CAP_HW_RESET` and `caps2` with
 `MMC_CAP2_HS200` + `MMC_CAP2_HS400`, and `card_type = 0x1`.
 
 `/mtd_nand` is present with a full nand_partition tree but is
-`status = "disabled"`. its partitions are listed anyway in §9.
+`status = "disabled"`. its partitions are listed anyway in sec 9.
 
 **ethernet: there is none.** no ethernet node anywhere in the aquaman tree. see
-§10, this is the single biggest structural difference from the reference GXL
+sec 10, this is the single biggest structural difference from the reference GXL
 tree. a stick does not need it.
 
 **audio.** `I2S`, `SPDIF`, `PCM` DAIs, `spdif_codec`, `pcm_codec`, a `dummy`
@@ -431,7 +431,7 @@ cooling devices (`cpufreq_cool_cluster0`, `cpucore_cool_cluster0`,
 | trip-point@2 | `0x19a28` (105000) | `0x14c08` (85000) |
 | trip-point@3 | `0x1d4c0` (120000) | `0x3f7a0` (260000) |
 
-all four are shifted, the aquaman is consistently hotter-running. see §10.
+all four are shifted, the aquaman is consistently hotter-running. see sec 10.
 
 **hdmi / display.** `/amhdmitx` `okay`, gic0/57 (`hdmitx_hpd`), `ic_type = 0x3`,
 `vend_data` = phandle 0x52 which resolves to `vendor_name = "Amlogic"`,
@@ -449,7 +449,7 @@ is `status = "disabled"` on the aquaman, `okay` on p212. no analog output.
 cec_osd_string = "Mi TV Stick"
 ```
 
-that string is the product name, in the blob, in plain text. see §8.
+that string is the product name, in the blob, in plain text. see sec 8.
 
 **ir / remote.** `/rc@c8100580`, `amlogic, aml_remote`, `dev_name =
 "meson-remote"`, `okay`, `protocol = 0x2`, gic0/196, `max_frame_time = 0xc8`,
@@ -639,7 +639,7 @@ to the kernel:
 /firmware/android/fstab/odm      /dev/block/odm     ext4  ro,...  wait
 ```
 
-no `system` entry in the aquaman fstab (the reference has one, see §11).
+no `system` entry in the aquaman fstab (the reference has one, see sec 11).
 `/firmware` has no `android,firmware` partitions list beyond this.
 
 `boot.img`, `dt.img`, `dtbo.img`, `vbmeta.img` and `bootloader.img` from the
@@ -716,7 +716,7 @@ reference side. the full diff, phandle renumbering stripped, is in
 | node | what it is |
 |---|---|
 | `/ethernet@0xc9410000` | `amlogic, gxbb-eth-dwmac` at `0xc9410000`, gic0/8, internal PHY, `external_eth_pins`, `rst_pin-gpios` EE 0x0e, `GPIOZ4/Z5` 0x04/0x05. **the stick has no wired ethernet, and the DT agrees** |
-| `/gpio_keypad` | `amlogic, gpio_keypad`, `okay`, one key, `key_name = "power"`, `key_code = 0x74`, `key-gpios = <0x54 0x2>` (EE bank, 2). a hardware power button. the aquaman has no such node, its power key arrives over IR instead (§8) |
+| `/gpio_keypad` | `amlogic, gpio_keypad`, `okay`, one key, `key_name = "power"`, `key_code = 0x74`, `key-gpios = <0x54 0x2>` (EE bank, 2). a hardware power button. the aquaman has no such node, its power key arrives over IR instead (sec 8) |
 | `/pm` | `amlogic, pm` with `reg` windows. the aquaman has the newer `/aml_pm` node instead, same `0xc81000a8` / `0xc810023c` registers |
 | `/firmware/android/fstab/system` | the aquaman fstab has vendor, product, odm but **no system entry** |
 
@@ -770,7 +770,7 @@ on the things a stick differs on. the aquaman is also not a khadas board, and
 
 ## 13. anomalies
 
-1. **the "second identical copy" is not one.** §3. `sha256` differs, the head
+1. **the "second identical copy" is not one.** sec 3. `sha256` differs, the head
    8 KiB is an `AML_RES!` resource image, `fdtdump` rejects the blob at
    `0x01080000` outright. the round 8 claim is retracted. only one `d00dfeed`
    exists in the 16 MiB.
@@ -793,17 +793,17 @@ on the things a stick differs on. the aquaman is also not a khadas board, and
 6. **`/reserved-memory/linux,secos` leaves a 1 MiB hole** at `0x07300000`
    before `ramoops` at `0x07400000`. unexplained.
 7. **no `/chosen` node.** no `bootargs`, no `stdout-path` in the tree.
-8. **zero regulators in the tree.** §7.
+8. **zero regulators in the tree.** sec 7.
 9. **every gpio reference points at the periphs/EE bank**, including the eMMC
    reset and dat3, and including `/jtag/jtagao-gpios` whose name says ao. the
    AO bank `0x8f` is referenced by nothing in the tree. present in the p212
    reference too, so family behaviour and not an aquaman error, but it will
-   bite anyone who assumes the aobus bank. §7.
-10. **dtc emits 47 warnings** on a perfectly valid blob, all style. §2. the file
+   bite anyone who assumes the aobus bank. sec 7.
+10. **dtc emits 47 warnings** on a perfectly valid blob, all style. sec 2. the file
     was not "fixed" to silence them, which is the correct call: the warnings
     describe the vendor's tree, not a defect in the extraction.
 11. **a fresh device read was not performed this session**, only the round 8
-    dump was reused. §1. it is the same bytes and it was already cross checked
+    dump was reused. sec 1. it is the same bytes and it was already cross checked
     against a second read path, but it is one session, not two.
 
 ## 14. files
@@ -812,13 +812,13 @@ on the things a stick differs on. the aquaman is also not a khadas board, and
 |---|---|
 | `artifacts/aquaman.dtb` | 58280 bytes, `sha256 b00adaba...`, the blob as read, unmodified |
 | `artifacts/aquaman.dts` | 65052 bytes, 2945 lines, `dtc -I dtb -O dts`, re-compiles value-identically |
-| `artifacts/aquaman-plus0x80000-clobbered.bin` | the 58280 bytes at `0x01080000`, kept so §3 can be rechecked. not a valid FDT |
+| `artifacts/aquaman-plus0x80000-clobbered.bin` | the 58280 bytes at `0x01080000`, kept so sec 3 can be rechecked. not a valid FDT |
 | `tools/dtb_dump.py` | walks the struct block and prints every property with its offset in the strings block, so any value in this report can be traced to a byte range of the blob |
 | `reports/round9-dtb-extraction/00_fdt_validation.txt` | fdtdump header, dtc exit status, warning classes |
 | `reports/round9-dtb-extraction/01_dtc_warnings.txt` | all 47 dtc warnings, verbatim |
-| `reports/round9-dtb-extraction/02_second_copy.txt` | the §3 measurement |
+| `reports/round9-dtb-extraction/02_second_copy.txt` | the sec 3 measurement |
 | `reports/round9-dtb-extraction/03_full_inventory.txt` | every node and every property, 2185 lines |
-| `reports/round9-dtb-extraction/04_vs_gxl_p212_1g.txt` | the full §12 diff |
+| `reports/round9-dtb-extraction/04_vs_gxl_p212_1g.txt` | the full sec 12 diff |
 | `reports/round9-dtb-extraction/05_gpio_table.txt` | the full gpio scan, aquaman and p212 |
 
 nothing was written to the stick. the round 8 dump

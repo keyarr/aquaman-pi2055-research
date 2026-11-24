@@ -31,7 +31,7 @@ fastboot download buf   [0x10200000,0x18200000)       YES     YES    YES      rx
                                                                           reads of nearby DRAM in rounds 7-13
 burning transfer buf    [0x07700000,0x0b700000)       YES     YES    YES      0x37e7bbf4 mov x3,#0x7700000 + header math;
                         (64 MiB)                                                  optimus slots; upload/download used it
-                                                                          in every round since 7
+ in every round since 7
 runtime DTB             [0x01000000,0x0100e3a8)       YES     YES    UNPROVEN  artifacts/aquaman.dtb 58280 B, FDT totalsize
                         (58280 B)                                                 0xe3a8, from mread_01000000_01000000.bin
                                                                           sha256 f5e20c9e...; dtb_mem_addr=0x1000000

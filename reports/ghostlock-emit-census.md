@@ -1,10 +1,12 @@
-# ghostlock emit census — read-only kernel-pointer disclosure (no writes)
+# ghostlock emit census - read-only kernel-pointer disclosure (no writes)
 
 Date: 2026-10-01. Authority: Xiaomi Mi TV Stick 1080p (aquaman, S805Y/GXL,
 Android 9, PI.2055, 4.9.113 arm64, shell uid 2000, SELinux Enforcing).
 Lab instruments: build-aq/vmlinux + .src/linux-amlogic (OFFLINE_ONLY).
 No kernel-memory write in this phase. No stack overwrite, no fake object,
-no arbitrary R/W, no cred, no root. Read-only disclosure only.
+no arbitrary R/W, no cred, no root from GhostLock. Read-only disclosure only.
+Root now exists independently through the ODM init service
+(`reports/root-via-odm-2026-11-23.md`); it does not change this census.
 
 Tools: `tools/ghostlock_emit_search.py` (new: --emit/--dev/--dispatch/
 --taint/--pi/--task/--pistate/--verify/--all) +
@@ -12,14 +14,14 @@ Tools: `tools/ghostlock_emit_search.py` (new: --emit/--dev/--dispatch/
 `/data/local/tmp/ghostlock_emit_probe`) +
 `tools/ghostlock_chain.c` emit_dev (26) / emit_pi (27) (read-only open
 census + PI rule, P0-P8 intact) +
-`tools/ghostlock_deref_chain.py --emit` (new: FASE 13 validation ruler;
+`tools/ghostlock_deref_chain.py --emit` (new: PHASE 13 validation ruler;
 --disclosure preserved).
 
 Prior state preserved: GhostLock, stale task->pi_blocked_on, stale waiter
 traversal, FUTEX_LOCK_PI(f_chain), FULL_CHAINWALK, f_target has_waiters
 gate, leftmost predicate, heap consumption, pos_cycle, H16 immutability,
 h16_static baseline, f_alt.pi_mutex legitimacy, f_target vs f_alt
-separation, register-only pi_state+0x10 carrier — none reopened
+separation, register-only pi_state+0x10 carrier - none reopened
 (cited, not re-proven).
 
 ## 1. Objective
@@ -31,7 +33,7 @@ works, (3) whether 64 bits survive, (4) whether masking applies,
 (5) whether a second address can be derived from it.
 
 Verdict up front: no such path was found on the audited surface.
-SUCESSO A/B/C/D all NO (this phase). The three strongest /dev candidates
+SUCCESS A/B/C/D all NO (this phase). The three strongest /dev candidates
 were probed on hardware and all emit only scalars, USER echoes, or
 indices, with zero is_kptr hits across all outputs.
 EVIDENCE: mix below per claim.
@@ -66,7 +68,7 @@ EVIDENCE: HARDWARE_OBSERVED (emit_dev full output in sec. 10).
 
 ## 3. Emit Primitives
 
-FASE 1 (`--emit`): source-wide grep counts, then field-level audit
+PHASE 1 (`--emit`): source-wide grep counts, then field-level audit
 (dataflow, not just `%p`):
 
 * copy_to_user 3487 hits tree-wide; put_user 3977; __copy_to_user 248;
@@ -80,7 +82,7 @@ EVIDENCE: OFFLINE_ONLY.
 
 ## 4. Pointer Sources
 
-FASE 4 (`--taint`): forward taint from each source to copy_to_user:
+PHASE 4 (`--taint`): forward taint from each source to copy_to_user:
 
 * current / task_struct *: consumers are copy_thread, scheduler, futex
   key (mm+uaddr ints), seccomp user-PC; task->stack consumers are
@@ -105,11 +107,11 @@ EVIDENCE: OFFLINE_ONLY.
 
 ## 5. /dev Candidates
 
-FASE 2 (`--dev`): source fops per node (binder.c binder_fops,
+PHASE 2 (`--dev`): source fops per node (binder.c binder_fops,
 ashmem.c ashmem_fops, ion-ioctl.c ion_fops all have
 unlocked_ioctl+compat_ioctl; mali is out-of-tree, unauditable;
 xt_qtaguid emits counters only; ge2d/vfm/vendored media unreachable
-or disabled). FASE 10 shortlist (max 3, all shell-openable +
+or disabled). PHASE 10 shortlist (max 3, all shell-openable +
 source-auditable + safe side-effect-free):
 
 * C1 binder: BINDER_VERSION (scalar) + BINDER_GET_NODE_DEBUG_INFO
@@ -125,7 +127,7 @@ EVIDENCE: OFFLINE_ONLY (fops) + HARDWARE_OBSERVED (OPEN results).
 
 ## 6. PI Emit Paths
 
-FASE 6 (`--pi`): futex.c copy_to_user hits = 0; rtmutex.c hits = 0
+PHASE 6 (`--pi`): futex.c copy_to_user hits = 0; rtmutex.c hits = 0
 (verified by grep on source). Per struct:
 
 * futex_pi_state { pi_mutex, list }: no emitter; FUTEX_* return
@@ -133,7 +135,7 @@ FASE 6 (`--pi`): futex.c copy_to_user hits = 0; rtmutex.c hits = 0
 * rt_mutex { wait_lock, waiters, leftmost, owner }: walkers only;
   sched shows prio ints. NO_POINTER.
 * rt_mutex_waiter { task, lock, prio, deadline, tree_entry }: birth stp
-  in task_blocks_on_rt_mutex, walk reads, stores land on peer
+ in task_blocks_on_rt_mutex, walk reads, stores land on peer
   stacks/heap, zero copy-out. NO_POINTER (even waiter* shortcut absent).
 * futex_q { rt_waiter, pi_state }: stack+heap, freed on wake. NO_POINTER.
 * robust_list_head: USER echo (futex.c:3055). USER_ECHO.
@@ -147,7 +149,7 @@ EVIDENCE: OFFLINE_ONLY.
 
 ## 7. task/current Emit Paths
 
-FASE 7/8 (`--task`): S1 /proc/pid/stack %pK zeros; S2 wchan 0/symbol;
+PHASE 7/8 (`--task`): S1 /proc/pid/stack %pK zeros; S2 wchan 0/symbol;
 S3 syscall user regs; S4 kstkesp/kstkeip 0; S5 start_stack USER;
 S6 net sk zeros; S7 sched scalars; S8 maps USER + pagemap PFN 0;
 S9 kallsyms denied; S10 dmesg/kmsg/pstore denied; S11-S13 slab/debugfs/
@@ -170,17 +172,17 @@ EVIDENCE: OFFLINE_ONLY + HARDWARE_OBSERVED (prior disclose_stack probe).
 
 ## 9. Candidate Ranking
 
-1. C1 binder — best pointer-width field (ptr/cookie u64) but source
+1. C1 binder - best pointer-width field (ptr/cookie u64) but source
    proves USER echo (node->ptr set by creator userspace at
    BC_TRANSACTION BINDER_TYPE_BINDER; fresh fd has no nodes -> zeros).
    Safe, deterministic, repeatable. Rank 1.
-2. C3 ion — heap query returns name/type/id (id is INDEX, the honest
+2. C3 ion - heap query returns name/type/id (id is INDEX, the honest
    address-derived scalar); buffer quirk (rc=-EINVAL with filled buffer)
    is source-verified behavior, not a leak. Rank 2.
-3. C2 ashmem — scalar size + USER name string; caught and fixed a wrong
+3. C2 ashmem - scalar size + USER name string; caught and fixed a wrong
    ioctl magic ('a' vs 0x77) via source, proving offline->stock loop
    works. Rank 3.
-4. Everything else — unreachable or unauditable or counter-only.
+4. Everything else - unreachable or unauditable or counter-only.
 EVIDENCE: OFFLINE_ONLY (ranking) + HARDWARE_REPRODUCED (values below).
 
 ## 10. Hardware Probes
@@ -232,17 +234,17 @@ Two corrections found by the offline->stock loop (kept, not hidden):
 (a) ashmem magic is 0x77 not 'a' (first run gave ENOTTY, source fixed
 it, re-run returned 0/dev/ashmem as predicted);
 (b) ion buffer query returns -EINVAL with a FILLED buffer (source
-ion.c: ret stays -EINVAL on the buffer path) — the names/ids above are
+ion.c: ret stays -EINVAL on the buffer path) - the names/ids above are
 real emits, the rc is a quirk, neither is a kernel pointer.
 
 ## 11. Pointer Validation
 
-FASE 13 (`--emit` ruler): DIRECT_KERNEL_PTR needs FIELD + LOAD + COPY +
+PHASE 13 (`--emit` ruler): DIRECT_KERNEL_PTR needs FIELD + LOAD + COPY +
 USER + MASK/identity; less stays SINGLE_SOURCE. Applied:
 
 * C1 ptr/cookie: FIELD binder_node_debug_info.ptr/cookie; LOAD from
   node->ptr (binder.c binder_ioctl_get_node_debug_info); COPY at
-  binder.c:4829; USER ioctl buffer 8B; MASK none — but identity is USER
+  binder.c:4829; USER ioctl buffer 8B; MASK none - but identity is USER
   echo (creator-provided), and stock value is 0. Fails identity as
   kernel pointer. USER_ECHO. EVIDENCE: OFFLINE_ONLY (chain) +
   HARDWARE_REPRODUCED (zeros).
@@ -259,7 +261,7 @@ EVIDENCE: OFFLINE_ONLY (ruler) + HARDWARE_REPRODUCED (zero hits).
 Two independent paths per address were required; no address was
 disclosed, so there is nothing to cross-check. What exists:
 PATH A (stack): every /proc channel masked/denied/user-only (prior) and
-every /dev candidate scalar/echo/index (this phase) — no PATH B to pair.
+every /dev candidate scalar/echo/index (this phase) - no PATH B to pair.
 PATH B (heap): occupancy verdict (alt_base TIMEOUT) identifies the f_alt
 object semantically but is not an address source. Any future single-path
 disclosure stays SINGLE_SOURCE until a second confirmation appears.
@@ -318,7 +320,7 @@ EVIDENCE: OFFLINE_ONLY + HARDWARE_OBSERVED/REPRODUCED (as marked).
 
 * H16 absolute address on stock. EVIDENCE: INCONCLUSIVE (absent).
 * &f_alt.pi_mutex value on stock. EVIDENCE: INCONCLUSIVE (absent).
-* Any kernel pointer to shell on stock (SUCESSO A). EVIDENCE:
+* Any kernel pointer to shell on stock (SUCCESS A). EVIDENCE:
   INCONCLUSIVE-as-absent on the audited surface (not claimed everywhere).
 * Paths deeper than audited: mali ioctls (unaudited, unprobed beyond
   open), unaudited amlogic ioctls on unreachable nodes, indirect
@@ -334,11 +336,11 @@ EVIDENCE: OFFLINE_ONLY + HARDWARE_OBSERVED/REPRODUCED (as marked).
 Exactly one: a read-only kernel-pointer source for EITHER address that
 survives stock masking. Candidates in order: (1) /dev ioctl emit census
 past C1/C2/C3 for shell-openable nodes with source-auditable structs
-(mali needs source first — no blind ioctl campaign); (2) re-walk
+(mali needs source first - no blind ioctl campaign); (2) re-walk
 f_op/indirect dispatch past BFS depth 3 looking only for EMIT
 (copy_to_user/put_user of kernel-pointer fields), never for STAMP;
-(3) if either address discloses, immediately re-run the FASE 12 ruler
-(--disclosure) + FASE 13 ruler (--emit) before any write thinking.
+(3) if either address discloses, immediately re-run the PHASE 12 ruler
+(--disclosure) + PHASE 13 ruler (--emit) before any write thinking.
 Do NOT build a stack stamper, fake object, cred/root path, or arbitrary
 R/W while the addresses are unknown. The mandatory STOP after both
 addresses confirm still stands; this round did not reach it.

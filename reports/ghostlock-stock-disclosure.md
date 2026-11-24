@@ -1,23 +1,25 @@
-# ghostlock stock disclosure — READ/DISCLOSE phase (no writes)
+# ghostlock stock disclosure - READ/DISCLOSE phase (no writes)
 
 Date: 2026-10-01. Authority: Xiaomi Mi TV Stick 1080p (aquaman, S805Y/GXL,
 Android 9, PI.2055, 4.9.113 arm64, shell uid 2000, SELinux Enforcing).
 Lab instruments: build-aq/vmlinux + .src/linux-amlogic (OFFLINE_ONLY).
 No kernel-memory write in this phase. No stack corruption, no fake object,
-no root, no arbitrary R/W. Read-only disclosure only.
+no root from GhostLock, no arbitrary R/W. Read-only disclosure only. Root now
+exists independently through the ODM init service
+(`reports/root-via-odm-2026-11-23.md`); it does not change this census.
 
 Tools: `tools/ghostlock_disclosure.py` (new: --proc/--copy/--stack-flow/
 --heap/--verify/--all) + `tools/ghostlock_deref_chain.py --disclosure`
-(new: disclosed-target -> known-consumer ruler, FASE 12) +
+(new: disclosed-target -> known-consumer ruler, PHASE 12) +
 `tools/ghostlock_chain.c` disclose modes 23/24/25 (read-only probes +
-FASE 11 harness, binary rebuilt and pushed as
+PHASE 11 harness, binary rebuilt and pushed as
 `/data/local/tmp/ghostlock_disclose`).
 
 Prior state preserved: GhostLock, stale task->pi_blocked_on, stale waiter
 traversal, FUTEX_LOCK_PI(f_chain), FULL_CHAINWALK, f_target has_waiters
 gate, leftmost predicate, heap consumption, pos_cycle, H16 immutability,
 h16_static baseline, f_alt.pi_mutex legitimacy, f_target vs f_alt
-separation — none reopened (cited, not re-proven).
+separation - none reopened (cited, not re-proven).
 
 ## 1. Objective
 
@@ -33,7 +35,7 @@ Verdict up front: neither disclosure exists on the audited surface.
 STACK_DISCLOSURE and HEAP_DISCLOSURE stay INCONCLUSIVE-as-absent
 (no candidate survived to probe). The read-only phase therefore closes
 with a documented negative, one SINGLE_SOURCE-adjacent identity rule
-(f_alt occupancy verdict), and a ready FASE 11 harness. EVIDENCE: mix
+(f_alt occupancy verdict), and a ready PHASE 11 harness. EVIDENCE: mix
 below per claim.
 
 ## 2. Stock Authority
@@ -45,7 +47,7 @@ Config facts (`aquaman-config`): `KALLSYMS=y`, `KALLSYMS_ALL=y`,
 `PROC_PAGE_MONITOR=y`, `PERF_EVENTS=y` (paranoid 3 on stock),
 `TASKSTATS=y`, `SCHED_DEBUG=y`, `SCHEDSTATS=y`, `FRAME_POINTER=y`.
 
-FASE 0 baseline re-ran FIRST on stock this round (`h16_static`, 4th
+PHASE 0 baseline re-ran FIRST on stock this round (`h16_static`, 4th
 overall counting history, pad 0x0, VAR B):
 
 ```
@@ -68,7 +70,7 @@ EVIDENCE: HARDWARE_REPRODUCED.
 
 ## 3. Stack Disclosure Candidates
 
-FASE 1 inventory (taint backward OUTPUT USERSPACE <- kernel field <-
+PHASE 1 inventory (taint backward OUTPUT USERSPACE <- kernel field <-
 pointer source). Full table from `--proc`; summary:
 
 | # | interface | format / dataflow | class | stock result |
@@ -84,9 +86,9 @@ pointer source). Full table from `--proc`; summary:
 | S9 | /proc/kallsyms | %pK-gated, kptr_restrict | masked/unreachable | Permission denied |
 | S10 | dmesg/kmsg/pstore | dmesg_restrict + SELinux | unreachable | all Permission denied |
 | S11 | /sys/kernel/slab/* | attrs | unreachable metadata | every attr Permission denied |
-| S12 | /sys/kernel/debug,tracing | — | unreachable | Permission denied |
+| S12 | /sys/kernel/debug,tracing | - | unreachable | Permission denied |
 | S13 | /proc/sys/kernel/* | tunables incl. kptr_restrict | unreachable | listing Permission denied |
-| S14 | binder debug | — | unreachable | Permission denied |
+| S14 | binder debug | - | unreachable | Permission denied |
 | S15 | unix/netlink diag | ino/dev/qlen/path (diag.c) | index only | no pointer field by source |
 
 No candidate above yields a kernel-stack pointer to shell.
@@ -95,7 +97,7 @@ masking above was read on the device this round).
 
 ## 4. Heap Disclosure Candidates
 
-FASE 6 inventory (ideal `f_alt -> pi_state -> pi_mutex -> userspace`).
+PHASE 6 inventory (ideal `f_alt -> pi_state -> pi_mutex -> userspace`).
 Full table from `--heap`; summary: PI state never copied out (zero
 `copy_to_user` in futex.c/rtmutex.c); robust list is a USER echo;
 sched/signal/socket copies are scalars, sender-controlled si_ptr, or
@@ -108,19 +110,19 @@ EVIDENCE: OFFLINE_ONLY (source structs + binary `--verify` counts).
 
 ## 5. Pointer Dataflow
 
-FASE 2 (struct -> copy_to_user -> userspace) per candidate: struct,
+PHASE 2 (struct -> copy_to_user -> userspace) per candidate: struct,
 field, offset, copy site, syscall, reachability, masking, width,
-KASLR transform, userspace control — see `--copy` output (10 rows).
+KASLR transform, userspace control - see `--copy` output (10 rows).
 Heads: `get_robust_list` echoes a `__user` head (source futex.c:3055);
 `sched_attr`/`sched_param` are scalar-only by UAPI; `siginfo.si_ptr`
 is sender/user-PC sourced, never waiter/stack/rt_mutex; `sockaddr`
 and `ifconf` carry addresses/USER echo; diag carries inodes.
-FASE 3 (current/stack/waiter auto-reference): `current->mm` + user
+PHASE 3 (current/stack/waiter auto-reference): `current->mm` + user
 uaddr flow into the futex key (ints, never `task->stack`);
 `task_stack_page()` consumers are fork/oops/kdb (privileged-only);
 `futex_q.rt_waiter` never leaves the kernel; `KSTK_EIP/ESP` in
 seccomp/audit are USER pc/sp; no `current->stack -> copy_to_user`
-edge exists. FASE 4 (indirect inference): no interface on the
+edge exists. PHASE 4 (indirect inference): no interface on the
 audited surface branches on the kernel stack address in a
 shell-observable way; the old futex timing oracle is NOT rebuilt
 (per phase rule, timing is not an address proof).
@@ -142,7 +144,7 @@ by assertion. EVIDENCE: OFFLINE_ONLY + HARDWARE_OBSERVED (denials).
 
 ## 7. Stack Disclosure Probe
 
-FASE 5. New read-only harness mode `disclose_stack` (23): no trigger,
+PHASE 5. New read-only harness mode `disclose_stack` (23): no trigger,
 no stamp, no fake, no write. Stock output (this round, twice stable):
 
 ```
@@ -159,9 +161,9 @@ P6 RESULT=DISCLOSURE_PROBE_DONE mode=disclose_stack
 
 Repeat run: identical masking (STACK zeros, WCHAN 0, only user addresses
 vary by ASLR). No 64-bit kernel pointer in any output; `is_kptr()`
-fires on nothing. FASE 13 note: the first real reference to the stack
+fires on nothing. PHASE 13 note: the first real reference to the stack
 address is `mrs SP_EL0` (current) and `add x29/sp` frame bases, but no
-edge carries either to userspace — so even a `waiter *` shortcut (which
+edge carries either to userspace - so even a `waiter *` shortcut (which
 would suffice: H16 = waiter+0x38) is not disclosed either.
 EVIDENCE: HARDWARE_OBSERVED (probe) + OFFLINE_ONLY (dataflow).
 
@@ -183,11 +185,11 @@ TIMEOUT_BLOCK 3000ms proves a valid contended rt_mutex;
 `alt_tgt` (f_target occupied + f_alt occupied) EDEADLK follows f_target.
 These verdicts identify the OBJECT semantically but disclose no ADDRESS:
 they are the reason a future heap address, once disclosed, can be
-checked — not a disclosure themselves. FASE 14 note: the kernel already
+checked - not a disclosure themselves. PHASE 14 note: the kernel already
 carries `pi_state->pi_mutex` as the `+0x10` LEA in registers
 (attach 0x9614, requeue 0xabe4, lock_pi 0xb1b8/0xb238/0xb2a0), but the
 `--rtmutex` spill check shows the LEA reg dies in registers/epilogue
-and never lands on a reusable stack slot — documented as a
+and never lands on a reusable stack slot - documented as a
 register-only carrier, not a leak, and NOT written in this phase.
 EVIDENCE: HARDWARE_OBSERVED (probe) + HARDWARE_REPRODUCED (occupancy
 history) + OFFLINE_ONLY (LEA/carrier dataflow).
@@ -196,7 +198,7 @@ history) + OFFLINE_ONLY (LEA/carrier dataflow).
 
 Two independent paths per address were required; neither address was
 disclosed, so there is nothing to cross-check. What exists:
-PATH A (stack): every /proc channel masked/denied/user-only — no PATH B
+PATH A (stack): every /proc channel masked/denied/user-only - no PATH B
 to pair. PATH B (heap): occupancy verdict identifies the object, but it
 is not an address source, so it cannot pair with a (nonexistent) pointer
 disclosure either. Any future single-path disclosure stays
@@ -222,10 +224,10 @@ EVIDENCE: HARDWARE_OBSERVED (probes) + HARDWARE_REPRODUCED (validity)
 
 ## 12. Read-Only Consumer Validation
 
-`--disclosure` ruler (new in deref_chain.py, FASE 12): any future
+`--disclosure` ruler (new in deref_chain.py, PHASE 12): any future
 H16_addr must equal walk base x28 at H16.7 (`0x4df0 ldr x0,[x28,#0x38]`)
 with value equality against x20 at `0x4df4 cmp` (and against the H16.4
-`0x52fc` x25 read — same 8 bytes twice); any future F_alt_addr must
+`0x52fc` x25 read - same 8 bytes twice); any future F_alt_addr must
 equal `pi_state_alt+0x10` with trylock-free `+0x00`, occupied `+0x10`
 whose top `+0x38` reads back the same address, and non-NULL owner
 `+0x18`. Verified as a RULER only (offline mapping, no addresses to
@@ -234,16 +236,16 @@ feed it). `DISCLOSED TARGET -> KNOWN CONSUMER = NOT CLOSED`
 
 ## 13. Future Targeted Write
 
-FASE 10 classification (chosen after the negative result): A
+PHASE 10 classification (chosen after the negative result): A
 (userspace must know F_alt_addr as an immediate) vs B (a future
 primitive reads it from a kernel structure directly). Answer: UNDECIDED
-— A needs both disclosures (absent); B needs a kernel-pointer carrier
+- A needs both disclosures (absent); B needs a kernel-pointer carrier
 with dest+value control (the only known carrier, `pi_state+0x10` LEA,
 is register-only with zero stack spills, so B has no binary support
-today either). FASE 11 harness (mode `disclose_write8`, 25) accepts
+today either). PHASE 11 harness (mode `disclose_write8`, 25) accepts
 both values as hex parameters and checks size (fixed 8B), alignment
 (8B both), kptr heuristic notes, lifetime rule (frame alive across
-H16.4+H16.7), and consumer mapping — WITHOUT touching memory:
+H16.4+H16.7), and consumer mapping - WITHOUT touching memory:
 
 ```
 P4 WRITE8_SPEC h16=0xffffffc012345678 falt=0xffffffc087654320
@@ -287,7 +289,7 @@ stock). No `WRITE8` was performed. EVIDENCE: HARDWARE_OBSERVED
   EVIDENCE: INCONCLUSIVE.
 * Paths deeper than the audited surface (indirect f_op dispatch beyond
   BFS, unreviewed vendor ioctls beyond the 22+ge2d/vfm sample, novel
-  async/alias channels that EMIT pointers — the closed set was
+  async/alias channels that EMIT pointers - the closed set was
   write-oriented; the emit-oriented set reviewed here is
   proc/sys/net/futex/sched/signal/socket/binder/ge2d/vfm).
   EVIDENCE: INCONCLUSIVE (explicitly not claimed covered).
@@ -311,12 +313,12 @@ heap-identity signal and it is deliberately NOT called a disclosure.
 Exactly one: a read-only kernel-pointer source for EITHER address that
 survives stock masking. Candidates in order: (1) finish the `/dev`
 ioctl emit census for shell-openable nodes (open test + struct-field
-audit per ioctl, same copy_to_user discipline as FASE 2); (2) re-walk
+audit per ioctl, same copy_to_user discipline as PHASE 2); (2) re-walk
 f_op/indirect dispatch past BFS depth 3 looking only for EMIT
 (copy_to_user/put_user of kernel-pointer fields), never for STAMP;
-(3) if either address discloses, immediately re-run the FASE 12 ruler
+(3) if either address discloses, immediately re-run the PHASE 12 ruler
 before any write thinking. Do NOT build a stack stamper, fake object,
-cred/root path, or arbitrary R/W while the addresses are unknown —
+cred/root path, or arbitrary R/W while the addresses are unknown -
 there is no target to write and no value to write yet. The mandatory
 STOP after both addresses confirm still stands; this round did not
 reach it.

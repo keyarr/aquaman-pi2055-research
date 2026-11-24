@@ -1,4 +1,4 @@
-# ghostlock h16 durable write — [W_waiter+0x38] = &f_alt.pi_mutex
+# ghostlock h16 durable write - [W_waiter+0x38] = &f_alt.pi_mutex
 
 > DIRECTION (2026-10-02, see `reports/CURRENT_STATE.md`): principal is
 > post-free stack reuse + disclosure; H16 live retarget is secondary;
@@ -8,7 +8,7 @@
 
 Date: 2026-10-01. Device: Xiaomi Mi TV Stick 1080p (aquaman, S805Y/GXL, Android 9, PI.2055, 4.9.113 arm64). Lab: build-aq/vmlinux + .src/linux-amlogic. One boot, no power-cycle, no flash, no SELinux bypass, no root.
 
-Tools: `tools/ghostlock_deref_chain.py --h16/--h16-write/--pi-source/--target` + `tools/ghostlock_h16_target_search.py --all/--carrier/--atomic/--rtmutex/--current/--frame-reuse/--ioctl/--syscall/--store8/--verify` (live from binary) + `tools/ghostlock_chain.c` (unchanged P0-P8, modes alt_only/alt_tgt/h16_static/occ_tgt/trg_inwin/occ_base/base_t). Full disassembly cache `/tmp/opencode/aq_full.asm` (3768288 lines). Static verify 30/30. `pthread_setschedparam` not used.
+Tools: `tools/ghostlock_deref_chain.py --h16/--h16-write/--pi-source/--target` + `tools/ghostlock_h16_target_search.py --all/--carrier/--atomic/--rtmutex/--current/--frame-reuse/--ioctl/--syscall/--store8/--verify` (live from binary) + `tools/ghostlock_chain.c` (unchanged P0-P8, modes alt_only/alt_tgt/h16_static/occ_tgt/trg_inwin/occ_base/base_t). Full disassembly cache `/tmp/aq_full.asm` (3768288 lines). Static verify 30/30. `pthread_setschedparam` not used.
 
 Hardware log: `out/logs/ghostlock_h16_durable_boot3ec336a5-439f-497f-b9f7-08fd7441b174.log` (this round, same BOOT_ID as prior `ghostlock_consumer_boot3ec336a5.log`).
 
@@ -18,7 +18,7 @@ A durable 8-byte store lands on the live waiter slot while the GhostLock graph i
 
 ```text
 legitimate operation -> exact store -> [W_waiter+0x38] -> exact &f_alt.pi_mutex
-waiter nasce (waiter->lock = &f_target.pi_mutex) -> [corruption window] -> H16.4 read -> H16.7 read
+waiter is born (waiter->lock = &f_target.pi_mutex) -> [corruption window] -> H16.4 read -> H16.7 read
 ```
 
 Success requires dest AND value AND timing AND durability AND differential together. Anything less is not LEVEL_3.
@@ -91,14 +91,14 @@ No new harness, no new mode, no memory touched beyond existing legitimate syscal
 Matrix (task mapping; W1/W2 have no candidate so they are NOT RUN by design, not skipped):
 
 ```text
-C0 alt_only: sem writer, f_target vazio, f_alt ocupado (a_armed=1 alt_parked=1). Esperado TIMEOUT. Observado TIMEOUT 3000ms/110. PASS.
-C1 h16_static: writer path armada (mesma arming que C0) mas condicao que nao deve atingir slot (duplo LOCK_PI(f_chain) no mesmo frame vivo, sem corrupcao). Esperado TIMEOUT+TIMEOUT. Observado 3000ms/110 + 3000ms/110. PASS.
-W1 writer path f_target->f_alt: SEM CANDIDATO EXATO, nao executado (executar poll/current com valor errado seria GEOMETRY_ONLY e arriscaria garbage trylock; proibido pela Fase 5).
-W2 mesma preparacao sem store final: NAO APLICAVEL pelo mesmo motivo.
-Discriminadores (diferencial ja validado, re-rodados neste boot):
-  base_t (sem trigger, f_chain) TIMEOUT 3000ms/110. PASS.
-  occ_base (sem trigger, f_target ocupado) TIMEOUT 3000ms/110. PASS.
-  trg_inwin (trigger, f_target vazio) TIMEOUT 3000ms/110. PASS.
+C0 alt_only: no writer, f_target empty, f_alt occupied (a_armed=1 alt_parked=1). Expected TIMEOUT. Observed TIMEOUT 3000ms/110. PASS.
+C1 h16_static: writer path armed (same arming as C0) but condition that must not reach the slot (double LOCK_PI(f_chain) on the same live frame, no corruption). Expected TIMEOUT+TIMEOUT. Observed 3000ms/110 + 3000ms/110. PASS.
+W1 writer path f_target->f_alt: NO EXACT CANDIDATE, not executed (running poll/current with the wrong value would be GEOMETRY_ONLY and risk a garbage trylock; forbidden by Phase 5).
+W2 same preparation without final store: NOT APPLICABLE for the same reason.
+Discriminators (differential already validated, re-run on this boot):
+  base_t (no trigger, f_chain) TIMEOUT 3000ms/110. PASS.
+  occ_base (no trigger, f_target occupied) TIMEOUT 3000ms/110. PASS.
+  trg_inwin (trigger, f_target empty) TIMEOUT 3000ms/110. PASS.
   occ_tgt (trigger, f_target ocupado) EDEADLK 0ms/35. PASS.
   alt_tgt (trigger, f_target ocupado + f_alt ocupado) EDEADLK 0ms/35. PASS.
 ```

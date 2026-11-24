@@ -1,7 +1,7 @@
-# round30 / 02 — exact build matching: local artifact vs public artifacts
+# round30 / 02 - exact build matching: local artifact vs public artifacts
 
 Question: can any public bootloader.bin/img be compared byte-wise against
-the local `bootloader.img` (sha256 c7b8eea6…, 0x148200)?
+the local `bootloader.img` (sha256 c7b8eea6..., 0x148200)?
 
 ## answer block
 
@@ -11,7 +11,7 @@ EXACT MATCH                             n/a (no candidate)
 SAME BUILD / DIFFERENT WRAPPER          n/a
 DIFFERENT BUILD                         n/a
 UNKNOWN                                 n/a
-comparison performed                    NO — impossible without a candidate
+comparison performed                    NO - impossible without a candidate
 ```
 
 ## what the brief asked for, and what a candidate WOULD have been compared on

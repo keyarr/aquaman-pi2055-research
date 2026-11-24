@@ -1,11 +1,11 @@
 /*
- * test_mm_enum.c — host-only validation for ghostlock_mm_enum.h.
+ * test_mm_enum.c - host-only validation for ghostlock_mm_enum.h.
  *
  * Build (host, no NDK, no device):
  *   gcc -O2 -Wall -Wextra -o /tmp/test_mm_enum tools/test_mm_enum.c
  *   /tmp/test_mm_enum
  *
- * Checks (task §16 + multi-order §11):
+ * Checks (task sec 16 + multi-order sec 11):
  *   a) slab_base AQ_MM_SLAB_SIZE-aligned
  *   b) AQ_MM_OBJS slots per slab, stride 0x340
  *   c) reserved-region exclusion (ramoops/secmon/fb)

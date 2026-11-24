@@ -113,7 +113,7 @@ optional 4th word `x21`:
 
 syntax: `keyman read <name> <addr> [hex|str]`. CONFIRMED.
 example in rodata: `keyman read %s 1080000 str`@0x37ebf6bd
-(template used byາດownload-key code, not by the parser itself).
+(template used by download-key code, not by the parser itself).
 
 ## 1.4 `do_keyman_query 0x37e75304` (query parser, no storage edge)
 

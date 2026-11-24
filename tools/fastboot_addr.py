@@ -73,7 +73,7 @@ def main():
 
     print()
     if match == ["loadaddr"]:
-        print("CONSISTENT with reports/buffer-equals-loadaddr-proof.md (BUF==loadaddr)")
+        print("CONSISTENT with reports/_archive/buffer-equals-loadaddr-proof.md (BUF==loadaddr)")
     elif not match:
         print("INCONSISTENT with both BUF==loadaddr and BUF==khadas.")
         print("Either the device hardcodes/recomputes max-download-size, or its")

@@ -1,4 +1,4 @@
-# ghostlock chainwalk predicate — occupancy gates EDEADLK
+# ghostlock chainwalk predicate - occupancy gates EDEADLK
 
 Date: 2026-10-01. Device: Xiaomi Mi TV Stick 1080p (aquaman, S805Y/GXL,
 Android 9, PI.2055, 4.9.113 arm64, PREEMPT=y, shell uid=2000, no root,
@@ -41,44 +41,44 @@ Dataflow f_target -> register -> compare -> branch -> consequence:
 hop 0 task_blocks stale root `OFFLINE_ONLY`
 - VA 0xffffff80091052f0 `ldr x0, [x22, #0x7f0]`
 - reg x22=W task -> x0=pi_blocked_on, off +0x7f0
-- origem W task_struct, destino x0, cond sempre (sob pi_lock)
+- source W task_struct, destination x0, cond always (under pi_lock)
 - branch 0xffffff80091052f8 `cbz x0, +0x188`: NULL -> return 0
-  (TIMEOUT path), non-NULL -> continue. Efeito: walk starts only if
+  (TIMEOUT path), non-NULL -> continue. Effect: walk starts only if
   stale != NULL. `HARDWARE_REPRODUCED` (occ_base NULL->TIMEOUT vs
   occ_tgt non-NULL->EDEADLK, sec. 6).
 
 hop 1 first stale deref `OFFLINE_ONLY`
 - VA 0xffffff80091052fc `ldr x25, [x0, #0x38]`
 - reg x0=stale waiter -> x25=next_lock, off +0x38
-- origem waiter->lock, destino x25, cond stale != NULL
+- source waiter->lock, destination x25, cond stale != NULL
 - branch 0xffffff800910530c `cmp x25,#0` + 0x5318 `cbz w23`:
-  NULL -> return 0, non-NULL -> chain. Efeito: next_lock=&f_target
+  NULL -> return 0, non-NULL -> chain. Effect: next_lock=&f_target
   heap (owner O), walk not abandoned. Natural, valid, no fault.
 
 hop 2 FULL entry `OFFLINE_ONLY`
 - VA 0xffffff8009105378 `bl rt_mutex_adjust_prio_chain`
 - reg x0=W x1=1 FULL x2=f_chain x3=next_lock x4=C_waiter x5=C
-- cond chain_walk && next_lock (both true when stale). Efeito:
+- cond chain_walk && next_lock (both true when stale). Effect:
   FULL removes MIN prio early-return; walk proceeds whatever prio.
 
 hop 3 walk root `OFFLINE_ONLY`
 - VA 0xffffff8009104e60 `ldr x28, [x19, #0x7f0]`
 - reg x19=W -> x28=stale waiter, off +0x7f0, cond cbnz passes.
-- Efeito: same stale word re-read.
+- Effect: same stale word re-read.
 
 hop 4 lock-match gate `OFFLINE_ONLY`
 - VA 0xffffff8009104df0 `ldr x0, [x28, #0x38]`
 - VA 0xffffff8009104df4 `cmp x20, x0`
 - VA 0xffffff8009104df8 `b.ne out`
 - reg x20=next_lock vs x0=waiter->lock, off +0x38
-- origem stale waiter, destino x0, cond != -> bail, == -> continue.
-- Efeito: passes on natural bytes (same heap word twice, stable).
+- source stale waiter, destination x0, cond != -> bail, == -> continue.
+- Effect: passes on natural bytes (same heap word twice, stable).
 
 hop 5 has_waiters(W) `OFFLINE_ONLY`
 - VA 0xffffff8009104e00 `ldr x0, [x19, #0x7e0]`
 - VA 0xffffff8009104e04 `cbz x0, out`
 - reg x19=W, off +0x7e0 (pi_waiters root), cond EMPTY->ret 0.
-- Efeito: W holds O_waiter (O blocked on f_chain, enqueue_pi), so
+- Effect: W holds O_waiter (O blocked on f_chain, enqueue_pi), so
   non-empty, no bail. Same for O0/O1/O2.
 
 hop 6 task_top(W) + FULL `OFFLINE_ONLY`
@@ -87,20 +87,20 @@ hop 6 task_top(W) + FULL `OFFLINE_ONLY`
   0x4e1c `b.ne out`, 0x4e20 `mov w24,#0`
 - reg x22=C_waiter vs x0=task_top(W)=O_waiter, off +0x7e8-0x18
 - cond != + FULL -> requeue=false, continue (DEADLOCK-DETECT-ONLY).
-- Efeito: first iteration takes !requeue path in all configs.
+- Effect: first iteration takes !requeue path in all configs.
 
 hop 7 prio gate `OFFLINE_ONLY`
 - VA 0xffffff8009104e28 `ldr w1, [x28, #0x40]`, 0x4e2c `cmp w1,w0`,
   0x4e30 `b.ne`, 0x4e34 `cmp w23,#1`, 0x4e38 `b.ne out`
 - reg x28 prio vs task prio ~120, off +0x40
 - cond FULL -> requeue=false + CONTINUE whatever prio.
-- Efeito: prio never decides on FULL. FASE 4 closed without prio var.
+- Effect: prio never decides on FULL. PHASE 4 closed without prio var.
 
 hop A occupancy top(f_target), first !requeue tail `OFFLINE_ONLY` VAs,
 `HARDWARE_REPRODUCED` divergence
 - VA 0xffffff800910508c `ldr x2, [x20, #0x10]`
 - reg x20=f_target lock -> x2=waiters_leftmost, off +0x10
-- origem f_target.pi_mutex, destino x2=top_waiter
+- source f_target.pi_mutex, destination x2=top_waiter
 - O0: x2=NULL. O1/O2: x2=occ_waiter (first parked, prio 120).
 - VA 0xffffff8009105094 `ldr x0, [x2, #0x38]` (BUG_ON w->lock!=lock)
 - reg x2 -> x0=top->lock, off +0x38, cond cmp x20,x0 else brk 0x5114
@@ -116,13 +116,13 @@ hop B has_waiters(O), second-iteration head `OFFLINE_ONLY` VAs,
 - O0: O empty (sole W dequeued via is_top path) -> would bail.
 - O1/O2: O non-empty (occ; plus stale W retained when W not top,
   remove_waiter early-return) -> passes to lock==orig EDEADLK.
-- Efeito: O0 TIMEOUT vs O1/O2 EDEADLK. Minimum 1, O2 stable.
+- Effect: O0 TIMEOUT vs O1/O2 EDEADLK. Minimum 1, O2 stable.
 
 hop C top compare(O) `OFFLINE_ONLY`
 - VA 0xffffff8009104e08/0x4e0c/0x4e10/0x4e14 (x22=top(f_target) vs
   task_top(O)=occ)
 - O1: occ==occ equal. O2: occ1==occ1 equal (2nd right, top still 1st).
-- Efeito: O1 vs O2 identical EDEADLK. Count does not matter.
+- Effect: O1 vs O2 identical EDEADLK. Count does not matter.
 
 EDEADLK site `OFFLINE_ONLY` VA, `HARDWARE_REPRODUCED` result
 - VA 0xffffff8009105124 `mov w22,#-0x23` (ret -35) via 0x4f10
@@ -185,7 +185,7 @@ Proves occupied f_target alone does not create EDEADLK.
 
 Priority: all threads SCHED_OTHER default (prio ~120). Hop 7 shows
 FULL ignores prio match. No prio change was needed; existence alone
-decides. FASE 4 closed with zero prio variable. `OFFLINE_ONLY` for
+decides. PHASE 4 closed with zero prio variable. `OFFLINE_ONLY` for
 the gate, `HARDWARE_REPRODUCED` for stability O1==O2.
 
 ## 5. Hardware Matrix
@@ -241,7 +241,7 @@ x2 NULL vs occ, O root EMPTY vs NON-EMPTY. `HARDWARE_REPRODUCED`.
 Original hypothesis (top BUG_ON fault -> panic) `HARDWARE_REFUTED` as
 a panic prediction (O0 TIMEOUT, not fault). Narrowed actual predicate
 (existence gate -> EDEADLK vs TIMEOUT) `HARDWARE_REPRODUCED`. Report
-states both so the hypothesis is replaced, not forced (FASE 12).
+states both so the hypothesis is replaced, not forced (PHASE 12).
 
 ## 7. pos_cycle Control
 

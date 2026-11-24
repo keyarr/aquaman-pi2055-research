@@ -1,6 +1,6 @@
 # GhostLock KASLR + symbols + stock kernel (Phase 8 + Phase 9)
 
-## Stock kernel as an artifact — result
+## Stock kernel as an artifact - result
 
 - boot.img -> boot_unpack/kernel 9.3M starts with AMLSECU! magic
   (version 0x905, 3 blocks, build timestamp 2022090612544443).
@@ -12,12 +12,12 @@
 
 ## What this closes and what remains
 
-Closes: (B) static artifacts — no text base, no kallsyms, no
+Closes: (B) static artifacts - no text base, no kallsyms, no
 relocations, no DWARF, no IKCONFIG from the actual binary.
 Remains:
   A) Direct: /proc/version, /proc/cmdline, getprop, uname (basic).
   C) Side-channel: leak via futex hash timing (hazel ks_*) or KASLR
-     slide via relative reads — functions WITHOUT kallsyms, but requires
+     slide via relative reads - functions WITHOUT kallsyms, but requires
      the reclaim primitive working first (chicken-and-egg resolved
      by hazel: mm leak comes before kernel R/W and uses only futex
      timing + child's /proc/pid/mem, all userspace).
@@ -30,7 +30,7 @@ Remains:
 All three ports assume kallsyms is closed to unprivileged shell:
 - hazel: profiles with absolute addresses + runtime read validation
   ("swapper" comm + next/prev from task list). KASLR? On ARM32 4.9 FireOS
-  no effective lowmem KASLR — addresses remain stable per firmware.
+  no effective lowmem KASLR - addresses remain stable per firmware.
 - aresin: slide_leak_kernel_base + resolve_missing_offsets via kallsyms
   WHEN available (root/Magisk), otherwise static fallback. On aquaman
   without prior root, static fallback does not yet exist: must construct
@@ -48,7 +48,7 @@ via mm leak, as hazel does with slab page_base);
 (2) Kernel read of the page -> anchor swapper -> resolve init_task;
 (3) From there derive fops/configfs/ashmem by reading pointers
     (e.g., file->f_op from a real ashmem fd via task read? requires
-    file table walk — high effort but feasible) OR via a locally compiled
+    file table walk - high effort but feasible) OR via a locally compiled
     compatible kernel image.
 
 ## Recommended path for initial aquaman profile

@@ -1,4 +1,4 @@
-# ghostlock h16 control — waiter->lock address selection
+# ghostlock h16 control - waiter->lock address selection
 
 Date: 2026-10-01. Stock: Xiaomi Mi TV Stick 1080p (aquaman, S805Y/GXL,
 Android 9, PI.2055, 4.9.113 arm64). Lab: build-aq/vmlinux +
@@ -118,8 +118,8 @@ slowlock path lock = the futex being taken. After that:
 * Stack frame death recycles bytes, but that is not a store to the
   field and the harness keeps the FWRQ frame alive (fwake_errno=22).
 
-So `waiter->lock` is: E. sobrescrito somente por corrupcao externa
-(and A. immutable after creation by any legitimate syscall — both
+So `waiter->lock` is: E. overwritten only by external corruption
+(and A. immutable after creation by any legitimate syscall - both
 hold; E is the operative one). No B/C/D path exists in 4.9.113:
 not alterable by syscall, not derived from another mutable field,
 not copied from a second kernel object after birth. EVIDENCE:
@@ -160,7 +160,7 @@ zero reboot, adb stable. `ghostlock_chain 0x0 B <mode>`:
   f_alt occupied does not disturb.
 * alt_only HARDWARE_REPRODUCED (2x): occ_n=0 + ALT_ARMED a_armed=1
   alt_parked=1, TIMEOUT_BLOCK errno=110 3000ms. f_alt occupied is
-  IGNORED by the walk; f_target empty decides. This is the FASE 8
+  IGNORED by the walk; f_target empty decides. This is the PHASE 8
   negative control: two legit mutexes in deliberately different states
   (f_target empty, f_alt occupied), H16 still f_target, result follows
   f_target.
@@ -174,11 +174,11 @@ explicitly out of scope. Documented as impossible, not skipped.
 
 ## 9. H16 Result
 
-SUCESSO B. NATURAL H16 CONTROL = HARDWARE_REFUTED (no legitimate
+SUCCESS B. NATURAL H16 CONTROL = HARDWARE_REFUTED (no legitimate
 syscall sequence retargets the stale waiter->lock; single birth store
 H16.0, zero post-creation writers). ADDRESS SELECTION stays
 INCONCLUSIVE as a hardware claim (never demonstrated, by design).
-What IS hardware-proven instead: address FIDELITY — with two live
+What IS hardware-proven instead: address FIDELITY - with two live
 legitimate rt_mutexes in opposite states, the walk deterministically
 consumes f_target (the birth value) and ignores f_alt (alt_tgt
 EDEADLK vs alt_only TIMEOUT, 1x/2x, zero panic). EVIDENCE:
@@ -194,7 +194,7 @@ faithful H16 value drives: first heap word lock+0x00 RMW trylock
 owner+0x7d4 pi_lock as necessary path consequence. lock+0x08 untouched
 in !requeue; +0x20.. OOB (object size 0x20). A future H16=f_alt would
 replay exactly these offsets on f_alt's heap object (same struct, same
-function, same VAs) — but the pointer switch itself is the unsolved
+function, same VAs) - but the pointer switch itself is the unsolved
 step, so no claim is made about f_alt downstream behavior. EVIDENCE:
 HARDWARE_REPRODUCED for f_target path; INCONCLUSIVE for f_alt path.
 

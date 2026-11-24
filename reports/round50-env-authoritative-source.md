@@ -11,17 +11,17 @@ Single question only:
 
 No hardware was executed in this round. No E1, no E1-template, no boot, no
 poke, no flash, no saveenv. All code claims are re-derived from the device
-binary `reports/round14-bl33-persist/bl33-37e18000.bin` (sha `664fb34a…`,
+binary `reports/round14-bl33-persist/bl33-37e18000.bin` (sha `664fb34a...`,
 base `0x37e18000`). All blob claims are re-derived from
 `reports/round46-same-cycle/hunt_33e18000_32k.bin` and
 `reports/round49-bootargs-template-selinux/hunt_33e18000_32k.bin`
-(sha `1c5e262d…`).
+(sha `1c5e262d...`).
 
 The Khadas reference tree (`.src/u-boot-khadas`) is used ONLY for names and
 layout comparison, always marked REFERENCE. Nothing in this report depends on
 it as proof.
 
-Status vocabulary: same as `reports/ROOT_FINAL_ANALYSIS.md`
+Status vocabulary: same as `reports/_archive/ROOT_FINAL_ANALYSIS.md`
 (PROVEN / HARDWARE_REPRODUCED / HARDWARE_OBSERVED / OFFLINE_ONLY / INFERRED /
 INCONCLUSIVE / REFUTED / EXTERNAL).
 
@@ -42,7 +42,7 @@ Round49 measured the wrong copy. `run storeargs` executes four sequential
 old `bootargs` address (`0x33e1d73f`) afterwards observes freed bytes, not the
 effective value. The E1 smoking gun needs no extra machinery either: no
 `storeargs` ran in E1, yet Linux saw `reboot_mode=normal` while the arena
-string said `fastboot` — the consumed string was never the arena string.
+string said `fastboot` - the consumed string was never the arena string.
 
 Category: **`SHADOW_COPY`** (arena = stale copy; htab = authority), with
 `CONFIRMED_SHARED` as the proven sub-finding for the get/set pair (both use
@@ -54,7 +54,7 @@ is exactly what the proposed one-session oracle decides.
 ```text
 flash env / default env (0x37eb65a0, len 0x1785)
      |
-     |  himport_r (0x37eaa264) — one-way, at relocate/import only
+     |  himport_r (0x37eaa264) - one-way, at relocate/import only
      v
 htab object @ 0x37ee7278 {table=0x33e2d650, size=0x209}   <-- AUTHORITY
      |  ENTRY nodes {used,key,data,flags} stride 0x28, heap
@@ -73,7 +73,7 @@ htab object @ 0x37ee7278 {table=0x33e2d650, size=0x209}   <-- AUTHORITY
 Fallback layer (precedence): if `GD_FLG_ENV_READY` (`0x80` in `gd->flags`
 at `[x18,#8]`) is clear, `env_get` uses a 32-byte linear path
 (`gd->env_buf` at `[x18,#0xd0]`, cap `0x20`, error
-`"env_buf [%d bytes] too small…"` at `0x37ed0532`). Any successful
+`"env_buf [%d bytes] too small..."` at `0x37ed0532`). Any successful
 `run <script longer than 31 chars>` proves the htab path was active.
 Round49 `run storeargs` (965 B) -> `success` therefore proves the htab path
 was active during round49 (OFFLINE_ONLY logic + HARDWARE_OBSERVED reply).
@@ -99,7 +99,7 @@ Function `0x37e58920` (device binary, re-derived):
 Fallback (`0x37e58828` + `0x37e587a8` + char helper `0x37e58a74`):
 copies at most `0x20` bytes from `[x18,#0xd0]` (`gd->env_buf[32]`,
 REFERENCE name) or scans the compiled-in default env at `0x37eb65a0`
-(`"bootcmd=run storeboot…"`, resolved at `0x37e58a90`: `0x37eb6000+0x5a0`).
+(`"bootcmd=run storeboot..."`, resolved at `0x37e58a90`: `0x37eb6000+0x5a0`).
 The `'='` matcher at `0x37e587a8` (`cmp w0,#0x3d`) confirms the default blob
 uses `name=value` serialisation, unlike the arena's `name\0value\0`.
 
@@ -115,7 +115,7 @@ htab object contents from the persisted image (device artifact, not
 reference): at file offset of `0x37ee7278`: `table = 0x33e2d650`
 (heap, above the hunt window), `size = 0x209` (521), `filled = 0x4a`
 (74, plausible var count). `env_id` counter at `0x37ee70f0` = `0x26`
-(38 `setenv`s ran during boot — boot scripts do dozens).
+(38 `setenv`s ran during boot - boot scripts do dozens).
 
 162 `BL env_get` call sites in the image (census, device binary). Boot
 consumers re-derived this round (all `adrp+add` resolving `0x37ebf453` =
@@ -132,12 +132,12 @@ consumers re-derived this round (all `adrp+add` resolving `0x37ebf453` =
 ## `env_set` / `setenv` reverse engineering
 
 `setenv` cmd_tbl idx 91, entry `0x37f61fc0`, handler `0x37e58470`
-(cmd_tbl base `0x37f60eb0` stride `0x30`, handler at `+0x10` — re-derived
+(cmd_tbl base `0x37f60eb0` stride `0x30`, handler at `+0x10` - re-derived
 from the offline image; all ten spot-checked handlers match
-`reports/ROOT_FINAL_ANALYSIS.md`).
+`reports/_archive/ROOT_FINAL_ANALYSIS.md`).
 
 Handler `0x37e58470` is an argc dispatcher into worker `0x37e58294`,
-which: rejects `'='` in names (`"## Error: illegal character…"` at
+which: rejects `'='` in names (`"## Error: illegal character..."` at
 `0x37ed0475`), builds the new value with malloc (`0x37e59f28`, NULL ->
 `"## Can't malloc %d bytes"` at `0x37ed04ab`), increments the generation
 counter at `0x37ee70f0`, then calls hsearch_r with the SAME htab and
@@ -157,7 +157,7 @@ resides at a NEW heap address. The old address keeps freed (stale) bytes.
 This is the oracle-invalidating mechanism for round49. OFFLINE_ONLY
 (call-site semantics for malloc/free/strdup).
 
-`setenv` therefore never writes the `0x33e18000` arena by address — there is
+`setenv` therefore never writes the `0x33e18000` arena by address - there is
 not one `ADRP` into `0x33e1xxxx`/`0x33e2xxxx` in the whole image (census:
 0 hits). This matches the round49 HARDWARE_OBSERVED side finding (`setenv`
 did not rewrite the blob) and promotes it from "likely wall" to explained.
@@ -185,7 +185,7 @@ Two layers, both ending in `env_get` on the device binary:
    `0x37e2b1ac`, called from dispatcher `0x37e2b348`, reachable from the
    `test` command handler `0x37e36774`): on `$`+`{` it skips 2, scans for
    `}`, truncates with NUL, and does a bare `b 0x37e58920` (tail-call to
-   `env_get`). There is NO local-variable lookup on this path — it reads
+   `env_get`). There is NO local-variable lookup on this path - it reads
    the global htab unconditionally. Only the `${VAR}` form is expanded
    here (bare `$VAR` returns NULL).
 
@@ -197,7 +197,7 @@ calls `getenv()` first and `get_local_var()` second, and `getenv()` is
 Consequence for `run storeargs`: `${EnableSelinux}` expands via
 `env_get("EnableSelinux")` = htab value. The WRITE-poked arena bytes are
 consulted if and only if the arena string IS the entry's live `data`
-pointer — which the census below makes unlikely and the proposed oracle
+pointer - which the census below makes unlikely and the proposed oracle
 decides.
 
 ## Why round49 failed
@@ -230,7 +230,7 @@ Both round49 observations are therefore consistent with a CORRECTLY
 functioning `storeargs`. The `REFUTED` label on
 `EnableSelinux -> storeargs -> bootargs` was measured through a stale
 oracle and strictly only refutes "the OLD heap bytes change". Whether the
-effective (htab) `bootargs` changed was never observed — that leg is
+effective (htab) `bootargs` changed was never observed - that leg is
 UNKNOWN, not refuted. (Verdicts in `CURRENT_STATE.md` /
 `INVALIDATED_HYPOTHESES.md` #21 are kept as-is; this report records the
 oracle caveat so the next run does not repeat the error.)
@@ -240,7 +240,7 @@ oracle caveat so the next run does not repeat the error.)
 E1 ran `imgread` + `bootm` with NO `storeargs`, yet Linux showed TWO fields
 differing from the poked arena string: `selinux permissiv -> enforcing`
 AND `reboot_mode fastboot -> normal`. Under "arena string == consumed
-string", the second difference is inexplicable — nothing in that session
+string", the second difference is inexplicable - nothing in that session
 rewrote it. Under the htab model it is expected: the htab `bootargs` had
 been (re)built during U-Boot boot (`get_rebootmode` reads AO register
 `0xc810023c` bits[15:12] and setenvs `reboot_mode`; boot scripts run
@@ -260,7 +260,7 @@ SHADOW_COPY
 Justification:
 
 * `env_get` (FIND) and `env_set` (ENTER) provably share one htab object
-  (`0x37ee7278`) — CONFIRMED_SHARED sub-finding, device binary.
+  (`0x37ee7278`) - CONFIRMED_SHARED sub-finding, device binary.
 * The `0x33e18000` arena is heap (absolute pointers, `list_head`
   self-links, dlmalloc size words `0xa1`/`0x41` in the first `0x56b6`
   bytes), not a serialised blob; code never addresses it by constant.
@@ -269,7 +269,7 @@ Justification:
   def x1, `enforcing` x4, `permissiv` x0 after restore); 90/91 names have
   zero in-window pointer references, so no ENTRY-node array lives there.
 * `setenv` allocates new strings (free+strdup in ENTER path) instead of
-  rewriting in place — matches the HARDWARE_OBSERVED non-rewrite.
+  rewriting in place - matches the HARDWARE_OBSERVED non-rewrite.
 * E1's double-field divergence without `storeargs` is incompatible with
   arena==live and fully compatible with arena==stale.
 * Not promoted to fact: WHICH heap bytes are the live strdups (nodes +
@@ -310,7 +310,7 @@ Outcome table (decides the one open point, nothing else):
 |---|---|---|
 | yes | yes | arena string is live entry data; round49 needs re-explanation |
 | yes | no | SHADOW_COPY confirmed; round49 explained (stale oracle) |
-| no | — | Case D/E: expansion reads elsewhere; remap required |
+| no | - | Case D/E: expansion reads elsewhere; remap required |
 
 No `storeargs`, no `imgread`, no `bootm` in this session: the question is
 oracle placement, not transport. Transport (htab `bootargs` -> kernel)
@@ -325,7 +325,7 @@ performed in this round (per scope).
 
 The one related capability found and NOT proposed for use:
 `do_env_import` (`env import`, `0x37e581a0`-region) re-imports a
-serialised blob into the htab — documented only so a future round knows a
+serialised blob into the htab - documented only so a future round knows a
 re-import path exists in-code.
 
 ## Root relevance
@@ -350,7 +350,7 @@ fixed-address blob readback after a `setenv`.
 ## Artifacts
 
 * This report: `reports/round50-env-authoritative-source.md`
-* Analysis scripts: `/tmp/opencode/envptr_scan.py` (throwaway census;
+* Analysis scripts: `/tmp/envptr_scan.py` (throwaway census;
   figures reproduced above, not a repo artifact)
 * No binary artifacts created; no device state touched.
 

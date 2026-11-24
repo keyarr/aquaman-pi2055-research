@@ -1,5 +1,5 @@
 /*
- * test_aq_futex_timing.c — observational benchmark: is the aquaman futex
+ * test_aq_futex_timing.c - observational benchmark: is the aquaman futex
  * hash bucket visible in FUTEX_WAKE_PRIVATE latency?
  *
  * Benign by construction. No PI, no rtmutex, no mm_struct, no reclaim, no

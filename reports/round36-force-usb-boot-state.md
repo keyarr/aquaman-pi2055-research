@@ -22,7 +22,7 @@ literal pools and string refs).
                                                           hardcoded in BL2
   the boot-mode field             = [3:0]                0 cold, 1 normal, 7 bootloader
   who writes it                   = BL31, on the SMC 0x82000043          setter not
-                                                          recoverable, see §3
+                                                          recoverable, see sec 3
   who clears it                   = BL31 reset hook, BL2 "Skip usb!", BL30 pre-reset
   who CONSUMES it                 = BL2, 0x79b4 and 0x820                FIRST consumer
   the other consumer              = BL30, moves [3:0] -> SD_CFG15[15:12]
@@ -294,7 +294,7 @@ BL33 `_get_romcode_boot_id()`, and confirmed live: F1 read `GP_CFG0[3:0] == 1`,
    v
 ```
 
-**cold vs normal, statically, as asked in §8: the mode lands in `RTI[3:0]` and
+**cold vs normal, statically, as asked in sec 8: the mode lands in `RTI[3:0]` and
 `SD_CFG15[15:12]`, and BL2's two gates read `[15:12]` and `GP_CFG0[3:0]`. neither
 gate looks at `[3:0]` or at `SD_CFG15`. so `cold_boot` and `normal` should behave
 identically once the flag is armed.** that is a falsifiable prediction and it is
@@ -317,7 +317,7 @@ the status register. full sets, decoded from the two dispatchers:
 
 there is **no** usb-boot command in either set. so on this generation BL30 is not
 the component that arms the flag; it is only the component that transports the
-mode and clears the flag on the way down. consistent with §3: the arming is done
+mode and clears the flag on the way down. consistent with sec 3: the arming is done
 inside bl31, before BL30 is ever involved.
 
 ## 7. persistence, classified
@@ -345,7 +345,7 @@ not cleared by losing power in any way visible in this code. so either
 * the arming is in a second place that *is* power-cycle cleared, or
 * the F1 "it came back after a power-cycle" reading is wrong. F1 never issued a
   reset. the flag was read as 0, the auto-burn path ran, and the stick came back
-  on its own or after the plug. round 34 §5 already leaned on F1's implicit
+  on its own or after the plug. round 34 sec 5 already leaned on F1's implicit
   recovery; that inference is **not** supported, because no reset separated F1
   from the recovery.
 
@@ -414,7 +414,7 @@ arm is still armed when BL2 runs.
 
 **E3, cold vs normal, with the flag armed.**
 `set_usb_boot 2` then `oem reboot normal`, with the 4 ms watcher running.
-discriminates: §5 predicts the same wedge as `cold_boot`. if `normal` boots
+discriminates: sec 5 predicts the same wedge as `cold_boot`. if `normal` boots
 android, the mode field matters somewhere this analysis missed, and the "BL2 USB
 branch only" story is incomplete.
 

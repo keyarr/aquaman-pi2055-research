@@ -18,7 +18,7 @@ INFERRED           an aquaman claim argued from family structure plus an
 | property | value | source | exact-aquaman |
 |---|---|---|---|
 | bootloader.img size | 0x148200 | measured | YES |
-| bootloader.img sha256 | c7b8eea6…3424 | measured | YES |
+| bootloader.img sha256 | c7b8eea6...3424 | measured | YES |
 | uniform ciphertext | chi2 226.6, 0/329 blocks deviant | measured | YES |
 | known magics present | none of 11 searched | measured | YES |
 | 128-byte record, 5 sites | 0xc080 0x10080 0x20080 0x4c080 0x8c080 | measured | YES |
@@ -28,9 +28,9 @@ INFERRED           an aquaman claim argued from family structure plus an
 | BL31 secure window | 0x05100000 + 0x200000 | live fault boundary + DTB | YES |
 | BL32 base / size | 0x05300000 / 0x2000000 | live AO CFG4/CFG3-lo + DTB | YES |
 | BL33 base | 0x01000000 | exact BL33 dump | YES |
-| BL33 size at rest | UNKNOWN | — | — |
+| BL33 size at rest | UNKNOWN | - | - |
 | FIP ToC layout | 0x10 hdr, 0x28 entries | fip_create run offline | no |
-| UUID table | 6 uuids incl. BL31 `05d0e189…` | fip_create .data | no |
+| UUID table | 6 uuids incl. BL31 `05d0e189...` | fip_create .data | no |
 | bl31.img header fields | 6 values, magic 0x12348765 | gxl/bl31.img | no |
 | AML control block | 0x200, AMLC at +0x0c/+0xfc | aml_ctrl_blk_check | no |
 | AES-256-CBC, IV=0, [0,0xC000) | exact | aml_bl2_enc_file disasm | no |
@@ -38,7 +38,7 @@ INFERRED           an aquaman claim argued from family structure plus an
 | three root-key SHA-2 digests | exact | aml_check_root_key_sha2_with_efuse | no |
 | object boundaries | 0xC000 0x10000 0x20000 0x4C000 0x8C000 | hypothesis | no |
 | BL31 object offset/size | 0x20000 / 0x2C000 | hypothesis | no |
-| BL31 entrypoint | UNKNOWN | no field carries one | — |
+| BL31 entrypoint | UNKNOWN | no field carries one | - |
 
 ## 3. where the family is *not* evidence
 

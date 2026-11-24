@@ -1,6 +1,6 @@
-# round30 / 05 — pipeline reproduction with public material only
+# round30 / 05 - pipeline reproduction with public material only
 
-Brief rule 8: "known key → encrypt known FIP → compare expected structure",
+Brief rule 8: "known key -> encrypt known FIP -> compare expected structure",
 no device. The one public production package (superbird, sha256-pinned by
 its own downstream project) was run through the ENTIRE vendor pipeline,
 offline, on family artifacts. This is the first end-to-end execution of the
@@ -30,12 +30,12 @@ inputs   .src/u-boot-khadas/fip/gxl/{bl2.bin,bl30.bin,bl31.img} + random
 stage A  --bl3enc bl30/bl31.img/bl32/bl33   (per-object rand key)
 stage B  --bl2sig bl2.bin -> bl2.n.bin.sig  (0xC000)
 stage C  --bootmk -> u-boot.bin             (0x60000; ctrl@0xC000+0xFE00
-                                             plaintext, AMLC@0xC00C/0xFE0C…)
+                                             plaintext, AMLC@0xC00C/0xFE0C...)
 stage D  --bootsig --amluserkey <superbird> --aeskey enable
          -> u-boot.bin.encrypt              (0x60200, delta +0x200)
 ```
 
-Stage D succeeded with a REAL production 0x1B40 package — the consumer
+Stage D succeeded with a REAL production 0x1B40 package - the consumer
 contract (package accepted, tail32 consumed as AES key) is thereby
 demonstrated end-to-end, exactly the rule-8 requirement.
 
@@ -43,22 +43,22 @@ demonstrated end-to-end, exactly the rule-8 requirement.
 
 ```text
 1  oracle(enc[0:16], key=tail32, expected=pre[0:16])  = TRUE
-    (IV=0 → block 0 = ECB block; the tail32 IS the stage-1 key)
+    (IV=0 -> block 0 = ECB block; the tail32 IS the stage-1 key)
 2  tail32-CBC decrypt of enc[0,0xC000) == bl2.n.bin.sig content
     everywhere EXCEPT 148 blocks in 8 spans (0x10..0xF70) = the
     re-signature data bootsig inserts BEFORE encrypting.
-    → the FULL [0,0xC000) window is re-encrypted under tail32/IV=0.
+    -> the FULL [0,0xC000) window is re-encrypted under tail32/IV=0.
 3  enc has NO plaintext ctrl copy: no AMLC anywhere (pre had 8);
     both ctrl copies (0xC000/0xFE00) are encrypted.
 4  enc has ZERO repeated 16-byte blocks (pre/at-rest census method);
     the at-rest record128 (5 identical 128B records) cannot be produced
-    by this per-stream-random-key composition — re-proving the round-29
+    by this per-stream-random-key composition - re-proving the round-29
     deduction that the production build encrypted ALL streams under ONE
     key (the tail32).
 5  reference fixture tail32 does NOT decrypt the new artifact (negative
     control for the oracle run itself).
 6  decrypted-header word0/word1 did not equal the bootmk constants under
-    any tried rand-blob layout — the exact v1.3 bootsig header-wrapper
+    any tried rand-blob layout - the exact v1.3 bootsig header-wrapper
     (rand blob position/format) stays OPEN; it does not touch the key
     question because stage 1 is proven directly on block 0 + window.
 ```
@@ -82,7 +82,7 @@ still differs (the production variant question, unchanged):
 Every element of the round-29 pipeline that can be tested without the
 aquaman secret has now been executed with public material and behaved as
 documented. The reproduction validates the tooling, the package format,
-the key-consumption contract and the at-rest structure constraints — and
+the key-consumption contract and the at-rest structure constraints - and
 simultaneously demonstrates that with a KNOWN package the pipeline turns
 into a straightforward decryptor (the new artifact's BL2 window was
 decrypted transparently). The single missing input for the aquaman file

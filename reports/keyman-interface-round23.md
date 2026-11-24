@@ -26,20 +26,20 @@ query     | keyman query ... | console words only | - | - | - | - | - | - | cons
 
 ```text
 keyman write:
-  host controls name/data? YES, GATED (DTS cfg + per-type validators) — CONFIRMED
+  host controls name/data? YES, GATED (DTS cfg + per-type validators) - CONFIRMED
   reaches SMC 0x62? YES (direct for hdcp fixed names; runtime device
-    vector otherwise) — CONFIRMED
+    vector otherwise) - CONFIRMED
   size bounded? YES (0x11 / >0x14 / >0x385+magic / <=0x10000 / exact
-    0x24,0x35e,4) — CONFIRMED
-  names restricted? YES (unknown name => reject before any SMC) — CONFIRMED
+    0x24,0x35e,4) - CONFIRMED
+  names restricted? YES (unknown name => reject before any SMC) - CONFIRMED
 
 keyman read:
-  host controls name? YES, GATED (DTS; no argv len exists) — CONFIRMED
-  reaches SMC 0x61? YES (direct in hdcp leg; runtime vector otherwise) — CONFIRMED
-  output type? opaque blob (len+bytes shape CONFIRMED, content UNPROVEN) — CONFIRMED
+  host controls name? YES, GATED (DTS; no argv len exists) - CONFIRMED
+  reaches SMC 0x61? YES (direct in hdcp leg; runtime vector otherwise) - CONFIRMED
+  output type? opaque blob (len+bytes shape CONFIRMED, content UNPROVEN) - CONFIRMED
   output destination? caller RAM @argv[2] addr (host-chosen); heap staging
-    freed; fmt=hex adds console hexdump, fmt=str adds setenv(name,blob) — CONFIRMED
-  host-readable through existing RAM-read path? UNKNOWN — UNPROVEN
+    freed; fmt=hex adds console hexdump, fmt=str adds setenv(name,blob) - CONFIRMED
+  host-readable through existing RAM-read path? UNKNOWN - UNPROVEN
 ```
 
 contract closed:

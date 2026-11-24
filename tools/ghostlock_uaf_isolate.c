@@ -1,8 +1,8 @@
 /*
- * ghostlock_uaf_isolate.c — isolates WHICH consumer crashes the device.
+ * ghostlock_uaf_isolate.c - isolates WHICH consumer crashes the device.
  *
  * Finding that motivated this tool: ghostlock_uaf_check.c (Phase 3) crashes
- * aquaman on the VULN leg, but the log stops at "[vuln] cmp_errno=35" — i.e.,
+ * aquaman on the VULN leg, but the log stops at "[vuln] cmp_errno=35" - i.e.,
  * the crash comes AFTER the rollback, in the teardown/consumer leg, and not
  * during the CMP. And the device recovers on its own (PANIC_TIMEOUT=1), so each
  * test costs a reboot, not a power cycle.

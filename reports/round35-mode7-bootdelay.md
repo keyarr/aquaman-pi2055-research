@@ -9,10 +9,10 @@ every single time). no USB, no SMC, no reset, no execution of device code.
 ## 0. answer block
 
 ```text
-  "logo aparece, USB nao aparece"                    = BY DESIGN, not a hang
+  "logo appears, USB does not appear"                 = BY DESIGN, not a hang
   mode 7 means, in this build                        = stay in the U-Boot prompt
   the whole mechanism                                = setenv bootdelay -1
-  set in                                             = do_get_rebootmode, 0x37e60618
+  set in = do_get_rebootmode, 0x37e60618
   consumed by                                        = autoboot_command, 0x37e24500
                                                       cmn w19,#1 ; b.eq  (== -1)
   bootcmd ("run storeboot") ever runs on mode 7      = NO
@@ -68,7 +68,7 @@ every single time). no USB, no SMC, no reset, no execution of device code.
 **there is no pre-SMC work specific to mode 7.** not an AO write, not an RTC
 poke, not a sticky register, not shared memory, not a delay. `x1` is masked
 with `&0xf` and handed over. the only thing that differs between mode 0 and
-mode 7 inside BL33 is the integer in `w1`. that answers §1 of the question
+mode 7 inside BL33 is the integer in `w1`. that answers sec 1 of the question
 completely: mode 7 is literally `PSCI_SYSTEM_RESET(x1=7)` and nothing else.
 
 the mode table, decoded from the strcmp chain (every entry confirmed by
@@ -90,7 +90,7 @@ reading the string at the adrp/add pair):
 
 matches `.src/u-boot-khadas/common/cmd_reboot.c:130-153` plus `rpmbp`, which
 is the Xiaomi addition. 8, 10, 13, 14 are reachable on the read side only,
-see §3.
+see sec 3.
 
 ## 2. what BL31 does with x1=7 (family, and the one thing it does not do)
 
@@ -123,7 +123,7 @@ offset `0x18ddc`:
 
 **no special case for 7.** the only conditional in the whole function is on
 the *previous* mode being 8 and the *new* mode not being 12. mode 8 is
-`shutdown_reboot` in the BL33 decode table (§3), so the semantics of the
+`shutdown_reboot` in the BL33 decode table (sec 3), so the semantics of the
 "clear usb flag" branch are: coming out of a clean shutdown, wipe the low 12
 bits of the reboot-reason register. mode 7 goes straight through.
 
@@ -147,7 +147,7 @@ about the aquaman binary.
 `RTI_STATUS_REG3`; BL33 reads it back from `SD_CFG15`. the copy between them
 is still unlocated.
 
-**correction to round 31 §4.3**: the claim that BL31 "polls SD_CFG15 at
+**correction to round 31 sec 4.3**: the claim that BL31 "polls SD_CFG15 at
 0x1886c" and that therefore "BL30/SCP writes it" is wrong about what the poll
 is. `0x1886c` is:
 
@@ -370,7 +370,7 @@ only appends `defendkey=%x,%x,` to bootargs for `recovery`, `update`,
 `factory_reset` or `upgrade_step == 3`. `bootloader` is not in it.
 
 **so, explicitly answering "should `reboot bootloader` give fastboot/USB in
-this build?" — no. by design it should not.** `bootloader` means "drop to the
+this build?" - no. by design it should not.** `bootloader` means "drop to the
 U-Boot prompt and wait for a human", which is why it coexists with
 `bootdelay=-1`. the only bootloader this firmware expects here is the one on
 the UART console (`console=ttyS0,115200`, `earlycon=aml_uart,0xc81004c0` in
@@ -451,7 +451,7 @@ mechanical one.**
 
 so: nothing in the static evidence ties `0x82000043(x1=2)` to
 `0x84000009(x1=7)`, and the one experiment that would look for it is
-confounded as shown in §6. drop it from the plan.
+confounded as shown in sec 6. drop it from the plan.
 
 ## 8. the logo-but-no-USB question, graded
 
@@ -466,37 +466,37 @@ confounded as shown in §6. drop it from the plan.
 
 and the classification the question asked for:
 
-- **COMPROVADO PELO CÓDIGO**: mode 7 is `PSCI(x1=7)` with zero pre-work;
+- **PROVEN BY CODE**: mode 7 is `PSCI(x1=7)` with zero pre-work;
   `do_get_rebootmode` sets `bootdelay=-1` on mode 7; `main_loop` runs preboot
   before `bootdelay_process`; `autoboot_command` skips `bootcmd` on -1;
   `switch_bootmode` and `init_display` have no `bootloader` branch; the logo
   is drawn from inside preboot; the SD_CFG15[15:12] decode table including
   7 -> `bootloader`; the family BL31 hook has no special case for 7.
-- **COMPROVADO PELO TESTE**: mode 7 leaves the stick off the bus with no
+- **PROVEN BY TEST**: mode 7 leaves the stick off the bus with no
   fastboot and no Android (operator, plus round19 02-c2.md:25);
   `adb reboot fastboot` -> `18d1:0d02` back (same session);
   `cold_boot` -> `17.5 s` -> `2717:4e40` (C0).
-- **INFERÊNCIA FORTE**: the operator's "logo" is the U-Boot `init_display`
+- **STRONG INFERENCE**: the operator's "logo" is the U-Boot `init_display`
   blit, not the kernel splash. the two are near-identical on a Xiaomi stick
   and this is the one place where the distinction matters. the supporting
   fact is that the kernel is never reached at all, so the kernel splash
   cannot be what is on screen.
-- **HIPÓTESE**: the live env partition matches the compiled default env
+- **HYPOTHESIS**: the live env partition matches the compiled default env
   (`preboot` contains `run init_display`, `bootdelay=1`, and a
   `switch_bootmode` without a `bootloader` branch). nothing in the image
   contradicts it and the behaviour fits it, but the env is writable and was
-  not read. §9 closes it for one command.
+  not read. sec 9 closes it for one command.
 
 ## 9. next experiment, minimal, read-only where possible
 
 three, in this order. none writes, none uses RUN_IN_ADDR, none is
-destructive. all three are `fastboot oem`, which round 14 §3 established is a
+destructive. all three are `fastboot oem`, which round 14 sec 3 established is a
 host-driven `run_command` and is not lock-gated.
 
 1. **`fastboot oem printenv preboot`** and **`fastboot oem printenv bootdelay`**
    and **`fastboot oem printenv switch_bootmode`**, from a clean cold boot.
    read-only, no reset. this is the only thing standing between the answer
-   above and "COMPROVADO PELO TESTE" for the env half. expected: `bootdelay=1`,
+   above and "PROVEN BY TEST" for the env half. expected: `bootdelay=1`,
    a `preboot` containing `run init_display`, and a `switch_bootmode` with six
    branches and no `bootloader`.
 2. **`fastboot oem reboot fastboot` under `tools/usb_watch.py`.** expected
@@ -510,7 +510,7 @@ host-driven `run_command` and is not lock-gated.
    path" question with a mode that shares mode 7's lack of a branch but not
    its `bootdelay` clobber.
 
-skip entirely: `set_usb_boot 2` combined with mode 7 (§6, confounded), and
+skip entirely: `set_usb_boot 2` combined with mode 7 (sec 6, confounded), and
 anything that touches AO registers, which is where the risk actually is.
 
 ## 10. ledger
@@ -533,6 +533,6 @@ anything that touches AO registers, which is where the risk actually is.
                                                                a power cycle restores 1
 ```
 
-round 31's §8 item 4 ("`fastboot oem reboot bootloader`") was the right test
+round 31's sec 8 item 4 ("`fastboot oem reboot bootloader`") was the right test
 to run and the right way to run it. it just was not read against the boot
 script, which is where the answer was sitting the whole time.

@@ -16,7 +16,7 @@ set -u
 IMG_A="m1_boot.img"
 IMG_B="m1b_boot.img"
 # runtime-proven 2026-09-29: BUF==loadaddr on this build
-# (reports/buffer-equals-loadaddr-proof.md). NOT 0x10200000.
+# (reports/_archive/buffer-equals-loadaddr-proof.md). NOT 0x10200000.
 X="0x1080000"
 RUN="${1:-A}"
 
@@ -57,7 +57,7 @@ log "== step 4: inject bootm X via set_active sink (RAM-only)"
 log "wire bytes: set_active:;bootm $X (stock CLI filters this, raw does not)"
 T0=$(date +%s.%N)
 # NOTE: U-Boot replies FAIL (first command argc!=2) AFTER both Hush
-# commands already ran (see reports/set-active-sink.md). On success the
+# commands already ran (see reports/_archive/set-active-sink.md). On success the
 # device resets mid-read -> USB-GONE with dt = delay+reset time.
 python3 tools/fb_raw.py cmd "set_active:;bootm $X" "$CMD_TIMEOUT" 2>&1 | head -3 || true
 log "injection round done (reply above; USB-GONE means the box reset)"

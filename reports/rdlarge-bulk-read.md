@@ -5,12 +5,12 @@ working so RAM could be pulled out in big blocks instead of 512B at a time.
 **it does not work on this build. the result is negative**, and it is negative
 in a way that rules out the obvious explanations. no write verb was issued, no
 eMMC, no env, no `flash`, no `RUN_IN_ADDR`. the stick was left enumerated in
-optimus mode, see §9.
+optimus mode, see sec 9.
 
 ## 0. TL;DR
 
 - **`RD_LARGE_MEM: NOT CONFIRMED.** the control stage is correct and completes
-  in 0.000 s, the endpoint is healthy, the address is mapped, and the device
+ in 0.000 s, the endpoint is healthy, the address is mapped, and the device
   still never puts a single byte on the wire. this is not a client bug.
 - the bulk IN endpoint **works**: `AM_REQ_BULKCMD` (0x34) returned its full
   512-byte reply on EP 0x81 in the same sessions where 0x12 returned nothing at
@@ -20,10 +20,10 @@ optimus mode, see §9.
 - sizes 0x200 through 0x4000 all fail. it is not a block size limit.
 - both proven addresses fail identically. it is not the address.
 - **new operational fact, better than round 4's:** `libusb_reset_device`
-  recovers the wedged gadget. no power cycle needed. round 4 §4 said the
+  recovers the wedged gadget. no power cycle needed. round 4 sec 4 said the
   device needed a manual unplug, that is no longer true.
 - the blocker is upstream of this task: without a bulk read, a 512 MB sweep is
-  1,048,576 control transfers, which does not fit in a 77 second window. see §8.
+  1,048,576 control transfers, which does not fit in a 77 second window. see sec 8.
 
 ## 1. transport audit, answered from the code
 
@@ -97,7 +97,7 @@ are dead values. the host still sends them, because the public spec says to.
 (`dwc_pcd.h:184`), so the ceiling is 0x7fffffff in principle. in practice there
 is no device-side buffer: `bulk_buf` is a raw pointer into RAM and the payload
 is streamed straight out of it, so the only real limits are the burning window
-and the host. **not the blocker**, see §3.
+and the host. **not the blocker**, see sec 3.
 
 **max safe blocks.** `bulk_num` is not a host-controlled quantity at all, it is
 recomputed from the length and merely decremented in `do_bulk_complete`
@@ -178,7 +178,7 @@ setup bytes then sixteen data bytes, on EP0 OUT, then a bulk read on 0x81.
 
 for `addr=0x20000000 size=0x1000 block_len=0x1000`. `wIndex=1` is
 `ceil(0x1000/0x1000)`, i.e. the "block count" from the public spec, which
-§1.2 shows is ignored anyway.
+sec 1.2 shows is ignored anyway.
 
 **16 byte OUT payload** (`usb_pcd.c:636`, `intBuf[0]` then `intBuf[1]`):
 
@@ -271,7 +271,7 @@ control: 0x34 bulk IN 512 bytes b'success\x00...'
 both proven addresses, both readable by 0x02 in the same session, both dead
 over 0x12, and 0x34 alive again immediately afterwards.
 
-side note, 0x3f000000 did not return the round 4 §3.3 pattern this time, it is
+side note, 0x3f000000 did not return the round 4 sec 3.3 pattern this time, it is
 `0c 00 00 00 01 00 00 00 a8 aa ae d2 10 10 00 00`. different boot, different
 point in U-Boot's life, so that region is **not** stable across sessions.
 anything built on reading it needs to re-read it each time.
@@ -322,11 +322,11 @@ parameter combinations, which the task explicitly told me not to do.
 
 | phase | status |
 |---|---|
-| 1. transport audit | **done**, all six questions answered, §1 |
-| 2. minimal 0x12 client | **done**, `read_large_mem`, no writes, no retry, §2 |
+| 1. transport audit | **done**, all six questions answered, sec 1 |
+| 2. minimal 0x12 client | **done**, `read_large_mem`, no writes, no retry, sec 2 |
 | 3. ladder 0x1000 / 0x10000 / 0x100000 | **stopped at step 1**, 0x12 returns 0 bytes |
 | 4. byte-for-byte vs 0x02 | **impossible**, nothing to compare |
-| 5. max useful block_len | **moot**, the host block length is ignored (§1.3) |
+| 5. max useful block_len | **moot**, the host block length is ignored (sec 1.3) |
 | 6. BL33 search prep | **blocked**, no bulk read means no scan |
 
 the deliverable asked for, "a file of at least 0x10000 bytes that matches 0x02
@@ -335,7 +335,7 @@ returns nothing as progress.
 
 ## 7. one thing that did get better
 
-round 4 §4 concluded that a wedged gadget needs a manual power cycle, and it
+round 4 sec 4 concluded that a wedged gadget needs a manual power cycle, and it
 cost the user an unplug. that is no longer necessary:
 
 ```python
@@ -388,9 +388,9 @@ the remaining ways to get U-Boot out of RAM are all worse than what we had:
   back to Android, round 4 saw that after 77 s, or it may need a power cycle.
   no writes were issued at any point in this round, so nothing persistent
   changed.
-- a wedged gadget is recoverable in software now, see §7, so the blast radius
+- a wedged gadget is recoverable in software now, see sec 7, so the blast radius
   of a failed 0x12 is one reset.
-- `0x3f000000` is **not** stable across boots (§4.3). anything that caches it
+- `0x3f000000` is **not** stable across boots (sec 4.3). anything that caches it
   is wrong.
 - the phase 6 goal, "identify a first BL33 code region", is not reached and is
   not currently reachable without either the bootloader image or a bulk read

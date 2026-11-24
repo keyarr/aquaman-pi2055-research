@@ -54,7 +54,7 @@ After 3x `storeargs`, entry262's data pointer moved `0x33e32910 -> 0x33e0d0e0` (
 
 ## Round48 / Round49 correction
 
-> os experimentos anteriores nao atingiram o objeto runtime autoritativo; seus vereditos sobre o consumo do valor devem ser reinterpretados conforme o novo oracle.
+> the previous experiments did not reach the authoritative runtime object; their verdicts about value consumption must be reinterpreted according to the new oracle.
 
 Concretely: round49's template `REFUTED` becomes `REFUTED-for-stale-oracle, REPRODUCED-through-htab`. Round48's direct-arena-poke `REFUTED` stands (wrong object), and E1's double-field divergence is now triple-explained (stale arena + preboot rebuilder + htab authority). Transport `htab bootargs -> kernel` remains the single open leg; nothing here boots, roots, or touches Linux.
 

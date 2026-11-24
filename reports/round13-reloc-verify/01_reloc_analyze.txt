@@ -4,84 +4,84 @@ size 8388608  base 0x37800000
 brief marker list over 0x37800000..0x37ffffff (8388608 bytes)
 
 b'U-Boot'              5 hit(s)
-      abs 0x37ebdcc0  in run 0x37e17cc0..0x37f4bcc0  align 0
-      abs 0x37ec2266  in run 0x37e17266..0x37f49266  align 2
-      abs 0x37ed0fe1  in run 0x37e17fe1..0x37f48fe1  align 1
-      abs 0x37ed5c05  in run 0x37e17c05..0x37f4bc05  align 1
-      abs 0x37edf2f4  in run 0x37e172f4..0x37f492f4  align 0
+      abs 0x37ebdcc0 in run 0x37e17cc0..0x37f4bcc0  align 0
+      abs 0x37ec2266 in run 0x37e17266..0x37f49266  align 2
+      abs 0x37ed0fe1 in run 0x37e17fe1..0x37f48fe1  align 1
+      abs 0x37ed5c05 in run 0x37e17c05..0x37f4bc05  align 1
+      abs 0x37edf2f4 in run 0x37e172f4..0x37f492f4  align 0
 b'2015.01'             2 hit(s)
-      abs 0x37ebdcc7  in run 0x37e17cc7..0x37f4bcc7  align 3
-      abs 0x37edf2fb  in run 0x37e172fb..0x37f492fb  align 3
+      abs 0x37ebdcc7 in run 0x37e17cc7..0x37f4bcc7  align 3
+      abs 0x37edf2fb in run 0x37e172fb..0x37f492fb  align 3
 b'g7ac5df7677'         2 hit(s)
-      abs 0x37ebdccf  in run 0x37e17ccf..0x37f4bccf  align 3
-      abs 0x37edf303  in run 0x37e17303..0x37f49303  align 3
+      abs 0x37ebdccf in run 0x37e17ccf..0x37f4bccf  align 3
+      abs 0x37edf303 in run 0x37e17303..0x37f49303  align 3
 b'aml log : Sig Check' 2 hit(s)
-      abs 0x37ec00d4  in run 0x37e170d4..0x37f490d4  align 0
-      abs 0x37ec6c0c  in run 0x37e17c0c..0x37f4bc0c  align 0
+      abs 0x37ec00d4 in run 0x37e170d4..0x37f490d4  align 0
+      abs 0x37ec6c0c in run 0x37e17c0c..0x37f4bc0c  align 0
 b'aml_sec_boot_check'  ABSENT
 b'Optimus'             ABSENT
 b'fastboot'            24 hit(s)
-      abs 0x37eb4ff9  in run 0x37e17ff9..0x37f48ff9  align 1
-      abs 0x37eb5010  in run 0x37e17010..0x37f49010  align 0
-      abs 0x37eb5029  in run 0x37e17029..0x37f49029  align 1
-      abs 0x37eb5040  in run 0x37e17040..0x37f49040  align 0
-      abs 0x37eb716c  in run 0x37e1716c..0x37f4916c  align 0
-      abs 0x37eb71ab  in run 0x37e171ab..0x37f491ab  align 3
-      abs 0x37ec5668  in run 0x37e17668..0x37f49668  align 0
-      abs 0x37ec56f9  in run 0x37e176f9..0x37f496f9  align 1
-      abs 0x37ec5716  in run 0x37e17716..0x37f49716  align 2
-      abs 0x37ec5730  in run 0x37e17730..0x37f49730  align 0
-      abs 0x37ec573e  in run 0x37e1773e..0x37f4973e  align 2
-      abs 0x37ec8453  in run 0x37e17453..0x37f49453  align 3
+      abs 0x37eb4ff9 in run 0x37e17ff9..0x37f48ff9  align 1
+      abs 0x37eb5010 in run 0x37e17010..0x37f49010  align 0
+      abs 0x37eb5029 in run 0x37e17029..0x37f49029  align 1
+      abs 0x37eb5040 in run 0x37e17040..0x37f49040  align 0
+      abs 0x37eb716c in run 0x37e1716c..0x37f4916c  align 0
+      abs 0x37eb71ab in run 0x37e171ab..0x37f491ab  align 3
+      abs 0x37ec5668 in run 0x37e17668..0x37f49668  align 0
+      abs 0x37ec56f9 in run 0x37e176f9..0x37f496f9  align 1
+      abs 0x37ec5716 in run 0x37e17716..0x37f49716  align 2
+      abs 0x37ec5730 in run 0x37e17730..0x37f49730  align 0
+      abs 0x37ec573e in run 0x37e1773e..0x37f4973e  align 2
+      abs 0x37ec8453 in run 0x37e17453..0x37f49453  align 3
       ... 12 more
 b'do_bootm'            ABSENT
 b'bootm'               21 hit(s)
-      abs 0x37eb6669  in run 0x37e17669..0x37f49669  align 1
-      abs 0x37eb6aeb  in run 0x37e17aeb..0x37f4baeb  align 3
-      abs 0x37eb6eb2  in run 0x37e17eb2..0x37f48eb2  align 2
-      abs 0x37eb6ec1  in run 0x37e17ec1..0x37f48ec1  align 1
-      abs 0x37eb7448  in run 0x37e17448..0x37f49448  align 0
-      abs 0x37eb7798  in run 0x37e17798..0x37f49798  align 0
-      abs 0x37eb7969  in run 0x37e17969..0x37f49969  align 1
-      abs 0x37eb79d8  in run 0x37e179d8..0x37f499d8  align 0
-      abs 0x37eb7a8f  in run 0x37e17a8f..0x37f4ca8f  align 3
-      abs 0x37eb7abc  in run 0x37e17abc..0x37f4cabc  align 0
-      abs 0x37ebf8f3  in run 0x37e178f3..0x37f498f3  align 3
-      abs 0x37ec01fe  in run 0x37e171fe..0x37f491fe  align 2
+      abs 0x37eb6669 in run 0x37e17669..0x37f49669  align 1
+      abs 0x37eb6aeb in run 0x37e17aeb..0x37f4baeb  align 3
+      abs 0x37eb6eb2 in run 0x37e17eb2..0x37f48eb2  align 2
+      abs 0x37eb6ec1 in run 0x37e17ec1..0x37f48ec1  align 1
+      abs 0x37eb7448 in run 0x37e17448..0x37f49448  align 0
+      abs 0x37eb7798 in run 0x37e17798..0x37f49798  align 0
+      abs 0x37eb7969 in run 0x37e17969..0x37f49969  align 1
+      abs 0x37eb79d8 in run 0x37e179d8..0x37f499d8  align 0
+      abs 0x37eb7a8f in run 0x37e17a8f..0x37f4ca8f  align 3
+      abs 0x37eb7abc in run 0x37e17abc..0x37f4cabc  align 0
+      abs 0x37ebf8f3 in run 0x37e178f3..0x37f498f3  align 3
+      abs 0x37ec01fe in run 0x37e171fe..0x37f491fe  align 2
       ... 9 more
 b'set_usb_boot'        1 hit(s)
-      abs 0x37ed260d  in run 0x37e1760d..0x37f4960d  align 1
+      abs 0x37ed260d in run 0x37e1760d..0x37f4960d  align 1
 b'usb_pcd'             1 hit(s)
-      abs 0x37ed8021  in run 0x37e17021..0x37f49021  align 1
+      abs 0x37ed8021 in run 0x37e17021..0x37f49021  align 1
 b'Wrong Image Format'  1 hit(s)
-      abs 0x37ec05b6  in run 0x37e175b6..0x37f495b6  align 2
+      abs 0x37ec05b6 in run 0x37e175b6..0x37f495b6  align 2
 b'reset'               20 hit(s)
-      abs 0x37eb6604  in run 0x37e17604..0x37f49604  align 0
-      abs 0x37eb6eeb  in run 0x37e17eeb..0x37f48eeb  align 3
-      abs 0x37eb7472  in run 0x37e17472..0x37f49472  align 2
-      abs 0x37ebf353  in run 0x37e17353..0x37f49353  align 3
-      abs 0x37ebf612  in run 0x37e17612..0x37f49612  align 2
-      abs 0x37ec01bd  in run 0x37e171bd..0x37f491bd  align 1
-      abs 0x37ec47ff  in run 0x37e177ff..0x37f497ff  align 3
-      abs 0x37ec7adc  in run 0x37e17adc..0x37f4badc  align 0
-      abs 0x37ec7ae4  in run 0x37e17ae4..0x37f4bae4  align 0
-      abs 0x37ec7ec9  in run 0x37e17ec9..0x37f48ec9  align 1
-      abs 0x37ec822c  in run 0x37e1722c..0x37f4922c  align 0
-      abs 0x37ecabb0  in run 0x37e17bb0..0x37f4bbb0  align 0
+      abs 0x37eb6604 in run 0x37e17604..0x37f49604  align 0
+      abs 0x37eb6eeb in run 0x37e17eeb..0x37f48eeb  align 3
+      abs 0x37eb7472 in run 0x37e17472..0x37f49472  align 2
+      abs 0x37ebf353 in run 0x37e17353..0x37f49353  align 3
+      abs 0x37ebf612 in run 0x37e17612..0x37f49612  align 2
+      abs 0x37ec01bd in run 0x37e171bd..0x37f491bd  align 1
+      abs 0x37ec47ff in run 0x37e177ff..0x37f497ff  align 3
+      abs 0x37ec7adc in run 0x37e17adc..0x37f4badc  align 0
+      abs 0x37ec7ae4 in run 0x37e17ae4..0x37f4bae4  align 0
+      abs 0x37ec7ec9 in run 0x37e17ec9..0x37f48ec9  align 1
+      abs 0x37ec822c in run 0x37e1722c..0x37f4922c  align 0
+      abs 0x37ecabb0 in run 0x37e17bb0..0x37f4bbb0  align 0
       ... 8 more
 b'reboot'              62 hit(s)
-      abs 0x37eb65af  in run 0x37e175af..0x37f495af  align 3
-      abs 0x37eb65d3  in run 0x37e175d3..0x37f495d3  align 3
-      abs 0x37eb6947  in run 0x37e17947..0x37f49947  align 3
-      abs 0x37eb6ae9  in run 0x37e17ae9..0x37f4bae9  align 1
-      abs 0x37eb6b1b  in run 0x37e17b1b..0x37f4bb1b  align 3
-      abs 0x37eb6b31  in run 0x37e17b31..0x37f4bb31  align 1
-      abs 0x37eb6df4  in run 0x37e17df4..0x37f48df4  align 0
-      abs 0x37eb6e02  in run 0x37e17e02..0x37f48e02  align 2
-      abs 0x37eb6ebf  in run 0x37e17ebf..0x37f48ebf  align 3
-      abs 0x37eb6ed4  in run 0x37e17ed4..0x37f48ed4  align 0
-      abs 0x37eb6efe  in run 0x37e17efe..0x37f48efe  align 2
-      abs 0x37eb6f4e  in run 0x37e17f4e..0x37f48f4e  align 2
+      abs 0x37eb65af in run 0x37e175af..0x37f495af  align 3
+      abs 0x37eb65d3 in run 0x37e175d3..0x37f495d3  align 3
+      abs 0x37eb6947 in run 0x37e17947..0x37f49947  align 3
+      abs 0x37eb6ae9 in run 0x37e17ae9..0x37f4bae9  align 1
+      abs 0x37eb6b1b in run 0x37e17b1b..0x37f4bb1b  align 3
+      abs 0x37eb6b31 in run 0x37e17b31..0x37f4bb31  align 1
+      abs 0x37eb6df4 in run 0x37e17df4..0x37f48df4  align 0
+      abs 0x37eb6e02 in run 0x37e17e02..0x37f48e02  align 2
+      abs 0x37eb6ebf in run 0x37e17ebf..0x37f48ebf  align 3
+      abs 0x37eb6ed4 in run 0x37e17ed4..0x37f48ed4  align 0
+      abs 0x37eb6efe in run 0x37e17efe..0x37f48efe  align 2
+      abs 0x37eb6f4e in run 0x37e17f4e..0x37f48f4e  align 2
       ... 50 more
 
 opcode census per 64 KiB  (b/bl/adrp are unaligned-word counts)

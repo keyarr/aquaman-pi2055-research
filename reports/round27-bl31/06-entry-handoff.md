@@ -1,9 +1,9 @@
-# 06 — entrypoint, image metadata, handoff
+# 06 - entrypoint, image metadata, handoff
 
 ## what the FIP data says (FAMILY STRUCTURAL REFERENCE)
 
 `gxlimg/fip.c` documents the format contract: *"BL31 binary store
-information about load address and entry point in the FIP data"* — the
+information about load address and entry point in the FIP data"* - the
 0x50-byte BL31 header is copied by the packer into the FIP ToC region
 (`FTE_BL31HDR_OFF(n) = 0x430 + n*0x50`), preceded by a two-word marker
 `{BL31_ENTRY_MAGIC 0x87654321, 1}` written at FIP offset 0x400 (gxlimg
@@ -18,7 +18,7 @@ in the header itself the only nonzero fields are load/rsv/secure (no separate
 entry word), so the family convention is **entry == load address**
 (0x05100000): BL2 jumps to the image base after load. consistent with the
 reference binaries: `bl31.bin` `_start` (0xaa0003f4 = mov x4,x0 /
-0xaa0103f5 = mov x5,x1 — BL2 passes params in x0/x1 saved to x4/x5; then
+0xaa0103f5 = mov x5,x1 - BL2 passes params in x0/x1 saved to x4/x5; then
 `ldr x0, =_anon`-style `movz x1,#0x228/movk 0xc810` AClamp loop, `mrs
 sctlr_el3` clear M, `msr vbar_el3`, spin table read from SRAM mailbox
 `0xd9013f00` for secondaries).
@@ -42,7 +42,7 @@ NO pointer/entry/vector/size-of-image beyond the above ever crosses to NS.
 the round26 summary "no entrypoint in regs: start+size only. NO
 pointer/entry/vector in handoff" stands, and round27 explains why none is
 needed: NS never jumps to BL31; it only makes SMCs (the dispatcher lives in
-the protected window — rounds 14/18/26 negative results in the readable MiB
+the protected window - rounds 14/18/26 negative results in the readable MiB
 leave exactly one place for it).
 
 ## indirect entrypoint evidence census (brief s9)
@@ -74,7 +74,7 @@ update/burning -> USB -> fixed buffer 0x07700000 -> bootm -> same SMC
 
 no NS parser touches AMLSECU/FIP headers *of the bootloader* (the FIP is
 consumed entirely inside the pre-BL33 chain); `aml_encrypt_gxl --bootsig
---aeskey enable` (amlsecu-reverse.md §4) encrypts the whole u-boot.bin FIP at
+--aeskey enable` (amlsecu-reverse.md sec 4) encrypts the whole u-boot.bin FIP at
 pack time. there is no separate "copy/decrypt into 0x05000000+" flow visible
 in NS: the load into the secure window happened once, in BL2, at boot.
 nothing to decrypt without the vendor FIP key; per brief, not attempted.

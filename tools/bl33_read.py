@@ -27,7 +27,7 @@ sys.path.insert(0, __file__.rsplit("/", 1)[0])
 from optimus import MAX_RD, find, hexdump, identify, mread_mem, read_mem
 
 # CONFIG_SYS_TEXT_BASE for gxl, derived from the khadas tree, not measured on
-# the aquaman. See reports/bl33-offline-round7.md 3.2.
+# the aquaman. See reports/_archive/bl33-offline-round7.md 3.2.
 BASE = 0x01000000
 LADDER = [0x200, 0x1000, 0x10000]
 DUMP = 0x01000000

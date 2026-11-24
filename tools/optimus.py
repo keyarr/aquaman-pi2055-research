@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """optimus.py - minimal Amlogic optimus v2 USB burning client (read-only).
 
-The U-Boot console on this stick is invisible (reports/usb-entry-aquaman.md
+The U-Boot console on this stick is invisible (reports/_archive/usb-entry-aquaman.md
 2.2), so `md` / `mread` / `sha1sum` are useless over the tpl_cmd channel: they
 print to a console nobody sees and the host only ever gets "success". The bytes
 have to come out through the vendor control requests instead.

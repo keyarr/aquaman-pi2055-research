@@ -1,4 +1,4 @@
-$ sudo timeout 60 python3 /tmp/opencode/e2_string.py
+$ sudo timeout 60 python3 /tmp/e2_string.py
 [  0.016s] usb open ok
 [  0.017s] identify 00 07 00 10 stage=16
 [  0.017s] BEFORE 0x37ed8794: 66 61 69 6c 65 64 3a 00 5b 69 6e 66 6f 5d 25 73 ascii=b'failed:\x00'
