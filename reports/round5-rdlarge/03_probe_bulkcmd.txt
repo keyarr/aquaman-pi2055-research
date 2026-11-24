@@ -1,4 +1,4 @@
-[sudo] senha para erick: === step 1: identify ===
+[sudo] password for erick: === step 1: identify ===
   FAIL (USBTimeoutError errno=110)
   after reset: OK (00 07 00 10)
 

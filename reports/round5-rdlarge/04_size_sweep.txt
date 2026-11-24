@@ -1,4 +1,4 @@
-[sudo] senha para erick: 
+[sudo] password for erick: 
 === size 0x200 ===
   FAIL usb errno=110
 

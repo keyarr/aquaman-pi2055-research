@@ -1,0 +1,87 @@
+diff --git a/userspace/ksud_magic/src/cli.rs b/userspace/ksud_magic/src/cli.rs
+index db82dc72..fbd1a7c6 100644
+--- a/userspace/ksud_magic/src/cli.rs
++++ b/userspace/ksud_magic/src/cli.rs
+@@ -29,6 +29,12 @@ enum Commands {
+         command: Module,
+     },
+ 
++    /// Sync the allowlist between the LKM and /data/adb/ksu/.allowlist
++    Allowlist {
++        #[command(subcommand)]
++        command: Allowlist,
++    },
++
+     /// Trigger `post-fs-data` event
+     PostFsData,
+ 
+@@ -130,6 +136,18 @@ enum Commands {
+     },
+ }
+ 
++#[derive(clap::Subcommand, Debug)]
++enum Allowlist {
++    /// Read the file and push validated records to the LKM
++    Load,
++    /// Persist a pending change from the LKM
++    Save,
++    /// Run the save loop
++    Daemon,
++    /// Open the file from this context and log the result
++    Probe,
++}
++
+ #[derive(clap::Subcommand, Debug)]
+ enum BootInfo {
+     /// show current kmi version
+@@ -302,6 +320,12 @@ pub fn run() -> Result<()> {
+     log::info!("command: {:?}", cli.command);
+ 
+     let result = match cli.command {
++        Commands::Allowlist { command } => match command {
++            Allowlist::Load => crate::allowlist::load(),
++            Allowlist::Save => crate::allowlist::save(),
++            Allowlist::Daemon => crate::allowlist::daemon(),
++            Allowlist::Probe => crate::allowlist::probe(),
++        },
+         Commands::PostFsData => init_event::on_post_data_fs(),
+         Commands::BootCompleted => init_event::on_boot_completed(),
+ 
+diff --git a/userspace/ksud_magic/src/init_event.rs b/userspace/ksud_magic/src/init_event.rs
+index a205de53..a0c0a523 100644
+--- a/userspace/ksud_magic/src/init_event.rs
++++ b/userspace/ksud_magic/src/init_event.rs
+@@ -9,6 +9,15 @@ use std::path::Path;
+ pub fn on_post_data_fs() -> Result<()> {
+     ksucalls::report_post_fs_data();
+ 
++    // Same boot phase as the kernel workqueue: record both open results and
++    // load from this root service context, which has a valid keyring.
++    if let Err(e) = crate::allowlist::probe() {
++        warn!("allowlist probe failed: {e:#}");
++    }
++    if let Err(e) = crate::allowlist::load() {
++        warn!("allowlist load failed: {e:#}");
++    }
++
+     utils::umask(0);
+ 
+     #[cfg(unix)]
+@@ -145,6 +154,8 @@ pub fn on_boot_completed() -> Result<()> {
+ 
+     run_stage("boot-completed", false);
+ 
++    crate::allowlist::spawn_daemon()?;
++
+     Ok(())
+ }
+ 
+diff --git a/userspace/ksud_magic/src/main.rs b/userspace/ksud_magic/src/main.rs
+index a91fc0cb..834064dd 100644
+--- a/userspace/ksud_magic/src/main.rs
++++ b/userspace/ksud_magic/src/main.rs
+@@ -1,3 +1,4 @@
++mod allowlist;
+ mod apk_sign;
+ mod assets;
+ mod boot_patch;

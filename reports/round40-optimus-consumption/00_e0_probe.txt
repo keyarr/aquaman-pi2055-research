@@ -63,9 +63,9 @@ stage   16 (TPL/BL33-u-boot)
 37f8a658  25 73 0a 00 63 75 72 72 65 6e 74 2d 73 6c 6f 74  |%s..current-slot|
 37f8a668  00 68 61 73 2d 73 6c 6f 74 3a 62 6f 6f 74 6c 6f  |.has-slot:bootlo|
 
-note: 0x37f8a638 stale nesta leitura; mread seguinte mostrou o buffer
-vivo em ~0x37f8a620 com o proprio comando 'upload mem 0x37f8a600 normal 0x200'.
-.bss mutavel por design, sem conclusao tirada deste ponto isolado.
+note: 0x37f8a638 stale in this read; the next mread showed the buffer
+live at ~0x37f8a620 with its own command 'upload mem 0x37f8a600 normal 0x200'.
+.bss is mutable by design, no conclusion drawn from this isolated point.
 
 0x07700000:
 07700000  08 ea 46 c3 09 00 08 00 b6 86 9d 00 56 86 00 00  |..F.........V...|

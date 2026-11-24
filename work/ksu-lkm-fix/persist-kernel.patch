@@ -1,0 +1,692 @@
+--- a/ksu-skeleton/allowlist.c
++++ b/ksu-skeleton/allowlist.c
+@@ -4,9 +4,12 @@
+ #include <linux/gfp.h>
+ #include <linux/kernel.h>
+ #include <linux/list.h>
++#include <linux/err.h>
++#include <linux/namei.h>
+ #include <linux/printk.h>
+ #include <linux/slab.h>
+ #include <linux/types.h>
++#include <linux/uaccess.h>
+ #include <linux/version.h>
+ #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 14, 0)
+ #include <linux/compiler_types.h>
+@@ -21,12 +24,18 @@
+ 
+ #define FILE_MAGIC 0x7f4b5355 // ' KSU', u32
+ #define FILE_FORMAT_VERSION 3 // u32
++#define ALLOWLIST_HEADER_SIZE (sizeof(u32) + sizeof(u32))
++#define ALLOWLIST_MAX_RECORDS 1024
+ 
+ #define KSU_APP_PROFILE_PRESERVE_UID 9999 // NOBODY_UID
+ #define KSU_DEFAULT_SELINUX_DOMAIN "u:r:su:s0"
+ 
+ static DEFINE_MUTEX(allowlist_mutex);
+ 
++#ifdef CONFIG_KSU_ALLOWLIST_IO_VIA_KSUD
++static bool allowlist_save_pending;
++#endif
++
+ // default profiles, these may be used frequently, so we cache it
+ static struct root_profile default_root_profile;
+ static struct non_root_profile default_non_root_profile;
+@@ -351,6 +360,7 @@
+ 	return true;
+ }
+ 
++#ifndef CONFIG_KSU_ALLOWLIST_IO_VIA_KSUD
+ void do_save_allow_list(struct work_struct *work)
+ {
+ 	u32 magic = FILE_MAGIC;
+@@ -362,7 +372,8 @@
+ 	struct file *fp =
+ 		ksu_filp_open_compat(KERNEL_SU_ALLOWLIST, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+ 	if (IS_ERR(fp)) {
+-		pr_err("save_allow_list create file failed: %ld\n", PTR_ERR(fp));
++		pr_err("save_allow_list create file failed: %ld at jiffies=%lu\n",
++		       PTR_ERR(fp), jiffies);
+ 		return;
+ 	}
+ 
+@@ -409,7 +420,8 @@
+ 	// load allowlist now!
+ 	fp = ksu_filp_open_compat(KERNEL_SU_ALLOWLIST, O_RDONLY, 0);
+ 	if (IS_ERR(fp)) {
+-		pr_err("load_allow_list open file failed: %ld\n", PTR_ERR(fp));
++		pr_err("load_allow_list open file failed: %ld at jiffies=%lu\n",
++		       PTR_ERR(fp), jiffies);
+ 		return;
+ 	}
+ 
+@@ -449,6 +461,215 @@
+ 	ksu_show_allow_list();
+ 	filp_close(fp, 0);
+ }
++#endif /* !CONFIG_KSU_ALLOWLIST_IO_VIA_KSUD */
++
++/* Parse and validate the whole blob before touching the live list. A
++ * truncated tail or a bad record leaves the previous (possibly empty)
++ * allowlist in place, which is the secure state. */
++static int allowlist_validate_blob(const void __user *buf, u32 len, u32 *count)
++{
++	u32 magic, version, i;
++
++	if (len < ALLOWLIST_HEADER_SIZE)
++		return -EINVAL;
++	if (copy_from_user(&magic, buf, sizeof(magic)))
++		return -EFAULT;
++	if (copy_from_user(&version, (const char __user *)buf + sizeof(u32),
++			   sizeof(version)))
++		return -EFAULT;
++	if (magic != FILE_MAGIC || version != FILE_FORMAT_VERSION) {
++		pr_err("allowlist: bad magic/version (%#x/%u)\n", magic, version);
++		return -EINVAL;
++	}
++	if ((len - ALLOWLIST_HEADER_SIZE) % sizeof(struct app_profile)) {
++		pr_err("allowlist: truncated record\n");
++		return -EINVAL;
++	}
++	i = (len - ALLOWLIST_HEADER_SIZE) / sizeof(struct app_profile);
++	if (i > ALLOWLIST_MAX_RECORDS)
++		return -EINVAL;
++
++	for (*count = 0; *count < i; (*count)++) {
++		struct app_profile profile;
++		const void __user *rec = (const char __user *)buf +
++			ALLOWLIST_HEADER_SIZE +
++			(*count) * sizeof(profile);
++
++		if (copy_from_user(&profile, rec, sizeof(profile)))
++			return -EFAULT;
++		if (!profile_valid(&profile))
++			return -EINVAL;
++		if (profile.current_uid < 0 ||
++		    strnlen(profile.key, KSU_MAX_PACKAGE_NAME) >=
++			    KSU_MAX_PACKAGE_NAME)
++			return -EINVAL;
++	}
++	return 0;
++}
++
++static void allowlist_rebuild_indices(struct list_head *head)
++{
++	struct perm_data *p;
++	int i;
++
++	init_default_profiles();
++	memset(allow_list_bitmap, 0, sizeof(allow_list_bitmap));
++	for (i = 0; i < ARRAY_SIZE(allow_list_arr); i++)
++		allow_list_arr[i] = -1;
++	allow_list_pointer = 0;
++
++	list_for_each_entry (p, head, list) {
++		uid_t uid = p->profile.current_uid;
++
++		if (!strcmp(p->profile.key, "$"))
++			memcpy(&default_non_root_profile, &p->profile.nrp_config.profile,
++			       sizeof(default_non_root_profile));
++		if (!strcmp(p->profile.key, "#"))
++			memcpy(&default_root_profile, &p->profile.rp_config.profile,
++			       sizeof(default_root_profile));
++		if (!p->profile.allow_su)
++			continue;
++		if (uid <= BITMAP_UID_MAX)
++			allow_list_bitmap[uid / BITS_PER_BYTE] |=
++				1 << (uid % BITS_PER_BYTE);
++		else if (allow_list_pointer < ARRAY_SIZE(allow_list_arr))
++			allow_list_arr[allow_list_pointer++] = uid;
++	}
++}
++
++#ifdef CONFIG_KSU_ALLOWLIST_IO_VIA_KSUD
++static u32 allowlist_blob_size_locked(void)
++{
++	struct perm_data *p;
++	u32 count = 0;
++
++	list_for_each_entry (p, &allow_list, list)
++		count++;
++	if (count > ALLOWLIST_MAX_RECORDS)
++		count = ALLOWLIST_MAX_RECORDS;
++	return ALLOWLIST_HEADER_SIZE + count * sizeof(struct app_profile);
++}
++
++u32 ksu_allowlist_blob_size(void)
++{
++	u32 size;
++
++	mutex_lock(&allowlist_mutex);
++	size = allowlist_blob_size_locked();
++	mutex_unlock(&allowlist_mutex);
++	return size;
++}
++
++int ksu_allowlist_blob_read(void __user *buf, u32 len)
++{
++	u32 magic = FILE_MAGIC, version = FILE_FORMAT_VERSION, off;
++	struct perm_data *p;
++	int ret = 0;
++
++	mutex_lock(&allowlist_mutex);
++	if (len < allowlist_blob_size_locked()) {
++		mutex_unlock(&allowlist_mutex);
++		return -ENOSPC;
++	}
++	if (copy_to_user(buf, &magic, sizeof(magic)) ||
++	    copy_to_user((char __user *)buf + sizeof(u32), &version,
++			 sizeof(version))) {
++		ret = -EFAULT;
++		goto out;
++	}
++	off = ALLOWLIST_HEADER_SIZE;
++	list_for_each_entry (p, &allow_list, list) {
++		if (copy_to_user((char __user *)buf + off, &p->profile,
++				 sizeof(p->profile))) {
++			ret = -EFAULT;
++			break;
++		}
++		off += sizeof(p->profile);
++	}
++out:
++	mutex_unlock(&allowlist_mutex);
++	return ret;
++}
++
++int ksu_allowlist_blob_write(const void __user *buf, u32 len)
++{
++	struct perm_data *p, *n;
++	LIST_HEAD(new_list);
++	LIST_HEAD(old_list);
++	u32 count, i;
++	int ret;
++
++	ret = allowlist_validate_blob(buf, len, &count);
++	if (ret) {
++		pr_err("allowlist: rejected blob (%d), keeping current list\n", ret);
++		return ret;
++	}
++
++	for (i = 0; i < count; i++) {
++		p = kmalloc(sizeof(*p), GFP_KERNEL);
++		if (!p) {
++			ret = -ENOMEM;
++			goto free_new;
++		}
++		if (copy_from_user(&p->profile,
++				   (const char __user *)buf + ALLOWLIST_HEADER_SIZE +
++					   i * sizeof(p->profile),
++				   sizeof(p->profile))) {
++			kfree(p);
++			ret = -EFAULT;
++			goto free_new;
++		}
++		list_add_tail(&p->list, &new_list);
++	}
++
++	mutex_lock(&allowlist_mutex);
++	list_replace_init(&allow_list, &old_list);
++	list_replace_init(&new_list, &allow_list);
++	allowlist_rebuild_indices(&allow_list);
++	WRITE_ONCE(allowlist_save_pending, false);
++	mutex_unlock(&allowlist_mutex);
++
++	list_for_each_entry_safe (p, n, &old_list, list) {
++		list_del(&p->list);
++		kfree(p);
++	}
++	pr_info("allowlist: applied %u validated records at jiffies=%lu\n",
++		count, jiffies);
++	return 0;
++
++free_new:
++	list_for_each_entry_safe (p, n, &new_list, list) {
++		list_del(&p->list);
++		kfree(p);
++	}
++	return ret;
++}
++
++bool ksu_allowlist_save_pending(void)
++{
++	return READ_ONCE(allowlist_save_pending);
++}
++
++int ksu_allowlist_probe_open(void)
++{
++	struct path data_path;
++	struct file *fp;
++	int data_err, ret = 0;
++
++	data_err = kern_path("/data", 0, &data_path);
++	if (!data_err)
++		path_put(&data_path);
++	fp = ksu_filp_open_compat(KERNEL_SU_ALLOWLIST, O_RDONLY, 0);
++	if (IS_ERR(fp))
++		ret = PTR_ERR(fp);
++	else
++		filp_close(fp, 0);
++	pr_info("allowlist probe: jiffies=%lu pid=%d comm=%s data=%d open=%d wq=%d\n",
++		jiffies, current->pid, current->comm, data_err, ret,
++		!!(current->flags & PF_WQ_WORKER));
++	return ret;
++}
++#endif /* CONFIG_KSU_ALLOWLIST_IO_VIA_KSUD */
+ 
+ void ksu_prune_allowlist(bool (*is_uid_valid)(uid_t, char *, void *), void *data)
+ {
+@@ -485,18 +706,35 @@
+ // make sure allow list works cross boot
+ bool persistent_allow_list(void)
+ {
++#ifdef CONFIG_KSU_ALLOWLIST_IO_VIA_KSUD
++	/* The manager root service has a valid keyring; the kernel workqueue
++	 * does not. ksud writes the blob instead of the kernel workqueue. */
++	WRITE_ONCE(allowlist_save_pending, true);
++	return true;
++#else
+ 	return ksu_queue_work(&ksu_save_work);
++#endif
+ }
+ 
+ bool ksu_load_allow_list(void)
+ {
++#ifdef CONFIG_KSU_ALLOWLIST_IO_VIA_KSUD
++	/* ksud reads /data/adb/ksu/.allowlist and pushes it through
++	 * CMD_ALLOWLIST_IO. Replaying a failed load never re-runs rc hooks. */
++	pr_info("allowlist load delegated to ksud at jiffies=%lu\n", jiffies);
++	return true;
++#else
+ 	return ksu_queue_work(&ksu_load_work);
++#endif
+ }
+ 
+ void ksu_allowlist_init(void)
+ {
+ 	int i;
+ 
++#ifdef CONFIG_KSU_ALLOWLIST_IO_VIA_KSUD
++	BUILD_BUG_ON(sizeof(struct app_profile) != 776);
++#endif
+ 	BUILD_BUG_ON(sizeof(allow_list_bitmap) != PAGE_SIZE);
+ 	BUILD_BUG_ON(sizeof(allow_list_arr) != PAGE_SIZE);
+ 
+@@ -505,8 +743,10 @@
+ 
+ 	INIT_LIST_HEAD(&allow_list);
+ 
++#ifndef CONFIG_KSU_ALLOWLIST_IO_VIA_KSUD
+ 	INIT_WORK(&ksu_save_work, do_save_allow_list);
+ 	INIT_WORK(&ksu_load_work, do_load_allow_list);
++#endif
+ 
+ 	init_default_profiles();
+ }
+@@ -516,7 +756,9 @@
+ 	struct perm_data *np = NULL;
+ 	struct perm_data *n = NULL;
+ 
++#ifndef CONFIG_KSU_ALLOWLIST_IO_VIA_KSUD
+ 	do_save_allow_list(NULL);
++#endif
+ 
+ 	// free allowlist
+ 	mutex_lock(&allowlist_mutex);
+--- a/ksu-skeleton/allowlist.h
++++ b/ksu-skeleton/allowlist.h
+@@ -1,6 +1,7 @@
+ #ifndef __KSU_H_ALLOWLIST
+ #define __KSU_H_ALLOWLIST
+ 
++#include <linux/compiler.h>
+ #include <linux/types.h>
+ #include "ksu.h"
+ 
+@@ -10,6 +11,14 @@
+ 
+ bool ksu_load_allow_list(void);
+ 
++#ifdef CONFIG_KSU_ALLOWLIST_IO_VIA_KSUD
++u32 ksu_allowlist_blob_size(void);
++int ksu_allowlist_blob_read(void __user *buf, u32 len);
++int ksu_allowlist_blob_write(const void __user *buf, u32 len);
++bool ksu_allowlist_save_pending(void);
++int ksu_allowlist_probe_open(void);
++#endif
++
+ void ksu_show_allow_list(void);
+ 
+ bool __ksu_is_allow_uid(uid_t uid);
+--- a/ksu-skeleton/core_hook.c
++++ b/ksu-skeleton/core_hook.c
+@@ -1,4 +1,5 @@
+ #include <linux/capability.h>
++#include <linux/compat.h>
+ #include <linux/cred.h>
+ #include <linux/dcache.h>
+ #include <linux/err.h>
+@@ -240,6 +241,10 @@
+ 	struct path path;
+ 	int err;
+ 
++#ifdef CONFIG_KSU_NO_EXT4_SYSFS_NUKE
++	pr_info("ext4 sysfs nuke disabled\n");
++	return;
++#endif
+ 	if (nuked) {
+ 		return;
+ 	}
+@@ -326,6 +331,52 @@
+ 	}
+ #endif
+ 
++#ifdef CONFIG_KSU_ALLOWLIST_IO_VIA_KSUD
++	if (arg2 == CMD_ALLOWLIST_IO) {
++		struct allowlist_ioctl ctl;
++		void __user *ctl_user, *buf;
++		u32 len;
++		int ret;
++
++		if (!from_root)
++			return 0;
++		if (is_compat_task()) {
++			ctl_user = compat_ptr((compat_uptr_t)arg5);
++			buf = compat_ptr((compat_uptr_t)arg3);
++		} else {
++			ctl_user = (void __user *)arg5;
++			buf = (void __user *)arg3;
++		}
++		if (copy_from_user(&ctl, ctl_user, sizeof(ctl)))
++			return 0;
++		len = (u32)arg4;
++		switch (ctl.op) {
++		case ALLOWLIST_IO_GET_SIZE:
++			ctl.reply = ksu_allowlist_blob_size();
++			break;
++		case ALLOWLIST_IO_READ:
++			ctl.reply = ksu_allowlist_blob_read(buf, len);
++			break;
++		case ALLOWLIST_IO_WRITE:
++			ctl.reply = ksu_allowlist_blob_write(buf, len);
++			break;
++		case ALLOWLIST_IO_PENDING:
++			ctl.reply = ksu_allowlist_save_pending();
++			break;
++		case ALLOWLIST_IO_PROBE_OPEN:
++			ctl.reply = ksu_allowlist_probe_open();
++			break;
++		default:
++			ctl.reply = -EINVAL;
++			break;
++		}
++		ret = copy_to_user(ctl_user, &ctl, sizeof(ctl));
++		if (ret)
++			pr_err("allowlist io: reply copy failed: %d\n", ret);
++		return 0;
++	}
++#endif
++
+ #ifdef CONFIG_KSU_DEBUG
+ 	pr_info("option: 0x%x, cmd: %ld\n", option, arg2);
+ #endif
+@@ -400,7 +451,8 @@
+ 			static bool post_fs_data_lock = false;
+ 			if (!post_fs_data_lock) {
+ 				post_fs_data_lock = true;
+-				pr_info("post-fs-data triggered\n");
++				pr_info("post-fs-data triggered at jiffies=%lu\n",
++					jiffies);
+ 				on_post_fs_data();
+ 			}
+ 			break;
+@@ -409,7 +461,8 @@
+ 			static bool boot_complete_lock = false;
+ 			if (!boot_complete_lock) {
+ 				boot_complete_lock = true;
+-				pr_info("boot_complete triggered\n");
++				pr_info("boot_complete triggered at jiffies=%lu\n",
++					jiffies);
+ 			}
+ 			break;
+ 		}
+--- a/ksu-skeleton/kernel_compat.c
++++ b/ksu-skeleton/kernel_compat.c
+@@ -34,30 +34,9 @@
+ 	return commit_creds(new);
+ }
+ 
+-/* This kernel has no exported init_session_keyring and no LSM key_permission
+- * hook to capture it. Use the session keyring already attached to init (the
+- * same one the old hook read), then the uid's default session keyring. */
+-static void install_allowlist_keyring(void)
+-{
+-	struct key *keyring = NULL;
+-
+-	if (init_session_keyring)
+-		keyring = init_session_keyring;
+-	else if (init_task.cred)
+-		keyring = init_task.cred->session_keyring;
+-	if (!keyring) {
+-		if (ksu_install_user_keyrings)
+-			ksu_install_user_keyrings();
+-		keyring = current_cred()->user->session_keyring;
+-	}
+-	if (!keyring) {
+-		pr_warn("no session keyring available for allowlist\n");
+-		return;
+-	}
+-	pr_info("installing session keyring for allowlist workqueue\n");
+-	if (install_session_keyring(keyring))
+-		pr_warn("install session keyring failed\n");
+-}
++/* Keep the upstream condition. init_task is PID 0 (swapper), not Android
++ * init (PID 1); installing its keyring changed workqueue credentials and
++ * belongs to the bootloop change, not to the original module. */
+ #endif
+ 
+ extern struct task_struct init_task;
+@@ -105,10 +84,9 @@
+ struct file *ksu_filp_open_compat(const char *filename, int flags, umode_t mode)
+ {
+ #if LINUX_VERSION_CODE < KERNEL_VERSION(4, 10, 0) || defined(CONFIG_IS_HW_HISI) || defined(CONFIG_KSU_ALLOWLIST_WORKAROUND)
+-	if (!current_cred()->session_keyring &&
+-	    (current->flags & PF_WQ_WORKER)) {
+-		install_allowlist_keyring();
+-	}
++	if (init_session_keyring && !current_cred()->session_keyring &&
++	    (current->flags & PF_WQ_WORKER))
++		install_session_keyring(init_session_keyring);
+ #endif
+ 	// switch mnt_ns even if current is not wq_worker, to ensure what we open is the correct file in android mnt_ns, rather than user created mnt_ns
+ 	struct ksu_ns_fs_saved saved;
+@@ -120,6 +98,11 @@
+ 		task_unlock(current);
+ 	}
+ 	struct file *fp = filp_open(filename, flags, mode);
++	pr_info("ksu_open %s jiffies=%lu pid=%d comm=%s wq=%d keyring=%d result=%ld\n",
++		filename, jiffies, current->pid, current->comm,
++		!!(current->flags & PF_WQ_WORKER),
++		!!current_cred()->session_keyring,
++		IS_ERR(fp) ? PTR_ERR(fp) : 0);
+ 	if (android_context_saved_enabled) {
+ 		task_lock(current);
+ 		ksu_load_ns_fs(&saved);
+--- a/ksu-skeleton/ksu.h
++++ b/ksu-skeleton/ksu.h
+@@ -24,6 +24,20 @@
+ #define CMD_IS_SU_ENABLED 14
+ #define CMD_ENABLE_SU 15
+ #define CMD_GET_MANAGER_UID 16
++#define CMD_ALLOWLIST_IO 17
++
++#define ALLOWLIST_IO_GET_SIZE 0
++#define ALLOWLIST_IO_READ 1
++#define ALLOWLIST_IO_WRITE 2
++#define ALLOWLIST_IO_PENDING 3
++#define ALLOWLIST_IO_PROBE_OPEN 4
++
++/* arg5 of CMD_ALLOWLIST_IO points to this struct, so the same command works
++ * from 32-bit and 64-bit userspace with a single length field. */
++struct allowlist_ioctl {
++	u32 op;
++	u32 reply;
++};
+ 
+ #define CMD_HOOK_MODE 0xC0DEAD1A
+ 
+--- a/ksu-skeleton/Makefile
++++ b/ksu-skeleton/Makefile
+@@ -25,6 +25,12 @@
+ ccflags-y += -I$(srctree)/security/selinux -I$(srctree)/security/selinux/include
+ ccflags-y += -I$(objtree)/security/selinux -I$(src)/include
+ ccflags-y += -include $(srctree)/include/uapi/asm-generic/errno.h
++ifdef KSU_ALLOWLIST_IO_VIA_KSUD
++ccflags-y += -DCONFIG_KSU_ALLOWLIST_IO_VIA_KSUD
++endif
++ifdef KSU_NO_EXT4_SYSFS_NUKE
++ccflags-y += -DCONFIG_KSU_NO_EXT4_SYSFS_NUKE
++endif
+ ccflags-y += -fno-stack-protector
+ ccflags-y += -Wno-implicit-function-declaration -Wno-strict-prototypes -Wno-int-conversion
+ ccflags-y += -Wno-declaration-after-statement -Wno-unused-function
+--- a/ksu-skeleton/hook_runtime.c
++++ b/ksu-skeleton/hook_runtime.c
+@@ -20,7 +20,6 @@
+ #define KSU_LDR_X16_PC8 0x58000050U
+ #define KSU_BR_X16 0xd61f0200U
+ 
+-extern void ksu_stub_execve(void);
+ extern void ksu_stub_faccessat(void);
+ extern void ksu_stub_read(void);
+ extern void ksu_stub_newfstatat(void);
+@@ -41,6 +40,8 @@
+ extern int ksu_handle_execve_sucompat(int *fd,
+ 				      const char __user **filename_user,
+ 				      void *argv, void *envp, int *flags);
++extern int ksu_handle_execve_ksud(const char __user *filename_user,
++				  const char __user *const __user *__argv);
+ 
+ struct ksu_hook_entry {
+ 	const char *name;
+@@ -50,8 +51,10 @@
+ 	bool installed;
+ };
+ 
++/* do_execve is omitted: its argument layout does not match
++ * ksu_handle_execveat (which expects fd/filename/argv/envp/flags), and the
++ * real su path is covered by sys_execve below. */
+ static struct ksu_hook_entry hooks[] = {
+-	{ "do_execve", ksu_stub_execve, 0, {}, false },
+ 	{ SYS_FACCESSAT_SYMBOL, ksu_stub_faccessat, 0, {}, false },
+ 	{ SYS_READ_SYMBOL, ksu_stub_read, 0, {}, false },
+ 	{ SYS_NEWFSTATAT_SYMBOL, ksu_stub_newfstatat, 0, {}, false },
+@@ -123,7 +126,12 @@
+ 	case 6: {
+ 		int fd = -100;
+ 		const char __user *filename = (const char __user *)regs->regs[0];
++		const char __user *const __user *argv =
++			(const char __user *const __user *)regs->regs[1];
+ 
++		/* The adapter builds a struct filename from the user pointer;
++		 * it also drives track_throne(), which crowns the Manager. */
++		ksu_handle_execve_ksud(filename, argv);
+ 		ksu_handle_execve_sucompat(&fd, &filename, NULL, NULL, NULL);
+ 		regs->regs[0] = (unsigned long)filename;
+ 		break;
+@@ -192,6 +200,9 @@
+ 		void *stub = stub_page + i * KSU_STUB_SIZE;
+ 		u64 *slot;
+ 
++		/* The trampoline executes from this page, not from the module
++		 * text: the assembled stubs have zero-filled dispatch slots. */
++		memcpy(stub, hooks[i].stub, KSU_STUB_SIZE);
+ 		memcpy(stub + KSU_ORIG_OFF, hooks[i].orig,
+ 		       sizeof(hooks[i].orig));
+ 		slot = stub + KSU_CONT_OFF;
+@@ -207,11 +218,13 @@
+ 	}
+ 
+ 	for (i = 0; i < ARRAY_SIZE(hooks); i++) {
++		unsigned long stub_addr =
++			(unsigned long)(stub_page + i * KSU_STUB_SIZE);
+ 		u32 insns[KSU_PATCH_WORDS] = {
+ 			KSU_LDR_X16_PC8,
+ 			KSU_BR_X16,
+-			(u32)(unsigned long)hooks[i].stub,
+-			(u32)(((unsigned long)hooks[i].stub) >> 32),
++			(u32)stub_addr,
++			(u32)(stub_addr >> 32),
+ 			0,
+ 			0,
+ 		};
+--- a/ksu-skeleton/hook_stubs.S
++++ b/ksu-skeleton/hook_stubs.S
+@@ -7,7 +7,7 @@
+  */
+ #include <linux/linkage.h>
+ 
+-.macro KSU_STUB name
++.macro KSU_STUB name, id
+ 	.globl ksu_stub_\name
+ 	.type ksu_stub_\name, %function
+ ksu_stub_\name:
+@@ -22,7 +22,7 @@
+ 	stp	x14, x15, [sp, #0x70]
+ 	stp	x16, x17, [sp, #0x80]
+ 	str	x30, [sp, #0x90]
+-	mov	w0, #0
++	mov	w0, #\id
+ 	mov	x1, sp
+ 	nop
+ 	ldr	x16, ksu_stub_\name\()_dispatch_slot
+@@ -57,10 +57,10 @@
+ 	.size ksu_stub_\name, . - ksu_stub_\name
+ .endm
+ 
+-KSU_STUB execve
+-KSU_STUB faccessat
+-KSU_STUB read
+-KSU_STUB newfstatat
+-KSU_STUB reboot
+-KSU_STUB prctl
+-KSU_STUB sysexecve
++KSU_STUB execve, 0
++KSU_STUB faccessat, 1
++KSU_STUB read, 2
++KSU_STUB newfstatat, 3
++KSU_STUB reboot, 4
++KSU_STUB prctl, 5
++KSU_STUB sysexecve, 6
+--- a/ksu-skeleton/throne_tracker.c
++++ b/ksu-skeleton/throne_tracker.c
+@@ -15,7 +15,9 @@
+ 
+ uid_t ksu_manager_uid = KSU_INVALID_UID;
+ 
+-#define SYSTEM_PACKAGES_LIST_PATH "/data/system/packages.list.tmp"
++/* Discovery runs at init, not from the vfs_rename hook: read the committed
++ * file, not the transient .tmp name used during package manager updates. */
++#define SYSTEM_PACKAGES_LIST_PATH "/data/system/packages.list"
+ 
+ struct uid_data {
+ 	struct list_head list;
+@@ -353,7 +355,7 @@
+ 
+ void track_throne()
+ {
+-	struct file *fp;
++	struct file *fp = ERR_PTR(-ENOENT);
+ 	int tries = 0;
+ 
+ 	while (tries++ < 10) {
+@@ -460,7 +462,8 @@
+ 
+ void ksu_throne_tracker_init()
+ {
+-	// nothing to do
++	/* insmod runs at sys.boot_completed, so /data is ready here. */
++	track_throne();
+ }
+ 
+ void ksu_throne_tracker_exit()

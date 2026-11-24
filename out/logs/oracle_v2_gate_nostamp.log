@@ -1,18 +1,18 @@
 #### GATE nostamp uptime_before=819.10
-[info] mode=nostamp (controle, sem carimbo)
+[info] mode=nostamp (control, no stamp)
 [cmp] errno=35 EDEADLK ok, tid_waiter=5181
-[teardown] waiter acordou e soltou a chain
-[teardown] carimbo feito, settle 2.5s
-#### REBOOT (uptime 819.10 -> 25.14). GATE VERMELHO. STOP.
-#### parou entre a linha "[teardown] carimbo feito, settle 2.5s" e o
-#### printf "[consumer]": ou seja, dentro do usleep(2500000) de settle ou
-#### dentro do pthread_setschedparam. nao chegou a imprimir [result].
-#### reboots usados = 2 de 3. trial (ii) NAO executado.
+[teardown] waiter woke up and released the chain
+[teardown] stamp done, settle 2.5s
+#### REBOOT (uptime 819.10 -> 25.14). GATE RED. STOP.
+#### stopped between the line "[teardown] stamp done, settle 2.5s" e o
+#### printf "[consumer]": i.e. inside the settle usleep(2500000) or
+#### inside pthread_setschedparam. It never printed [result].
+#### reboots used = 2 of 3. trial (ii) NOT executed.
 ####
-#### DELTA vs trial 1: a teardown endurecida (timeout wake, sem FUPI de fora,
-#### pre-read removido, owner joined) rodou inteira e imprimiu as duas linhas
-#### de teardown. o crash migrou para a janela do consumer. ou seja: o
-#### teardown da janela [cmp]..[teardown] esta estavel agora; o que mata o
-#### device e o consumer chamar __sched_setscheduler no waiter depois que o
-#### owner (que segurava f_target com a wait tree apontando pro no do waiter
-#### no frame morto) ja foi joined e portanto o task_struct dele foi liberado.
+#### DELTA vs trial 1: the hardened teardown (timeout wake, no external FUPI,
+#### pre-read removed, owner joined) ran through and printed both
+#### teardown lines. The crash moved to the consumer window. i.e. the
+#### teardown of the [cmp]..[teardown] window is stable now; what kills the
+#### device is the consumer calling __sched_setscheduler on the waiter after the
+#### owner (which held f_target with the wait tree pointing at the waiter's node
+#### in the dead frame) was already joined and its task_struct freed.

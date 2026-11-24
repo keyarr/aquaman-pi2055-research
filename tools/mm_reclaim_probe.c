@@ -236,9 +236,9 @@ int main(int argc, char **argv) {
                     for (int k = 0; k < g_nholds; k++)
                         close(g_holds[k]);
                     if (shape_errno == EACCES || shape_errno == EPERM)
-                        printf("P6 RESULT=HOLD_BLOCKED mode=%s (exit limpo, sem reclaim)\n", mode);
+                        printf("P6 RESULT=HOLD_BLOCKED mode=%s (clean exit, no reclaim)\n", mode);
                     else
-                        printf("P6 RESULT=FAIL mode=%s (hold errno=%d, sem reclaim)\n", mode, shape_errno);
+                        printf("P6 RESULT=FAIL mode=%s (hold errno=%d, no reclaim)\n", mode, shape_errno);
                     printf("P7 SUMMARY mode=%s boot=%s pid=%d attempts=%d holds_req=%d holds_ok=%d freed=0 pairs_req=%d pairs_ok=0 sends_ok=0 plumbing_hits=0 reclaim_hits=0 emfile=%d hold_blocked=%d hold_other=%d t_ms=%llu\n",
                            mode, boot_id, (int)getpid(), attempts, want_total, g_nholds,
                            want_pairs, g_emfile, g_hold_blocked, g_hold_other,

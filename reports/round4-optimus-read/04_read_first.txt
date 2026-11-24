@@ -1,5 +1,5 @@
 === read 0x0 len 64 (run 1) ===
-[sudo] senha para erick: Traceback (most recent call last):
+[sudo] password for erick: Traceback (most recent call last):
   File "/home/erick/Downloads/aquaman_9_PI_2055/tools/optimus.py", line 192, in <module>
     sys.exit(main())
              ~~~~^^

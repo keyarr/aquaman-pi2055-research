@@ -1,12 +1,12 @@
 #### trial(i) nostamp uptime_before=6084.94
-[info] mode=nostamp (controle, sem carimbo)
+[info] mode=nostamp (control, no stamp)
 [cmp] errno=35 EDEADLK ok, tid_waiter=6477
-[pre] tid=6477 f18=20 f19=0 (controle: 20/0)
+[pre] tid=6477 f18=20 f19=0 (control: 20/0)
 adb: no devices/emulators found
-#### REBOOT (uptime 6084.94 -> 8.51). STOP RULE 1: o device caiu no trial (i).
-#### reboots usados = 1 de 3. trials (ii)/(iii) NAO executados.
-#### boot.reason=reboot,userrequested (sem pstore/dmesg p/ shell, sem evidencia de panic)
-#### hypotheses p/ proxima fase: FUPI em f_target acorda o waiter no meio da
-#### teardown da arvore PI, ou o trio LOCK_PI+LOCK_PI com CMP Requeue e o
-#### "crash leg3" ja conhecido (ver scan_pads.log, nota sobre a corrida
-#### EDEADLK/timeout). Nao e o carimbo: o modo nostamp nao escreve nada.
+#### REBOOT (uptime 6084.94 -> 8.51). STOP RULE 1: the device crashed in trial (i).
+#### reboots used = 1 of 3. trials (ii)/(iii) NOT executed.
+#### boot.reason=reboot,userrequested (no pstore/dmesg for shell, no panic evidence)
+#### hypotheses for next phase: FUPI em f_target wakes the waiter in the middle of the
+#### PI tree teardown, ou the LOCK_PI+LOCK_PI trio with CMP Requeue and the
+#### known "crash leg3" (see scan_pads.log, note on the race
+#### EDEADLK/timeout). It is not the stamp: nostamp mode writes nothing.

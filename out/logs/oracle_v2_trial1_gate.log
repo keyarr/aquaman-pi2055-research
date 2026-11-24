@@ -1,36 +1,36 @@
 #### trial1 GATE nostamp uptime_before=656.68
-[info] mode=nostamp (controle, sem carimbo)
+[info] mode=nostamp (control, no stamp)
 [cmp] errno=35 EDEADLK ok, tid_waiter=5037
-[teardown] waiter acordou e soltou a chain
-[teardown] owner virou zumbi (nao joined), task_struct vivo
-[teardown] carimbo feito, settle 2.5s com heartbeat
+[teardown] waiter woke up and released the chain
+[teardown] owner became a zombie (not joined), task_struct alive
+[teardown] stamp done, settle 2.5s with heartbeat
 [hb] +0ms
 [hb] +500ms
 [hb] +1000ms
 [hb] +1500ms
 [hb] +2000ms
-#### REBOOT (uptime 656.68 -> 25.32). GATE VERMELHO. STOP.
-#### trial 2 (stamp 0x120) NAO executado: sem gate verde.
+#### REBOOT (uptime 656.68 -> 25.32). GATE RED. STOP.
+#### trial 2 (stamp 0x120) NOT executed: no green gate.
 ####
-#### ULTIMA LINHA: [hb] +2000ms. morreu entre +2000ms e +2500ms do settle.
-#### NUNCA imprimiu [teardown] settle finished, [consumer-before] nem
-#### [consumer-after]. ou seja: a morte e ASSINCRONA, dentro da janela de
-#### settle, e NAO o walk do consumer.
+#### LAST LINE: [hb] +2000ms. died between +2000ms and +2500ms of settle.
+#### never printed [teardown] settle finished, [consumer-before] nem
+#### [consumer-after]. i.e. the death is ASYNC, inside the
+#### settle window, and NOT the consumer walk.
 ####
-#### isso refuta a hipotese do gate v2 (join -> consumer pisa em heap freed).
-#### o owner ficou zumbi (task_struct vivo, provado por [teardown] owner virou
-#### zumbi) e mesmo assim o device morreu 2-2.5s depois, sem o consumer
-#### rodar. a causa esta no que o kernel faz sozinho entre o fim do teardown
-#### e o consumer, e o unico ator assincrono nessa janela e... o PRIMEIRO
-#### pselect nao rodou (nostamp). o que roda sozinho ali e o timer do
-#### FWRQ/timeout e o rebalanceamento de RT em background.
+#### this refutes the gate v2 hypothesis (join -> consumer steps on freed heap).
+#### the owner became a zombie (task_struct alive, proven by [teardown] owner became
+#### zombie) and still the device died 2-2.5s later, without the consumer
+#### running. The cause is what the kernel does on its own between the end of teardown
+#### e o consumer, and the only async actor in that window is... the FIRST
+#### pselect did not run (nostamp). What runs on its own there is the
+#### FWRQ/timeout timer and background RT rebalancing.
 ####
-#### hipotese mais forte agora: o no stale do waiter na wait tree do f_target
-#### (frame morto do FWRQ) e referencia por um caminho que o kernel percorre
-#### sozinho ~2-4s depois (rt_mutex_rebalance / exit_pi_state do owner no
-#### teardown do processo), nao pelo consumer. o consumer era so o vetor mais
-#### obvio, nao o unico. matar o owner no exit do processo ou manter o waiter
-#### com pi_blocked_on ativo muda esse caminho.
+#### stronger hypothesis now: o no stale do waiter na wait tree do f_target
+#### (dead FWRQ frame) is referenced by a path the kernel traverses
+#### on its own ~2-4s later (rt_mutex_rebalance / owner exit_pi_state at
+#### process teardown), not by the consumer. The consumer was only the most
+#### obvious vector, not the only one. Killing the owner at process exit or keeping the waiter
+#### with active pi_blocked_on changes that path.
 ####
-#### rebudget: 3 de 3 reboots usados. teto estourado, precisa de aprovacao
-#### para mais um boot.
+#### rebudget: 3 of 3 reboots used. cap exceeded, needs approval
+#### for one more boot.

@@ -1,0 +1,1057 @@
+diff -ruN '--exclude=*.o' '--exclude=*.cmd' '--exclude=modules.order' '--exclude=kernelsu.mod.c' '--exclude=.tmp_versions' '--exclude=.gitignore' '--exclude=.clangd' '--exclude=.clang-format' upstream/kernel/core_hook.c ksu-skeleton/core_hook.c
+--- upstream/kernel/core_hook.c	2026-11-24 09:10:29.057299187 -0300
++++ ksu-skeleton/core_hook.c	2026-11-24 09:31:37.912758168 -0300
+@@ -45,6 +45,7 @@
+ #include "selinux/selinux.h"
+ #include "throne_tracker.h"
+ #include "kernel_compat.h"
++#include "ksu_compat_syms.h"
+ 
+ static bool ksu_module_mounted = false;
+ 
+@@ -130,7 +131,6 @@
+ #ifdef CONFIG_SECCOMP
+ 	current->seccomp.mode = 0;
+ 	current->seccomp.filter = NULL;
+-	atomic_set(&current->seccomp.filter_count, 0);
+ #else
+ #endif
+ }
+@@ -236,8 +236,16 @@
+ }
+ 
+ static void nuke_ext4_sysfs() {
++	static bool nuked = false;
+ 	struct path path;
+-	int err = kern_path("/data/adb/modules", 0, &path);
++	int err;
++
++	if (nuked) {
++		return;
++	}
++	nuked = true;
++
++	err = kern_path("/data/adb/modules", 0, &path);
+ 	if (err) {
+ 		pr_err("nuke path err: %d\n", err);
+ 		return;
+@@ -251,7 +259,7 @@
+ 		return;
+ 	}
+ 
+-	ext4_unregister_sysfs(sb);
++	ksu_ext4_unregister_sysfs(sb);
+ 	path_put(&path);
+ }
+ 
+@@ -606,7 +614,7 @@
+ 		return false;
+ 	}
+ 
+-	if (current->nsproxy->mnt_ns == init_nsproxy.mnt_ns) {
++	if (current->nsproxy->mnt_ns == ksu_init_nsproxy_ptr->mnt_ns) {
+ 		pr_info("ignore global mnt namespace process: %d\n",
+ 			current_uid().val);
+ 		return false;
+diff -ruN '--exclude=*.o' '--exclude=*.cmd' '--exclude=modules.order' '--exclude=kernelsu.mod.c' '--exclude=.tmp_versions' '--exclude=.gitignore' '--exclude=.clangd' '--exclude=.clang-format' upstream/kernel/hook_runtime.c ksu-skeleton/hook_runtime.c
+--- upstream/kernel/hook_runtime.c	1969-12-31 21:00:00.000000000 -0300
++++ ksu-skeleton/hook_runtime.c	2026-11-24 09:29:39.139599181 -0300
+@@ -0,0 +1,248 @@
++#include <linux/errno.h>
++#include <linux/kallsyms.h>
++#include <linux/module.h>
++#include <linux/printk.h>
++#include <linux/string.h>
++#include <linux/vmalloc.h>
++#include <asm/cacheflush.h>
++#include <asm/ptrace.h>
++
++#include "arch.h"
++#include "hook_runtime.h"
++#include "klog.h" // IWYU pragma: keep
++
++#define KSU_PATCH_WORDS 6
++#define KSU_STUB_SIZE 0x100
++#define KSU_DISPATCH_OFF 0x44
++#define KSU_ORIG_OFF 0x78
++#define KSU_CONT_OFF 0x98
++
++#define KSU_LDR_X16_PC8 0x58000050U
++#define KSU_BR_X16 0xd61f0200U
++
++extern void ksu_stub_execve(void);
++extern void ksu_stub_faccessat(void);
++extern void ksu_stub_read(void);
++extern void ksu_stub_newfstatat(void);
++extern void ksu_stub_reboot(void);
++extern void ksu_stub_prctl(void);
++extern void ksu_stub_sysexecve(void);
++
++extern int ksu_handle_faccessat(int *dfd, const char __user **filename_user,
++				int *mode, int *flags);
++extern int ksu_handle_stat(int *dfd, const char __user **filename_user,
++			   int *flags);
++extern int ksu_handle_execveat(int *fd, struct filename **filename_ptr,
++			       void *argv, void *envp, int *flags);
++extern int ksu_handle_prctl(int option, unsigned long arg2, unsigned long arg3,
++			    unsigned long arg4, unsigned long arg5);
++extern int ksu_handle_sys_read(unsigned int fd, char __user **buf_ptr,
++			       size_t *count_ptr);
++extern int ksu_handle_execve_sucompat(int *fd,
++				      const char __user **filename_user,
++				      void *argv, void *envp, int *flags);
++
++struct ksu_hook_entry {
++	const char *name;
++	void *stub;
++	unsigned long addr;
++	u32 orig[KSU_PATCH_WORDS];
++	bool installed;
++};
++
++static struct ksu_hook_entry hooks[] = {
++	{ "do_execve", ksu_stub_execve, 0, {}, false },
++	{ SYS_FACCESSAT_SYMBOL, ksu_stub_faccessat, 0, {}, false },
++	{ SYS_READ_SYMBOL, ksu_stub_read, 0, {}, false },
++	{ SYS_NEWFSTATAT_SYMBOL, ksu_stub_newfstatat, 0, {}, false },
++	{ "sys_reboot", ksu_stub_reboot, 0, {}, false },
++	{ PRCTL_SYMBOL, ksu_stub_prctl, 0, {}, false },
++	{ SYS_EXECVE_SYMBOL, ksu_stub_sysexecve, 0, {}, false },
++};
++
++static int (*ksu_patch_text)(void **addrs, u32 *insns, int cnt);
++static void *stub_page;
++
++static bool is_pc_relative(u32 insn)
++{
++	return (insn & 0xff000000U) == 0x10000000U ||
++	       (insn & 0xff000000U) == 0x14000000U ||
++	       (insn & 0xff000000U) == 0x54000000U ||
++	       (insn & 0x3b000000U) == 0x18000000U;
++}
++
++int ksu_hook_dispatch(int id, struct pt_regs *regs)
++{
++	switch (id) {
++	case 0: {
++		int fd = -100;
++		struct filename *filename = (struct filename *)regs->regs[1];
++		int flags = (int)regs->regs[2];
++
++		ksu_handle_execveat(&fd, &filename, NULL, NULL, &flags);
++		regs->regs[0] = (unsigned long)filename;
++		break;
++	}
++	case 1: {
++		int dfd = (int)regs->regs[0];
++		const char __user *filename = (const char __user *)regs->regs[1];
++		int mode = (int)regs->regs[2];
++		int flags = (int)regs->regs[3];
++
++		ksu_handle_faccessat(&dfd, &filename, &mode, &flags);
++		regs->regs[0] = (unsigned long)(unsigned int)dfd;
++		regs->regs[1] = (unsigned long)filename;
++		regs->regs[2] = (unsigned long)(unsigned int)mode;
++		regs->regs[3] = (unsigned long)(unsigned int)flags;
++		break;
++	}
++	case 2: {
++		char __user *buf = (char __user *)regs->regs[1];
++		size_t count = regs->regs[2];
++
++		ksu_handle_sys_read((unsigned int)regs->regs[0], &buf, &count);
++		regs->regs[1] = (unsigned long)buf;
++		regs->regs[2] = (unsigned long)count;
++		break;
++	}
++	case 3: {
++		int dfd = (int)regs->regs[0];
++		const char __user *filename = (const char __user *)regs->regs[1];
++		int flags = (int)regs->regs[3];
++
++		ksu_handle_stat(&dfd, &filename, &flags);
++		regs->regs[0] = (unsigned long)(unsigned int)dfd;
++		regs->regs[1] = (unsigned long)filename;
++		regs->regs[3] = (unsigned long)(unsigned int)flags;
++		break;
++	}
++	case 5:
++		ksu_handle_prctl((int)regs->regs[0], regs->regs[1],
++				 regs->regs[2], regs->regs[3], regs->regs[4]);
++		break;
++	case 6: {
++		int fd = -100;
++		const char __user *filename = (const char __user *)regs->regs[0];
++
++		ksu_handle_execve_sucompat(&fd, &filename, NULL, NULL, NULL);
++		regs->regs[0] = (unsigned long)filename;
++		break;
++	}
++	default:
++		break;
++	}
++	return 0;
++}
++
++static int patch_hook(struct ksu_hook_entry *hook, u32 *insns)
++{
++	void *addrs[KSU_PATCH_WORDS + 1];
++	int i;
++
++	for (i = 0; i < KSU_PATCH_WORDS; i++) {
++		addrs[i] = (void *)(hook->addr + i * 4);
++	}
++	addrs[KSU_PATCH_WORDS] = (void *)(hook->addr + KSU_PATCH_WORDS * 4);
++
++	return ksu_patch_text(addrs, insns, KSU_PATCH_WORDS);
++}
++
++int ksu_hook_init(void)
++{
++	int i, j, ret;
++
++	ksu_patch_text = (void *)kallsyms_lookup_name("aarch64_insn_patch_text");
++	if (!ksu_patch_text) {
++		pr_err("ksu_hook: aarch64_insn_patch_text not found\n");
++		return -ENOENT;
++	}
++
++	for (i = 0; i < ARRAY_SIZE(hooks); i++) {
++		struct ksu_hook_entry *hook = &hooks[i];
++
++		hook->addr = kallsyms_lookup_name(hook->name);
++		if (!hook->addr) {
++			pr_err("ksu_hook: symbol %s not found\n", hook->name);
++			return -ENOENT;
++		}
++		ret = probe_kernel_read(hook->orig, (void *)hook->addr,
++					sizeof(hook->orig));
++		if (ret) {
++			pr_err("ksu_hook: read %s failed: %d\n", hook->name, ret);
++			return -EFAULT;
++		}
++		for (j = 0; j < KSU_PATCH_WORDS; j++) {
++			if (is_pc_relative(hook->orig[j])) {
++				pr_err("ksu_hook: PC-relative insn in %s\n",
++				       hook->name);
++				return -EINVAL;
++			}
++		}
++		pr_info("ksu_hook: %s at %px\n", hook->name,
++			(void *)hook->addr);
++	}
++
++	stub_page = vmalloc(PAGE_SIZE);
++	if (!stub_page) {
++		return -ENOMEM;
++	}
++	memset(stub_page, 0, PAGE_SIZE);
++
++	for (i = 0; i < ARRAY_SIZE(hooks); i++) {
++		void *stub = stub_page + i * KSU_STUB_SIZE;
++		u64 *slot;
++
++		memcpy(stub + KSU_ORIG_OFF, hooks[i].orig,
++		       sizeof(hooks[i].orig));
++		slot = stub + KSU_CONT_OFF;
++		*slot = hooks[i].addr + KSU_PATCH_WORDS * 4;
++		slot = stub + KSU_DISPATCH_OFF;
++		*slot = (u64)ksu_hook_dispatch;
++	}
++
++	ret = set_memory_x((unsigned long)stub_page, 1);
++	if (ret) {
++		pr_err("ksu_hook: set_memory_x failed: %d\n", ret);
++		return ret;
++	}
++
++	for (i = 0; i < ARRAY_SIZE(hooks); i++) {
++		u32 insns[KSU_PATCH_WORDS] = {
++			KSU_LDR_X16_PC8,
++			KSU_BR_X16,
++			(u32)(unsigned long)hooks[i].stub,
++			(u32)(((unsigned long)hooks[i].stub) >> 32),
++			0,
++			0,
++		};
++
++		ret = patch_hook(&hooks[i], insns);
++		if (ret) {
++			pr_err("ksu_hook: patch %s failed: %d\n",
++			       hooks[i].name, ret);
++			return ret;
++		}
++		hooks[i].installed = true;
++	}
++
++	return 0;
++}
++
++void ksu_hook_exit(void)
++{
++	int i;
++
++	for (i = 0; i < ARRAY_SIZE(hooks); i++) {
++		if (!hooks[i].installed) {
++			continue;
++		}
++		patch_hook(&hooks[i], hooks[i].orig);
++		hooks[i].installed = false;
++	}
++
++	if (stub_page) {
++		set_memory_nx((unsigned long)stub_page, 1);
++		vfree(stub_page);
++		stub_page = NULL;
++	}
++}
+diff -ruN '--exclude=*.o' '--exclude=*.cmd' '--exclude=modules.order' '--exclude=kernelsu.mod.c' '--exclude=.tmp_versions' '--exclude=.gitignore' '--exclude=.clangd' '--exclude=.clang-format' upstream/kernel/hook_runtime.h ksu-skeleton/hook_runtime.h
+--- upstream/kernel/hook_runtime.h	1969-12-31 21:00:00.000000000 -0300
++++ ksu-skeleton/hook_runtime.h	2026-11-24 09:28:14.165770007 -0300
+@@ -0,0 +1,7 @@
++#ifndef __KSU_HOOK_RUNTIME_H
++#define __KSU_HOOK_RUNTIME_H
++
++int ksu_hook_init(void);
++void ksu_hook_exit(void);
++
++#endif
+diff -ruN '--exclude=*.o' '--exclude=*.cmd' '--exclude=modules.order' '--exclude=kernelsu.mod.c' '--exclude=.tmp_versions' '--exclude=.gitignore' '--exclude=.clangd' '--exclude=.clang-format' upstream/kernel/hook_stubs.S ksu-skeleton/hook_stubs.S
+--- upstream/kernel/hook_stubs.S	1969-12-31 21:00:00.000000000 -0300
++++ ksu-skeleton/hook_stubs.S	2026-11-24 09:28:46.945089867 -0300
+@@ -0,0 +1,66 @@
++/*
++ * One 0x100-byte stub per hooked kernel function. The first 0x28 bytes save
++ * all argument registers plus LR; the dispatch slot calls the C dispatcher
++ * with x1 == sp (the saved register frame). The restore block puts the
++ * registers back, then the original 24 bytes are replayed in place before
++ * branching to target+24.
++ */
++#include <linux/linkage.h>
++
++.macro KSU_STUB name
++	.globl ksu_stub_\name
++	.type ksu_stub_\name, %function
++ksu_stub_\name:
++	sub	sp, sp, #0xa0
++	stp	x0, x1, [sp]
++	stp	x2, x3, [sp, #0x10]
++	stp	x4, x5, [sp, #0x20]
++	stp	x6, x7, [sp, #0x30]
++	stp	x8, x9, [sp, #0x40]
++	stp	x10, x11, [sp, #0x50]
++	stp	x12, x13, [sp, #0x60]
++	stp	x14, x15, [sp, #0x70]
++	stp	x16, x17, [sp, #0x80]
++	str	x30, [sp, #0x90]
++	mov	w0, #0
++	mov	x1, sp
++	nop
++	ldr	x16, ksu_stub_\name\()_dispatch_slot
++	blr	x16
++	b	ksu_stub_\name\()_restore
++
++ksu_stub_\name\()_dispatch_slot:
++	.quad	0
++
++ksu_stub_\name\()_restore:
++	ldp	x0, x1, [sp]
++	ldp	x2, x3, [sp, #0x10]
++	ldp	x4, x5, [sp, #0x20]
++	ldp	x6, x7, [sp, #0x30]
++	ldp	x8, x9, [sp, #0x40]
++	ldp	x10, x11, [sp, #0x50]
++	ldp	x12, x13, [sp, #0x60]
++	ldp	x14, x15, [sp, #0x70]
++	ldp	x16, x17, [sp, #0x80]
++	ldr	x30, [sp, #0x90]
++	add	sp, sp, #0xa0
++
++ksu_stub_\name\()_orig_slot:
++	.rept	6
++	.word	0
++	.endr
++	ldr	x16, ksu_stub_\name\()_cont_slot
++	br	x16
++
++ksu_stub_\name\()_cont_slot:
++	.quad	0
++	.size ksu_stub_\name, . - ksu_stub_\name
++.endm
++
++KSU_STUB execve
++KSU_STUB faccessat
++KSU_STUB read
++KSU_STUB newfstatat
++KSU_STUB reboot
++KSU_STUB prctl
++KSU_STUB sysexecve
+diff -ruN '--exclude=*.o' '--exclude=*.cmd' '--exclude=modules.order' '--exclude=kernelsu.mod.c' '--exclude=.tmp_versions' '--exclude=.gitignore' '--exclude=.clangd' '--exclude=.clang-format' upstream/kernel/kernel_compat.c ksu-skeleton/kernel_compat.c
+--- upstream/kernel/kernel_compat.c	2026-11-24 09:10:29.057568559 -0300
++++ ksu-skeleton/kernel_compat.c	2026-11-24 09:38:18.528683389 -0300
+@@ -9,6 +9,7 @@
+ #include <linux/uaccess.h>
+ #include "klog.h" // IWYU pragma: keep
+ #include "kernel_compat.h" // Add check Huawei Device
++#include "ksu_compat_syms.h"
+ #if LINUX_VERSION_CODE < KERNEL_VERSION(4, 10, 0) || defined(CONFIG_IS_HW_HISI) || defined(CONFIG_KSU_ALLOWLIST_WORKAROUND)
+ #include <linux/key.h>
+ #include <linux/errno.h>
+@@ -24,7 +25,7 @@
+ 	if (!new)
+ 		return -ENOMEM;
+ 
+-	ret = install_session_keyring_to_cred(new, keyring);
++	ret = ksu_install_session_keyring_to_cred(new, keyring);
+ 	if (ret < 0) {
+ 		abort_creds(new);
+ 		return ret;
+@@ -32,6 +33,31 @@
+ 
+ 	return commit_creds(new);
+ }
++
++/* This kernel has no exported init_session_keyring and no LSM key_permission
++ * hook to capture it. Use the session keyring already attached to init (the
++ * same one the old hook read), then the uid's default session keyring. */
++static void install_allowlist_keyring(void)
++{
++	struct key *keyring = NULL;
++
++	if (init_session_keyring)
++		keyring = init_session_keyring;
++	else if (init_task.cred)
++		keyring = init_task.cred->session_keyring;
++	if (!keyring) {
++		if (ksu_install_user_keyrings)
++			ksu_install_user_keyrings();
++		keyring = current_cred()->user->session_keyring;
++	}
++	if (!keyring) {
++		pr_warn("no session keyring available for allowlist\n");
++		return;
++	}
++	pr_info("installing session keyring for allowlist workqueue\n");
++	if (install_session_keyring(keyring))
++		pr_warn("install session keyring failed\n");
++}
+ #endif
+ 
+ extern struct task_struct init_task;
+@@ -79,10 +105,9 @@
+ struct file *ksu_filp_open_compat(const char *filename, int flags, umode_t mode)
+ {
+ #if LINUX_VERSION_CODE < KERNEL_VERSION(4, 10, 0) || defined(CONFIG_IS_HW_HISI) || defined(CONFIG_KSU_ALLOWLIST_WORKAROUND)
+-	if (init_session_keyring != NULL && !current_cred()->session_keyring &&
++	if (!current_cred()->session_keyring &&
+ 	    (current->flags & PF_WQ_WORKER)) {
+-		pr_info("installing init session keyring for older kernel\n");
+-		install_session_keyring(init_session_keyring);
++		install_allowlist_keyring();
+ 	}
+ #endif
+ 	// switch mnt_ns even if current is not wq_worker, to ensure what we open is the correct file in android mnt_ns, rather than user created mnt_ns
+Os arquivos binários upstream/kernel/kernelsu.ko e ksu-skeleton/kernelsu.ko são diferentes
+diff -ruN '--exclude=*.o' '--exclude=*.cmd' '--exclude=modules.order' '--exclude=kernelsu.mod.c' '--exclude=.tmp_versions' '--exclude=.gitignore' '--exclude=.clangd' '--exclude=.clang-format' upstream/kernel/ksu.c ksu-skeleton/ksu.c
+--- upstream/kernel/ksu.c	2026-11-24 09:10:29.057690800 -0300
++++ ksu-skeleton/ksu.c	2026-11-24 09:28:06.561695806 -0300
+@@ -7,8 +7,10 @@
+ #include "allowlist.h"
+ #include "arch.h"
+ #include "core_hook.h"
++#include "hook_runtime.h"
+ #include "klog.h" // IWYU pragma: keep
+ #include "ksu.h"
++#include "ksu_compat_syms.h"
+ #include "throne_tracker.h"
+ 
+ static struct workqueue_struct *ksu_workqueue;
+@@ -51,24 +53,20 @@
+ 
+ 	ksu_core_init();
+ 
++	if (ksu_compat_syms_init()) {
++		return -ENOENT;
++	}
++
+ 	ksu_workqueue = alloc_ordered_workqueue("kernelsu_work_queue", 0);
+ 
+ 	ksu_allowlist_init();
+ 
+ 	ksu_throne_tracker_init();
+ 
+-#ifdef CONFIG_KSU_KPROBES_HOOK
+ 	ksu_sucompat_init();
+-	ksu_ksud_init();
+-#else
+-	pr_alert("KPROBES is disabled, KernelSU may not work, please check https://kernelsu.org/guide/how-to-integrate-for-non-gki.html");
+-#endif
+ 
+-#ifdef MODULE
+-#ifndef CONFIG_KSU_DEBUG
+-	kobject_del(&THIS_MODULE->mkobj.kobj);
+-#endif
+-#endif
++	ksu_hook_init();
++
+ 	return 0;
+ }
+ 
+@@ -78,12 +76,11 @@
+ 
+ 	ksu_throne_tracker_exit();
+ 
+-	destroy_workqueue(ksu_workqueue);
++	ksu_hook_exit();
+ 
+-#ifdef CONFIG_KSU_KPROBES_HOOK
+-	ksu_ksud_exit();
+ 	ksu_sucompat_exit();
+-#endif
++
++	destroy_workqueue(ksu_workqueue);
+ 
+ 	ksu_core_exit();
+ }
+diff -ruN '--exclude=*.o' '--exclude=*.cmd' '--exclude=modules.order' '--exclude=kernelsu.mod.c' '--exclude=.tmp_versions' '--exclude=.gitignore' '--exclude=.clangd' '--exclude=.clang-format' upstream/kernel/ksu_compat_syms.c ksu-skeleton/ksu_compat_syms.c
+--- upstream/kernel/ksu_compat_syms.c	1969-12-31 21:00:00.000000000 -0300
++++ ksu-skeleton/ksu_compat_syms.c	2026-11-24 09:38:26.652763223 -0300
+@@ -0,0 +1,73 @@
++#include <linux/init.h>
++#include <linux/kallsyms.h>
++#include <linux/module.h>
++#include <linux/printk.h>
++#include <linux/string.h>
++
++#include "kernel_compat.h"
++#include "ksu_compat_syms.h"
++#include "klog.h" // IWYU pragma: keep
++
++int (*ksu_avc_ss_reset)(u32 seqno);
++int (*ksu_ebitmap_set_bit)(struct ebitmap *e, unsigned long bit, int value);
++int (*ksu_ebitmap_get_bit)(struct ebitmap *e, unsigned long bit);
++void *(*ksu_hashtab_search)(struct hashtab *h, const void *key);
++int (*ksu_hashtab_insert)(struct hashtab *h, void *key, void *data);
++struct avtab_node *(*ksu_avtab_insert_nonunique)(struct avtab *h,
++						 struct avtab_key *key,
++						 void *data);
++struct avtab_node *(*ksu_avtab_search_node)(struct avtab *h,
++					    struct avtab_key *key);
++struct avtab_node *(*ksu_avtab_search_node_next)(struct avtab_node *node,
++						 int specified);
++void (*ksu_selnl_notify_policyload)(u32 seqno);
++void (*ksu_selinux_status_update_policyload)(int seqno);
++int *ksu_selinux_enforcing_ptr;
++struct policydb *ksu_policydb_ptr;
++struct nsproxy *ksu_init_nsproxy_ptr;
++void (*ksu_ext4_unregister_sysfs)(struct super_block *sb);
++int (*ksu_install_session_keyring_to_cred)(struct cred *cred,
++					   struct key *keyring);
++int (*ksu_install_user_keyrings)(void);
++
++#define KSU_RESOLVE(ptr, name)                                             \
++	do {                                                               \
++		(ptr) = (typeof(ptr))kallsyms_lookup_name(name);            \
++		if (!(ptr)) {                                              \
++			pr_err("ksu_compat: %s not found\n", name);        \
++			return -ENOENT;                                    \
++		}                                                          \
++	} while (0)
++
++int ksu_compat_syms_init(void)
++{
++	KSU_RESOLVE(ksu_avc_ss_reset, "avc_ss_reset");
++	KSU_RESOLVE(ksu_ebitmap_set_bit, "ebitmap_set_bit");
++	KSU_RESOLVE(ksu_ebitmap_get_bit, "ebitmap_get_bit");
++	KSU_RESOLVE(ksu_hashtab_search, "hashtab_search");
++	KSU_RESOLVE(ksu_hashtab_insert, "hashtab_insert");
++	KSU_RESOLVE(ksu_avtab_insert_nonunique, "avtab_insert_nonunique");
++	KSU_RESOLVE(ksu_avtab_search_node, "avtab_search_node");
++	KSU_RESOLVE(ksu_avtab_search_node_next, "avtab_search_node_next");
++	KSU_RESOLVE(ksu_selnl_notify_policyload, "selnl_notify_policyload");
++	KSU_RESOLVE(ksu_selinux_status_update_policyload,
++		    "selinux_status_update_policyload");
++	KSU_RESOLVE(ksu_selinux_enforcing_ptr, "selinux_enforcing");
++	KSU_RESOLVE(ksu_policydb_ptr, "policydb");
++	KSU_RESOLVE(ksu_init_nsproxy_ptr, "init_nsproxy");
++	KSU_RESOLVE(ksu_ext4_unregister_sysfs, "ext4_unregister_sysfs");
++	KSU_RESOLVE(ksu_install_session_keyring_to_cred,
++		    "install_session_keyring_to_cred");
++	KSU_RESOLVE(ksu_install_user_keyrings, "install_user_keyrings");
++
++	/* Old kernels kept this global; this 4.9 build does not, so a missing
++	 * symbol is expected. kernel_compat.c falls back to init's cred and
++	 * the uid session keyring. */
++	init_session_keyring =
++		(struct key *)kallsyms_lookup_name("init_session_keyring");
++	if (!init_session_keyring) {
++		pr_warn("ksu_compat: init_session_keyring not found\n");
++	}
++
++	return 0;
++}
+diff -ruN '--exclude=*.o' '--exclude=*.cmd' '--exclude=modules.order' '--exclude=kernelsu.mod.c' '--exclude=.tmp_versions' '--exclude=.gitignore' '--exclude=.clangd' '--exclude=.clang-format' upstream/kernel/ksu_compat_syms.h ksu-skeleton/ksu_compat_syms.h
+--- upstream/kernel/ksu_compat_syms.h	1969-12-31 21:00:00.000000000 -0300
++++ ksu-skeleton/ksu_compat_syms.h	2026-11-24 09:37:36.716272507 -0300
+@@ -0,0 +1,42 @@
++#ifndef __KSU_COMPAT_SYMS_H
++#define __KSU_COMPAT_SYMS_H
++
++#include <linux/types.h>
++
++/* Forward declarations: these helpers are resolved from kallsyms at init. */
++struct cred;
++struct key;
++struct nsproxy;
++struct policydb;
++struct hashtab;
++struct avtab;
++struct avtab_key;
++struct avtab_node;
++struct ebitmap;
++struct super_block;
++
++extern int (*ksu_avc_ss_reset)(u32 seqno);
++extern int (*ksu_ebitmap_set_bit)(struct ebitmap *e, unsigned long bit, int value);
++extern int (*ksu_ebitmap_get_bit)(struct ebitmap *e, unsigned long bit);
++extern void *(*ksu_hashtab_search)(struct hashtab *h, const void *key);
++extern int (*ksu_hashtab_insert)(struct hashtab *h, void *key, void *data);
++extern struct avtab_node *(*ksu_avtab_insert_nonunique)(struct avtab *h,
++							struct avtab_key *key,
++							void *data);
++extern struct avtab_node *(*ksu_avtab_search_node)(struct avtab *h,
++						   struct avtab_key *key);
++extern struct avtab_node *(*ksu_avtab_search_node_next)(struct avtab_node *node,
++							int specified);
++extern void (*ksu_selnl_notify_policyload)(u32 seqno);
++extern void (*ksu_selinux_status_update_policyload)(int seqno);
++extern int *ksu_selinux_enforcing_ptr;
++extern struct policydb *ksu_policydb_ptr;
++extern struct nsproxy *ksu_init_nsproxy_ptr;
++extern void (*ksu_ext4_unregister_sysfs)(struct super_block *sb);
++extern int (*ksu_install_session_keyring_to_cred)(struct cred *cred,
++						   struct key *keyring);
++extern int (*ksu_install_user_keyrings)(void);
++
++int ksu_compat_syms_init(void);
++
++#endif
+diff -ruN '--exclude=*.o' '--exclude=*.cmd' '--exclude=modules.order' '--exclude=kernelsu.mod.c' '--exclude=.tmp_versions' '--exclude=.gitignore' '--exclude=.clangd' '--exclude=.clang-format' upstream/kernel/Makefile ksu-skeleton/Makefile
+--- upstream/kernel/Makefile	2026-11-24 09:10:29.056992717 -0300
++++ ksu-skeleton/Makefile	2026-11-24 09:32:30.576272058 -0300
+@@ -7,119 +7,26 @@
+ kernelsu-objs += ksud.o
+ kernelsu-objs += embed_ksud.o
+ kernelsu-objs += kernel_compat.o
++kernelsu-objs += ksu_compat_syms.o
++kernelsu-objs += hook_runtime.o
++kernelsu-objs += hook_stubs.o
+ 
+ kernelsu-objs += selinux/selinux.o
+ kernelsu-objs += selinux/sepolicy.o
+ kernelsu-objs += selinux/rules.o
+-ccflags-y += -I$(srctree)/security/selinux -I$(srctree)/security/selinux/include
+-ccflags-y += -I$(objtree)/security/selinux -include $(srctree)/include/uapi/asm-generic/errno.h
+-
+-obj-$(CONFIG_KSU) += kernelsu.o
+-
+-# .git is a text file while the module is imported by 'git submodule add'.
+-ifeq ($(shell test -e $(srctree)/$(src)/../.git; echo $$?),0)
+-$(shell cd $(srctree)/$(src); /usr/bin/env PATH="$$PATH":/usr/bin:/usr/local/bin [ -f ../.git/shallow ] && git fetch --unshallow)
+-KSU_GIT_VERSION := $(shell cd $(srctree)/$(src); /usr/bin/env PATH="$$PATH":/usr/bin:/usr/local/bin git rev-list --count HEAD)
+-# ksu_version: major * 10000 + git version + 200 for historical reasons
+-$(eval KSU_VERSION=$(shell expr 10000 + $(KSU_GIT_VERSION) + 200))
+-$(info -- KernelSU-Next version: $(KSU_VERSION))
+-ccflags-y += -DKSU_VERSION=$(KSU_VERSION)
+-else # If there is no .git file, the default version will be passed.
+-$(warning "KSU_GIT_VERSION not defined! It is better to make KernelSU-Next a git submodule!")
+-ccflags-y += -DKSU_VERSION=11998
+-endif
+-
+-ifeq ($(shell grep -q " current_sid(void)" $(srctree)/security/selinux/include/objsec.h; echo $$?),0)
+-ccflags-y += -DKSU_COMPAT_HAS_CURRENT_SID
+-endif
+-
+-ifeq ($(shell grep -q "struct selinux_state " $(srctree)/security/selinux/include/security.h; echo $$?),0)
+-ccflags-y += -DKSU_COMPAT_HAS_SELINUX_STATE
+-endif
+-
+-ifeq ($(shell grep -q "strncpy_from_user_nofault" $(srctree)/include/linux/uaccess.h; echo $$?),0)
+-ccflags-y += -DKSU_STRNCPY_FROM_USER_NOFAULT
+-endif
+-
+-ifeq ($(shell grep -q "ssize_t kernel_read" $(srctree)/fs/read_write.c; echo $$?),0)
+-ccflags-y += -DKSU_KERNEL_READ
+-endif
+-
+-ifeq ($(shell grep "ssize_t kernel_write" $(srctree)/fs/read_write.c | grep -q "const void" ; echo $$?),0)
+-ccflags-y += -DKSU_KERNEL_WRITE
+-endif
+-
+-ifndef KSU_NEXT_MANAGER_SIZE
+-KSU_NEXT_MANAGER_SIZE := 0x3e6
+-endif
+ 
+-ifndef KSU_NEXT_MANAGER_HASH
+-KSU_NEXT_MANAGER_HASH := 79e590113c4c4c0c222978e413a5faa801666957b1212a328e46c00c69821bf7
+-endif
++obj-m += kernelsu.o
+ 
+-ifdef KSU_MANAGER_PACKAGE
+-ccflags-y += -DKSU_MANAGER_PACKAGE=\"$(KSU_MANAGER_PACKAGE)\"
+-$(info -- KernelSU-Next Manager package name: $(KSU_MANAGER_PACKAGE))
+-endif
++KSU_VERSION := 12851
+ 
+-$(info -- KernelSU-Next Manager signature size: $(KSU_NEXT_MANAGER_SIZE))
+-$(info -- KernelSU-Next Manager signature hash: $(KSU_NEXT_MANAGER_HASH))
+-
+-ccflags-y += -DEXPECTED_MANAGER_SIZE=$(KSU_NEXT_MANAGER_SIZE)
+-ccflags-y += -DEXPECTED_MANAGER_HASH=\"$(KSU_NEXT_MANAGER_HASH)\"
+-
+-ccflags-y += -DKSU_UMOUNT
+-
+-ifneq ($(shell grep -Eq "^static int can_umount" $(srctree)/fs/namespace.c; echo $$?),0)
+-$(info -- KSU_NEXT: adding function 'static int can_umount(const struct path *path, int flags);' to $(srctree)/fs/namespace.c)
+-CAN_UMOUNT = static int can_umount(const struct path *path, int flags)\n\
+-{\n\t\
+-        struct mount *mnt = real_mount(path->mnt);\n\t\
+-        if (flags & ~(MNT_FORCE | MNT_DETACH | MNT_EXPIRE | UMOUNT_NOFOLLOW))\n\t\t\
+-                return -EINVAL;\n\t\
+-        if (!may_mount())\n\t\t\
+-                return -EPERM;\n\t\
+-        if (path->dentry != path->mnt->mnt_root)\n\t\t\
+-                return -EINVAL;\n\t\
+-        if (!check_mnt(mnt))\n\t\t\
+-                return -EINVAL;\n\t\
+-        if (mnt->mnt.mnt_flags & MNT_LOCKED)\n\t\t\
+-                return -EINVAL;\n\t\
+-        if (flags & MNT_FORCE && !capable(CAP_SYS_ADMIN))\n\t\t\
+-                return -EPERM;\n\t\
+-        return 0;\n\
+-}\n
+-$(shell sed -i '/^static bool is_mnt_ns_file/i $(CAN_UMOUNT)' $(srctree)/fs/namespace.c;)
+-endif
+-
+-ifneq ($(shell grep -Eq "^int path_umount" $(srctree)/fs/namespace.c; echo $$?),0)
+-$(info -- KSU_NEXT: adding function 'int path_umount(struct path *path, int flags);' to $(srctree)/fs/namespace.c)
+-PATH_UMOUNT = int path_umount(struct path *path, int flags)\n\
+-{\n\t\
+-        struct mount *mnt = real_mount(path->mnt);\n\t\
+-        int ret;\n\t\
+-        ret = can_umount(path, flags);\n\t\
+-        if (!ret)\n\t\t\
+-                ret = do_umount(mnt, flags);\n\t\
+-        dput(path->dentry);\n\t\
+-        mntput_no_expire(mnt);\n\t\
+-        return ret;\n\
+-}\n
+-$(shell sed -i '/^static bool is_mnt_ns_file/i $(PATH_UMOUNT)' $(srctree)/fs/namespace.c;)
+-endif
+-
+-ifneq ($(shell grep -Eq "^int path_umount" $(srctree)/fs/internal.h; echo $$?),0)
+-$(shell sed -i '/^extern void __init mnt_init/a int path_umount(struct path *path, int flags);' $(srctree)/fs/internal.h;)
+-$(info -- KSU_NEXT: adding 'int path_umount(struct path *path, int flags);' to $(srctree)/fs/internal.h)
+-endif
+-
+-ifneq ($(shell grep -q "atomic_t filter_count;" $(srctree)/include/linux/seccomp.h; echo $$?),0)
+-$(info -- KSU_NEXT: patching struct seccomp for filter_count)
+-$(shell sed -i '/int mode;/a\	atomic_t filter_count;' $(srctree)/include/linux/seccomp.h)
+-$(shell sed -i '/#include <linux\/thread_info.h>/a\#include <linux/atomic.h>' $(srctree)/include/linux/seccomp.h)
+-endif
+-
+-ccflags-y += -Wno-implicit-function-declaration -Wno-strict-prototypes -Wno-int-conversion -Wno-gcc-compat
++ccflags-y += -DKSU_VERSION=$(KSU_VERSION)
++ccflags-y += -DEXPECTED_MANAGER_SIZE=0x3e6
++ccflags-y += -DEXPECTED_MANAGER_HASH=\"79e590113c4c4c0c222978e413a5faa801666957b1212a328e46c00c69821bf7\"
++ccflags-y += -I$(srctree)/security/selinux -I$(srctree)/security/selinux/include
++ccflags-y += -I$(objtree)/security/selinux -I$(src)/include
++ccflags-y += -include $(srctree)/include/uapi/asm-generic/errno.h
++ccflags-y += -fno-stack-protector
++ccflags-y += -Wno-implicit-function-declaration -Wno-strict-prototypes -Wno-int-conversion
+ ccflags-y += -Wno-declaration-after-statement -Wno-unused-function
+ 
+-# Keep a new line here!! Because someone may append config
++$(info -- KernelSU-Next version: $(KSU_VERSION))
+diff -ruN '--exclude=*.o' '--exclude=*.cmd' '--exclude=modules.order' '--exclude=kernelsu.mod.c' '--exclude=.tmp_versions' '--exclude=.gitignore' '--exclude=.clangd' '--exclude=.clang-format' upstream/kernel/selinux/rules.c ksu-skeleton/selinux/rules.c
+--- upstream/kernel/selinux/rules.c	2026-11-24 09:10:29.058014500 -0300
++++ ksu-skeleton/selinux/rules.c	2026-11-24 09:27:15.726084237 -0300
+@@ -3,6 +3,7 @@
+ #include <linux/version.h>
+ 
+ #include "../klog.h" // IWYU pragma: keep
++#include "../ksu_compat_syms.h"
+ #include "selinux.h"
+ #include "sepolicy.h"
+ #include "ss/services.h"
+@@ -31,7 +32,7 @@
+ 	db = &ss->policydb;
+ #endif
+ #else
+-	db = &policydb;
++	db = ksu_policydb_ptr;
+ #endif
+ 	return db;
+ }
+@@ -216,16 +217,15 @@
+ {
+ #if ((!defined(KSU_COMPAT_USE_SELINUX_STATE)) || \
+         LINUX_VERSION_CODE >= KERNEL_VERSION(6, 4, 0))
+-	avc_ss_reset(0);
+-	selnl_notify_policyload(0);
+-	selinux_status_update_policyload(0);
++	ksu_avc_ss_reset(0);
++	ksu_selnl_notify_policyload(0);
++	ksu_selinux_status_update_policyload(0);
+ #else
+ 	struct selinux_avc *avc = selinux_state.avc;
+-	avc_ss_reset(avc, 0);
+-	selnl_notify_policyload(0);
+-	selinux_status_update_policyload(&selinux_state, 0);
++	ksu_avc_ss_reset(0);
++	ksu_selnl_notify_policyload(0);
++	ksu_selinux_status_update_policyload(0);
+ #endif
+-	selinux_xfrm_notify_policyload();
+ }
+ 
+ int handle_sepolicy(unsigned long arg3, void __user *arg4)
+diff -ruN '--exclude=*.o' '--exclude=*.cmd' '--exclude=modules.order' '--exclude=kernelsu.mod.c' '--exclude=.tmp_versions' '--exclude=.gitignore' '--exclude=.clangd' '--exclude=.clang-format' upstream/kernel/selinux/selinux.c ksu-skeleton/selinux/selinux.c
+--- upstream/kernel/selinux/selinux.c	2026-11-24 09:10:29.058140406 -0300
++++ ksu-skeleton/selinux/selinux.c	2026-11-24 09:27:15.730348963 -0300
+@@ -2,6 +2,7 @@
+ #include "objsec.h"
+ #include "linux/version.h"
+ #include "../klog.h" // IWYU pragma: keep
++#include "../ksu_compat_syms.h"
+ #ifndef KSU_COMPAT_USE_SELINUX_STATE
+ #include "avc.h"
+ #endif
+@@ -58,7 +59,7 @@
+ #ifdef KSU_COMPAT_USE_SELINUX_STATE
+ 	selinux_state.enforcing = enforce;
+ #else
+-	selinux_enforcing = enforce;
++	*ksu_selinux_enforcing_ptr = enforce;
+ #endif
+ #endif
+ }
+@@ -79,7 +80,7 @@
+ #ifdef KSU_COMPAT_USE_SELINUX_STATE
+ 	return selinux_state.enforcing;
+ #else
+-	return selinux_enforcing;
++	return *ksu_selinux_enforcing_ptr;
+ #endif
+ #else
+ 	return true;
+diff -ruN '--exclude=*.o' '--exclude=*.cmd' '--exclude=modules.order' '--exclude=kernelsu.mod.c' '--exclude=.tmp_versions' '--exclude=.gitignore' '--exclude=.clangd' '--exclude=.clang-format' upstream/kernel/selinux/sepolicy.c ksu-skeleton/selinux/sepolicy.c
+--- upstream/kernel/selinux/sepolicy.c	2026-11-24 09:10:29.058224170 -0300
++++ ksu-skeleton/selinux/sepolicy.c	2026-11-24 09:27:15.729199783 -0300
+@@ -7,6 +7,7 @@
+ #include "../klog.h" // IWYU pragma: keep
+ #include "ss/symtab.h"
+ #include "../kernel_compat.h" // Add check Huawei Device
++#include "../ksu_compat_syms.h"
+ 
+ #define KSU_SUPPORT_ADD_TYPE
+ 
+@@ -80,8 +81,8 @@
+ // symtab_search is introduced on 5.9.0:
+ // https://elixir.bootlin.com/linux/v5.9-rc1/source/security/selinux/ss/symtab.h
+ #if LINUX_VERSION_CODE < KERNEL_VERSION(5, 9, 0)
+-#define symtab_search(s, name) hashtab_search((s)->table, name)
+-#define symtab_insert(s, name, datum) hashtab_insert((s)->table, name, datum)
++#define symtab_search(s, name) ksu_hashtab_search((s)->table, name)
++#define symtab_insert(s, name, datum) ksu_hashtab_insert((s)->table, name, datum)
+ #endif
+ 
+ #define avtab_for_each(avtab, cur)                                             \
+@@ -96,7 +97,7 @@
+ 	/* AVTAB_XPERMS entries are not necessarily unique */
+ 	if (key->specified & AVTAB_XPERMS) {
+ 		bool match = false;
+-		node = avtab_search_node(&db->te_avtab, key);
++		node = ksu_avtab_search_node(&db->te_avtab, key);
+ 		while (node) {
+ 			if ((node->datum.u.xperms->specified ==
+ 			     xperms->specified) &&
+@@ -104,12 +105,12 @@
+ 				match = true;
+ 				break;
+ 			}
+-			node = avtab_search_node_next(node, key->specified);
++			node = ksu_avtab_search_node_next(node, key->specified);
+ 		}
+ 		if (!match)
+ 			node = NULL;
+ 	} else {
+-		node = avtab_search_node(&db->te_avtab, key);
++		node = ksu_avtab_search_node(&db->te_avtab, key);
+ 	}
+ 
+ 	if (!node) {
+@@ -125,7 +126,7 @@
+ 				key->specified == AVTAB_AUDITDENY ? ~0U : 0U;
+ 		}
+ 		/* this is used to get the node - insertion is actually unique */
+-		node = avtab_insert_nonunique(&db->te_avtab, key, &avdatum);
++		node = ksu_avtab_insert_nonunique(&db->te_avtab, key, &avdatum);
+ 
+ 		int grow_size = sizeof(struct avtab_key);
+ 		grow_size += sizeof(struct avtab_datum);
+@@ -454,9 +455,9 @@
+ 	return true;
+ }
+ 
+-// 5.9.0 : static inline int hashtab_insert(struct hashtab *h, void *key, void
++// 5.9.0 : static inline int ksu_hashtab_insert(struct hashtab *h, void *key, void
+ // *datum, struct hashtab_key_params key_params) 5.8.0: int
+-// hashtab_insert(struct hashtab *h, void *k, void *d);
++// ksu_hashtab_insert(struct hashtab *h, void *k, void *d);
+ #if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 9, 0)
+ static u32 filenametr_hash(const void *k)
+ {
+@@ -537,10 +538,10 @@
+ 		policydb_filenametr_search(db, &key);
+ #else
+ 	struct filename_trans_datum *trans =
+-		hashtab_search(&db->filename_trans, &key);
++		ksu_hashtab_search(&db->filename_trans, &key);
+ #endif
+ 	while (trans) {
+-		if (ebitmap_get_bit(&trans->stypes, src->value - 1)) {
++		if (ksu_ebitmap_get_bit(&trans->stypes, src->value - 1)) {
+ 			// Duplicate, overwrite existing data and return
+ 			trans->otype = def->value;
+ 			return true;
+@@ -561,12 +562,12 @@
+ 		new_key->name = kstrdup(key.name, GFP_ATOMIC);
+ 		trans->next = last;
+ 		trans->otype = def->value;
+-		hashtab_insert(&db->filename_trans, new_key, trans,
++		ksu_hashtab_insert(&db->filename_trans, new_key, trans,
+ 			       filenametr_key_params);
+ 	}
+ 
+ 	db->compat_filename_trans_count++;
+-	return ebitmap_set_bit(&trans->stypes, src->value - 1, 1) == 0;
++	return ksu_ebitmap_set_bit(&trans->stypes, src->value - 1, 1) == 0;
+ #else // < 5.7.0, has no filename_trans_key, but struct filename_trans
+ 
+ 	struct filename_trans key;
+@@ -575,7 +576,7 @@
+ 	key.name = (char *)o;
+ 
+ 	struct filename_trans_datum *trans =
+-		hashtab_search(db->filename_trans, &key);
++		ksu_hashtab_search(db->filename_trans, &key);
+ 
+ 	if (trans == NULL) {
+ 		trans = (struct filename_trans_datum *)kcalloc(sizeof(*trans),
+@@ -594,10 +595,10 @@
+ 		*new_key = key;
+ 		new_key->name = kstrdup(key.name, GFP_ATOMIC);
+ 		trans->otype = def->value;
+-		hashtab_insert(db->filename_trans, new_key, trans);
++		ksu_hashtab_insert(db->filename_trans, new_key, trans);
+ 	}
+ 
+-	return ebitmap_set_bit(&db->filename_trans_ttypes, src->value - 1, 1) ==
++	return ksu_ebitmap_set_bit(&db->filename_trans_ttypes, src->value - 1, 1) ==
+ 	       0;
+ #endif
+ }
+@@ -688,7 +689,7 @@
+ 
+ 	db->type_attr_map_array = new_type_attr_map_array;
+ 	ebitmap_init(&db->type_attr_map_array[value - 1]);
+-	ebitmap_set_bit(&db->type_attr_map_array[value - 1], value - 1, 1);
++	ksu_ebitmap_set_bit(&db->type_attr_map_array[value - 1], value - 1, 1);
+ 
+ 	db->type_val_to_struct = new_type_val_to_struct;
+ 	db->type_val_to_struct[value - 1] = type;
+@@ -698,7 +699,7 @@
+ 
+ 	int i;
+ 	for (i = 0; i < db->p_roles.nprim; ++i) {
+-		ebitmap_set_bit(&db->role_val_to_struct[i]->types, value - 1,
++		ksu_ebitmap_set_bit(&db->role_val_to_struct[i]->types, value - 1,
+ 				1);
+ 	}
+ 
+@@ -738,7 +739,7 @@
+ 
+ 	db->type_attr_map = new_type_attr_map;
+ 	ebitmap_init(&db->type_attr_map[value - 1], HISI_SELINUX_EBITMAP_RO);
+-	ebitmap_set_bit(&db->type_attr_map[value - 1], value - 1, 1);
++	ksu_ebitmap_set_bit(&db->type_attr_map[value - 1], value - 1, 1);
+ 
+ 	db->type_val_to_struct = new_type_val_to_struct;
+ 	db->type_val_to_struct[value - 1] = type;
+@@ -748,7 +749,7 @@
+ 
+ 	int i;
+ 	for (i = 0; i < db->p_roles.nprim; ++i) {
+-		ebitmap_set_bit(&db->role_val_to_struct[i]->types, value - 1,
++		ksu_ebitmap_set_bit(&db->role_val_to_struct[i]->types, value - 1,
+ 				1);
+ 	}
+ 
+@@ -838,7 +839,7 @@
+ 	}
+ 
+ 	ebitmap_init(flex_array_get(db->type_attr_map_array, value - 1));
+-	ebitmap_set_bit(flex_array_get(db->type_attr_map_array, value - 1),
++	ksu_ebitmap_set_bit(flex_array_get(db->type_attr_map_array, value - 1),
+ 			value - 1, 1);
+ 
+ 	old_fa = db->type_val_to_struct_array;
+@@ -859,7 +860,7 @@
+ 
+ 	int i;
+ 	for (i = 0; i < db->p_roles.nprim; ++i) {
+-		ebitmap_set_bit(&db->role_val_to_struct[i]->types, value - 1,
++		ksu_ebitmap_set_bit(&db->role_val_to_struct[i]->types, value - 1,
+ 				1);
+ 	}
+ 	return true;
+@@ -879,7 +880,7 @@
+ 		ksu_hashtab_for_each(db->p_types.table, node)
+ 		{
+ 			type = (struct type_datum *)(node->datum);
+-			if (ebitmap_set_bit(&db->permissive_map, type->value,
++			if (ksu_ebitmap_set_bit(&db->permissive_map, type->value,
+ 					    permissive))
+ 				pr_info("Could not set bit in permissive map\n");
+ 		};
+@@ -890,7 +891,7 @@
+ 			pr_info("type %s does not exist\n", type_name);
+ 			return false;
+ 		}
+-		if (ebitmap_set_bit(&db->permissive_map, type->value,
++		if (ksu_ebitmap_set_bit(&db->permissive_map, type->value,
+ 				    permissive)) {
+ 			pr_info("Could not set bit in permissive map\n");
+ 			return false;
+@@ -914,7 +915,7 @@
+ 	struct ebitmap *sattr =
+ 		flex_array_get(db->type_attr_map_array, type->value - 1);
+ #endif
+-	ebitmap_set_bit(sattr, attr->value - 1, 1);
++	ksu_ebitmap_set_bit(sattr, attr->value - 1, 1);
+ 
+ 	struct hashtab_node *node;
+ 	struct constraint_node *n;
+@@ -925,9 +926,9 @@
+ 		for (n = cls->constraints; n; n = n->next) {
+ 			for (e = n->expr; e; e = e->next) {
+ 				if (e->expr_type == CEXPR_NAMES &&
+-				    ebitmap_get_bit(&e->type_names->types,
++				    ksu_ebitmap_get_bit(&e->type_names->types,
+ 						    attr->value - 1)) {
+-					ebitmap_set_bit(&e->names,
++					ksu_ebitmap_set_bit(&e->names,
+ 							type->value - 1, 1);
+ 				}
+ 			}

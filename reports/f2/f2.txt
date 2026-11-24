@@ -1,28 +1,28 @@
-=== F2 EXECUTADO, 2026-09-30 ~19:37 ===
-set_usb_boot 2 + reset REAL (oem reboot cold_boot), COM watcher
+=== F2 EXECUTED, 2026-09-30 ~19:37 ===
+set_usb_boot 2 + REAL reset (oem reboot cold_boot), COM watcher
 
-precondicao: pos-C0, boot limpo, uptime 261.9s, adb USB, sem residuo de F1
+precondition: post-C0, clean boot, uptime 261.9s, USB adb, no F1 residue
 
   adb reboot fastboot              -> 18d1:0d02 em 5.7s
   fastboot oem set_usb_boot 2      -> AMLOGIC x3 + OKAY 0.000s
-                                     device ainda no bus (18d1:0d02 presente)
-  fastboot oem reboot cold_boot    -> FAILED (Status read failed) [esperado]
+                                     device still on the bus (18d1:0d02 present)
+  fastboot oem reboot cold_boot    -> FAILED (Status read failed) [expected]
 
   t=  0.000  2717:4e40  android     bcdDevice=0223
   t=  5.712  OFF      2717:4e40
   t=  8.981  ON       18d1:0d02    bcdDevice=9999
   t= 14.946  OFF      18d1:0d02
   t= 14.946  *** no Aquaman device on the bus ***
-  [nada por mais 885s. watcher de 900s esgotado. zero reenumeracao.]
+  [nothing for another 885s. 900s watcher exhausted. zero re-enumeration.]
 
-  VEREDITO: CASO C.
-  - flag armada, reset real issued, NENHUM USB por 885s
-  - contrastado com C0: MESMO reset, MESMO comando, sem flag -> 17.5s de volta
-  - a flag e a unica variavel. GP_CFG7[31] le 0 nos dois lados (F1).
-  - precisa de power-cycle. SO O PLUG FISICO SAI.
+  VERDICT: CASE C.
+  - flag armed, real reset issued, NO USB for 885s
+  - contrasted with C0: SAME reset, SAME command, no flag -> 17.5s to return
+  - the flag is the only variable. GP_CFG7[31] reads 0 on both sides (F1).
+  - needs a power-cycle. ONLY THE PHYSICAL PLUG WORKS.
 
-  DIFERENCA ISOLADA (esta e a primeira vez que fica provada):
-    C0: sem set_usb_boot 2 -> 17.5s -> android
-    F2: com set_usb_boot 2 -> 885s+ -> nada
-  mesmo reset real, mesmo watcher, mesma build. a unica diferenca entre as
-  duas pernas e a chamada SMC 0x82000043 com x1=2.
+  ISOLATED DIFFERENCE (first time this is proven):
+    C0: without set_usb_boot 2 -> 17.5s -> android
+    F2: with set_usb_boot 2 -> 885s+ -> nothing
+  same real reset, same watcher, same build. the only difference between the
+  two legs is the SMC 0x82000043 call with x1=2.

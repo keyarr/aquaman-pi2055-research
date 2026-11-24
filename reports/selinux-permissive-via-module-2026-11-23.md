@@ -1,8 +1,10 @@
 # SELinux permissive via kernel module (2026-11-23)
 
 Device: Xiaomi Mi TV Stick 1080p, aquaman, Android 9 PI.2055, kernel 4.9.113.
-Status: HARDWARE_REPRODUCED. Current device state: Permissive. No boot,
-vbmeta, system, vendor, efuse, BL31 or SMC change was used.
+Status: HARDWARE_REPRODUCED for the 2026-11-23 build, now SUPERSEDED. The final
+2026-11-24 image is Enforcing with KernelSU; see
+`reports/kernelsu-persist-2026-11-24.md`. No boot, vbmeta, system, vendor,
+efuse, BL31 or SMC change was used.
 
 ## Result
 

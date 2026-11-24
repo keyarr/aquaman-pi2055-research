@@ -1,0 +1,287 @@
+diff --git a/userspace/ksud_magic/src/allowlist.rs b/userspace/ksud_magic/src/allowlist.rs
+new file mode 100644
+index 00000000..49216608
+--- /dev/null
++++ b/userspace/ksud_magic/src/allowlist.rs
+@@ -0,0 +1,281 @@
++use anyhow::{bail, Context, Result};
++use std::fs::{self, File, OpenOptions};
++use std::io::{Read, Write};
++use std::path::{Path, PathBuf};
++use std::time::Duration;
++
++const ALLOWLIST_PATH: &str = "/data/adb/ksu/.allowlist";
++const ALLOWLIST_TMP_PATH: &str = "/data/adb/ksu/.allowlist.tmp";
++
++const KERNEL_SU_OPTION: libc::c_ulong = 0xDEADBEEF;
++const CMD_ALLOWLIST_IO: libc::c_ulong = 17;
++const OP_GET_SIZE: u32 = 0;
++const OP_READ: u32 = 1;
++const OP_WRITE: u32 = 2;
++const OP_PENDING: u32 = 3;
++const OP_PROBE_OPEN: u32 = 4;
++
++const FILE_MAGIC: u32 = 0x7f4b5355;
++const FILE_VERSION: u32 = 3;
++const HEADER_LEN: usize = 8;
++// sizeof(struct app_profile) on arm64, locked by BUILD_BUG_ON in allowlist.c.
++const RECORD_LEN: usize = 776;
++const MAX_BLOB_LEN: usize = 1024 * 1024;
++
++#[repr(C)]
++struct AllowlistIoctl {
++    op: u32,
++    reply: u32,
++}
++
++// The pre-hook runs before the real prctl, which still returns EINVAL for our
++// private option. Only ctl.reply carries the module's result.
++const REPLY_UNSET: u32 = 0xdead0000;
++
++fn kernel_io(op: u32, buf: *mut u8, len: usize) -> Result<i32> {
++    let mut ctl = AllowlistIoctl {
++        op,
++        reply: REPLY_UNSET,
++    };
++    unsafe {
++        libc::syscall(
++            libc::SYS_prctl,
++            KERNEL_SU_OPTION,
++            CMD_ALLOWLIST_IO,
++            buf as libc::c_ulong,
++            len as libc::c_ulong,
++            &mut ctl as *mut AllowlistIoctl as libc::c_ulong,
++        );
++    }
++    if ctl.reply == REPLY_UNSET {
++        bail!("kernel did not answer allowlist command {}", op);
++    }
++    Ok(ctl.reply as i32)
++}
++
++fn validate_framing(data: &[u8]) -> Result<()> {
++    if data.len() < HEADER_LEN {
++        bail!("allowlist truncated: {} bytes", data.len());
++    }
++    let magic = u32::from_ne_bytes(data[0..4].try_into().unwrap());
++    let version = u32::from_ne_bytes(data[4..8].try_into().unwrap());
++    if magic != FILE_MAGIC {
++        bail!("allowlist bad magic: {:#x}", magic);
++    }
++    if version != FILE_VERSION {
++        bail!("allowlist unsupported version: {}", version);
++    }
++    if data.len() > MAX_BLOB_LEN {
++        bail!("allowlist too large: {} bytes", data.len());
++    }
++    if (data.len() - HEADER_LEN) % RECORD_LEN != 0 {
++        bail!("allowlist truncated record: {} bytes", data.len());
++    }
++    Ok(())
++}
++
++fn read_blob(path: &Path) -> Result<Vec<u8>> {
++    let mut file = File::open(path)
++        .with_context(|| format!("open {}", path.display()))?;
++    let mut data = Vec::new();
++    file.read_to_end(&mut data)
++        .with_context(|| format!("read {}", path.display()))?;
++    validate_framing(&data)?;
++    Ok(data)
++}
++
++/// Write through a temporary file so a failed write cannot destroy the last
++/// valid copy. The kernel validates every record before applying the blob.
++fn atomic_write(path: &Path, tmp: &Path, data: &[u8]) -> Result<()> {
++    validate_framing(data)?;
++    let mut file = OpenOptions::new()
++        .create(true)
++        .write(true)
++        .truncate(true)
++        .open(tmp)
++        .with_context(|| format!("create {}", tmp.display()))?;
++    file.write_all(data)
++        .with_context(|| format!("write {}", tmp.display()))?;
++    file.sync_all()
++        .with_context(|| format!("sync {}", tmp.display()))?;
++    drop(file);
++    fs::rename(tmp, path)
++        .with_context(|| format!("rename {} -> {}", tmp.display(), path.display()))?;
++    if let Some(parent) = path.parent() {
++        if let Ok(dir) = File::open(parent) {
++            let _ = dir.sync_all();
++        }
++    }
++    Ok(())
++}
++
++fn set_blob(data: &[u8]) -> Result<()> {
++    if data.len() > MAX_BLOB_LEN {
++        bail!("allowlist blob too large: {} bytes", data.len());
++    }
++    let ret = kernel_io(OP_WRITE, data.as_ptr() as *mut u8, data.len())?;
++    if ret != 0 {
++        bail!("kernel rejected allowlist blob: {}", ret);
++    }
++    Ok(())
++}
++
++/// Read /data/adb/ksu/.allowlist and push it to the LKM. Safe to repeat: the
++/// kernel applies the whole list only after every record validates, and no
++/// post-fs-data script or mount is touched here.
++pub fn load() -> Result<()> {
++    let path = Path::new(ALLOWLIST_PATH);
++    match read_blob(path) {
++        Ok(data) => {
++            set_blob(&data)?;
++            log::info!("allowlist: loaded {} bytes from {}", data.len(), path.display());
++            Ok(())
++        }
++        Err(e) => {
++            log::warn!("allowlist: keep current list, load failed: {e:#}");
++            Err(e)
++        }
++    }
++}
++
++fn save_pending() -> Result<bool> {
++    Ok(kernel_io(OP_PENDING, std::ptr::null_mut(), 0)? != 0)
++}
++
++/// Persist the in-memory list after a manager grant or revoke. On any error
++/// the previous file is left untouched; the next save retries.
++pub fn save() -> Result<()> {
++    if !save_pending()? {
++        return Ok(());
++    }
++    let size = kernel_io(OP_GET_SIZE, std::ptr::null_mut(), 0)?;
++    if size <= 0 || size as usize > MAX_BLOB_LEN {
++        bail!("allowlist invalid blob size: {}", size);
++    }
++    let mut data = vec![0u8; size as usize];
++    let ret = kernel_io(OP_READ, data.as_mut_ptr(), data.len())?;
++    if ret != 0 {
++        bail!("allowlist blob read failed: {}", ret);
++    }
++    validate_framing(&data)?;
++    atomic_write(Path::new(ALLOWLIST_PATH), Path::new(ALLOWLIST_TMP_PATH), &data)?;
++    log::info!("allowlist: saved {} bytes", data.len());
++    Ok(())
++}
++
++/// Instrumentation: open the same file from the ksud (boot service) context so
++/// its result can be compared with the workqueue log in dmesg.
++pub fn probe() -> Result<()> {
++    let ret = kernel_io(OP_PROBE_OPEN, std::ptr::null_mut(), 0)?;
++    log::info!("allowlist: boot-service probe open result={}", ret);
++    Ok(())
++}
++
++pub fn daemon() -> Result<()> {
++    loop {
++        if let Err(e) = save() {
++            log::warn!("allowlist: save deferred: {e:#}");
++        }
++        std::thread::sleep(Duration::from_secs(1));
++    }
++}
++
++/// Detach from the boot-completed exec so no extra init service or SELinux
++/// domain transition is needed for the save loop.
++pub fn spawn_daemon() -> Result<()> {
++    let pid = unsafe { libc::fork() };
++    if pid < 0 {
++        bail!("allowlist daemon fork failed");
++    }
++    if pid == 0 {
++        unsafe {
++            libc::setsid();
++        }
++        if let Err(e) = daemon() {
++            log::warn!("allowlist daemon stopped: {e:#}");
++        }
++        std::process::exit(0);
++    }
++    Ok(())
++}
++
++#[cfg(test)]
++mod tests {
++    use super::*;
++
++    fn temp_dir(name: &str) -> PathBuf {
++        let dir = std::env::temp_dir().join(format!("ksu-allowlist-{}-{}", name, std::process::id()));
++        let _ = fs::remove_dir_all(&dir);
++        fs::create_dir_all(&dir).unwrap();
++        dir
++    }
++
++    fn valid_blob() -> Vec<u8> {
++        let mut data = Vec::new();
++        data.extend_from_slice(&FILE_MAGIC.to_ne_bytes());
++        data.extend_from_slice(&FILE_VERSION.to_ne_bytes());
++        data.resize(HEADER_LEN + RECORD_LEN, 0);
++        data
++    }
++
++    #[test]
++    fn existing_valid_file_survives_repeated_write() {
++        let dir = temp_dir("valid");
++        let path = dir.join(".allowlist");
++        let tmp = dir.join(".allowlist.tmp");
++        let blob = valid_blob();
++        fs::write(&path, &blob).unwrap();
++        atomic_write(&path, &tmp, &blob).unwrap();
++        atomic_write(&path, &tmp, &blob).unwrap();
++        assert_eq!(fs::read(&path).unwrap(), blob);
++        assert!(!tmp.exists());
++    }
++
++    #[test]
++    fn truncated_file_is_rejected_before_write() {
++        let dir = temp_dir("truncated");
++        let path = dir.join(".allowlist");
++        let tmp = dir.join(".allowlist.tmp");
++        let original = valid_blob();
++        fs::write(&path, &original).unwrap();
++        for bad in [&[0u8, 7][..], &original[..HEADER_LEN + 1], &original[..4]] {
++            assert!(validate_framing(bad).is_err());
++            assert!(atomic_write(&path, &tmp, bad).is_err());
++        }
++        assert_eq!(fs::read(&path).unwrap(), original);
++    }
++
++    #[test]
++    fn failed_write_keeps_last_valid_copy() {
++        let dir = temp_dir("failwrite");
++        let path = dir.join(".allowlist");
++        let tmp = dir.join("not-a-directory").join(".allowlist.tmp");
++        let original = valid_blob();
++        fs::write(&path, &original).unwrap();
++        assert!(atomic_write(&path, &tmp, &valid_blob()).is_err());
++        assert_eq!(fs::read(&path).unwrap(), original);
++    }
++
++    #[test]
++    fn read_blob_rejects_missing_and_truncated() {
++        let dir = temp_dir("read");
++        let missing = dir.join("missing");
++        assert!(read_blob(&missing).is_err());
++        let truncated = dir.join("truncated");
++        fs::write(&truncated, &valid_blob()[..HEADER_LEN + 3]).unwrap();
++        assert!(read_blob(&truncated).is_err());
++        let full = dir.join("full");
++        fs::write(&full, valid_blob()).unwrap();
++        assert_eq!(read_blob(&full).unwrap(), valid_blob());
++    }
++
++    #[test]
++    fn framing_checks_magic_and_version() {
++        let mut blob = valid_blob();
++        blob[0] ^= 0xff;
++        assert!(validate_framing(&blob).is_err());
++        let mut blob = valid_blob();
++        blob[4..8].copy_from_slice(&99u32.to_ne_bytes());
++        assert!(validate_framing(&blob).is_err());
++    }
++}

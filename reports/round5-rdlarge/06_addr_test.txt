@@ -1,4 +1,4 @@
-[sudo] senha para erick: 
+[sudo] password for erick: 
 === 0x20000000 size 0x200 ===
   0x02 says: e3 95 62 04 ff ff ff ff ff ff ff ff ff ff ff ff
   0x12 control OK

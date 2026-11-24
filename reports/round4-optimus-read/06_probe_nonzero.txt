@@ -4,7 +4,7 @@
 FAILED (Status read failed (No such device))
 fastboot: error: Command failed
 === optimus up 1790714105.337915670 ===
-[sudo] senha para erick: raw     00 07 00 10
+[sudo] password for erick: raw     00 07 00 10
 version 0.7
 stage   16 (TPL/BL33-u-boot)
 

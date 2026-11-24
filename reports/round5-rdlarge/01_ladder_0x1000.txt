@@ -1,4 +1,4 @@
-[sudo] senha para erick: if 0 alt 0 class 0xff/00/00
+[sudo] password for erick: if 0 alt 0 class 0xff/00/00
   ep 0x81 IN  1 mps 512
   ep 0x02 OUT 2 mps 512
 raw     00 07 00 10

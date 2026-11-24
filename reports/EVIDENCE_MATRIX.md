@@ -111,11 +111,13 @@ evidence type to strongest artifact and main caveat.
 | MSG_PEEK | hardware experiment | REFUTED as proof | same probe | plumbing only |
 | slab/buddy diagnostics | blocked | INCONCLUSIVE | errno 13 / absent / 0400 | shell unreachable; root adds buddyinfo but slab attrs stay denied |
 
-## Root surface (2026-11-23)
+## Root surface (2026-11-24)
 
 | Item | Evidence type | Status | Strongest artifact | Main caveat |
 | ---- | ------------- | ------ | ------------------ | ----------- |
-| persistent uid 0 from ODM init service | hardware boot | HARDWARE_REPRODUCED | `reports/root-via-odm-2026-11-23.md` | shell on TCP 4444 in `u:r:dumpstate:s0`; not via boot chain or GhostLock |
-| root reads kernel log and `/proc/cmdline` | hardware, one boot | HARDWARE_REPRODUCED | `reports/root-read-surface-2026-11-23.md` (dmesg cmdline identical to `/proc/cmdline`) | enforcing-only snapshot; DT node, `/proc/kallsyms`, slab attrs and debugfs were denied then |
+| persistent root via KernelSU LKM | hardware boot + UI grant | HARDWARE_REPRODUCED | `reports/kernelsu-persist-2026-11-24.md` | `su -c id` -> uid 0 in `u:r:su:s0`; grant survives reboot; not via boot chain or GhostLock |
+| Manager crowning, allowlist save/load | hardware boot | HARDWARE_REPRODUCED | same report + `work/ksu-lkm-fix/PERSISTENCE.md` | repeated load idempotent, truncated file rejected, previous state preserved; one device |
+| SELinux stays Enforcing with KernelSU | hardware boot | HARDWARE_REPRODUCED | same report | no `seflip`, no global Permissive, no 4444 listener |
+| root reads kernel log and `/proc/cmdline` | hardware, one boot | HARDWARE_REPRODUCED | `reports/root-read-surface-2026-11-23.md` (dmesg cmdline identical to `/proc/cmdline`) | read through the earlier ODM listener; enforcing-only snapshot; DT node, `/proc/kallsyms`, slab attrs and debugfs were denied then |
 | root reads dmesg VA layout and `-g963f962d046a-dirty` banner | hardware, one boot | HARDWARE_REPRODUCED | same report | no second boot, no KASLR re-check; `/proc/version` still omits the suffix |
-| SELinux switched to Permissive from ODM rc | hardware boot + offline policy | HARDWARE_REPRODUCED | `reports/selinux-permissive-via-module-2026-11-23.md` | global enforcement only; `setenforce` still denied to shell and `dumpstate`, reboot does not revert |
+| TCP 4444 listener / global Permissive via `seflip` | hardware boot + offline policy | SUPERSEDED | `reports/root-via-odm-2026-11-23.md`, `reports/selinux-permissive-via-module-2026-11-23.md` | 2026-11-23 build only; absent from the final image |

@@ -1,4 +1,4 @@
-# CURRENT_STATE - single source of truth (2026-10-02)
+# CURRENT_STATE - single source of truth (2026-11-24)
 
 Read this first. It is the epistemological index. History is preserved in
 individual reports; this file states what is currently believed and why.
@@ -17,7 +17,9 @@ were checked and are correct. Details, ruled-out items and next step:
 
 This supersedes every "no root" statement below. Root is persistent and was
 obtained without a boot-chain or SMC bypass, without kernel exploitation, and
-without touching boot, system, vendor or vbmeta.
+without touching boot, system, vendor or vbmeta. The final 2026-11-24 image
+keeps the ODM load route but replaces the TCP 4444 listener and `seflip` with
+the KernelSU LKM described at the end of this file.
 
 | Claim | Status | Evidence | Scope | Supersedes |
 | ----- | ------ | -------- | ----- | ---------- |
@@ -25,7 +27,7 @@ without touching boot, system, vendor or vbmeta.
 | Android 9 init imports `/odm/etc/init/root.rc` | HARDWARE_REPRODUCED | marker after reboot, label `init_exec:s0` on the rc | hardware | - |
 | init exec requires a domain transition; it has no `execute_no_trans` on any exec type | HARDWARE_REPRODUCED | `execute_no_trans` denials for `shell_exec` and `init_exec`; policy dump has `type_transition init X:process` and no such allow | hardware + policy | - |
 | init -> `dumpstate` via `dumpstate_exec` yields uid 0 in `u:r:dumpstate:s0` | HARDWARE_REPRODUCED | service `rootsh` running, `id` returns `uid=0(root) ... context=u:r:dumpstate:s0` | hardware | - |
-| root shell on TCP 4444 | HARDWARE_REPRODUCED | `adb forward tcp:4444 tcp:4444`, `nc 127.0.0.1 4444`, `id` -> uid 0 | hardware | previous `no root` rows |
+| root shell on TCP 4444 | SUPERSEDED | `adb forward tcp:4444 tcp:4444`, `nc 127.0.0.1 4444`, `id` -> uid 0 | 2026-11-23 build only; final image has no listener | previous `no root` rows |
 
 Full construction, failed attempts and restore procedure:
 `reports/root-via-odm-2026-11-23.md`. The GhostLock row below remains scoped to
@@ -36,7 +38,7 @@ stand: unsigned boot was never demonstrated here.
 
 This is the enforcing-only snapshot from 2026-11-23. Uid 0 runs in
 `u:r:dumpstate:s0`; DAC is satisfied and SELinux was still enforcing in that
-boot. Current enforcement is in the next section. These rows supersede
+boot. Current root and enforcement are in the KernelSU section below. These rows supersede
 "unobservable" statements that were written for `u:r:shell:s0`. Evidence:
 `reports/root-read-surface-2026-11-23.md`, one boot, boot ID
 `5639814c-0597-46a1-9650-4f191906f0bb`, read-only.
@@ -52,25 +54,27 @@ boot. Current enforcement is in the next section. These rows supersede
 | `/proc/config.gz` readable from shell but not from root | HARDWARE_REPRODUCED | gzip magic via `adb shell`; SELinux denial via root listener | one boot | "root sees everything shell sees" |
 | DT cmdline, `/sys/firmware/fdt`, `/proc/kallsyms`, slab attrs, debugfs, selinuxfs, `mali.ko`, sysctls still denied | HARDWARE_REPRODUCED | per-path `head -c 1` and avc records | one boot, before the permissive module | snapshot only; enforcement changed later |
 
-## SELinux permissive (2026-11-23)
+## SELinux permissive (2026-11-23, SUPERSEDED)
 
-The device is currently Permissive. This supersedes the enforcing-only state
-in the section above and every old "SELinux still enforces" statement. It does
-not supersede the boot/cmdline refutations: those were about transporting
-`androidboot.selinux` from U-Boot, which was never demonstrated.
+The 2026-11-23 build was Permissive through `seflip`. The final 2026-11-24
+image is Enforcing, with KernelSU applying its own sepolicy at module load;
+see the KernelSU section below. The rows here are historical for that build.
+They do not supersede the boot/cmdline refutations: those were about
+transporting `androidboot.selinux` from U-Boot, which was never demonstrated.
 
 | Claim | Status | Evidence | Scope | Supersedes |
 | ----- | ------ | -------- | ----- | ---------- |
-| `getenforce` returns Permissive and `/sys/fs/selinux/enforce` is 0 | HARDWARE_REPRODUCED | adb shell readback after ODM flash | current device | enforcing state in root read surface |
+| `getenforce` returns Permissive and `/sys/fs/selinux/enforce` is 0 | HARDWARE_REPRODUCED | adb shell readback after ODM flash | 2026-11-23 build only; now Enforcing | enforcing state in root read surface |
 | a kernel module can be loaded without boot-chain involvement | HARDWARE_REPRODUCED | `seflip` in `/proc/modules`, `lsmod` | ODM rc path only | "kernel module loading requires boot or kernel R/W" |
 | `vendor_init`, not `init`, imports `/odm/etc/init/root.rc` | HARDWARE_REPRODUCED | avc denial for `system_file` label, `scontext=u:r:vendor_init:s0` | one boot, first attempt | assumption that ODM rc runs in `u:r:init:s0` |
 | `vendor_init` has `sys_module` and `module_load` on `vendor_file`, not `system_file` | PROVEN | policy converted from `precompiled_sepolicy` with libsepol | offline policy | - |
 | module writes `selinux_enforcing` to 0 from kernel mode | HARDWARE_REPRODUCED | enforcing went 1 -> 0 after `insmod`, no `Unknown symbol` or CRC error | one boot | "no way past setenforce without load_policy or kernel R/W" |
 | `setenforce` remains denied to shell and `dumpstate` | PROVEN | policy has no `security:setenforce` allow; user's three-path test | policy + prior hardware | - |
-| reboot alone does not restore enforcing | PROVEN | module is loaded from ODM on every boot | logic | - |
+| reboot alone does not restore enforcing | SUPERSEDED | `seflip` was loaded from ODM on every boot | 2026-11-23 build; final image boots Enforcing | - |
 
 Full construction, failed label, build command and rollback:
-`reports/selinux-permissive-via-module-2026-11-23.md`.
+`reports/selinux-permissive-via-module-2026-11-23.md` (historical). Current
+rollback: `reports/kernelsu-persist-2026-11-24.md`.
 
 ## Kernel provenance
 
@@ -192,13 +196,29 @@ Two files were added after the 2026-10-02 consolidation. They are indexed in
 | `reports/observations-new-angles-2026-11-19.md` | OFFLINE_ONLY | four untested angles: plaintext kernel dump through the BL33 wrapper, keyman blobs as AMLSECU key, CBC oracle at the SMC, bootm rebuild trace. The file explicitly does not change the rows above |
 | `reports/plan-smc-gate-neutralize-magisk.md` | OFFLINE_ONLY | operational plan. Phase 0 read-only oracle PASS; phases 1-3 not executed. No bypass demonstrated, so the BL31 row above stands |
 
-## KernelSU Next LKM (2026-11-23)
+## KernelSU Next LKM (2026-11-24)
 
-`reports/kernelsu-next-lkm-2026-11-23.md` is the current state for this track.
-It supersedes the "VIABLE WITH SOURCE" verdict in `reports/kernelsu-next.md`
-only for the LKM route: KernelSU Next v1.1.1 runs from `/odm` with seven hooks,
-manager detection, `su -c id` as uid 2000 and a persistent `permissive su;`
-sepolicy patch. No boot.img, BL31 or source-tree rebuild is involved. The BL31
-and custom-kernel rows above remain unchanged. Known gaps: allowlist does not
-survive reboot (save failed with ENOKEY), no LSM hooks, manager detection is a
-one-shot scan, and `rmmod` is not a validated rollback.
+`reports/kernelsu-persist-2026-11-24.md` is the current state for this track.
+It supersedes `reports/kernelsu-next-lkm-2026-11-23.md` on persistence,
+SELinux mode, Manager crowning, the `su` path and network exposure. It also
+supersedes the "VIABLE WITH SOURCE" verdict in `reports/kernelsu-next.md` for
+the LKM route. KernelSU Next v1.1.1 runs as an unsigned LKM loaded from `/odm`
+at `sys.boot_completed`, with `su -c id` as `u:r:su:s0`, Manager crowning, a
+grant that survives reboot and SELinux Enforcing. No boot.img, BL31 or
+source-tree rebuild is involved. The BL31 and custom-kernel rows above remain
+unchanged.
+
+| Claim | Status | Evidence | Scope | Supersedes |
+| ----- | ------ | -------- | ----- | ---------- |
+| grant/revoke through the Manager, survives reboot | HARDWARE_REPRODUCED | UI revoke -> `su` rc 127, grant -> uid 0, grant still present after reboot | final ODM image, one device | allowlist in memory only, `ENOKEY` on save |
+| SELinux stays Enforcing with KernelSU loaded | HARDWARE_REPRODUCED | `getenforce` = Enforcing, no `seflip`, no Oops for >4 min | final ODM image, one device | global Permissive via `seflip` |
+| KernelSU sepolicy applied at module load | HARDWARE_REPRODUCED | `vendor_init` can read `packages.list`, Manager crowning line in dmesg | final ODM image | `/odm/ksu_sepolicy.sh` exec with `permissive su;` |
+| 32-bit `su` path works | HARDWARE_REPRODUCED | native + `compat_sys_execve` hooks, `su -c id` -> uid 0 | final ODM image, 32-bit userspace | 64-bit-only `sys_execve` hook |
+| no network root listener | HARDWARE_REPRODUCED | no `:115c` in `/proc/net/tcp*`, `nc` refused | final ODM image | TCP 4444 listener on all interfaces |
+| static symbol/CRC match of the rebuilt module | OFFLINE_ONLY | `work/ksu-lkm-fix/check-static.py` PASS against stock `Module.symvers` | build tree, not device | - |
+
+Remaining gaps: the control build is source-close, not byte-identical; LSM
+hooks (`vfs_rename`, `task_fix_setuid`, `inode_permission`, `key_permission`)
+are absent and Manager discovery is a one-shot scan at init; symbol fidelity
+is offline-derived; `rmmod` is not a validated rollback. Detailed evidence and
+build recipe: `work/ksu-lkm-fix/PERSISTENCE.md`.

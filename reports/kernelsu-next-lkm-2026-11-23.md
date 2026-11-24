@@ -13,6 +13,12 @@ question "can KernelSU Next reach this kernel?" is now answered without a
 kernel source rebuild. The BL31 statement in that older report still holds for
 every boot-image route.
 
+> SUPERSEDED by `reports/kernelsu-persist-2026-11-24.md` on persistence,
+> SELinux mode, Manager crowning, the `su` path and network exposure. The
+> findings below describe the 2026-11-23 build: global Permissive via
+> `seflip`, TCP 4444 root listener and an allowlist that did not survive
+> reboot. None of those are in the final image.
+
 ## Result
 
 KernelSU Next `v1.1.1` (`0d6bdc6`, legacy branch, non-GKI) runs as an unsigned

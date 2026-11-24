@@ -1,4 +1,4 @@
-trigger: fastboot oem update 5000 -> FAILED (Status read failed (No such device)) rc=1 (esperado, entra em burning)
+trigger: fastboot oem update 5000 -> FAILED (Status read failed (No such device)) rc=1 (expected, enters burning)
 lsusb: Bus 003 Device 011: ID 1b8e:c003 Amlogic, Inc.
 
 $ sudo python3 /tmp/write_test.py
@@ -11,4 +11,4 @@ $ sudo python3 /tmp/write_test.py
 [  0.218s] RESULT: WRITE_MEM CONFIRMADO - readback bate
 [  0.218s] RESTORE <- 00 00 00 00 ; verify=00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 OK
 EXIT=0
-lsusb: Bus 003 Device 011: ID 1b8e:c003 Amlogic, Inc. (segue vivo, sem travar)
+lsusb: Bus 003 Device 011: ID 1b8e:c003 Amlogic, Inc. (still alive, not stuck)

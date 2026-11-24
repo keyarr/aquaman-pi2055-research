@@ -1,7 +1,7 @@
-=== FASE 1 EXECUTADA, 2026-09-30 ~19:00 ===
+=== PHASE 1 EXECUTED, 2026-09-30 ~19:00 ===
 
 entry: adb reboot fastboot -> 18d1:0d02 em 2s
-        fastboot oem update 5000 -> host FAILED (esperado, larga o link)
+        fastboot oem update 5000 -> host FAILED (expected, drops the link)
         1b8e:c003 em ~200ms
 
   raw     00 07 00 10
@@ -23,11 +23,11 @@ entry: adb reboot fastboot -> 18d1:0d02 em 2s
   SD_CFG15 0xc810023c  0x03b04200  00 42 b0 03
   GP_CFG7[31] = 0   GP_CFG0[3:0] = 1   SD_CFG15[15:12] = 4
 
-== CONTROLE, mesma janela, set_usb_boot 1 (CLEAR_USB_BOOT) ==
-  before e after: valores byte-identicos ao bloco acima
+== CONTROL, same window, set_usb_boot 1 (CLEAR_USB_BOOT) ==
+  before and after: byte-identical values to the block above
   GP_CFG7[31] 0 -> 0
 
 == verdict ==
   GP_CFG7[31]  0 -> 0
-  NO OBSERVABLE CHANGE. real null, nao read falhado: os bytes sao coerentes
-  ao vivo (bit 22 = rpmb_state set, [7:0] = 0x07 campo de boot).
+  NO OBSERVABLE CHANGE. real null, not a failed read: the bytes are coherent
+  live (bit 22 = rpmb_state set, [7:0] = 0x07 boot field).

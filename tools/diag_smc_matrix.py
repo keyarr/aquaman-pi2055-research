@@ -161,7 +161,7 @@ def run(tag):
     import optimus
     dev = optimus.find()
     if optimus.identify(dev) != 0:
-        sys.exit("ABORT: nao e stage 16")
+        sys.exit("ABORT: not stage 16")
     b = stub(cmd, buf, length, opt, wrapper)
     try:
         poke(dev, SCRATCH, b)

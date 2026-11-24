@@ -5,6 +5,6 @@ error: no devices/emulators found
 FAILED (Status read failed (No such device))
 fastboot: error: Command failed
 === optimus up 1790714918.795976668 ===
-[sudo] senha para erick: USBError: [Errno 110] Operation timed out
+[sudo] password for erick: USBError: [Errno 110] Operation timed out
 === done 1790714948.976036950 ===
 Bus 003 Device 051: ID 1b8e:c003 Amlogic, Inc. 

@@ -72,7 +72,7 @@ Reconstructed from the code and the logs, not from the prose summaries.
    `stamp()` in that build allocated a fixed 4096-byte VLA and varied only the
    `memset` length, so the user SP was identical for every PAD and the
    `stack_fds` address never moved. The scan was a no-op by construction.
-   `out/logs/rep_0x180.log` then shows 9/9 rep runs with "frame intocado".
+   `out/logs/rep_0x180.log` then shows 9/9 rep runs with "frame untouched".
    Reconciled: the 0x180 result is a stack-reuse lottery plus the known
    EDEADLK/timeout race, not a stamp hit. **No stamp byte was ever written
    on the device in any boot** (`ghostlock-oracle-v2-gate3.md:127-129`).
@@ -816,11 +816,11 @@ the least evidence in the repo, so most entries are marked as such.
 | 3 | wrong frame | **likely, and the strongest static finding** | sec 2.3: the oracle drives `rt_mutex_get_effective_prio`, which reads `task->pi_waiters` (the *owner's* tree). The dangling object is the *victim's* `pi_blocked_on`, read by `rt_mutex_adjust_pi` (`core.c:4401`) or the chain walk (`rtmutex.c:548`). These are different code paths. The oracle was pointed at a path that may never touch the freed frame. |
 | 4 | wrong timing | **ruled out for the observed deaths** | `ghostlock-oracle-v2-hold.md:29-35`: holdB died before the first heartbeat at `+0 ms` with a 250 ms settle, so the actor is faster than the settle. "Shorten the settle" was already tried. |
 | 5 | correct UAF, wrong primitive | **not excluded** | The reboot is consistent with a UAF read, but no log names the faulting path. A wrong-but-live consumer is as plausible as a stamp failure. |
-| 6 | right hypothesis, wrong oracle | **confirmed for the `0x180` "hit"** | `ghostlock-value-oracle.md:18-24`: fixed 4096 B VLA meant the user SP never moved, so the sweep was a no-op. The "hit" was stack-reuse luck. `rep_0x180.log` shows 9/9 "frame intocado". |
+| 6 | right hypothesis, wrong oracle | **confirmed for the `0x180` "hit"** | `ghostlock-value-oracle.md:18-24`: fixed 4096 B VLA meant the user SP never moved, so the sweep was a no-op. The "hit" was stack-reuse luck. `rep_0x180.log` shows 9/9 "frame untouched". |
 | 7 | false hypothesis | **one confirmed** | The claim that the actor is process exit was refuted by the hold round (`hold.md:20-27`). |
 
 Reconciling the old "PAD 0x180 hit" with the later reboots, as requested:
-`scan_pads.log:119-127` recorded `[pad 0x180] ACERTO consumer rapido prio=0
+`scan_pads.log:119-127` recorded `[pad 0x180] HIT consumer fast prio=0
 us=706` and survived. That run predates the `stamp_at()` rewrite. Under the
 old fixed-VLA stamper the user SP was constant for every PAD, so 0x180 was not
 measuring a stack offset at all; it was a fresh-pthread stack-reuse lottery

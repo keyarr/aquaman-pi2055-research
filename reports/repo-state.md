@@ -268,6 +268,12 @@ not the old wording):
 - Any `BL33 is RWX` without descriptor caveat; any `env mutation alters boot`
   without consumption caveat; any `modules in use` from presence alone;
   any global `no disclosure / no writer` without audited-surface scope.
+- `reports/root-via-odm-2026-11-23.md`,
+  `reports/selinux-permissive-via-module-2026-11-23.md` and
+  `reports/kernelsu-next-lkm-2026-11-23.md`: TCP 4444 root, global Permissive
+  and the non-persistent allowlist as current. The final image is KernelSU
+  with root via `su` and SELinux Enforcing; see
+  `reports/kernelsu-persist-2026-11-24.md`.
 
 ## blockers, ranked
 

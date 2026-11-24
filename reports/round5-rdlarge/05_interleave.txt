@@ -1,4 +1,4 @@
-[sudo] senha para erick: === A: 0x34 first (known good), then 0x12 ===
+[sudo] password for erick: === A: 0x34 first (known good), then 0x12 ===
   [A1] 0x34 bulk IN 512 bytes b'success\x00\x00\x00\x00\x00\x00\x00\x00\x00'
   [A] identify OK 00 07 00 10
   [A2] 0x12 bulk IN FAIL errno=110 (control took 0.000s, got 0)

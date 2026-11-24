@@ -4,10 +4,10 @@ Device: Xiaomi Mi TV Stick 1080p, aquaman, Android 9 PI.2055, kernel 4.9.113.
 Status: HARDWARE_REPRODUCED. Root survives reboot. No boot-chain or SMC
 bypass was used.
 
-> The ODM service was later extended to load a kernel module that switches
-> SELinux to Permissive; see
-> `reports/selinux-permissive-via-module-2026-11-23.md`. The root construction
-> below is unchanged.
+> This is the superseded 2026-11-23 construction. The final image loads the
+> KernelSU Next LKM instead of `rootsh` and `seflip`; see
+> `reports/kernelsu-persist-2026-11-24.md`. The ODM write and init import
+> below are still part of that chain.
 
 ## Result
 

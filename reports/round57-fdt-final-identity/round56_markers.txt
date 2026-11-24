@@ -1,4 +1,0 @@
-wificountrycode ZZ->US defenv wifi_ccode=US 0x37eb68f1 storeargs androidboot.wificountrycode=${wifi_ccode} no ZZ literal
-selinux permissiv->enforcing defenv EnableSelinux=enforcing 0x37eb6673 storeargs androidboot.selinux=${EnableSelinux} rodata enforcing 0x37ee0ebe no permissiv literal
-reboot_mode fastboot->normal defenv reboot_mode_android=normal 0x37eb6947 get_rebootmode HW reg not literal
-conclusao: stock values exist in defenv/rodata, none emitted by C to /chosen

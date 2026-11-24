@@ -4,17 +4,17 @@ History is preserved. These entries exist so nobody re-spends a session on a
 refuted path. Each entry: original hypothesis, why it looked plausible,
 refuting evidence, current document, final state.
 
-> Root context (2026-11-23): persistent root now exists via the ODM init
-> service (`reports/root-via-odm-2026-11-23.md`). Rows saying "no root" or
-> "root unchanged" are scoped to the path named in that row, not to the
-> device. The root read surface is recorded in
+> Root context (2026-11-24): persistent root exists through the KernelSU Next
+> LKM loaded from ODM (`reports/kernelsu-persist-2026-11-24.md`). Rows saying
+> "no root" or "root unchanged" are scoped to the path named in that row, not
+> to the device. The earlier ODM listener read surface is recorded in
 > `reports/root-read-surface-2026-11-23.md`.
 >
-> SELinux context (2026-11-23): the device is now Permissive through a kernel
-> module loaded from the ODM rc file
-> (`reports/selinux-permissive-via-module-2026-11-23.md`). The rows below that
-> refute `androidboot.selinux=permissive` via U-Boot cmdline stay REFUTED for
-> that transport; they do not contradict the module path.
+> SELinux context (2026-11-24): the device is Enforcing. The 2026-11-23 build
+> was Permissive through `seflip` loaded from the ODM rc file
+> (`reports/selinux-permissive-via-module-2026-11-23.md`), now superseded. The
+> rows below that refute `androidboot.selinux=permissive` via U-Boot cmdline
+> stay REFUTED for that transport; they do not contradict the module path.
 
 ## 1. test payload really executed via `fastboot boot`
 

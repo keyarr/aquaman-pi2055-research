@@ -1,8 +1,8 @@
-[info] mode=nostamp (controle, sem carimbo)
+[info] mode=nostamp (control, no stamp)
 [cmp] errno=35 EDEADLK ok, tid_waiter=5111
-[teardown] waiter acordou e soltou a chain
-[teardown] owner virou zumbi (nao joined), task_struct vivo
-[teardown] carimbo feito, settle 2.5s com heartbeat
+[teardown] waiter woke up and released the chain
+[teardown] owner became a zombie (not joined), task_struct alive
+[teardown] stamp done, settle 2.5s with heartbeat
 [hb] +0ms
 [hb] +500ms
 [hb] +1000ms

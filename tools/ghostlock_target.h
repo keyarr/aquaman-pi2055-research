@@ -157,7 +157,7 @@
 #define GL_FRAME_DO_FUTEX         0x0120
 #define GL_FRAME_FWRQ             0x01a0
 #define GL_WAITER_OFF_X29         0x0080
-/* deslocamento do waiter abaixo do SP de entrada da syscall do waiter */
+/* waiter offset below the waiter's syscall entry SP */
 #define GL_WAITER_OFF_SP         0x02b0UL
 
 /* Stamp chain (pselect): core_sys_select keeps the stack_fds array in its own

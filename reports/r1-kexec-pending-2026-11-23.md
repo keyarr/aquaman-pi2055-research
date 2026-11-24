@@ -4,6 +4,9 @@ Status: **PENDING**. No custom kernel boot. Nothing was reflashed,
 formatted, or written to any partition. The device ends up intact: stock 4.9.113,
 root via ODM, SELinux Permissive via module.
 
+> Device state at the time of this round: the 2026-11-23 ODM root plus
+> `seflip`. Current state: `reports/kernelsu-persist-2026-11-24.md`.
+
 Goal: load a custom Image without going through the BL31 signature gate.
 With root and `CONFIG_MODULE_SIG` disabled, a module gives arbitrary execution in
 kernel mode; the route tries to use this to jump directly to another kernel,

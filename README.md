@@ -1,4 +1,4 @@
-# Aquaman PI.2055: research that led to root and permissive SELinux
+# Aquaman PI.2055: research that led to root through KernelSU
 
 Lab notebook for a Xiaomi Mi TV Stick 1080p (MiTV-AESP0, codename aquaman,
 Amlogic S805Y/GXL), Android 9 PI.2055, stock kernel 4.9.113 built
@@ -6,10 +6,11 @@ Amlogic S805Y/GXL), Android 9 PI.2055, stock kernel 4.9.113 built
 
 The research started with two questions: which source tree built that
 kernel, and what can still be executed on the device. Both stayed open on
-the boot chain. The practical result came from a different direction: on
-2026-11-23 the device got persistent root and Permissive SELinux through
-the ODM partition and an init-loaded kernel module. No boot-chain bypass,
-GhostLock exploit, custom kernel, efuse change or vbmeta change was used.
+the boot chain. The practical result came from a different direction:
+KernelSU Next runs as an unsigned loadable module loaded from the ODM
+partition. On 2026-11-24 the final build gave persistent root through the
+Manager and `su`, with SELinux Enforcing. No boot-chain bypass, GhostLock
+exploit, custom kernel, efuse change or vbmeta change was used.
 
 This is not a ROM, a root guide, or a kernel release. It is a lab
 notebook. Most reports record negative results on purpose, so closed
@@ -19,16 +20,15 @@ leads stay closed.
 
 | Outcome | Observed on device | How | Report |
 | --- | --- | --- | --- |
-| Persistent root | `uid=0(root) gid=0(root) groups=0(root) context=u:r:dumpstate:s0` on TCP 4444, survives reboot | ODM rc starts an init service; Android 9 init imports `/odm/etc/init/root.rc` | `reports/root-via-odm-2026-11-23.md` |
-| SELinux Permissive | `getenforce` -> `Permissive`, `/sys/fs/selinux/enforce` -> `0` | The same ODM rc loads `seflip`, a kernel module that writes `selinux_enforcing = 0` from kernel mode | `reports/selinux-permissive-via-module-2026-11-23.md` |
-| Actual boot state readable | `/proc/cmdline` and the `Kernel command line:` line in `dmesg` are byte-identical | root | `reports/root-read-surface-2026-11-23.md` |
+| Persistent root | `su -c id` -> `uid=0(root) ... context=u:r:su:s0`; grant survives reboot | KernelSU Next LKM loaded from ODM; Manager grants uid 2000 | `reports/kernelsu-persist-2026-11-24.md` |
+| SELinux Enforcing | `getenforce` -> `Enforcing`, no `seflip` loaded | KernelSU applies its own sepolicy at module load; no global Permissive module | `reports/kernelsu-persist-2026-11-24.md` |
+| Actual boot state readable | `/proc/cmdline` and the `Kernel command line:` line in `dmesg` are byte-identical | root via the earlier ODM listener | `reports/root-read-surface-2026-11-23.md` |
 
 Root here is not an unlocked bootloader. BL31 still rejects unsigned images
 over SMC before Linux starts, and the rebuilt kernel is not ABI-compatible
 with the stock modules. Flashing a custom kernel remains blocked. To revert
-the device to stock, reflash stock ODM; rebooting alone does not restore
-Enforcing. The root listener should not be left exposed to an untrusted
-network.
+the device to stock, reflash stock ODM; rebooting alone keeps KernelSU and
+root. The final image has no network root listener.
 
 ## How the research got there
 
@@ -44,12 +44,15 @@ network.
    no disclosure, reclaim or kernel R/W followed. It did not produce root.
 4. **Pivot to ODM.** ODM is writable from fastboot and sits outside
    `vbmeta.parts` with no `avb`/`verify` flag. An rc file under
-   `/odm/etc/init` is imported by Android 9 init. A service labelled into
-   `dumpstate_exec` lands as uid 0 in `u:r:dumpstate:s0`, and the
-   `vendor_init` domain that imports the rc can load a kernel module. That
-   module flips `selinux_enforcing` without touching `setenforce`.
+   `/odm/etc/init` is imported by Android 9 init, and the `vendor_init`
+   domain that imports it can load a kernel module. That module is KernelSU
+   Next: kernel hooks deliver `su` and the Manager applies its sepolicy
+   while the device stays Enforcing. Earlier rounds used the ODM rc for a
+   TCP 4444 root shell and a global `seflip` module; both are gone from the
+   final image.
 
-Each step above is a closed lead, not an open option. The evidence is in
+Steps 1-3 are closed leads, not open options; step 4 is the route that produced
+the current state. Evidence for the closed leads is in
 `reports/INVALIDATED_HYPOTHESES.md`.
 
 ## Start here
@@ -58,17 +61,20 @@ Read in this order. Do not read `reports/` alphabetically.
 
 1. `reports/CURRENT_STATE.md`: what is believed, at which evidence level,
    and what each claim supersedes. This file wins over every other page.
-2. `reports/root-via-odm-2026-11-23.md`: the root construction and how to
-   restore stock ODM.
-3. `reports/selinux-permissive-via-module-2026-11-23.md`: current Permissive
-   state, the module path and rollback.
-4. `reports/root-read-surface-2026-11-23.md`: what uid 0 in `dumpstate` can
-   and cannot read, and which old "unobservable" claims it supersedes.
-5. `reports/EVIDENCE_MATRIX.md`: evidence by subsystem.
-6. `reports/INVALIDATED_HYPOTHESES.md`: closed leads. Check here before
+2. `reports/kernelsu-persist-2026-11-24.md`: current root, Enforcing state,
+   Manager and `su` behaviour, limitations and rollback.
+3. `reports/root-read-surface-2026-11-23.md`: what uid 0 could read from the
+   earlier ODM listener. Its Permissive-era notes are historical.
+4. `reports/EVIDENCE_MATRIX.md`: evidence by subsystem.
+5. `reports/INVALIDATED_HYPOTHESES.md`: closed leads. Check here before
    proposing a theory.
-7. `reports/MAP.md`: pointer to the reports that the main indexes do not
+6. `reports/MAP.md`: pointer to the reports that the main indexes do not
    name, grouped by track.
+
+`reports/root-via-odm-2026-11-23.md` and
+`reports/selinux-permissive-via-module-2026-11-23.md` record the superseded
+2026-11-23 construction: a TCP 4444 shell and global Permissive. They are
+history, not the current state.
 
 Two files from 2026-11-19 are not consolidated into the indexes above:
 `reports/observations-new-angles-2026-11-19.md` (untested angles,
@@ -99,9 +105,9 @@ plan, phase 0 only). Treat them as leads, not as current state.
 
 | Question | Current answer | Details |
 | --- | --- | --- |
-| Is there root? | Yes, persistent via an ODM init service: uid 0 in `u:r:dumpstate:s0`, TCP 4444. Not via GhostLock and not via a boot-chain bypass. | `reports/root-via-odm-2026-11-23.md` |
-| Is SELinux enforcing? | No. Since 2026-11-23 an ODM-loaded kernel module sets `selinux_enforcing` to 0 at boot. `setenforce` is still denied to shell and `dumpstate`. Reboot alone does not revert; reflash stock ODM. | `reports/selinux-permissive-via-module-2026-11-23.md` |
-| Can the delivered cmdline be read? | Yes, from root: `/proc/cmdline` and the `Kernel command line:` line in `dmesg` are byte-identical. The DT node was denied in the enforcing-only snapshot. Marker transport has not been re-tested with this oracle. | `reports/root-read-surface-2026-11-23.md` |
+| Is there root? | Yes, persistent through KernelSU Next loaded as an LKM from ODM: `su -c id` -> uid 0 in `u:r:su:s0`, grant survives reboot. Not via GhostLock and not via a boot-chain bypass. | `reports/kernelsu-persist-2026-11-24.md` |
+| Is SELinux enforcing? | Yes. Since 2026-11-24 KernelSU applies its own sepolicy at module load and no `seflip` is present. The global Permissive state of 2026-11-23 is superseded. | `reports/kernelsu-persist-2026-11-24.md` |
+| Can the delivered cmdline be read? | Yes, from root via the earlier ODM listener: `/proc/cmdline` and the `Kernel command line:` line in `dmesg` are byte-identical. The DT node was denied in the enforcing-only snapshot. Marker transport has not been re-tested with this oracle. | `reports/root-read-surface-2026-11-23.md` |
 | Exact stock source? | Not found in searched public material. `McMCCRU/linux-amlogic` `3d4ab79e` is close family, not exact. This does not prove none exists. | `reports/provenance.md` |
 | Can the kernel be rebuilt? | Only as an approximation: 98.1% of the expanded config matches, 190 CRCs differ, 13 symbols are missing. Not a reproduction. | `reports/_archive/rebuilt-kernel.md` |
 | Can vendor modules be reused? | 28 `.ko` were extracted from the OTA. Presence is proven; loading is not. CRCs are the gate, not vermagic. | `reports/vendor-modules.md` |
@@ -116,7 +122,7 @@ Hardware-proven: E5/E6 overlap, E7 SMC reject, BL33 WRITE/FILL and
 same-cycle redirects, authoritative-htab writability and parser
 consumption, the whole-string revert of three inert `androidboot.*`
 fields, GhostLock trigger/consumer/fidelity, DTB blob validity, ODM write,
-init-service root, and the module-driven switch to Permissive.
+the init-loaded KernelSU LKM, Manager crowning and `su` as uid 0.
 
 Offline only: static chain, disasm censuses, CRC/config arithmetic, H16
 birth, the `bootm` Hush command census, the `himport_r` closure negative,
@@ -133,7 +139,7 @@ burning, blind ioctls, fake object, kernel cred/root via GhostLock, any
 
 ## Open problems
 
-None of these block the current root or Permissive state.
+None of these block the current root or Enforcing state.
 
 1. BL31 secure-fused rejects unsigned images before the kernel runs.
 2. No exact source, so no CRC-compatible kernel and no exact DTS source.
@@ -155,6 +161,7 @@ None of these block the current root or Permissive state.
 | `*.new.dat.br`, `*.transfer.list` | OTA sparse images for system, vendor, product, and odm. |
 | `boot_unpack/`, `patched_unpack/`, `recovery_unpack/` | Unpacked stock, patched, and recovery boot images. |
 | `.src/`, `build-aq/`, `out/` | Gitignored source trees, build output, and logs. |
+| `work/ksu-lkm-fix/` | Local KernelSU LKM build tree and lab log (untracked). |
 | Top-level `*.img` | Scratch and test images. The stock set is in `firmware/`. |
 
 ## Quick start
@@ -211,20 +218,20 @@ list with evidence in `reports/INVALIDATED_HYPOTHESES.md`.
 ## FAQ
 
 **Can I root my Mi TV Stick with this?**
-Yes, persistently, by writing a modified ODM image with an init service that
-starts a root shell on TCP 4444. It is not a GhostLock exploit and not a boot
-bypass. See `reports/root-via-odm-2026-11-23.md`; restore stock ODM before
-exposing the device to an untrusted network.
+Yes, persistently, by flashing an ODM image that loads the KernelSU Next LKM
+and granting root to the shell or app in the Manager. `su -c id` returns uid 0
+and the grant survives reboot. It is not a GhostLock exploit and not a boot
+bypass. See `reports/kernelsu-persist-2026-11-24.md`.
 
 **Is SELinux still enforcing?**
-No. The same ODM rc file loads a small kernel module that sets
-`selinux_enforcing` to 0 in kernel mode. `setenforce` remains unavailable to
-shell and to the root domain. Details and rollback:
-`reports/selinux-permissive-via-module-2026-11-23.md`.
+Yes. The final image stays Enforcing; KernelSU applies its own sepolicy at
+module load and no `seflip` module is loaded. The global Permissive build from
+2026-11-23 is superseded. Details and rollback:
+`reports/kernelsu-persist-2026-11-24.md`.
 
 **Is the bootloader unlocked / can I flash a custom kernel?**
 No. BL31 rejects unsigned images, and the rebuild is not ABI-compatible
-with the stock modules. Root and Permissive SELinux do not change that.
+with the stock modules. Root and KernelSU do not change that.
 
 **My device is another Amlogic box. Does this apply?**
 No. Claims are scoped to aquaman PI.2055. Other trees are family
@@ -236,5 +243,5 @@ Because closed leads get reopened without them. Check
 conclusions were overturned live in `reports/_archive/` and must not be
 cited as current.
 
-Last consolidated: 2026-11-23. If this page and `reports/CURRENT_STATE.md`
+Last consolidated: 2026-11-24. If this page and `reports/CURRENT_STATE.md`
 disagree, `CURRENT_STATE.md` wins.

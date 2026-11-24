@@ -14,9 +14,9 @@ date: Mon Nov 23 22:14:13 GMT 2026
 
 Root here is uid 0 inside `u:r:dumpstate:s0`. SELinux still enforces in this
 snapshot: uid 0 does not imply a general kernel read surface. This was an
-enforcing-only boot; the device is now Permissive through an ODM-loaded
-kernel module, described in
-`reports/selinux-permissive-via-module-2026-11-23.md`.
+enforcing-only boot through the earlier ODM listener. The device later became
+Permissive via `seflip` and then Enforcing with KernelSU; current state:
+`reports/kernelsu-persist-2026-11-24.md`.
 
 ## Newly readable versus shell
 
