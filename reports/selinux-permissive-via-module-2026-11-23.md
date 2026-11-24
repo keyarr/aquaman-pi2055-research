@@ -115,8 +115,8 @@ the stock vendor modules. `__versions` contains only `module_layout` and
 
 ## ODM image
 
-Built from `/tmp/opencode/odm_probe/odm20_root7.img` into
-`/tmp/opencode/odm_probe/odm20_root9.img`. Only two changes:
+Built from `odm/odm20_root7.img` into
+`odm/odm20_root9.img`. Only two changes:
 
 - `/odm/seflip.ko`: mode 0644 root:root, xattr
   `security.selinux = u:object_r:vendor_file:s0` with trailing NUL.
@@ -138,7 +138,7 @@ Flash, same path as the ODM root work:
 
 ```sh
 adb reboot fastboot
-python3 tools/fb_raw.py download /tmp/opencode/odm_probe/odm20_root9.img
+python3 tools/fb_raw.py download odm/odm20_root9.img
 python3 tools/fb_raw.py cmd 'set_active:;store write odm 10200000 0 1400000' 20000
 python3 tools/fb_raw.py cmd reboot 10000
 ```
@@ -150,7 +150,7 @@ every boot. Reflash stock ODM:
 
 ```sh
 adb reboot fastboot
-python3 tools/fb_raw.py download /tmp/opencode/odm_probe/odm20_stock.img
+python3 tools/fb_raw.py download odm/odm20_stock.img
 python3 tools/fb_raw.py cmd 'set_active:;store write odm 10200000 0 1400000' 20000
 python3 tools/fb_raw.py cmd reboot 10000
 ```

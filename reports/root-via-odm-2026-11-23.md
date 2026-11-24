@@ -22,8 +22,8 @@ uid=0(root) gid=0(root) groups=0(root) context=u:r:dumpstate:s0
 `sys.boot_completed=1`. The service is started by an ODM rc script on every
 boot.
 
-Persistent image: `/tmp/opencode/odm_probe/odm20_root7.img`.
-Stock ODM backup: `/tmp/opencode/odm_probe/odm20_stock.img`.
+Persistent image: `odm/odm20_root7.img`.
+Stock ODM backup: `odm/odm20_stock.img`.
 
 The listener runs in a loop, so repeated connections work without a reboot.
 There is a ~1 s window after each disconnect while `nc` rebinds the port; a
@@ -47,7 +47,7 @@ connection attempted inside that window is refused.
 
 ## Image contents
 
-Built from `odm20_stock.img` (stock ODM expanded to `0x1400000` bytes,
+Built from `odm/odm20_stock.img` (stock ODM expanded to `0x1400000` bytes,
 `e2fsck` clean). All new files are mode `0100755`.
 
 `/etc/init/root.rc`, label `init_exec:s0`:
@@ -87,7 +87,7 @@ mkdir` directory because it is `unlabeled:s0`. Files live in the ODM root.
 
 ```
 adb reboot fastboot
-python3 tools/fb_raw.py download /tmp/opencode/odm_probe/odm20_root7.img
+python3 tools/fb_raw.py download odm/odm20_root7.img
 python3 tools/fb_raw.py cmd 'set_active:;store write odm 10200000 0 1400000' 20000
 python3 tools/fb_raw.py cmd reboot 10000
 ```
@@ -125,7 +125,7 @@ To restore stock ODM:
 
 ```
 adb reboot fastboot
-python3 tools/fb_raw.py download /tmp/opencode/odm_probe/odm20_stock.img
+python3 tools/fb_raw.py download odm/odm20_stock.img
 python3 tools/fb_raw.py cmd 'set_active:;store write odm 10200000 0 1400000' 20000
 python3 tools/fb_raw.py cmd reboot 10000
 ```

@@ -67,7 +67,7 @@ The original is kept as `Module.symvers.build-aq`.
 | Artifact | sha256 |
 | --- | --- |
 | `kernelsu.ko` (3,758,560 B) | `cf217969df3272e5d0df517dd0dba412cdbcb7a91db3f085d3d4dc830f5191d9` |
-| `odm20_ksu3.img` | `880a575753d694ca0d7fab6a84da82a2c1f3913257261ed4d4d2f03e95939da7` |
+| `odm/odm20_ksu3.img` | `880a575753d694ca0d7fab6a84da82a2c1f3913257261ed4d4d2f03e95939da7` |
 | manager `KernelSU_Next_v1.1.1_12851-release.apk` | `988dae93c17b5477b8b97952cc5bca6809a386bbbba55940ce45aecc90cacb80` |
 | `ksud_magic-aarch64-linux-android` (3,392,200 B) | installed by the manager at `/data/adb/ksud` |
 
@@ -168,11 +168,11 @@ never `do_execve`. Target 6 was added, wired to
 
 ## Rollback
 
-Reflash `odm20_root9.img`, which contains root plus seflip but no KernelSU:
+Reflash `odm/odm20_root9.img`, which contains root plus seflip but no KernelSU:
 
 ```sh
 adb reboot fastboot
-python3 tools/fb_raw.py download /tmp/opencode/odm_probe/odm20_root9.img
+python3 tools/fb_raw.py download odm/odm20_root9.img
 python3 tools/fb_raw.py cmd 'set_active:;store write odm 10200000 0 1400000' 20000
 python3 tools/fb_raw.py cmd reboot 10000
 ```
