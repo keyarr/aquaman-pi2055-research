@@ -21,7 +21,7 @@
 9. ~~Custom kernel accepted by `fastboot boot` without user-key?~~ **REVOKED. INCORRECT.** The original reading of this item was wrong and represents the most costly error in the repo, as it became the premise for item 10. The 4096-byte plaintext DID NOT execute: the device returned to Android in 16-21 s, identical to the INVALID control, with an empty `bootreason`. That timing is the **rejection** duration (`do_bootm` fails -> `do_reset`), not execution duration. The decisive test is M1b: identical stub with a 15x delay loop, and reboot timing did not shift at all. An executing payload does not return in rejection time. See `reports/_archive/fastboot-boot-verdict.md` (M1/M1b/M2/E1, all revoked) and `reports/fastboot-memory-flow.md` sec 6 for the explanation.
    What item 9 conflated: "U-Boot accepted download" and "bytes executed" are different. The download is accepted; execution is gated at BL31.
 10. Real blocker for KernelSU/APatch: **also incorrect, due to item 9.** The blocker is NOT AMLSECU packaging alone, but neither is it "lack of functional kernel/DTB". It is BL31: `do_bootm` calls `aml_sec_boot_check` (SMC) prior to any format validation, and BL31 is secure-fused on this device. An AMLSECU signature is what it requires. See `reports/_archive/custom-kernel-execution.md` for the full matrix. Magisk/APatch patching stock `boot.img` remains infeasible (ramdisk ciphertext, #2555) - that part of the original item remains correct.
-11. What lifts the blocker: (a) leaked `aml-user-key.sig` for aquaman/PI.2055; (b) kernel-AES key extracted via BootROM USBDL exploit (Raxone, fredericb) - requires physical reboot, currently out of scope; (c) proof that `secure=no` + unlocked accepts plaintext under `fastboot boot` - requires an authorized test boot, also out of scope currently.
+11. What lifts the blocker: (a) leaked `aml-user-key.sig` for aquaman/PI.2055; (b) kernel-AES key extracted via BootROM USBDL exploit (Raxone, fredericb) - requires physical reboot, currently out of scope; (c) proof that `secure=no` + unlocked accepts plaintext under `fastboot boot` - requires a test boot, which I left out of scope for now.
 
 ## inference vs unknown (summary)
 
@@ -33,7 +33,7 @@
 
 1. Extract `build.prop` / userspace TA/TEE (`tee-supplicant`, keybox, widevine) from `system/vendor/odm` (local `*.new.dat.br` dumps) to check if any UUID/TA references the user-key - zero cost, decompression only.
 2. Search for `aml-user-key*.sig` / `SECURE_BOOT_SET` / `aml_encrypt_gxl` in public aquaman dumps/OTAs (XDA/Yandex) - unlikely, but cheap.
-3. Construct a plaintext test `boot.img` (mainline kernel + minimal ramdisk) ready for future authorized `fastboot boot` - without executing now.
+3. Construct a plaintext test `boot.img` (mainline kernel + minimal ramdisk) ready for a future `fastboot boot` - without executing now.
 
 ## what NOT to do
 

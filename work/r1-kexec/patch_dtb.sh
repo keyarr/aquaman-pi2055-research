@@ -11,7 +11,7 @@ OUT_DTB="${OUT_DTB:-$HERE/aquaman-r1.dtb}"
 DTC="${DTC:-dtc}"
 
 # Stock cmdline from artifacts/aquaman-linux.dts, minus skip_initramfs.
-CMDLINE="${CMDLINE:-init=/init loglevel=8 console=ttyS0,115200 no_console_suspend earlycon=aml_uart,0xc81004c0 ramoops.pstore_en=1 ramoops.record_size=0x8000 ramoops.console_size=0x4000 ro rootwait reboot_mode_android=normal androidboot.selinux=permissive logo=osd1,loaded,0x3d800000,1080p60hz maxcpus=4 vout=1080p60hz,enable hdmimode=1080p60hz androidboot.hardware=amlogic otg_device=1 buildvariant=user}"
+CMDLINE="${CMDLINE:-init=/init loglevel=8 console=ttyS0,115200 no_console_suspend earlycon=aml_uart,0xc81004c0 ramoops.pstore_en=1 ramoops.record_size=0x8000 ramoops.console_size=0x4000 ro rootwait reboot_mode_android=normal androidboot.selinux=permissive logo=osd1,loaded,0x3d800000,1080p60hz maxcpus=4 vout=1080p60hz,enable hdmimode=1080p60hz androidboot.hardware=amlogic otg_device=1 buildvariant=user r1probe=DEADBEEF}"
 
 # Set both to add linux,initrd-start / linux,initrd-end (physical addresses).
 INITRD_START="${INITRD_START:-}"
@@ -35,15 +35,26 @@ fi
 
 "$DTC" -f -I dtb -O dts -o "$TMP/in.dts" "$SRC_DTB"
 grep -q '/chosen' "$TMP/in.dts" && fail "source DTB already has /chosen"
+
+# The live bootloader FDT reserves the whole 0x5000000..0x7400000 secure
+# window for secmon (36 MiB pool, 35 MiB taken). artifacts/aquaman.dtb ships
+# only 4 MiB / 3 MiB, which releases the 0x5300000..0x5400000 part back to the
+# buddy allocator; PFN 0x5307 then get used as pagecache and faults on access.
+sed -i \
+	-e 's/reserve_mem_size = <0x300000>;/reserve_mem_size = <0x2300000>;/' \
+	-e 's/size = <0x00 0x400000>;/size = <0x00 0x2400000>;/' \
+	-e 's/alloc-ranges = <0x00 0x5000000 0x00 0x400000>;/alloc-ranges = <0x00 0x5000000 0x00 0x2400000>;/' \
+	"$TMP/in.dts"
 CHOSEN_FILE="$TMP/chosen.txt"
 export CHOSEN_FILE
+CMDLINE_DTS=$(printf '%s' "$CMDLINE" | sed 's/\\/\\\\/g; s/"/\\"/g')
 
 {
 	printf '\tchosen {\n'
-	printf '\t\tbootargs = "%s";\n' "$CMDLINE"
+	printf '\t\tbootargs = "%s";\n' "$CMDLINE_DTS"
 	if [ -n "$INITRD_START" ]; then
-		printf '\t\tlinux,initrd-start = /bits/ 64 <0x0 %s>;\n' "$START_HEX"
-		printf '\t\tlinux,initrd-end = /bits/ 64 <0x0 %s>;\n' "$END_HEX"
+		printf '\t\tlinux,initrd-start = /bits/ 64 <%s>;\n' "$START_HEX"
+		printf '\t\tlinux,initrd-end = /bits/ 64 <%s>;\n' "$END_HEX"
 	fi
 	printf '\t};\n'
 	printf '\n'

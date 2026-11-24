@@ -16,9 +16,7 @@ ENTRY(r1_dcache_clean_poc)
 	mrs	x2, ctr_el0
 	ubfx	x2, x2, #16, #4		/* DminLine: log2(min line / 4 bytes) */
 	mov	x3, #4
-	lsl	x2, x2, x3		/* log2(bytes) */
-	mov	x4, #1
-	lsl	x2, x4, x2		/* x2 = dcache line size in bytes */
+	lsl	x2, x3, x2		/* x2 = 4 << DminLine = line size in bytes */
 	sub	x3, x2, #1
 	bic	x4, x0, x3
 	add	x5, x0, x1

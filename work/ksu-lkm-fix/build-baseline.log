@@ -1,0 +1,86 @@
+wrote 9911 symbols to /home/erick/Documentos/projetos/aquaman_9_PI_2055/work/ksu-lkm-fix/kernel-obj/Module.symvers
+make: Entrando no diretório '/home/erick/Documentos/projetos/aquaman_9_PI_2055/.src/linux-amlogic'
+
+  GEN     ./Makefile
+scripts/kconfig/conf  --olddefconfig Kconfig
+#
+# configuration written to .config
+#
+  GEN     ./Makefile
+scripts/kconfig/conf  --silentoldconfig Kconfig
+  CHK     include/config/kernel.release
+  CHK     include/config/kernel.release_full
+  Using /home/erick/Documentos/projetos/aquaman_9_PI_2055/.src/linux-amlogic as source for kernel
+  GEN     ./Makefile
+  CHK     include/generated/uapi/linux/version.h
+  CHK     include/generated/utsrelease.h
+  CHK     include/generated/bounds.h
+  CHK     include/generated/timeconst.h
+  CHK     include/generated/asm-offsets.h
+  CALL    /home/erick/Documentos/projetos/aquaman_9_PI_2055/.src/linux-amlogic/scripts/checksyscalls.sh
+  CHK     scripts/mod/devicetable-offsets.h
+make: Saindo do diretório '/home/erick/Documentos/projetos/aquaman_9_PI_2055/.src/linux-amlogic'
+
+make: Entrando no diretório '/home/erick/Documentos/projetos/aquaman_9_PI_2055/.src/linux-amlogic'
+
+  CHK     include/config/kernel.release
+  CHK     include/config/kernel.release_full
+  Using /home/erick/Documentos/projetos/aquaman_9_PI_2055/.src/linux-amlogic as source for kernel
+  GEN     ./Makefile
+  CHK     include/generated/uapi/linux/version.h
+  CHK     include/generated/utsrelease.h
+  CHK     include/generated/bounds.h
+  CHK     include/generated/timeconst.h
+  CHK     include/generated/asm-offsets.h
+  CALL    /home/erick/Documentos/projetos/aquaman_9_PI_2055/.src/linux-amlogic/scripts/checksyscalls.sh
+  CHK     scripts/mod/devicetable-offsets.h
+make: Saindo do diretório '/home/erick/Documentos/projetos/aquaman_9_PI_2055/.src/linux-amlogic'
+
+make: Entrando no diretório '/home/erick/Documentos/projetos/aquaman_9_PI_2055/.src/linux-amlogic'
+
+-- KernelSU-Next version: 12851
+  CC [M]  /home/erick/Documentos/projetos/aquaman_9_PI_2055/work/ksu-lkm-fix/ksu-skeleton/ksu.o
+  CC [M]  /home/erick/Documentos/projetos/aquaman_9_PI_2055/work/ksu-lkm-fix/ksu-skeleton/allowlist.o
+  CC [M]  /home/erick/Documentos/projetos/aquaman_9_PI_2055/work/ksu-lkm-fix/ksu-skeleton/apk_sign.o
+  CC [M]  /home/erick/Documentos/projetos/aquaman_9_PI_2055/work/ksu-lkm-fix/ksu-skeleton/sucompat.o
+  CC [M]  /home/erick/Documentos/projetos/aquaman_9_PI_2055/work/ksu-lkm-fix/ksu-skeleton/throne_tracker.o
+In file included from /home/erick/Documentos/projetos/aquaman_9_PI_2055/work/ksu-lkm-fix/ksu-skeleton/throne_tracker.c:1:0:
+/home/erick/Documentos/projetos/aquaman_9_PI_2055/work/ksu-lkm-fix/ksu-skeleton/throne_tracker.c: In function ‘track_throne’:
+/home/erick/Documentos/projetos/aquaman_9_PI_2055/.src/linux-amlogic/include/linux/err.h:30:9: warning: ‘fp’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+  return (long) ptr;
+         ^~~~~~~~~~
+/home/erick/Documentos/projetos/aquaman_9_PI_2055/work/ksu-lkm-fix/ksu-skeleton/throne_tracker.c:356:15: note: ‘fp’ was declared here
+  struct file *fp;
+               ^~
+  CC [M]  /home/erick/Documentos/projetos/aquaman_9_PI_2055/work/ksu-lkm-fix/ksu-skeleton/core_hook.o
+  CC [M]  /home/erick/Documentos/projetos/aquaman_9_PI_2055/work/ksu-lkm-fix/ksu-skeleton/ksud.o
+  CC [M]  /home/erick/Documentos/projetos/aquaman_9_PI_2055/work/ksu-lkm-fix/ksu-skeleton/embed_ksud.o
+  CC [M]  /home/erick/Documentos/projetos/aquaman_9_PI_2055/work/ksu-lkm-fix/ksu-skeleton/kernel_compat.o
+/home/erick/Documentos/projetos/aquaman_9_PI_2055/work/ksu-lkm-fix/ksu-skeleton/kernel_compat.c: In function ‘ksu_filp_open_compat’:
+/home/erick/Documentos/projetos/aquaman_9_PI_2055/work/ksu-lkm-fix/ksu-skeleton/kernel_compat.c:80:14: warning: ‘saved.fs’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+  current->fs = ns_fs_saved->fs;
+               
+/home/erick/Documentos/projetos/aquaman_9_PI_2055/work/ksu-lkm-fix/ksu-skeleton/kernel_compat.c:114:25: note: ‘saved.fs’ was declared here
+  struct ksu_ns_fs_saved saved;
+                         ^~~~~
+/home/erick/Documentos/projetos/aquaman_9_PI_2055/work/ksu-lkm-fix/ksu-skeleton/kernel_compat.c:79:19: warning: ‘saved.ns’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+  current->nsproxy = ns_fs_saved->ns;
+                    
+/home/erick/Documentos/projetos/aquaman_9_PI_2055/work/ksu-lkm-fix/ksu-skeleton/kernel_compat.c:114:25: note: ‘saved.ns’ was declared here
+  struct ksu_ns_fs_saved saved;
+                         ^~~~~
+  CC [M]  /home/erick/Documentos/projetos/aquaman_9_PI_2055/work/ksu-lkm-fix/ksu-skeleton/ksu_compat_syms.o
+  CC [M]  /home/erick/Documentos/projetos/aquaman_9_PI_2055/work/ksu-lkm-fix/ksu-skeleton/hook_runtime.o
+  AS [M]  /home/erick/Documentos/projetos/aquaman_9_PI_2055/work/ksu-lkm-fix/ksu-skeleton/hook_stubs.o
+  CC [M]  /home/erick/Documentos/projetos/aquaman_9_PI_2055/work/ksu-lkm-fix/ksu-skeleton/selinux/selinux.o
+  CC [M]  /home/erick/Documentos/projetos/aquaman_9_PI_2055/work/ksu-lkm-fix/ksu-skeleton/selinux/sepolicy.o
+  CC [M]  /home/erick/Documentos/projetos/aquaman_9_PI_2055/work/ksu-lkm-fix/ksu-skeleton/selinux/rules.o
+  LD [M]  /home/erick/Documentos/projetos/aquaman_9_PI_2055/work/ksu-lkm-fix/ksu-skeleton/kernelsu.o
+  Building modules, stage 2.
+-- KernelSU-Next version: 12851
+  MODPOST 1 modules
+  CC      /home/erick/Documentos/projetos/aquaman_9_PI_2055/work/ksu-lkm-fix/ksu-skeleton/kernelsu.mod.o
+  LD [M]  /home/erick/Documentos/projetos/aquaman_9_PI_2055/work/ksu-lkm-fix/ksu-skeleton/kernelsu.ko
+make: Saindo do diretório '/home/erick/Documentos/projetos/aquaman_9_PI_2055/.src/linux-amlogic'
+
+78866389837199cc03d4cbf5d206063465a92e4624f650819bb7e287b20eac1f  /home/erick/Documentos/projetos/aquaman_9_PI_2055/work/ksu-lkm-fix/kernelsu-fixed.ko

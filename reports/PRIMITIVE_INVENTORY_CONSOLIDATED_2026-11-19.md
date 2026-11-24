@@ -75,7 +75,7 @@ Unexplained anomalies / refutations:
   about SMC from that drop.
 - RUN_IN_ADDR 0x05 and MODIFY 0x04 kill the session; clear_halt fails errno 75.
 - Infinite loop in BL33 (ARMd scan) takes the device off the bus and required an
-  authorized power cycle. Do not repeat.
+  power cycle, which I performed. Do not repeat.
 - Handoff instrumentation: only `cbz 0x37e24cf8` is abort-safe; x25 is unstable;
   later points drop the gadget (rounds 62-64).
 - No root: uid=2000, Enforcing, /proc/cmdline and

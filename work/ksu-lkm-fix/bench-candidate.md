@@ -1,8 +1,8 @@
 # Bench - persistent candidate (2026-11-24)
 
 Continuation of the control bench (which PASSED on the third attempt; see
-`bench-control.md`, section "Third control test"). Authorization to move on
-to the candidate was conditional on the control passing. The control passed.
+`bench-control.md`, section "Third control test"). I moved on to the candidate
+only after the control passed.
 
 Device: MiTV-AESP0 (aquaman), ADB serial `26919800005844922`.
 
@@ -174,7 +174,7 @@ No module-related EXT4 warning was observable because `dmesg` requires root
 The Manager (`com.rifsxd.ksunext/.ui.MainActivity`) opened and the screencap
 was readable. The screen still shows "KernelSU Next v2 signature not found in
 kernel! [ !KSU_NEXT || != size/hash ]" and manager version v1.1.1
-(12851). The same behavior occurred on the approved control, so this is not
+(12851). The same behavior occurred on the control, so this is not
 a regression introduced by the label fix. Without detection, the UI does not
 show the Superuser list, so grant/revoke cannot be done via adb.
 

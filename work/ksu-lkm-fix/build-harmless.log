@@ -1,0 +1,9 @@
+make: Entrando no diretório '/home/erick/Documentos/projetos/aquaman_9_PI_2055/.src/linux-amlogic'
+
+  CC [M]  /home/erick/Documentos/projetos/aquaman_9_PI_2055/work/ksu-lkm-fix/harmless/ksu_ext4_noop.o
+  Building modules, stage 2.
+  MODPOST 1 modules
+  CC      /home/erick/Documentos/projetos/aquaman_9_PI_2055/work/ksu-lkm-fix/harmless/ksu_ext4_noop.mod.o
+  LD [M]  /home/erick/Documentos/projetos/aquaman_9_PI_2055/work/ksu-lkm-fix/harmless/ksu_ext4_noop.ko
+make: Saindo do diretório '/home/erick/Documentos/projetos/aquaman_9_PI_2055/.src/linux-amlogic'
+

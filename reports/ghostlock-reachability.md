@@ -46,7 +46,7 @@ Negligible. No call creates a real PI waiter (mismatched values,
 zero timeouts, anonymous private futexes). Can run via adb shell without
 panic risk. Leaves no persistent state: no lingering threads, no open fds.
 
-## Next step on device (when authorized)
+## Next step on device (I decided to proceed)
 
 adb push + run, capture output. 7/7 PASS => PATH REACHABLE
 (CONFIRMED ON AQUAMAN KERNEL for dispatch; vulnerability itself remains

@@ -1,0 +1,1 @@
+cmd_security/selinux/built-in.o :=  /home/erick/Documentos/projetos/aquaman_9_PI_2055/.src/MiTV_OpenSource/cross_compile_tool/bin/aarch64-linux-gnu-ld -EL   -r -o security/selinux/built-in.o security/selinux/selinux.o 

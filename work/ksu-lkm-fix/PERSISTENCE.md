@@ -118,7 +118,7 @@ assembled stub in module `.text`, whose dispatch literal is `.quad 0`;
 `hook_runtime.c` by copying each stub into the vmalloc page, filling its
 slots there and patching the kernel functions to that page. Both control and
 candidate were rebuilt; static checks and all hashes were regenerated after
-the fix. The device was left in the reboot loop; rollback needs authorization.
+the fix. The device was left in the reboot loop; I did not roll it back.
 
 ## Bench retry - FAILED again, second root cause found and fixed
 
@@ -134,7 +134,7 @@ were confirmed:
 
 Both modules and both ODM images were rebuilt; static check and all hashes
 were regenerated. The device is again in a reboot loop from the previous
-control image; a further rollback needs authorization.
+control image; I left a further rollback for later.
 
 ## Bench candidate attempt - FAILED on SELinux label, fixed
 

@@ -1,0 +1,38 @@
+make: Entrando no diretório '/home/erick/Documentos/projetos/aquaman_9_PI_2055/.src/linux-amlogic'
+
+  CHK     include/config/kernel.release
+  CHK     include/config/kernel.release_full
+  Using /home/erick/Documentos/projetos/aquaman_9_PI_2055/.src/linux-amlogic as source for kernel
+  GEN     ./Makefile
+  CHK     include/generated/uapi/linux/version.h
+  CHK     include/generated/utsrelease.h
+  CHK     include/generated/bounds.h
+  CHK     include/generated/timeconst.h
+  CHK     include/generated/asm-offsets.h
+  CALL    /home/erick/Documentos/projetos/aquaman_9_PI_2055/.src/linux-amlogic/scripts/checksyscalls.sh
+  CHK     scripts/mod/devicetable-offsets.h
+  GEN     security/selinux/flask.h security/selinux/av_permissions.h
+  CC      security/selinux/avc.o
+  CC      security/selinux/hooks.o
+  CC      security/selinux/selinuxfs.o
+  CC      security/selinux/netlink.o
+  CC      security/selinux/nlmsgtab.o
+  CC      security/selinux/netif.o
+  CC      security/selinux/netnode.o
+  CC      security/selinux/netport.o
+  CC      security/selinux/exports.o
+  CC      security/selinux/ss/ebitmap.o
+  CC      security/selinux/ss/hashtab.o
+  CC      security/selinux/ss/symtab.o
+  CC      security/selinux/ss/sidtab.o
+  CC      security/selinux/ss/avtab.o
+  CC      security/selinux/ss/policydb.o
+  CC      security/selinux/ss/services.o
+  CC      security/selinux/ss/conditional.o
+  CC      security/selinux/ss/mls.o
+  CC      security/selinux/ss/status.o
+  CC      security/selinux/netlabel.o
+  LD      security/selinux/selinux.o
+  LD      security/selinux/built-in.o
+make: Saindo do diretório '/home/erick/Documentos/projetos/aquaman_9_PI_2055/.src/linux-amlogic'
+

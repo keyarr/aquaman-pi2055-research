@@ -53,6 +53,14 @@ static unsigned long read_crumb;
 module_param(read_crumb, ulong, 0400);
 MODULE_PARM_DESC(read_crumb, "1 = default crumb, else physical address to read");
 
+static unsigned long write_crumb;
+module_param(write_crumb, ulong, 0400);
+MODULE_PARM_DESC(write_crumb, "physical address to write write_val (retention test)");
+
+static unsigned int write_val;
+module_param(write_val, uint, 0400);
+MODULE_PARM_DESC(write_val, "value for write_crumb");
+
 static int panic_at;
 module_param(panic_at, int, 0400);
 MODULE_PARM_DESC(panic_at, "panic at this step number (persists in pstore)");
@@ -106,6 +114,27 @@ extern void r1_icache_inval_all(void);
 extern void r1_install_idmap(unsigned long pgd_phys, unsigned long t0sz);
 extern char r1_relocate_new_kernel[];
 extern char r1_relocate_new_kernel_end[];
+
+/* Handoff slots in the ramoops reserved region, retained by both boots. */
+#define R1_SLOT_RECORD	0x07501000UL
+#define R1_SLOT_SENTINEL 0x075f1000UL
+#define R1_SLOT_DT_LO	0x075f2000UL
+#define R1_SLOT_DT_HI	0x075f3000UL
+#define R1_SLOT_DT_SIZE	0x075f4000UL
+#define R1_SLOT_DT_MAGIC 0x075f5000UL
+#define R1_SLOT_EL	0x075f6000UL
+#define R1_SLOT_MPIDR	0x075f7000UL
+#define R1_SLOT_CPUS	0x075f8000UL
+#define R1_ROUND_ID	0x52443152U
+
+static void r1_slot_write(unsigned long phys, u32 v)
+{
+	volatile u32 *p = (volatile u32 *)phys_to_virt(phys);
+
+	*p = v;
+	dsb(sy);
+	r1_dcache_clean_poc((void *)p, sizeof(v));
+}
 
 /* 3-level translation for VA_BITS=39 with 4K pages. */
 #define R1_PGD_SHIFT	30
@@ -207,6 +236,8 @@ static int r1_fdt_fixup_initrd(char *fdt, unsigned long size,
 		return -EINVAL;
 	off_struct = be32_to_cpu(*(u32 *)(fdt + 8));
 	off_strings = be32_to_cpu(*(u32 *)(fdt + 12));
+	if (off_struct < 40 || off_struct >= size || off_strings >= size)
+		return -EINVAL;
 	strings = fdt + off_strings;
 	p = fdt + off_struct;
 	limit = fdt + totalsize;
@@ -221,6 +252,11 @@ static int r1_fdt_fixup_initrd(char *fdt, unsigned long size,
 			while (p < limit && *p)
 				p++;
 			p++;
+			if (p > limit)
+				return -EINVAL;
+			p = (char *)ALIGN((unsigned long)p, 4);
+			if (p > limit)
+				return -EINVAL;
 			if (chosen_depth < 0 && depth == 1 &&
 			    !strcmp(name, "chosen"))
 				chosen_depth = depth + 1;
@@ -242,6 +278,9 @@ static int r1_fdt_fixup_initrd(char *fdt, unsigned long size,
 			len = be32_to_cpu(*(u32 *)p);
 			nameoff = be32_to_cpu(*(u32 *)(p + 4));
 			p += 8;
+			if (p + ALIGN(len, 4) > limit ||
+			    off_strings + nameoff >= size)
+				return -EINVAL;
 			name = strings + nameoff;
 			if (chosen_depth == depth &&
 			    (!strcmp(name, "linux,initrd-start") ||
@@ -387,13 +426,44 @@ static int r1_stage_and_jump(const struct r1_payload *p)
 	unsigned long total, image_phys, entry_phys, dtb_phys, initrd_phys;
 	unsigned long tramp_phys, stack_phys, base_phys, base_virt, cursor;
 	unsigned long nr_pages, tramp_size, pgd_phys, pmd_phys;
-	u64 text_off;
+	unsigned long image_span;
+	u64 text_off, kernel_sz;
 	struct page *pages, *idmap_pages;
 	unsigned long *pgd, *pmd;
 	unsigned long idmap_virt;
 	int order, ret;
 
-	total = PAGE_ALIGN(p->image_size) + PAGE_ALIGN(p->dtb_size) +
+	/*
+	 * The Image header's image_size (byte 16) covers BSS, which the new
+	 * kernel clears in __primary_switched. Placing the DTB right after the
+	 * file bytes would put it inside BSS and zero it before setup_arch.
+	 */
+	if (p->image_size < 64) {
+		pr_err("r1_kexec: Image file too small for 64-byte header\n");
+		return -EINVAL;
+	}
+	if (memcmp(p->image + 56, "ARM\x64", 4)) {
+		pr_err("r1_kexec: bad Image magic (expected ARM\\x64 at 56)\n");
+		return -EINVAL;
+	}
+	memcpy(&text_off, p->image + 8, sizeof(text_off));
+	memcpy(&kernel_sz, p->image + 16, sizeof(kernel_sz));
+	text_off = le64_to_cpu(text_off);
+	kernel_sz = le64_to_cpu(kernel_sz);
+	if (kernel_sz == 0) {
+		/* Explicit rule: a zero effective size means use the file. */
+		pr_warn("r1_kexec: image_size=0, using file size %zu\n",
+			p->image_size);
+		kernel_sz = p->image_size;
+	}
+	if (text_off >= p->image_size || kernel_sz > ~0ULL - text_off) {
+		pr_err("r1_kexec: bad header offsets (text=0x%llx size=0x%llx)\n",
+		       text_off, kernel_sz);
+		return -EINVAL;
+	}
+	image_span = PAGE_ALIGN(kernel_sz > p->image_size ? kernel_sz :
+				p->image_size);
+	total = image_span + PAGE_ALIGN(p->dtb_size) +
 		PAGE_ALIGN(p->initrd_size) + 2 * R1_2M + 3 * PAGE_SIZE;
 	ret = r1_alloc_cma(total, &pages, &nr_pages, &base_phys);
 	if (ret)
@@ -402,8 +472,7 @@ static int r1_stage_and_jump(const struct r1_payload *p)
 	r1_step(3);
 
 	image_phys = ALIGN(base_phys, R1_2M);
-	/* arm64 Image header: text_offset at byte 8; stext lives there, not at 0. */
-	memcpy(&text_off, p->image + 8, sizeof(text_off));
+	/* text_offset at byte 8; stext lives at the image base. */
 	if (text_off >= p->image_size) {
 		pr_err("r1_kexec: bad text_offset 0x%llx\n", text_off);
 		ret = -EINVAL;
@@ -428,7 +497,7 @@ static int r1_stage_and_jump(const struct r1_payload *p)
 		pr_info("r1_kexec: self _text=0x%lx -> entry=0x%lx\n",
 			self, entry_phys);
 	}
-	cursor = image_phys + PAGE_ALIGN(p->image_size);
+	cursor = image_phys + image_span;
 	dtb_phys = cursor;
 	cursor += PAGE_ALIGN(p->dtb_size);
 	initrd_phys = cursor;
@@ -501,9 +570,33 @@ static int r1_stage_and_jump(const struct r1_payload *p)
 		goto out_idmap;
 	r1_step(8);
 
+	/* TTBR0 and its TCR are per CPU. Secondaries are offline, so this is
+	 * the boot CPU; keep it pinned and masked until the trampoline runs. */
+	preempt_disable();
+	local_irq_disable();
+
 	r1_install_idmap(pgd_phys, R1_T0SZ);
 	r1_step(9);
 	r1_step(10);
+
+	/* Commit the handoff record last, then clean each slot to PoC. */
+	{
+		unsigned long cur;
+		u32 magic;
+
+		magic = be32_to_cpu(*(u32 *)p->dtb);
+		asm volatile("mrs %0, CurrentEL" : "=r"(cur));
+		r1_slot_write(R1_SLOT_DT_LO, (u32)dtb_phys);
+		r1_slot_write(R1_SLOT_DT_HI, (u32)(dtb_phys >> 32));
+		r1_slot_write(R1_SLOT_DT_SIZE, (u32)p->dtb_size);
+		r1_slot_write(R1_SLOT_DT_MAGIC, magic);
+		r1_slot_write(R1_SLOT_EL, (u32)(cur >> 2));
+		asm volatile("mrs %0, mpidr_el1" : "=r"(cur));
+		r1_slot_write(R1_SLOT_MPIDR, (u32)cur);
+		r1_slot_write(R1_SLOT_CPUS, (u32)num_online_cpus());
+		r1_slot_write(R1_SLOT_SENTINEL, R1_ROUND_ID);
+	}
+
 	((void (*)(unsigned long, unsigned long, unsigned long,
 		   unsigned long))tramp_phys)(
 		entry_phys, dtb_phys, stack_phys,
@@ -514,6 +607,8 @@ static int r1_stage_and_jump(const struct r1_payload *p)
 	return -EIO;
 
 out_idmap:
+	local_irq_enable();
+	preempt_enable();
 	free_pages(idmap_virt, order);
 out_cma:
 	r1_free_cma(pages, nr_pages);
@@ -530,6 +625,11 @@ static int __init r1_init(void)
 
 		pr_info("r1_kexec: crumb@0x%lx = %u\n",
 			phys, r1_crumb_read_addr(phys));
+		return 0;
+	}
+	if (write_crumb) {
+		r1_slot_write(write_crumb, write_val);
+		pr_info("r1_kexec: wrote crumb@0x%lx = %u\n", write_crumb, write_val);
 		return 0;
 	}
 	if (!fire) {

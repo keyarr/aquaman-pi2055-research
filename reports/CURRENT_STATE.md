@@ -13,6 +13,211 @@ that enables the MMU; watchdog after ~50 s, no panic. Addresses and KASLR alignm
 were checked and are correct. Details, ruled-out items and next step:
 `reports/r1-kexec-pending-2026-11-23.md`.
 
+HARDWARE_OBSERVED (2026-11-26): the "hang at `msr sctlr_el1`" reading is refuted.
+Static address audit shows the next instruction after that `msr`/`isb` was
+`R1_MARKV 0x5261`, a store to `0xffffff8007501000`. That VA is in the module
+region (`VA_START + 0x7501000`, below `KIMAGE_VADDR`), not the linear map; its
+PMD entry in `swapper_pg_dir` is zero before `paging_init`, so the store raises a
+synchronous data abort. The same defect applies to `R1_MARKV 0x525f`, and
+`r1_mark(0x5252)` at the top of `start_kernel` writes the linear-map VA
+`0xffffffc007501000`, whose PGD entry is also still zero. The instrumented
+source now has those three writes removed; the physical (`R1_MARKP`) crumbs and
+the `r1_mark` calls after `setup_arch` are unchanged. Hardware run: with safe
+crumbs the new kernel reached `start_kernel` and the `setup_arch` failure
+branch, so the marker-fault claim is REFUTED. The DTB was being zeroed by
+BSS clearing before `setup_machine_fdt`; the module now places it using the
+Image header `image_size`. A boot to userspace was NOT observed. No exception
+registers were captured. The device went off USB after one fire and came back
+after a power cycle. `reports/r1-kexec-2026-11-26.md`.
+
+HARDWARE_OBSERVED (2026-11-26, second round): with the DTB staging fix the new
+kernel parses the FDT (`0x5283`), reaches `console_init` (`0x5254`) and
+`rest_init` (`0x529c`), then stops inside `copy_process` just before
+`dup_task_struct` (`0x52a9` seen, `0x52aa` absent). The first `kernel_thread`
+never returns, so PID 1 is not created and userspace is not reached. Handoff
+slots recorded `dt_phys=0x2c85f000`, `dtb_magic=0xd00dfeed`, `CurrentEL=1`,
+`MPIDR=0x80000001`, `online_cpus=1`; Pstore stayed empty, so no panic was
+observed. Persistent crumbs `0x07501000` and `0x075f0000..0x075fffff` survive
+the watchdog reset; `0x2ac02000`/`0x2ac03000` do not and were rejected.
+All diagnostic kernel edits were reverted and the clean Image rebuilt
+(`a79349f84252a1f0eb1c94d920e54765bd04de1ca284173107ba3a7eed8255bb`). Module
+`bdceba1420456040cff846efc104150e1ab2b228bf2945adde7d4eb7afc75ec0`, DTB
+`35985354cf57ece3be678ca99666094921bcc2ffcc6f9e937a447edecb305f2d`. Details
+and negative result in `reports/r1-kexec-2026-11-26.md`.
+
+HARDWARE_OBSERVED (2026-11-26, third round): with per-round crumb sentinels,
+the new kernel was traced through `rest_init`, `copy_process` (including a
+successful `dup_task_struct` and all copy_* steps), `kernel_init`,
+`kernel_init_freeable`, `free_initmem`, `run_init_process`, `do_execve` and
+`getname_kernel`. The last markers were `0x5409` (run_init_process entry),
+`0x5410` (do_execve entry) and `0x5420` (getname_kernel entry); no execve
+return marker and no userspace were observed. Instrumentation in the SLUB hot
+path after `free_initmem` shifted the frontier between rounds, so the exact
+execve fault is INCONCLUSIVE. All instrumentation was removed and a clean
+Image was rebuilt (`09e0016f360b87026ed612b83807eca9aaa48c17a67f799b7f436162c0b13978`).
+One fire of that clean Image dropped USB and the device did not re-enumerate
+after more than six minutes, so the stop condition was reached and hardware
+work stopped. No new banner, no `r1probe=DEADBEEF`, no zygote and no pstore
+panic. Module and DTB unchanged. See `reports/r1-kexec-2026-11-26.md`.
+
+HARDWARE_OBSERVED (2026-11-26, fourth round): after a power cycle, sparse
+single-write crumbs showed that `dm_run_setup()`, `mount_root()` and
+`prepare_namespace()` all enter and return, so root mount is REFUTED as the
+failure point. An initrd round with a 391-byte static AArch64 `/init` that
+exits 42 bypassed dm-verity entirely and still hung in execve, so block I/O
+on the init binary is also REFUTED. Execve markers reached
+`do_execveat_common`, `load_elf_binary`, `exec_binprm`, `flush_old_exec` and
+`setup_arg_pages`; no execve return marker and no panic appeared in any round.
+Adding three more writes moved the frontier past `setup_arg_pages`, so the
+exact stop inside execve is INCONCLUSIVE. `norandmaps` did not change it.
+All instrumentation was removed and the clean Image rebuilt
+(`479e879556811d4002aeab1cd4f462635a1e9c7e641637dffb96a087681b5d74`;
+the hash differs from the earlier clean build only by the `UTS_VERSION`
+build timestamp). Two P1 fixes were retained in `work/r1-kexec/`:
+`r1_fdt_fixup_initrd()` now re-aligns the FDT struct block after node names
+and checks offsets, and `patch_dtb.sh` emits 8-byte initrd properties.
+Final module `5d228d18cfc1c8e799a339fb52f5aee1f5cea8961627110dc0f438cd6656917b`,
+DTB unchanged at `35985354cf57ece3be678ca99666094921bcc2ffcc6f9e937a447edecb305f2d`.
+Final clean fire returned to stock after about 123 s with no new banner, no
+`r1probe`, no zygote and a corrupted crumb region, so the stop condition was
+not reached again but no further fire was attempted. No flash or persistent
+write; no commit or push. See `reports/r1-kexec-2026-11-26.md`.
+
+HARDWARE_OBSERVED (2026-11-26, fifth round): the CMA-overlap hypothesis is
+REFUTED offline. `linux,codec_mm_cma` in the DTB is 208 MiB with no `reg` and
+no `alloc-ranges`, so its base is chosen at boot, not fixed at `0x2ac00000`.
+`arm64_memblock_init()` reserves the new kernel at
+`__pa_symbol(_text) = 0x2ac80000` before `early_init_fdt_scan_reserved_mem()`
+and `dma_contiguous_reserve()`, so its CMA cannot cover the image. The module
+places `text_off & (2M-1)` so the KASLR offset is 0; the self-reservation is
+correct. No DTB change was made. A directed module change now pins the CPU
+and masks IRQs across the per-CPU TTBR0/idmap swap
+(`preempt_disable()`/`local_irq_disable()` before `r1_install_idmap()`, with
+matching enable on the error path); module
+`936aa4b7d0ac987dcb6104f726c2075b4e428612e2c49e90497a0bbf80bd0eae`.
+Three fires with unique sentinels produced no userspace. The second fire used
+an `__init` marker in `run_init_process` after `free_initmem` and faulted at
+`r1_mark+0x0` (`ffffff800a3a0414`, `*pte=0`, `x0=0x5256`), panicking with
+"Attempted to kill init"; that instrumentation is invalid for the execve
+frontier. It did give the first fully readable new-kernel pstore log, which
+PROVES the new kernel mounts root (`VFS: Mounted root (ext4 filesystem)
+readonly on device 251:0`), mounts devtmpfs and reaches `Freeing unused
+kernel memory: 5248K`. The third fire used a non-init inline marker but
+returned only after about 290 s with a cold boot, empty pstore and a
+corrupted crumb (`0x07501000=4631`); no conclusion. All instrumentation was
+removed and the clean Image rebuilt
+(`b099af09350a6c849907cd1f02c587af4f6c3633495df742908bf9709983d43f`, not
+fired). Userspace is still NOT reached; the exact execve stop remains
+INCONCLUSIVE, with no SLUB/execve-internal instrumentation this round. No
+flash or persistent write, no commit or push. Risks: the last fire took about
+290 s to restore USB, so the stop condition is close; a readable pstore log
+appears only when the new kernel panics, not on a clean hang. Details in
+`reports/r1-kexec-2026-11-26.md`.
+
+HARDWARE_OBSERVED (2026-11-26, sixth round): the execve frontier was resolved
+from the userspace side. With no kernel instrumentation, only the DTB cmdline
+was changed (`loglevel=8 ignore_loglevel ramoops.console_size=0x20000`,
+`r1probe=DEADBEEF` and the rest kept) and the clean Image was fired with
+`cma_phys=0x2ac00000`: the device returned to stock in about 17 s with empty
+pstore and crumb `0x5260`, no new banner. A static libc-free AArch64 `/init`
+in a 646-byte initrd then wrote a unique marker and called `reboot` by raw
+`svc`, falling back to `exit(42)`. With DTB
+`733d20f53bf5b4b18781633a9b7cfc360666c43f6c372b933775c39af940e41c` the new
+kernel panicked at 5.999 s with `Attempted to kill init!
+exitcode=0x00002a00`, `CPU: 2 PID: 1 Comm: init Tainted: G S 4.9.113 #63`,
+trace through `el0_svc_naked`, plus `Freeing unused kernel memory: 5248K`.
+pstore had `console-ramoops-0` and `dmesg-ramoops-0`. This PROVES execve
+succeeded and userspace ran in EL0; the probe's reboot call failed, so exit
+42 supplied the evidence. Full Android userspace on the new kernel remains
+NOT SHOWN, and the same-boot `r1probe` / new-banner / zygote checks were not
+possible. A final no-initrd fire (rc=255) did not restore USB: serial
+`26919800005844922` disappeared and only an unrelated network adb device
+`192.168.0.6:5555` (9520, 3.18.79 armv7l) is visible. The stop condition is
+met and hardware work stopped; nothing was flashed. Instrumentation is still
+absent and clean rebuilds reproduced Image
+`b099af09350a6c849907cd1f02c587af4f6c3633495df742908bf9709983d43f` and
+module `936aa4b7d0ac987dcb6104f726c2075b4e428612e2c49e90497a0bbf80bd0eae`.
+No commit or push. See `reports/r1-kexec-2026-11-26.md`.
+
+HARDWARE_OBSERVED (2026-11-26, seventh round): a source audit found residual
+diagnostic crumbs in `.src/linux-amlogic` despite earlier reports claiming
+removal (`R1_MARKP` 0x5251-0x5260 in `head.S`, `r1_mark` 0x5253/0x5254/0x5255
+in `init/main.c`). All seven modified files were reverted and a genuinely
+clean Image rebuilt as
+`6c30b16ee7bdc99d62c08c86ef5c2212b736e7e6dab7bfaa1b1033e86e8ca045`; module
+unchanged at `936aa4b7d0ac987dcb6104f726c2075b4e428612e2c49e90497a0bbf80bd0eae`.
+Twelve fires were made; the first eleven restored USB in 41-70 s and Android
+booted stock after each. Static userspace probes on the stock kernel showed
+that `fork` (1079) and `mkdir` (1030) return ENOSYS on this arm64, while
+`clone` (220), `mkdirat` (34), `execve` (221) and `mount` (40) work; the old
+probe had used 104 instead of 142 for `reboot`. With a clone-based initrd
+wrapper, a 32-bit userspace exec on the new kernel is PROVEN: magiskinit ran
+as PID 1 and logged its layout probes before exiting 1. A root-mounting
+wrapper then mounted `mmcblk0p18` at 9.297878 s and exec'd the real Android
+init; PID 1 died at 9.313293 s with `synchronous external abort (0x82000010)
+at 0x0000000000049104` and panic `Attempted to kill init!
+exitcode=0x00000007` (SIGBUS). Full Android on the new kernel remains NOT
+SHOWN: no new banner, no `r1probe`, no zygote and no root shell from the new
+kernel. The final fire used the stock cmdline without verbose logging and no
+initrd; the serial did not return after 300 s and `lsusb` shows no Amlogic
+device, so the stop condition is MET and hardware work stopped. Nothing was
+flashed; no commit or push. See `reports/r1-kexec-2026-11-26.md`.
+HARDWARE_BLOCKED (2026-11-26, eighth round): after a user power cycle the
+serial was back and the staged Image/module/DTB hashes matched. Static
+analysis of fire 11 recovered the full console record locally and extracted
+the real `/init` from `mmcblk0p18` with `dd` plus `debugfs`: ELF32 ARM,
+1501480 B, `.text` `0x8160`-`0x132494`, and the fault address `0x49104` is
+a valid Thumb function prologue inside that text. ESR `0x82000010` is EC
+`0x20` (EL0 instruction abort) with FSC `0x10` (external abort, no
+translation-table walk), so translation succeeded and the instruction fetch
+itself got an external response. This makes a userspace page-table or
+memory-attribute defect the best-fitting hypothesis; the direct ext4 mount
+is weaker, and the missing `/dev`/`/proc`/`/sys` chroot is refuted as the
+direct cause because that would be a data abort. A minimal static ARM EABI
+`/init` with no clone, mount or chroot was built as a 456 B initrd
+(`c15eeb16209d7b6aa78086f47b495d359a376dc901fdb014bbae68e5c17e9e14`) to
+isolate 32-bit compat execution. One fire with the clean Image and console
+initrd DTB returned rc=255 but the serial and USB never came back in 195 s;
+no pstore was readable and no second fire was attempted. The 32-bit compat
+question and full Android boot remain NOT SHOWN; stock decrypted and custom
+image checks were not run. No flash, commit or push.
+See `reports/r1-kexec-2026-11-26.md`.
+
+HARDWARE_OBSERVED / OFFLINE_ONLY (2026-11-27): after a user power cycle the
+serial `26919800005844922` is back and the read-only baseline is stock
+`4.9.113 #1`, uid 0 in `u:r:su:s0`, Enforcing, `sys.boot_completed=1`, empty
+pstore. The clean Image `6c30b16e...` (27,308,544 B) is still staged on the
+device but has no host copy; the host `build-aq/Image` is `d1406478...`
+(22,493,696 B), built with 36 tracing options removed and five diagnostic
+kernel files still modified, so it is not comparable with rounds 7/8. Work
+done after the eighth report and not reported there is consolidated in
+`reports/r1-kexec-2026-11-27.md`: the secmon reservation fix in
+`patch_dtb.sh` plus two unreported DTBs (`56e286c3...`, `3f50b0cd...`), the
+pivot-root initrds (`630027e8...` is the valid candidate), and a diagnostic
+build that captures ESR/FAR/PC/TTBR0/TCR/MAIR/PTE at `0x075fb100` on the next
+EL0 IABT. The secmon hypothesis is plausible but UNPROVEN (no evidence ties
+user VA `0x49104` to PFN `0x5307`); the pivot_root rationale is speculative
+and lower priority; the compat32 initrd `c15eeb16...` remains the cheapest
+test separating compat page tables from the mount/chroot path. Full Android
+on the kexec'd kernel is still NOT SHOWN. The clean Image was recovered to
+`out/r1-device/Image.clean`; a tracing-on instrumented rebuild
+(`c9b4220d...`, module `202cbd51...`) is ready for PTE capture but is not
+byte-identical to the round 7/8 Image. Offline fire packages are staged in
+`out/r1-prep/{secmon,compat,usbdl}/`; none was executed. No fire, flash,
+USB DL write or commit in this consolidation.
+
+HARDWARE_OBSERVED (2026-11-27, after consolidation): with the instrumented
+Image `c9b4220d...` the new kernel `#73` booted from R1 all the way to
+userspace and system_server, but `sys.boot_completed` stayed empty because
+`StartHdmiControlService` was blocked by a CEC HAL crash-loop (`-22` opening
+the CEC device). The same Image over USB DL reproduced the identical hang, so
+R1, the DTB and the handoff are excluded as the cause; the blocker is the
+kernel build and its ABI with vendor modules, which the close-family source
+cannot fix. A first timeout-wrapper fire produced no IABT and no valid PTE
+capture, so the original SIGBUS cause stays INCONCLUSIVE. No power cycle was
+needed; the device is back on stock `#1` with root. See
+`reports/r1-kexec-2026-11-27.md`.
+
 ## Root via ODM (2026-11-23)
 
 This supersedes every "no root" statement below. Root is persistent and was

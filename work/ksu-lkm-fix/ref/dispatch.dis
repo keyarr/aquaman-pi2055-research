@@ -1,0 +1,131 @@
+
+work/ksu-lkm-fix/ref/kernelsu_stock_img.ko:	file format elf64-littleaarch64
+
+Disassembly of section .text:
+
+0000000000004bf0 <ksu_hook_dispatch>:
+    4bf0: a9bb7bfd     	stp	x29, x30, [sp, #-0x50]!
+    4bf4: 910003fd     	mov	x29, sp
+    4bf8: a90153f3     	stp	x19, x20, [sp, #0x10]
+    4bfc: 2a0003f4     	mov	w20, w0
+    4c00: aa0103f3     	mov	x19, x1
+    4c04: aa1e03e0     	mov	x0, x30
+    4c08: 94000000     	bl	0x4c08 <ksu_hook_dispatch+0x18>
+		0000000000004c08:  R_AARCH64_CALL26	_mcount
+    4c0c: 71000a9f     	cmp	w20, #0x2
+    4c10: 54000c00     	b.eq	0x4d90 <ksu_hook_dispatch+0x1a0>
+    4c14: 54000169     	b.ls	0x4c40 <ksu_hook_dispatch+0x50>
+    4c18: 7100169f     	cmp	w20, #0x5
+    4c1c: 540003e0     	b.eq	0x4c98 <ksu_hook_dispatch+0xa8>
+    4c20: 71001a9f     	cmp	w20, #0x6
+    4c24: 54000960     	b.eq	0x4d50 <ksu_hook_dispatch+0x160>
+    4c28: 71000e9f     	cmp	w20, #0x3
+    4c2c: 54000460     	b.eq	0x4cb8 <ksu_hook_dispatch+0xc8>
+    4c30: a94153f3     	ldp	x19, x20, [sp, #0x10]
+    4c34: a8c57bfd     	ldp	x29, x30, [sp], #0x50
+    4c38: d65f03c0     	ret
+    4c3c: d503201f     	nop
+    4c40: 34000614     	cbz	w20, 0x4d00 <ksu_hook_dispatch+0x110>
+    4c44: 7100069f     	cmp	w20, #0x1
+    4c48: 54ffff41     	b.ne	0x4c30 <ksu_hook_dispatch+0x40>
+    4c4c: 910143a3     	add	x3, x29, #0x50
+    4c50: a9400664     	ldp	x4, x1, [x19]
+    4c54: f90023a1     	str	x1, [x29, #0x40]
+    4c58: a9410a60     	ldp	x0, x2, [x19, #0x10]
+    4c5c: b81e0c62     	str	w2, [x3, #-0x20]!
+    4c60: 290483a4     	stp	w4, w0, [x29, #0x24]
+    4c64: 9100a3a2     	add	x2, x29, #0x28
+    4c68: 910103a1     	add	x1, x29, #0x40
+    4c6c: 910093a0     	add	x0, x29, #0x24
+    4c70: 94000000     	bl	0x4c70 <ksu_hook_dispatch+0x80>
+		0000000000004c70:  R_AARCH64_CALL26	ksu_handle_faccessat
+    4c74: 294487a3     	ldp	w3, w1, [x29, #0x24]
+    4c78: b94033a0     	ldr	w0, [x29, #0x30]
+    4c7c: f94023a2     	ldr	x2, [x29, #0x40]
+    4c80: a9000a63     	stp	x3, x2, [x19]
+    4c84: a9010261     	stp	x1, x0, [x19, #0x10]
+    4c88: a94153f3     	ldp	x19, x20, [sp, #0x10]
+    4c8c: a8c57bfd     	ldp	x29, x30, [sp], #0x50
+    4c90: d65f03c0     	ret
+    4c94: d503201f     	nop
+    4c98: a9408a61     	ldp	x1, x2, [x19, #0x8]
+    4c9c: a9419263     	ldp	x3, x4, [x19, #0x18]
+    4ca0: b9400260     	ldr	w0, [x19]
+    4ca4: 94000000     	bl	0x4ca4 <ksu_hook_dispatch+0xb4>
+		0000000000004ca4:  R_AARCH64_CALL26	ksu_handle_prctl
+    4ca8: a94153f3     	ldp	x19, x20, [sp, #0x10]
+    4cac: a8c57bfd     	ldp	x29, x30, [sp], #0x50
+    4cb0: d65f03c0     	ret
+    4cb4: d503201f     	nop
+    4cb8: 910143a2     	add	x2, x29, #0x50
+    4cbc: f9400e60     	ldr	x0, [x19, #0x18]
+    4cc0: a9400663     	ldp	x3, x1, [x19]
+    4cc4: b9002ba3     	str	w3, [x29, #0x28]
+    4cc8: b81e0c40     	str	w0, [x2, #-0x20]!
+    4ccc: 9100a3a0     	add	x0, x29, #0x28
+    4cd0: f90023a1     	str	x1, [x29, #0x40]
+    4cd4: 910103a1     	add	x1, x29, #0x40
+    4cd8: 94000000     	bl	0x4cd8 <ksu_hook_dispatch+0xe8>
+		0000000000004cd8:  R_AARCH64_CALL26	ksu_handle_stat
+    4cdc: b9402ba2     	ldr	w2, [x29, #0x28]
+    4ce0: b94033a0     	ldr	w0, [x29, #0x30]
+    4ce4: f94023a1     	ldr	x1, [x29, #0x40]
+    4ce8: a9000662     	stp	x2, x1, [x19]
+    4cec: f9000e60     	str	x0, [x19, #0x18]
+    4cf0: a94153f3     	ldp	x19, x20, [sp, #0x10]
+    4cf4: a8c57bfd     	ldp	x29, x30, [sp], #0x50
+    4cf8: d65f03c0     	ret
+    4cfc: d503201f     	nop
+    4d00: a9400663     	ldp	x3, x1, [x19]
+    4d04: a9037fbf     	stp	xzr, xzr, [x29, #0x30]
+    4d08: f9400a60     	ldr	x0, [x19, #0x10]
+    4d0c: 12800c62     	mov	w2, #-0x64              // =-100
+    4d10: a9047fbf     	stp	xzr, xzr, [x29, #0x40]
+    4d14: 910093a4     	add	x4, x29, #0x24
+    4d18: 29047fa2     	stp	w2, wzr, [x29, #0x20]
+    4d1c: 9100c3a2     	add	x2, x29, #0x30
+    4d20: f90017a3     	str	x3, [x29, #0x28]
+    4d24: 910103a3     	add	x3, x29, #0x40
+    4d28: f9001fa1     	str	x1, [x29, #0x38]
+    4d2c: 9100a3a1     	add	x1, x29, #0x28
+    4d30: f90027a0     	str	x0, [x29, #0x48]
+    4d34: 910083a0     	add	x0, x29, #0x20
+    4d38: 94000000     	bl	0x4d38 <ksu_hook_dispatch+0x148>
+		0000000000004d38:  R_AARCH64_CALL26	ksu_handle_execveat
+    4d3c: f94017a0     	ldr	x0, [x29, #0x28]
+    4d40: f9000260     	str	x0, [x19]
+    4d44: a94153f3     	ldp	x19, x20, [sp, #0x10]
+    4d48: a8c57bfd     	ldp	x29, x30, [sp], #0x50
+    4d4c: d65f03c0     	ret
+    4d50: 910143a4     	add	x4, x29, #0x50
+    4d54: f9400261     	ldr	x1, [x19]
+    4d58: 12800c60     	mov	w0, #-0x64              // =-100
+    4d5c: f90023a1     	str	x1, [x29, #0x40]
+    4d60: b9002ba0     	str	w0, [x29, #0x28]
+    4d64: 910103a1     	add	x1, x29, #0x40
+    4d68: b81e0c9f     	str	wzr, [x4, #-0x20]!
+    4d6c: d2800003     	mov	x3, #0x0                // =0
+    4d70: d2800002     	mov	x2, #0x0                // =0
+    4d74: 9100a3a0     	add	x0, x29, #0x28
+    4d78: 94000000     	bl	0x4d78 <ksu_hook_dispatch+0x188>
+		0000000000004d78:  R_AARCH64_CALL26	ksu_handle_execve_sucompat
+    4d7c: f94023a0     	ldr	x0, [x29, #0x40]
+    4d80: f9000260     	str	x0, [x19]
+    4d84: a94153f3     	ldp	x19, x20, [sp, #0x10]
+    4d88: a8c57bfd     	ldp	x29, x30, [sp], #0x50
+    4d8c: d65f03c0     	ret
+    4d90: 910143a2     	add	x2, x29, #0x50
+    4d94: f9400a63     	ldr	x3, [x19, #0x10]
+    4d98: a9400660     	ldp	x0, x1, [x19]
+    4d9c: f9001ba1     	str	x1, [x29, #0x30]
+    4da0: f81f0c43     	str	x3, [x2, #-0x10]!
+    4da4: 9100c3a1     	add	x1, x29, #0x30
+    4da8: 94000000     	bl	0x4da8 <ksu_hook_dispatch+0x1b8>
+		0000000000004da8:  R_AARCH64_CALL26	ksu_handle_sys_read
+    4dac: f9401ba1     	ldr	x1, [x29, #0x30]
+    4db0: f94023a0     	ldr	x0, [x29, #0x40]
+    4db4: a9008261     	stp	x1, x0, [x19, #0x8]
+    4db8: a94153f3     	ldp	x19, x20, [sp, #0x10]
+    4dbc: a8c57bfd     	ldp	x29, x30, [sp], #0x50
+    4dc0: d65f03c0     	ret
+    4dc4: d503201f     	nop

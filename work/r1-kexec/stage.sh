@@ -27,11 +27,12 @@ adb push work/r1-kexec/aquaman-r1.dtb        /data/local/tmp/r1/aquaman-r1.dtb
 # Sanity check on device before firing (read-only):
 adb shell "ls -l /data/local/tmp/r1/; dmesg | tail -20"
 
-# Variant A - no initrd, default CMA:
+# Variant A - no initrd, explicit 0x3d800000 (32 MiB, confirmed free on
+# 2026-11-23). The default CMA and 0x38c00000 were fragmented then.
 adb shell "insmod /data/local/tmp/r1/r1_kexec.ko \
   image_path=/data/local/tmp/r1/Image \
   dtb_path=/data/local/tmp/r1/aquaman-r1.dtb \
-  cma_phys=0 fire=1"
+  cma_phys=0x3d800000 fire=1"
 
 # Variant B - initrd, explicit CMA pool at 0x38c00000 (76 MiB):
 # adb shell "insmod /data/local/tmp/r1/r1_kexec.ko \
@@ -40,8 +41,11 @@ adb shell "insmod /data/local/tmp/r1/r1_kexec.ko \
 #   initrd_path=/data/local/tmp/r1/initrd.cpio \
 #   cma_phys=0x38c00000 fire=1"
 
-# After fire=1 the old kernel never returns. Reconnect and check:
-#   adb shell "cat /proc/cmdline; uname -a; dmesg | head -40"
+# After fire=1 the old kernel never returns. Reconnect (power-cycle if adb
+# does not come back) and check the breadcrumb and the new kernel:
+adb shell "insmod /data/local/tmp/r1/r1_kexec.ko read_crumb=0x07501000"
+adb shell "insmod /data/local/tmp/r1/r1_kexec.ko read_crumb=0x07502000"
+adb shell "cat /proc/cmdline; uname -a; dmesg | head -60"
 
 # --- rollback (NOT EXECUTED) ---------------------------------------------
 # If the new kernel does not come up, restore the stock ODM image that carries

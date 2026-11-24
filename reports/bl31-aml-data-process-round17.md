@@ -181,7 +181,7 @@ controlled tail       CONFIRMED (16 B at dst+L src-derived; host-influenced iff 
 arbitrary payload     REFUTED
 ```
 
-### Decisao
+### Decision
 
 ```text
 B: BL31 validation is absent in reference, aquaman still unproven

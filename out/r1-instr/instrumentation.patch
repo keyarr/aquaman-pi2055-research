@@ -1,0 +1,186 @@
+diff --git a/arch/arm64/include/asm/processor.h b/arch/arm64/include/asm/processor.h
+index 5917147a..44ffd86f 100644
+--- a/arch/arm64/include/asm/processor.h
++++ b/arch/arm64/include/asm/processor.h
+@@ -143,6 +143,8 @@ static inline void start_thread(struct pt_regs *regs, unsigned long pc,
+ }
+ 
+ #ifdef CONFIG_COMPAT
++extern void r1_mark_phys(unsigned int slot, u32 val);
++
+ static inline void compat_start_thread(struct pt_regs *regs, unsigned long pc,
+ 				       unsigned long sp)
+ {
+@@ -151,6 +153,10 @@ static inline void compat_start_thread(struct pt_regs *regs, unsigned long pc,
+ 	if (pc & 1)
+ 		regs->pstate |= COMPAT_PSR_T_BIT;
+ 
++	r1_mark_phys(0, 0x5A31C0DE);
++	r1_mark_phys(3, (u32)(pc & 0x7fffffffUL) |
++			   ((regs->pstate & COMPAT_PSR_T_BIT) ? 0x80000000U : 0));
++
+ #ifdef __AARCH64EB__
+ 	regs->pstate |= COMPAT_PSR_E_BIT;
+ #endif
+diff --git a/arch/arm64/mm/fault.c b/arch/arm64/mm/fault.c
+index df09e986..e5731d99 100644
+--- a/arch/arm64/mm/fault.c
++++ b/arch/arm64/mm/fault.c
+@@ -40,6 +40,20 @@
+ #include <asm/system_misc.h>
+ #include <asm/pgtable.h>
+ #include <asm/tlbflush.h>
++#include <asm/barrier.h>
++#include <asm/cacheflush.h>
++
++#define R1_EVID_PHYS 0x075fb100UL
++
++/* Normal .text evidence helper: never __init, callable from any context. */
++void r1_mark_phys(unsigned int slot, u32 val)
++{
++	u32 *p = (u32 *)phys_to_virt(R1_EVID_PHYS + slot * 4);
++
++	*p = val;
++	dsb(sy);
++	__flush_dcache_area((void *)p, sizeof(val));
++}
+ 
+ struct fault_info {
+ 	int	(*fn)(unsigned long addr, unsigned int esr,
+@@ -693,6 +707,47 @@ asmlinkage void __exception do_mem_abort(unsigned long addr, unsigned int esr,
+ 	pr_alert("Unhandled fault: %s (0x%08x) at 0x%016lx\n",
+ 		 inf->name, esr, addr);
+ 
++	if (user_mode(regs) && (((esr >> 26) & 0x3f) == 0x20) && ((esr & 0x3f) == 0x10)) {
++		unsigned long ttbr0, tcr, mair;
++		unsigned long pteval = 0;
++		pgd_t *pgd;
++		pud_t *pud;
++		pmd_t *pmd;
++		pte_t *pte;
++
++		r1_mark_phys(0, 0x5A31C0DE);
++		r1_mark_phys(1, (u32)esr);
++		r1_mark_phys(2, (u32)addr);
++		r1_mark_phys(3, (u32)instruction_pointer(regs));
++		asm volatile("mrs %0, ttbr0_el1" : "=r" (ttbr0));
++		asm volatile("mrs %0, tcr_el1" : "=r" (tcr));
++		r1_mark_phys(4, (u32)ttbr0);
++		pr_alert("r1: fault ttbr0=0x%016lx tcr=0x%016lx\n", ttbr0, tcr);
++		asm volatile("mrs %0, mair_el1" : "=r" (mair));
++		r1_mark_phys(7, (u32)mair);
++		r1_mark_phys(8, (u32)(mair >> 32));
++
++		pgd = pgd_offset(current->mm, addr);
++		if (!pgd_none(*pgd) && !pgd_bad(*pgd)) {
++			r1_mark_phys(9, (u32)pgd_val(*pgd));
++			pud = pud_offset(pgd, addr);
++			if (!pud_none(*pud) && !pud_bad(*pud)) {
++				pmd = pmd_offset(pud, addr);
++				if (!pmd_none(*pmd) && !pmd_bad(*pmd)) {
++					r1_mark_phys(10, (u32)pmd_val(*pmd));
++					pte = pte_offset_map(pmd, addr);
++					if (pte) {
++						pteval = pte_val(*pte);
++						r1_mark_phys(5, (u32)pteval);
++						r1_mark_phys(6, (u32)(pteval >> 32));
++						pte_unmap(pte);
++					}
++				}
++			}
++		}
++		show_pte(current->mm, addr);
++	}
++
+ #ifndef CONFIG_AMLOGIC_VMAP
+ 	info.si_signo = inf->sig;
+ 	info.si_errno = 0;
+diff --git a/fs/binfmt_elf.c b/fs/binfmt_elf.c
+index a4fabf60..04139533 100644
+--- a/fs/binfmt_elf.c
++++ b/fs/binfmt_elf.c
+@@ -40,6 +40,8 @@
+ #include <asm/param.h>
+ #include <asm/page.h>
+ 
++extern void r1_mark_phys(unsigned int slot, u32 val);
++
+ #ifndef user_long_t
+ #define user_long_t long
+ #endif
+@@ -705,6 +707,7 @@ static int load_elf_binary(struct linux_binprm *bprm)
+ 		goto out;
+ 	if (!elf_check_arch(&loc->elf_ex))
+ 		goto out;
++	r1_mark_phys(0, 0x5A31C0DE);
+ 	if (!bprm->file->f_op->mmap)
+ 		goto out;
+ 
+diff --git a/fs/exec.c b/fs/exec.c
+index 3e2de29a..3c37126f 100644
+--- a/fs/exec.c
++++ b/fs/exec.c
+@@ -67,6 +67,8 @@
+ 
+ #include <trace/events/sched.h>
+ 
++extern void r1_mark_phys(unsigned int slot, u32 val);
++
+ int suid_dumpable = 0;
+ 
+ static LIST_HEAD(formats);
+@@ -1042,6 +1044,16 @@ static int exec_mmap(struct mm_struct *mm)
+ 	tsk->mm = mm;
+ 	tsk->active_mm = mm;
+ 	activate_mm(active_mm, mm);
++	{
++		unsigned long r1_ttbr0;
++		asm volatile("mrs %0, ttbr0_el1" : "=r" (r1_ttbr0));
++		r1_mark_phys(4, (u32)r1_ttbr0);
++		asm volatile("tlbi vmalle1\n\t"
++			     "ic iallu\n\t"
++			     "dsb sy\n\t"
++			     "isb" : : : "memory");
++		r1_mark_phys(11, 0x5A31C0F1);
++	}
+ 	tsk->mm->vmacache_seqnum = 0;
+ 	vmacache_flush(tsk);
+ 	task_unlock(tsk);
+diff --git a/kernel/panic.c b/kernel/panic.c
+index 535ee50a..c56e3a63 100644
+--- a/kernel/panic.c
++++ b/kernel/panic.c
+@@ -25,6 +25,9 @@
+ #include <linux/nmi.h>
+ #include <linux/console.h>
+ #include <linux/bug.h>
++#include <asm/barrier.h>
++#include <asm/cacheflush.h>
++#include <asm/memory.h>
+ #ifdef CONFIG_AMLOGIC_RAMDUMP
+ #include <linux/amlogic/ramdump.h>
+ #endif
+@@ -608,6 +611,23 @@ EXPORT_SYMBOL(__stack_chk_fail);
+ 
+ #endif
+ 
++/* Vendor GPU/VPU modules reference this symbol; keep their loader happy. */
++int pstore_io_save(void *a, unsigned long b, void *c, unsigned int d, void *e)
++{
++	volatile u32 *p = (volatile u32 *)phys_to_virt(0x075fb140UL);
++
++	/* No printk: capture the five arguments even without a live console. */
++	p[0] = (u32)(uintptr_t)a;
++	p[1] = (u32)b;
++	p[2] = (u32)(uintptr_t)c;
++	p[3] = d;
++	p[4] = (u32)(uintptr_t)e;
++	dsb(sy);
++	__clean_dcache_area_poc((void *)p, 5 * sizeof(u32));
++	return 0;
++}
++EXPORT_SYMBOL_GPL(pstore_io_save);
++
+ core_param(panic, panic_timeout, int, 0644);
+ core_param(pause_on_oops, pause_on_oops, int, 0644);
+ core_param(panic_on_warn, panic_on_warn, int, 0644);

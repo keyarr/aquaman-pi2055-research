@@ -1,0 +1,655 @@
+Panic#1 Part1
+<4>[   16.363618@1] amvdec_vc1: disagrees about version of symbol __platform_driver_register
+<4>[   16.371454@1] amvdec_vc1: Unknown symbol __tracepoint_tracing_mark_write (err 0)
+<4>[   16.378790@1] amvdec_vc1: disagrees about version of symbol amvdec_resume
+<4>[   16.385553@1] amvdec_vc1: disagrees about version of symbol amvdec_suspend
+<4>[   16.392355@1] amvdec_vc1: disagrees about version of symbol kmalloc_caches
+<4>[   16.421140@2] amvdec_vp9: disagrees about version of symbol module_layout
+<4>[   16.424486@2] amvdec_vp9: disagrees about version of symbol param_ops_uint
+<4>[   16.429169@2] amvdec_vp9: disagrees about version of symbol vdec_enable_input
+<4>[   16.436209@2] amvdec_vp9: disagrees about version of symbol platform_driver_unregister
+<4>[   16.444108@2] amvdec_vp9: disagrees about version of symbol hevc_reset_core
+<4>[   16.450962@2] amvdec_vp9: disagrees about version of symbol configs_register_path_node
+<4>[   16.458801@2] amvdec_vp9: disagrees about version of symbol vdec_prepare_input
+<4>[   16.466024@2] amvdec_vp9: disagrees about version of symbol vf_provider_init
+<4>[   16.472934@2] amvdec_vp9: disagrees about version of symbol param_array_ops
+<4>[   16.479841@2] amvdec_vp9: disagrees about version of symbol vdec_core_request
+<4>[   16.486951@2] amvdec_vp9: disagrees about version of symbol canvas_read
+<4>[   16.493481@2] amvdec_vp9: disagrees about version of symbol dummy_dma_ops
+<4>[   16.500202@2] amvdec_vp9: disagrees about version of symbol get_cpu_major_id
+<4>[   16.507225@2] amvdec_vp9: disagrees about version of symbol amhevc_suspend
+<4>[   16.514042@2] amvdec_vp9: disagrees about version of symbol vdec_core_release
+<4>[   16.521087@2] amvdec_vp9: disagrees about version of symbol pts_lookup_offset_us64
+<4>[   16.528575@2] amvdec_vp9: disagrees about version of symbol dma_alloc_from_coherent
+<4>[   16.536165@2] amvdec_vp9: disagrees about version of symbol vdec_set_prepare_level
+<4>[   16.543689@2] amvdec_vp9: disagrees about version of symbol dma_release_from_coherent
+<4>[   16.551455@2] amvdec_vp9: disagrees about version of symbol vf_reg_provider
+<4>[   16.558329@2] amvdec_vp9: disagrees about version of symbol mutex_lock
+<4>[   16.564790@2] amvdec_vp9: disagrees about version of symbol vdec_core_finish_run
+<4>[   16.572175@2] amvdec_vp9: disagrees about version of symbol amports_get_dma_device
+<4>[   16.579645@2] amvdec_vp9: disagrees about version of symbol vf_unreg_provider
+<4>[   16.586710@2] amvdec_vp9: disagrees about version of symbol amhevc_resume
+<4>[   16.593451@2] amvdec_vp9: disagrees about version of symbol configs_init_new_node
+<4>[   16.600857@2] amvdec_vp9: disagrees about version of symbol vdec_has_more_input
+<4>[   16.608102@2] amvdec_vp9: disagrees about version of symbol __platform_driver_register
+<4>[   16.615945@2] amvdec_vp9: Unknown symbol __tracepoint_tracing_mark_write (err 0)
+<4>[   16.623309@2] amvdec_vp9: disagrees about version of symbol mutex_unlock
+<4>[   16.629926@2] amvdec_vp9: disagrees about version of symbol vdec_vframe_dirty
+<4>[   16.637018@2] amvdec_vp9: disagrees about version of symbol vdec_set_status
+<4>[   16.643895@2] amvdec_vp9: disagrees about version of symbol vdec_clean_input
+<4>[   16.650905@2] amvdec_vp9: disagrees about version of symbol configs_register_configs
+<4>[   16.658547@2] amvdec_vp9: disagrees about version of symbol param_ops_int
+<4>[   16.688782@3] amvdec_avs2: disagrees about version of symbol module_layout
+<4>[   16.692093@3] amvdec_avs2: disagrees about version of symbol param_ops_uint
+<4>[   16.696974@3] amvdec_avs2: disagrees about version of symbol vdec_enable_input
+<4>[   16.704098@3] amvdec_avs2: disagrees about version of symbol platform_driver_unregister
+<4>[   16.712042@3] amvdec_avs2: disagrees about version of symbol hevc_reset_core
+<4>[   16.719051@3] amvdec_avs2: disagrees about version of symbol configs_register_path_node
+<4>[   16.726976@3] amvdec_avs2: disagrees about version of symbol vdec_prepare_input
+<4>[   16.734209@3] amvdec_avs2: disagrees about version of symbol vdec_sync_input
+<4>[   16.741182@3] amvdec_avs2: disagrees about version of symbol vf_provider_init
+<4>[   16.748264@3] amvdec_avs2: disagrees about version of symbol param_array_ops
+<4>[   16.755238@3] amvdec_avs2: disagrees about version of symbol vdec_core_request
+<4>[   16.762398@3] amvdec_avs2: disagrees about version of symbol canvas_read
+<4>[   16.769123@3] amvdec_avs2: disagrees about version of symbol dummy_dma_ops
+<4>[   16.775884@3] amvdec_avs2: disagrees about version of symbol get_cpu_major_id
+<4>[   16.782929@3] amvdec_avs2: disagrees about version of symbol amhevc_suspend
+<4>[   16.789831@3] amvdec_avs2: disagrees about version of symbol vdec_core_release
+<4>[   16.796992@3] amvdec_avs2: disagrees about version of symbol pts_lookup_offset_us64
+<4>[   16.804579@3] amvdec_avs2: disagrees about version of symbol dma_alloc_from_coherent
+<4>[   16.812252@3] amvdec_avs2: disagrees about version of symbol vdec_set_prepare_level
+<4>[   16.819855@3] amvdec_avs2: disagrees about version of symbol dma_release_from_coherent
+<4>[   16.827739@3] amvdec_avs2: disagrees about version of symbol vf_reg_provider
+<4>[   16.834680@3] amvdec_avs2: disagrees about version of symbol mutex_lock
+<4>[   16.841266@3] amvdec_avs2: disagrees about version of symbol vdec_core_finish_run
+<4>[   16.848645@3] amvdec_avs2: disagrees about version of symbol amports_get_dma_device
+<4>[   16.856271@3] amvdec_avs2: disagrees about version of symbol vf_unreg_provider
+<4>[   16.863420@3] amvdec_avs2: disagrees about version of symbol amhevc_resume
+<4>[   16.870222@3] amvdec_avs2: disagrees about version of symbol configs_init_new_node
+<4>[   16.877709@3] amvdec_avs2: disagrees about version of symbol vdec_has_more_input
+<4>[   16.885078@3] amvdec_avs2: disagrees about version of symbol __platform_driver_register
+<4>[   16.892990@3] amvdec_avs2: Unknown symbol __tracepoint_tracing_mark_write (err 0)
+<4>[   16.900408@3] amvdec_avs2: disagrees about version of symbol mutex_unlock
+<4>[   16.907155@3] amvdec_avs2: disagrees about version of symbol vdec_vframe_dirty
+<4>[   16.914289@3] amvdec_avs2: disagrees about version of symbol vdec_set_status
+<4>[   16.921269@3] amvdec_avs2: disagrees about version of symbol vdec_clean_input
+<4>[   16.928342@3] amvdec_avs2: disagrees about version of symbol amvdec_resume
+<4>[   16.935214@3] amvdec_avs2: disagrees about version of symbol configs_register_configs
+<4>[   16.942961@3] amvdec_avs2: disagrees about version of symbol amvdec_suspend
+<4>[   16.949821@3] amvdec_avs2: disagrees about version of symbol param_ops_int
+<4>[   16.989642@1] encoder: disagrees about version of symbol module_layout
+<4>[   16.991758@1] encoder: disagrees about version of symbol param_ops_uint
+<4>[   16.997169@1] encoder: disagrees about version of symbol platform_driver_unregister
+<4>[   17.004697@1] encoder: disagrees about version of symbol platform_get_irq
+<4>[   17.011481@1] encoder: disagrees about version of symbol class_destroy
+<4>[   17.017913@1] encoder: disagrees about version of symbol remap_pfn_range
+<4>[   17.024530@1] encoder: disagrees about version of symbol canvas_read
+<4>[   17.030842@1] encoder: disagrees about version of symbol sched_setscheduler
+<4>[   17.037749@1] encoder: disagrees about version of symbol dummy_dma_ops
+<4>[   17.044197@1] encoder: disagrees about version of symbol kmem_cache_alloc_trace
+<4>[   17.051441@1] encoder: disagrees about version of symbol wake_up_process
+<4>[   17.058107@1] encoder: disagrees about version of symbol __class_register
+<4>[   17.064845@1] encoder: disagrees about version of symbol device_create
+<4>[   17.071288@1] encoder: disagrees about version of symbol class_unregister
+<4>[   17.077998@1] encoder: disagrees about version of symbol kthread_stop
+<4>[   17.084458@1] encoder: disagrees about version of symbol destroy_ge2d_work_queue
+<4>[   17.091726@1] encoder: disagrees about version of symbol of_reserved_mem_device_init_by_idx
+<4>[   17.099994@1] encoder: disagrees about version of symbol stretchblt_noalpha
+<4>[   17.106967@1] encoder: disagrees about version of symbol __platform_driver_register
+<4>[   17.114488@1] encoder: disagrees about version of symbol kthread_create_on_node
+<4>[   17.121728@1] encoder: disagrees about version of symbol ge2d_context_config_ex
+<4>[   17.128973@1] encoder: disagrees about version of symbol create_ge2d_work_queue
+<4>[   17.136247@1] encoder: disagrees about version of symbol __register_chrdev
+<4>[   17.143038@1] encoder: disagrees about version of symbol device_destroy
+<4>[   17.149616@1] encoder: disagrees about version of symbol send_sig
+<4>[   17.155660@1] encoder: disagrees about version of symbol param_ops_int
+<4>[   17.162106@1] encoder: disagrees about version of symbol kmalloc_caches
+<3>[   17.168968@1] encoder: module is already loaded
+<4>[   17.215778@1] vpu: disagrees about version of symbol module_layout
+<4>[   17.217355@1] vpu: disagrees about version of symbol param_ops_uint
+<4>[   17.222567@1] vpu: disagrees about version of symbol platform_driver_unregister
+<4>[   17.229815@1] vpu: disagrees about version of symbol of_address_to_resource
+<4>[   17.236743@1] vpu: disagrees about version of symbol kill_fasync
+<4>[   17.242653@1] vpu: disagrees about version of symbol class_destroy
+<4>[   17.248776@1] vpu: disagrees about version of symbol remap_pfn_range
+<4>[   17.255108@1] vpu: disagrees about version of symbol dummy_dma_ops
+<4>[   17.261214@1] vpu: disagrees about version of symbol kmem_cache_alloc_trace
+<4>[   17.268094@1] vpu: disagrees about version of symbol platform_get_irq_byname
+<4>[   17.275072@1] vpu: disagrees about version of symbol of_get_next_child
+<4>[   17.281581@1] vpu: disagrees about version of symbol __class_register
+<4>[   17.287930@1] vpu: disagrees about version of symbol pstore_io_save
+<4>[   17.294144@1] vpu: disagrees about version of symbol device_create
+<4>[   17.300256@1] vpu: disagrees about version of symbol fasync_helper
+<4>[   17.306410@1] vpu: disagrees about version of symbol class_unregister
+<4>[   17.312802@1] vpu: disagrees about version of symbol of_reserved_mem_device_init_by_idx
+<4>[   17.320707@1] vpu: disagrees about version of symbol __platform_driver_register
+<4>[   17.327952@1] vpu: disagrees about version of symbol __register_chrdev
+<4>[   17.334447@1] vpu: disagrees about version of symbol device_destroy
+<4>[   17.340649@1] vpu: disagrees about version of symbol kmalloc_caches
+<3>[   17.347128@1] vpu: module is already loaded
+<11>[   17.391408@2] selinux: avc:  denied  { set } for property=ro.net.pppoe pid=1 uid=0 gid=0 scontext=u:r:vendor_init:s0 tcontext=u:object_r:default_prop:s0 tclass=property_service permissive=0
+<11>[   17.391408@2] 
+<11>[   17.405960@2] init: Unable to set property 'ro.net.pppoe' to 'true' in property file '/vendor/build.prop': SELinux permission check failed
+<11>[   17.417056@2] selinux: avc:  denied  { set } for property=service.bootvideo pid=1 uid=0 gid=0 scontext=u:r:vendor_init:s0 tcontext=u:object_r:system_prop:s0 tclass=property_service permissive=0
+<11>[   17.417056@2] 
+<11>[   17.435324@2] init: Unable to set property 'service.bootvideo' to '0' in property file '/vendor/build.prop': SELinux permission check failed
+<7>[   17.447809@2] DI: DI: tasklet schedule cost 14ms.
+<11>[   17.452634@2] selinux: avc:  denied  { set } for property=libplayer.livets.softdemux pid=1 uid=0 gid=0 scontext=u:r:vendor_init:s0 tcontext=u:object_r:default_prop:s0 tclass=property_service permissive=0
+<11>[   17.452634@2] 
+<11>[   17.472126@2] init: Unable to set property 'libplayer.livets.softdemux' to '0' in property file '/vendor/build.prop': SELinux permission check failed
+<11>[   17.485431@2] selinux: avc:  denied  { set } for property=libplayer.netts.softdemux pid=1 uid=0 gid=0 scontext=u:r:vendor_init:s0 tcontext=u:object_r:default_prop:s0 tclass=property_service permissive=0
+<11>[   17.485431@2] 
+<11>[   17.504876@2] init: Unable to set property 'libplayer.netts.softdemux' to '0' in property file '/vendor/build.prop': SELinux permission check failed
+<7>[   17.518018@2] DI: DI: tasklet schedule cost 14ms.
+<11>[   17.522714@2] selinux: avc:  denied  { set } for property=libplayer.ts.softdemux pid=1 uid=0 gid=0 scontext=u:r:vendor_init:s0 tcontext=u:object_r:default_prop:s0 tclass=property_service permissive=0
+<11>[   17.522714@2] 
+<11>[   17.541985@2] init: Unable to set property 'libplayer.ts.softdemux' to '0' in property file '/vendor/build.prop': SELinux permission check failed
+<38>[   17.608831@1] logd.auditd: start
+<46>[   17.608891@1] logd.klogd: 17099484307
+<6>[   17.659524@1] binder: 3168:3168 ioctl 4018620d ffbf6530 returned -22
+<36>[   17.730830@1] type=1400 audit(1483229159.396:20): avc: denied { write } for pid=3171 comm="Binder:3171_2" name="uevent" dev="sysfs" ino=18767 scontext=u:r:vold:s0 tcontext=u:object_r:sysfs_mmc:s0 tclass=file permissive=0
+<4>[   17.741098@2] audit_log_lost: 24 callbacks suppressed
+<4>[   17.741105@2] audit: audit_lost=9 audit_rate_limit=5 audit_backlog_limit=64
+<3>[   17.741109@2] audit: rate limit exceeded
+<36>[   17.761050@1] type=1400 audit(1483229159.396:20): avc: denied { write } for pid=3171 comm="Binder:3171_2" name="uevent" dev="sysfs" ino=18767 scontext=u:r:vold:s0 tcontext=u:object_r:sysfs_mmc:s0 tclass=file permissive=0
+<36>[   17.779993@1] type=1400 audit(1483229159.396:21): avc: denied { write } for pid=3171 comm="Binder:3171_2" name="uevent" dev="sysfs" ino=18910 scontext=u:r:vold:s0 tcontext=u:object_r:sysfs_mmc:s0 tclass=file permissive=0
+<36>[   17.799560@1] type=1400 audit(1483229159.396:21): avc: denied { write } for pid=3171 comm="Binder:3171_2" name="uevent" dev="sysfs" ino=18910 scontext=u:r:vold:s0 tcontext=u:object_r:sysfs_mmc:s0 tclass=file permissive=0
+<36>[   17.818762@1] type=1400 audit(1483229159.396:22): avc: denied { write } for pid=3171 comm="Binder:3171_2" name="uevent" dev="sysfs" ino=18838 scontext=u:r:vold:s0 tcontext=u:object_r:sysfs_mmc:s0 tclass=file permissive=0
+<36>[   17.838326@1] type=1400 audit(1483229159.396:22): avc: denied { write } for pid=3171 comm="Binder:3171_2" name="uevent" dev="sysfs" ino=18838 scontext=u:r:vold:s0 tcontext=u:object_r:sysfs_mmc:s0 tclass=file permissive=0
+<36>[   17.857582@1] type=1400 audit(1483229159.396:23): avc: denied { write } for pid=3171 comm="Binder:3171_2" name="uevent" dev="sysfs" ino=18256 scontext=u:r:vold:s0 tcontext=u:object_r:sysfs_mmc:s0 tclass=file permissive=0
+<36>[   17.877177@1] type=1400 audit(1483229159.396:23): avc: denied { write } for pid=3171 comm="Binder:3171_2" name="uevent" dev="sysfs" ino=18256 scontext=u:r:vold:s0 tcontext=u:object_r:sysfs_mmc:s0 tclass=file permissive=0
+<4>[   18.053592@2] mali: disagrees about version of symbol module_layout
+<4>[   18.064763@2] mali: disagrees about version of symbol vm_insert_pfn
+<4>[   18.065404@2] mali: disagrees about version of symbol __put_page
+<4>[   18.071444@2] mali: disagrees about version of symbol misc_deregister
+<4>[   18.077771@2] mali: disagrees about version of symbol param_ops_uint
+<4>[   18.084063@2] mali: disagrees about version of symbol devm_kmalloc
+<4>[   18.090242@2] mali: disagrees about version of symbol of_property_read_variable_u32_array
+<4>[   18.098327@2] mali: disagrees about version of symbol platform_driver_unregister
+<4>[   18.105649@2] mali: disagrees about version of symbol pm_runtime_set_autosuspend_delay
+<4>[   18.113545@2] mali: disagrees about version of symbol fget
+<4>[   18.118927@2] mali: disagrees about version of symbol fd_install
+<4>[   18.124861@2] mali: disagrees about version of symbol gpucore_cooling_alloc
+<4>[   18.131758@2] mali: disagrees about version of symbol seq_lseek
+<4>[   18.137662@2] mali: disagrees about version of symbol zap_vma_ptes
+<4>[   18.143756@2] mali: disagrees about version of symbol __module_get
+<4>[   18.149883@2] mali: disagrees about version of symbol platform_get_resource_byname
+<4>[   18.157399@2] mali: disagrees about version of symbol get_device
+<4>[   18.163316@2] mali: disagrees about version of symbol dma_buf_attach
+<4>[   18.169623@2] mali: disagrees about version of symbol dummy_dma_ops
+<4>[   18.175830@2] mali: disagrees about version of symbol kmem_cache_alloc_trace
+<4>[   18.182838@2] mali: disagrees about version of symbol devm_clk_get
+<4>[   18.188957@2] mali: disagrees about version of symbol of_get_property
+<4>[   18.195304@2] mali: disagrees about version of symbol class_create_file_ns
+<4>[   18.202132@2] mali: disagrees about version of symbol platform_device_add_data
+<4>[   18.209362@2] mali: disagrees about version of symbol gpucore_cooling_register
+<4>[   18.216483@2] mali: disagrees about version of symbol pm_runtime_enable
+<4>[   18.222992@2] mali: disagrees about version of symbol dma_buf_map_attachment
+<4>[   18.230057@2] mali: disagrees about version of symbol __free_pages
+<4>[   18.236129@2] mali: disagrees about version of symbol module_put
+<4>[   18.242096@2] mali: disagrees about version of symbol dev_notice
+<4>[   18.248023@2] mali: disagrees about version of symbol dma_alloc_from_coherent
+<4>[   18.255140@2] mali: disagrees about version of symbol of_find_node_by_phandle
+<4>[   18.262165@2] mali: disagrees about version of symbol contig_page_data
+<4>[   18.268640@2] mali: disagrees about version of symbol shmem_file_setup
+<4>[   18.275124@2] mali: disagrees about version of symbol fput
+<4>[   18.280569@2] mali: disagrees about version of symbol __class_register
+<4>[   18.287006@2] mali: disagrees about version of symbol dma_buf_unmap_attachment
+<4>[   18.294158@2] mali: disagrees about version of symbol pstore_io_save
+<4>[   18.300518@2] mali: disagrees about version of symbol dma_release_from_coherent
+<4>[   18.307716@2] mali: disagrees about version of symbol pid_task
+<4>[   18.313477@2] mali: disagrees about version of symbol platform_get_resource
+<4>[   18.320427@2] mali: disagrees about version of symbol mutex_lock
+<4>[   18.326379@2] mali: disagrees about version of symbol dma_buf_get
+<4>[   18.332391@2] mali: disagrees about version of symbol shmem_read_mapping_page_gfp
+<4>[   18.339783@2] mali: disagrees about version of symbol dma_buf_put
+<4>[   18.345878@2] mali: disagrees about version of symbol of_property_read_string
+<4>[   18.352895@2] mali: disagrees about version of symbol of_find_property
+<4>[   18.359373@2] mali: disagrees about version of symbol class_unregister
+<4>[   18.365834@2] mali: disagrees about version of symbol of_iomap
+<4>[   18.371663@2] mali: disagrees about version of symbol __mutex_init
+<4>[   18.377756@2] mali: disagrees about version of symbol dev_err
+<4>[   18.383422@2] mali: disagrees about version of symbol default_llseek
+<4>[   18.389756@2] mali: disagrees about version of symbol misc_register
+<4>[   18.395984@2] mali: disagrees about version of symbol aml_thermal_min_update
+<4>[   18.402934@2] mali: disagrees about version of symbol __platform_driver_register
+<4>[   18.410252@2] mali: disagrees about version of symbol set_page_dirty
+<4>[   18.416568@2] mali: disagrees about version of symbol of_prop_next_u32
+<4>[   18.423007@2] mali: disagrees about version of symbol __alloc_pages_nodemask
+<4>[   18.430006@2] mali: disagrees about version of symbol seq_read
+<4>[   18.435787@2] mali: disagrees about version of symbol debugfs_remove_recursive
+<4>[   18.442975@2] mali: disagrees about version of symbol shmem_truncate_range
+<4>[   18.449779@2] mali: disagrees about version of symbol debugfs_create_file
+<4>[   18.456492@2] mali: disagrees about version of symbol __pm_runtime_resume
+<4>[   18.463259@2] mali: disagrees about version of symbol mutex_unlock
+<4>[   18.469364@2] mali: disagrees about version of symbol gpufreq_cooling_alloc
+<4>[   18.476238@2] mali: disagrees about version of symbol platform_bus_type
+<4>[   18.482776@2] mali: disagrees about version of symbol seq_printf
+<4>[   18.488807@2] mali: disagrees about version of symbol __lock_page
+<4>[   18.494787@2] mali: disagrees about version of symbol dma_buf_detach
+<4>[   18.501081@2] mali: disagrees about version of symbol find_vpid
+<4>[   18.506955@2] mali: disagrees about version of symbol single_release
+<4>[   18.513278@2] mali: disagrees about version of symbol gpufreq_cooling_register
+<4>[   18.520398@2] mali: disagrees about version of symbol pm_runtime_barrier
+<4>[   18.527036@2] mali: disagrees about version of symbol __pm_runtime_suspend
+<4>[   18.533889@2] mali: disagrees about version of symbol __pm_runtime_use_autosuspend
+<4>[   18.541383@2] mali: disagrees about version of symbol param_ops_int
+<4>[   18.547554@2] mali: disagrees about version of symbol single_open
+<4>[   18.553620@2] mali: disagrees about version of symbol debugfs_create_dir
+<4>[   18.560288@2] mali: disagrees about version of symbol kmalloc_caches
+<4>[   18.566541@2] mali: disagrees about version of symbol sync_file_create
+<5>[   18.576508@2] mali-utgard d00c0000.mali: set min pp to default 1
+<5>[   18.578940@2] mali-utgard d00c0000.mali: set min clk default to 0
+<5>[   18.585111@2] mali-utgard d00c0000.mali: max clk set 4
+<5>[   18.590092@2] mali-utgard d00c0000.mali: turbo clk set to 5
+<4>[   18.603330@2] gpu cooling register okay with err=0
+<4>[   18.606171@2] gpu core cooling register okay with err=0
+<4>[   18.608113@2] Mali: Mali device driver loaded
+<6>[   18.612902@1] aml_wifi wifi: [usb_power_control] Set WiFi power down
+<6>[   18.818505@1] aml_wifi wifi: [usb_power_control] Set WiFi power on !
+<3>[   18.820641@0] meson-mmc: sdio: resp_timeout,vstat:0xa3ff2800,virqc:3fff
+<3>[   18.825776@0] meson-mmc: sdio: err: wait for irq service, bus_fsm:0x8
+<6>[   18.832188@0] meson-mmc: meson_mmc_irq_thread 2768 sdio: cmd:52
+<3>[   18.839135@0] meson-mmc: sdio: resp_timeout,vstat:0xa3ff2800,virqc:3fff
+<3>[   18.844576@0] meson-mmc: sdio: err: wait for irq service, bus_fsm:0x8
+<6>[   18.851016@0] meson-mmc: meson_mmc_irq_thread 2768 sdio: cmd:52
+<6>[   18.889728@1] sdio: new high speed SDIO card at address 0000
+<6>[   18.889765@1] sdio: clock 50000000, 4-bit-bus-width
+<6>[   18.889765@1]  
+<6>[   18.896630@1] meson-mmc: [sdio_reinit] finish
+<6>[   18.898995@1] aml_wifi wifi: [usb_power_control] Set WiFi power on !
+<6>[   19.105396@1] aml_wifi wifi: [pci_reinit] pci wifi reinit!
+<6>[   19.105438@1] aml_wifi wifi: [wifi_power_ioctl] Set sdio wifi power up!
+<4>[   19.147253@1] rtl8821cs: disagrees about version of symbol module_layout
+<4>[   19.250042@1] rtl8821cs: disagrees about version of symbol skb_pull
+<4>[   19.250721@1] rtl8821cs: disagrees about version of symbol netif_napi_del
+<4>[   19.257453@1] rtl8821cs: disagrees about version of symbol __cfg80211_alloc_event_skb
+<4>[   19.265232@1] rtl8821cs: disagrees about version of symbol sched_setscheduler
+<4>[   19.272275@1] rtl8821cs: disagrees about version of symbol wiphy_register
+<4>[   19.279000@1] rtl8821cs: disagrees about version of symbol cfg80211_remain_on_channel_expired
+<4>[   19.287541@1] rtl8821cs: disagrees about version of symbol __netdev_alloc_skb
+<4>[   19.294528@1] rtl8821cs: disagrees about version of symbol sdio_f0_readb
+<4>[   19.301182@1] rtl8821cs: disagrees about version of symbol cfg80211_vendor_cmd_reply
+<4>[   19.308829@1] rtl8821cs: disagrees about version of symbol sdio_f0_writeb
+<4>[   19.315617@1] rtl8821cs: disagrees about version of symbol cfg80211_del_sta_sinfo
+<4>[   19.322982@1] rtl8821cs: disagrees about version of symbol netif_tx_stop_all_queues
+<4>[   19.330617@1] rtl8821cs: disagrees about version of symbol seq_release
+<4>[   19.337046@1] rtl8821cs: disagrees about version of symbol wiphy_unregister
+<4>[   19.343954@1] rtl8821cs: disagrees about version of symbol filp_open
+<4>[   19.350238@1] rtl8821cs: disagrees about version of symbol cfg80211_connect_bss
+<4>[   19.357553@1] rtl8821cs: disagrees about version of symbol __pskb_pull_tail
+<4>[   19.364389@1] rtl8821cs: disagrees about version of symbol single_open
+<4>[   19.370864@1] rtl8821cs: disagrees about version of symbol param_ops_int
+<4>[   19.377488@1] rtl8821cs: disagrees about version of symbol netif_wake_subqueue
+<4>[   19.384700@1] rtl8821cs: disagrees about version of symbol cfg80211_ch_switch_notify
+<4>[   19.392342@1] rtl8821cs: disagrees about version of symbol filp_close
+<4>[   19.398719@1] rtl8821cs: disagrees about version of symbol skb_clone
+<4>[   19.405028@1] rtl8821cs: disagrees about version of symbol cfg80211_ready_on_channel
+<4>[   19.412795@1] rtl8821cs: disagrees about version of symbol __ieee80211_get_channel
+<4>[   19.420184@1] rtl8821cs: disagrees about version of symbol skb_put
+<4>[   19.426310@1] rtl8821cs: disagrees about version of symbol sdio_disable_func
+<4>[   19.433312@1] rtl8821cs: disagrees about version of symbol sdio_readsb
+<4>[   19.439766@1] rtl8821cs: disagrees about version of symbol __vfs_write
+<4>[   19.446226@1] rtl8821cs: disagrees about version of symbol proc_get_parent_data
+<4>[   19.453538@1] rtl8821cs: disagrees about version of symbol seq_open
+<4>[   19.459712@1] rtl8821cs: disagrees about version of symbol sdio_unregister_driver
+<4>[   19.467106@1] rtl8821cs: disagrees about version of symbol wiphy_free
+<4>[   19.473498@1] rtl8821cs: disagrees about version of symbol param_array_ops
+<4>[   19.480299@1] rtl8821cs: disagrees about version of symbol wiphy_new_nm
+<4>[   19.486845@1] rtl8821cs: disagrees about version of symbol kmalloc_caches
+<4>[   19.493581@1] rtl8821cs: disagrees about version of symbol cfg80211_get_bss
+<4>[   19.500479@1] rtl8821cs: disagrees about version of symbol seq_printf
+<4>[   19.506910@1] rtl8821cs: disagrees about version of symbol sdio_claim_host
+<4>[   19.513694@1] rtl8821cs: disagrees about version of symbol __cfg80211_send_event_skb
+<4>[   19.521355@1] rtl8821cs: disagrees about version of symbol init_net
+<4>[   19.527573@1] rtl8821cs: disagrees about version of symbol kthread_stop
+<4>[   19.534173@1] rtl8821cs: disagrees about version of symbol cfg80211_disconnected
+<4>[   19.541499@1] rtl8821cs: disagrees about version of symbol netif_tx_wake_queue
+<4>[   19.548612@1] rtl8821cs: disagrees about version of symbol cfg80211_michael_mic_failure
+<4>[   19.556550@1] rtl8821cs: disagrees about version of symbol skb_dequeue
+<4>[   19.563054@1] rtl8821cs: disagrees about version of symbol netif_rx
+<4>[   19.569221@1] rtl8821cs: disagrees about version of symbol cfg80211_ibss_joined
+<4>[   19.576469@1] rtl8821cs: disagrees about version of symbol skb_copy_bits
+<4>[   19.583105@1] rtl8821cs: disagrees about version of symbol param_ops_charp
+<4>[   19.589970@1] rtl8821cs: disagrees about version of symbol skb_copy
+<4>[   19.596137@1] rtl8821cs: disagrees about version of symbol PDE_DATA
+<4>[   19.602341@1] rtl8821cs: disagrees about version of symbol seq_lseek
+<4>[   19.608629@1] rtl8821cs: disagrees about version of symbol register_netdevice
+<4>[   19.615750@1] rtl8821cs: disagrees about version of symbol wake_up_process
+<4>[   19.622524@1] rtl8821cs: disagrees about version of symbol __vfs_read
+<4>[   19.628909@1] rtl8821cs: disagrees about version of symbol kthread_create_on_node
+<4>[   19.636348@1] rtl8821cs: disagrees about version of symbol param_ops_uint
+<4>[   19.643063@1] rtl8821cs: disagrees about version of symbol netif_carrier_off
+<4>[   19.650032@1] rtl8821cs: disagrees about version of symbol mutex_lock_interruptible
+<4>[   19.657661@1] rtl8821cs: disagrees about version of symbol seq_read
+<4>[   19.663843@1] rtl8821cs: disagrees about version of symbol sdio_register_driver
+<4>[   19.671130@1] rtl8821cs: disagrees about version of symbol napi_complete_done
+<4>[   19.678158@1] rtl8821cs: disagrees about version of symbol sdio_readb
+<4>[   19.684573@1] rtl8821cs: disagrees about version of symbol __mutex_init
+<4>[   19.691104@1] rtl8821cs: disagrees about version of symbol kmem_cache_alloc_trace
+<4>[   19.698513@1] rtl8821cs: disagrees about version of symbol sdio_claim_irq
+<4>[   19.705284@1] rtl8821cs: disagrees about version of symbol cfg80211_scan_done
+<4>[   19.712322@1] rtl8821cs: disagrees about version of symbol remove_proc_entry
+<4>[   19.719301@1] rtl8821cs: disagrees about version of symbol cfg80211_roamed
+<4>[   19.726129@1] rtl8821cs: disagrees about version of symbol cfg80211_put_bss
+<4>[   19.733019@1] rtl8821cs: disagrees about version of symbol sdio_writesb
+<4>[   19.739558@1] rtl8821cs: disagrees about version of symbol sdio_memcpy_toio
+<4>[   19.746462@1] rtl8821cs: disagrees about version of symbol register_netdev
+<4>[   19.753290@1] rtl8821cs: disagrees about version of symbol sdio_enable_func
+<4>[   19.760194@1] rtl8821cs: disagrees about version of symbol netif_napi_add
+<4>[   19.766917@1] rtl8821cs: disagrees about version of symbol skb_trim
+<4>[   19.773172@1] rtl8821cs: disagrees about version of symbol kill_pid
+<4>[   19.779326@1] rtl8821cs: disagrees about version of symbol single_open_size
+<4>[   19.786228@1] rtl8821cs: disagrees about version of symbol dev_err
+<4>[   19.792356@1] rtl8821cs: disagrees about version of symbol skb_push
+<4>[   19.798638@1] rtl8821cs: disagrees about version of symbol sdio_set_block_size
+<4>[   19.805722@1] rtl8821cs: disagrees about version of symbol find_vpid
+<4>[   19.812016@1] rtl8821cs: disagrees about version of symbol proc_create_data
+<4>[   19.818906@1] rtl8821cs: disagrees about version of symbol __dev_kfree_skb_any
+<4>[   19.826105@1] rtl8821cs: disagrees about version of symbol cfg80211_unlink_bss
+<4>[   19.833233@1] rtl8821cs: disagrees about version of symbol netif_carrier_on
+<4>[   19.840187@1] rtl8821cs: disagrees about version of symbol dev_alloc_name
+<4>[   19.846893@1] rtl8821cs: disagrees about version of symbol cfg80211_inform_bss_frame_data
+<4>[   19.854978@1] rtl8821cs: disagrees about version of symbol flush_signals
+<4>[   19.861610@1] rtl8821cs: disagrees about version of symbol sdio_get_host_pm_caps
+<4>[   19.868974@1] rtl8821cs: disagrees about version of symbol unregister_netdev
+<4>[   19.875926@1] rtl8821cs: disagrees about version of symbol sdio_set_host_pm_flags
+<4>[   19.883354@1] rtl8821cs: disagrees about version of symbol cfg80211_new_sta
+<4>[   19.890234@1] rtl8821cs: disagrees about version of symbol alloc_etherdev_mqs
+<4>[   19.897350@1] rtl8821cs: disagrees about version of symbol sdio_release_irq
+<4>[   19.904221@1] rtl8821cs: disagrees about version of symbol mutex_unlock
+<4>[   19.910784@1] rtl8821cs: disagrees about version of symbol netif_receive_skb
+<4>[   19.917754@1] rtl8821cs: disagrees about version of symbol sdio_release_host
+<4>[   19.924837@1] rtl8821cs: disagrees about version of symbol __pskb_copy_fclone
+<4>[   19.931827@1] rtl8821cs: disagrees about version of symbol unregister_netdevice_queue
+<4>[   19.939580@1] rtl8821cs: disagrees about version of symbol __cfg80211_alloc_reply_skb
+<4>[   19.947350@1] rtl8821cs: disagrees about version of symbol free_netdev
+<4>[   19.953820@1] rtl8821cs: disagrees about version of symbol napi_disable
+<4>[   19.960362@1] rtl8821cs: disagrees about version of symbol kern_path
+<4>[   19.966693@1] rtl8821cs: disagrees about version of symbol cfg80211_rx_mgmt
+<4>[   19.973565@1] rtl8821cs: disagrees about version of symbol sdio_memcpy_fromio
+<4>[   19.980644@1] rtl8821cs: disagrees about version of symbol wiphy_apply_custom_regulatory
+<4>[   19.988646@1] rtl8821cs: disagrees about version of symbol sdio_writeb
+<4>[   19.995169@1] rtl8821cs: disagrees about version of symbol dev_get_by_name
+<4>[   20.001941@1] rtl8821cs: disagrees about version of symbol proc_mkdir_data
+<4>[   20.008753@1] rtl8821cs: disagrees about version of symbol cfg80211_mgmt_tx_status
+<4>[   20.016271@1] rtl8821cs: disagrees about version of symbol skb_queue_tail
+<4>[   20.022994@1] rtl8821cs: disagrees about version of symbol single_release
+<4>[   20.029703@1] rtl8821cs: disagrees about version of symbol napi_gro_receive
+<4>[   20.036607@1] rtl8821cs: disagrees about version of symbol eth_type_trans
+<4>[   20.043372@1] rtl8821cs: disagrees about version of symbol __napi_schedule
+<4>[   20.069696@1] RTW: module init start
+<4>[   20.069731@1] RTW: rtl8821cs v5.8.1.3_35313.20200409_COEX20200330-4539
+<4>[   20.074148@1] RTW: build time: Sep  6 2022 12:54:24
+<4>[   20.078967@1] RTW: rtl8821cs BT-Coex version = COEX20200330-4539
+<4>[   20.085028@1] RTW: rtw_inetaddr_notifier_register
+<4>[   20.089689@1] RTW: module init ret=0
+<4>[   20.093842@1] RTW: module exit start
+<4>[   20.096812@1] RTW: rtw_inetaddr_notifier_unregister
+<4>[   20.126079@1] RTW: module exit success
+<4>[   20.126112@1] RTW: ===================== MSTAT =====================
+<4>[   20.130573@1] RTW:  TAG      alloc       peak   aloc_cnt    err_cnt
+<4>[   20.136739@1] RTW: -------------------------------------------------
+<4>[   20.143037@1] RTW:  VIR          0          0          0          0
+<4>[   20.149231@1] RTW:  PHY          0          0          0          0
+<4>[   20.155491@1] RTW:  SKB          0          0          0          0
+<4>[   20.161669@1] RTW:  USB          0          0          0          0
+<6>[   20.183557@1] aml_wifi wifi: [usb_power_control] Set WiFi power down
+<6>[   20.184278@1] aml_wifi wifi: [wifi_power_ioctl] ioctl Set sdio wifi power down!
+<12>[   20.655841@1] healthd: No battery devices found
+<11>[   20.750720@2] android.hardware.health@2.0-impl: wakealarm_init: timerfd_create failed
+<12>[   20.766176@2] healthd: battery none chg=
+<3>[   20.932288@0] optee_armtz: handle_rpc_func_cmd: tee_shm_get_va ffffffc01dcf5800 failed
+<6>[   20.970499@2] fb: osd_open, 1589, fb_index=0,fb_rmem_size=25165824
+<6>[   20.971257@2] fb: osd_open, 1589, fb_index=0,fb_rmem_size=25165824
+<6>[   20.977350@2] fb: osd_open, 1589, fb_index=1,fb_rmem_size=1048576
+<6>[   21.107247@0] aml_wifi wifi: [usb_power_control] Set WiFi power down
+<6>[   21.115572@2] unifykey: amlkey_init_gen() enter!
+<6>[   21.117655@2] emmc_key_read:114, read ok
+<6>[   21.118458@2] unifykey: amlkey_init_gen() storagekey_info.buffer=ffffffc005080000, storagekey_info.size = 40000!
+<3>[   21.158967@1] vfm_map_store:rm default
+<3>[   21.159619@1] vfm_map_store:add default decoder ppmgr deinterlace amvideo
+<6>[   21.195378@2] file system registered
+<6>[   21.217255@2] assign_ffs_buffer FFS_BUFFER_MAX=100!!!
+<6>[   21.267685@2] assign_ffs_buffer FFS_BUFFER_MAX=100!!!
+<6>[   21.267784@2] ffs_data_put(): freeing
+<6>[   21.349040@2] aml_wifi wifi: [usb_power_control] Set WiFi power on !
+<4>[   21.349803@2] sdio_reset_comm():
+<6>[   21.364422@3] hdmitx: system: set hdcp_pwr 1
+<6>[   21.373366@3] read descriptors
+<6>[   21.373412@3] read strings
+<6>[   21.395946@3] meson-mmc: [sdio_reinit] finish
+<6>[   21.395995@3] aml_wifi wifi: [usb_power_control] Set WiFi power on !
+<6>[   21.401799@3] aml_wifi wifi: [wifi_power_ioctl] 6ioctl Set usb_sdio wifi power up!
+<6>[   21.642313@3] hdmitx: system: restore hdcp_pwr 0
+<4>[   21.642449@3] amhdmitx amhdmitx0: hdmitx20: stop14
+<4>[   21.646832@3] amhdmitx amhdmitx0: hdmitx20: stop22
+<4>[   21.757341@2] audit: audit_lost=32 audit_rate_limit=5 audit_backlog_limit=64
+<3>[   21.759670@2] audit: rate limit exceeded
+<4>[   21.786489@0] USB RESET
+<6>[   21.891740@2] [DI] load 0x3e00 pq table len 223 later.
+<4>[   21.903139@0] USB RESET
+<6>[   21.906289@0] android_work: sent uevent USB_STATE=CONNECTED
+<4>[   22.021840@0] aml_sdio: disagrees about version of symbol module_layout
+<4>[   22.023620@0] aml_sdio: disagrees about version of symbol sdio_release_host
+<6>[   22.032890@0] configfs-gadget gadget: high-speed config #1: b
+<6>[   22.033438@0] android_work: sent uevent USB_STATE=CONFIGURED
+<4>[   22.070662@3] aml_sdio: disagrees about version of symbol sdio_disable_func
+<4>[   22.074589@3] aml_sdio: disagrees about version of symbol sdio_set_block_size
+<4>[   22.094569@2] aml_sdio: disagrees about version of symbol sdio_claim_host
+<6>[   22.096723@2] vout: vout_io_open
+<6>[   22.096743@2] vout: vout_ioctl: cmd_dir = 0x2, cmd_nr = 0x0
+<6>[   22.096756@2] vout: vout_io_release
+<6>[   22.099091@2] hdmitx: system: set frac_rate_policy as 0
+<4>[   22.122524@2] aml_sdio: disagrees about version of symbol sdio_memcpy_fromio
+<4>[   22.152825@2] aml_sdio: disagrees about version of symbol sdio_register_driver
+<4>[   22.154432@2] aml_sdio: disagrees about version of symbol sdio_memcpy_toio
+<4>[   22.179466@2] aml_sdio: disagrees about version of symbol kmem_cache_alloc_trace
+<4>[   22.181241@2] aml_sdio: disagrees about version of symbol sdio_align_size
+<4>[   22.209214@2] aml_sdio: disagrees about version of symbol sdio_set_host_pm_flags
+<4>[   22.211064@2] aml_sdio: disagrees about version of symbol sdio_unregister_driver
+<4>[   22.229006@2] aml_sdio: disagrees about version of symbol sdio_readsb
+<4>[   22.229896@2] aml_sdio: disagrees about version of symbol mutex_lock
+<6>[   22.269049@2] fb: afbc: 1
+<6>[   22.269054@2] fb: afbc_type=0,enable=0
+<4>[   22.270187@2] aml_sdio: disagrees about version of symbol mmc_set_data_timeout
+<4>[   22.282423@2] aml_sdio: disagrees about version of symbol mmc_wait_for_req
+<4>[   22.284252@2] aml_sdio: disagrees about version of symbol sdio_get_host_pm_caps
+<4>[   22.292699@2] aml_sdio: disagrees about version of symbol mutex_unlock
+<4>[   22.302894@2] aml_sdio: disagrees about version of symbol sdio_enable_func
+<4>[   22.306277@2] aml_sdio: disagrees about version of symbol sdio_writesb
+<4>[   22.351487@2] aml_sdio: disagrees about version of symbol kmalloc_caches
+<4>[   22.352877@2] aml_sdio: disagrees about version of symbol sdio_readb
+<4>[   22.361164@2] aml_sdio: disagrees about version of symbol sdio_writeb
+<4>[   22.371705@0] aml_w1_sdio_probe(711): func->num 1 sdio block size=512, 
+<4>[   22.372702@0] aml_w1_sdio_probe(721): func->num 1 sdio_func=ffffffc034bf1000, 
+<4>[   22.389728@0] aml_w1_sdio_probe(728):func_num=1, last func num=7
+<4>[   22.400415@1] aml_w1_sdio_probe(711): func->num 2 sdio block size=512, 
+<4>[   22.402833@1] aml_w1_sdio_probe(721): func->num 2 sdio_func=ffffffc034bf1400, 
+<4>[   22.422849@1] aml_w1_sdio_probe(728):func_num=2, last func num=7
+<4>[   22.426335@1] aml_w1_sdio_probe(711): func->num 3 sdio block size=512, 
+<4>[   22.429872@1] aml_w1_sdio_probe(721): func->num 3 sdio_func=ffffffc034bf1800, 
+<4>[   22.456188@1] aml_w1_sdio_probe(728):func_num=3, last func num=7
+<4>[   22.460275@0] avc open
+<4>[   22.460308@0] amvenc_avc  check CMA pool success, max instance: 3.
+<4>[   22.465526@2] aml_w1_sdio_probe(711): func->num 4 sdio block size=512, 
+<4>[   22.465531@2] aml_w1_sdio_probe(721): func->num 4 sdio_func=ffffffc034bf1c00, 
+<4>[   22.465538@2] aml_w1_sdio_probe(728):func_num=4, last func num=7
+<4>[   22.465891@2] aml_w1_sdio_probe(711): func->num 5 sdio block size=512, 
+<4>[   22.465896@2] aml_w1_sdio_probe(721): func->num 5 sdio_func=ffffffc034bf2000, 
+<4>[   22.465901@2] aml_w1_sdio_probe(728):func_num=5, last func num=7
+<4>[   22.466231@2] aml_w1_sdio_probe(711): func->num 6 sdio block size=512, 
+<4>[   22.466236@2] aml_w1_sdio_probe(721): func->num 6 sdio_func=ffffffc034bf2400, 
+<4>[   22.466242@2] aml_w1_sdio_probe(728):func_num=6, last func num=7
+<4>[   22.466626@2] aml_w1_sdio_probe(711): func->num 7 sdio block size=512, 
+<4>[   22.466631@2] aml_w1_sdio_probe(721): func->num 7 sdio_func=ffffffc034bf2800, 
+<4>[   22.466830@2] w1_sdio->*****************aml sdio common driver is insmoded********************
+<4>[   22.466835@2] aml_w1_sdio_insmod(857) start...
+<4>[   22.630974@1] allocating phys 0x1dc00000, size 20480k, wq:ffffffc033b13400.
+<4>[   22.632297@1] amvenc_avc  memory config success, buff start:0x1dc00000, size is 0x1400000, wq:ffffffc033b13400.
+<4>[   22.649552@1] avc release, wq:ffffffc033b13400
+<4>[   22.649589@1] remove  encode_work_queue ffffffc033b13400 success, _destroy_encode_work_queue line 3517.
+<4>[   22.714110@0] w1: disagrees about version of symbol module_layout
+<4>[   22.770069@0] w1: disagrees about version of symbol alloc_etherdev_mqs
+<4>[   22.771010@0] w1: disagrees about version of symbol filp_open
+<4>[   22.776787@0] w1: disagrees about version of symbol sdio_release_host
+<4>[   22.783129@0] w1: disagrees about version of symbol vfs_write
+<4>[   22.788845@0] w1: disagrees about version of symbol skb_put
+<4>[   22.794353@0] w1: disagrees about version of symbol __vfs_read
+<4>[   22.800127@0] w1: disagrees about version of symbol cfg80211_scan_done
+<4>[   22.806581@0] w1: disagrees about version of symbol sdio_claim_host
+<4>[   22.807390@2] audit: audit_lost=45 audit_rate_limit=5 audit_backlog_limit=64
+<3>[   22.807394@2] audit: rate limit exceeded
+<4>[   22.823667@0] w1: disagrees about version of symbol param_ops_ushort
+<4>[   22.829932@0] w1: disagrees about version of symbol consume_skb
+<6>[   22.835788@2] snd_pcm: enter aml_pcm_open, stream:1
+<6>[   22.835793@2] snd_pcm: aml_pcm_timer_create
+<6>[   22.837042@2] snd_pcm: enter aml_pcm_close type: 1
+<6>[   22.837787@2] snd_spdif_dai: enterd aml_spdif_play,set_clock:4,sample_rate=4
+<6>[   22.837814@2] snd_spdif_dai: set 958 audio clk div 2
+<4>[   22.861484@0] w1: disagrees about version of symbol unregister_netdev
+<4>[   22.867861@0] w1: disagrees about version of symbol cfg80211_remain_on_channel_expired
+<4>[   22.875760@0] w1: disagrees about version of symbol sched_setscheduler
+<4>[   22.882216@0] w1: disagrees about version of symbol cfg80211_new_sta
+<4>[   22.888457@0] w1: disagrees about version of symbol unregister_netdevice_queue
+<4>[   22.895635@0] w1: disagrees about version of symbol kmem_cache_alloc_trace
+<4>[   22.902399@0] w1: disagrees about version of symbol cfg80211_disconnected
+<4>[   22.909160@0] w1: disagrees about version of symbol wake_up_process
+<4>[   22.915370@0] w1: disagrees about version of symbol __vfs_write
+<4>[   22.921228@0] w1: disagrees about version of symbol sdio_align_size
+<4>[   22.927414@0] w1: disagrees about version of symbol wiphy_new_nm
+<4>[   22.933382@0] w1: disagrees about version of symbol cfg80211_connect_bss
+<4>[   22.939999@0] w1: disagrees about version of symbol cfg80211_ready_on_channel
+<4>[   22.947115@0] w1: disagrees about version of symbol kfree_skb
+<4>[   22.952806@0] w1: disagrees about version of symbol skb_checksum_help
+<4>[   22.959199@0] w1: disagrees about version of symbol wiphy_register
+<4>[   22.965297@0] w1: disagrees about version of symbol __cfg80211_alloc_event_skb
+<4>[   22.972468@0] w1: Unknown symbol set_usb_wifi_power (err 0)
+<4>[   22.977974@0] w1: disagrees about version of symbol cfg80211_put_bss
+<4>[   22.984265@0] w1: disagrees about version of symbol skb_copy_expand
+<4>[   22.990486@0] w1: disagrees about version of symbol skb_queue_tail
+<4>[   22.996587@0] w1: disagrees about version of symbol sdio_set_host_pm_flags
+<4>[   23.003409@0] w1: disagrees about version of symbol __cfg80211_send_event_skb
+<4>[   23.010507@0] w1: disagrees about version of symbol skb_pull
+<4>[   23.016156@0] w1: disagrees about version of symbol cfg80211_michael_mic_failure
+<4>[   23.023415@0] w1: disagrees about version of symbol mutex_lock
+<4>[   23.029209@0] w1: disagrees about version of symbol skb_push
+<4>[   23.034813@0] w1: disagrees about version of symbol cfg80211_del_sta_sinfo
+<4>[   23.041621@0] w1: disagrees about version of symbol wireless_send_event
+<4>[   23.048157@0] w1: disagrees about version of symbol mmc_set_data_timeout
+<4>[   23.054832@0] w1: disagrees about version of symbol register_netdev
+<4>[   23.061018@0] w1: disagrees about version of symbol wiphy_unregister
+<4>[   23.067319@0] w1: disagrees about version of symbol free_netdev
+<4>[   23.073175@0] w1: disagrees about version of symbol kthread_stop
+<4>[   23.079167@0] w1: disagrees about version of symbol __mutex_init
+<4>[   23.085081@0] w1: disagrees about version of symbol cfg80211_get_bss
+<4>[   23.091400@0] w1: disagrees about version of symbol netif_tx_wake_queue
+<4>[   23.097922@0] w1: disagrees about version of symbol __ieee80211_get_channel
+<4>[   23.104873@0] w1: disagrees about version of symbol vfs_read
+<4>[   23.110434@0] w1: disagrees about version of symbol param_ops_charp
+<4>[   23.116662@0] w1: disagrees about version of symbol mmc_wait_for_req
+<4>[   23.122920@0] w1: disagrees about version of symbol netif_rx
+<4>[   23.128577@0] w1: disagrees about version of symbol __netdev_alloc_skb
+<4>[   23.135018@0] w1: disagrees about version of symbol cfg80211_mgmt_tx_status
+<4>[   23.141952@0] w1: disagrees about version of symbol skb_trim
+<4>[   23.147523@0] w1: disagrees about version of symbol sdio_get_host_pm_caps
+<4>[   23.154282@0] w1: disagrees about version of symbol kthread_create_on_node
+<4>[   23.161077@0] w1: disagrees about version of symbol mutex_unlock
+<4>[   23.167034@0] w1: disagrees about version of symbol filp_close
+<4>[   23.172794@0] w1: disagrees about version of symbol cfg80211_rx_mgmt
+<4>[   23.179120@0] w1: disagrees about version of symbol netif_carrier_off
+<4>[   23.185476@0] w1: disagrees about version of symbol skb_copy
+<4>[   23.192536@0] w1: disagrees about version of symbol skb_clone
+<4>[   23.196820@0] w1: disagrees about version of symbol netif_carrier_on
+<6>[   23.200932@2] snd_card_meson: audio speaker on
+<4>[   23.207500@0] w1: disagrees about version of symbol cfg80211_inform_bss_data
+<4>[   23.214513@0] w1: disagrees about version of symbol param_ops_int
+<4>[   23.220716@0] w1: disagrees about version of symbol wiphy_free
+<4>[   23.226323@0] w1: disagrees about version of symbol kmalloc_caches
+<4>[   23.232488@0] w1: disagrees about version of symbol register_netdevice
+<4>[   23.254109@2] w1_sdio->aml_w1_sdio_exit++ 
+<4>[   23.254186@2] 
+<4>[   23.254186@2] ==========================================
+<4>[   23.259666@2] aml_sdio_remove++ func->num =7 
+<4>[   23.263978@2] ==========================================
+<4>[   23.272201@2] 
+<4>[   23.272201@2] ==========================================
+<4>[   23.276646@2] aml_sdio_remove++ func->num =6 
+<4>[   23.280735@2] ==========================================
+<4>[   23.285904@2] 
+<4>[   23.285904@2] ==========================================
+<4>[   23.292694@2] aml_sdio_remove++ func->num =5 
+<4>[   23.296988@2] ==========================================
+<4>[   23.302447@2] 
+<4>[   23.302447@2] ==========================================
+<4>[   23.309255@2] aml_sdio_remove++ func->num =4 
+<4>[   23.313479@2] ==========================================
+<4>[   23.318807@2] 
+<4>[   23.318807@2] ==========================================
+<4>[   23.325593@2] aml_sdio_remove++ func->num =3 
+<4>[   23.329861@2] ==========================================
+<4>[   23.335276@2] 
+<4>[   23.335276@2] ==========================================
+<4>[   23.342033@2] aml_sdio_remove++ func->num =2 
+<4>[   23.346318@2] ==========================================
+<4>[   23.351759@0] 
+<4>[   23.351759@0] ==========================================
+<4>[   23.358399@0] aml_sdio_remove++ func->num =1 
+<4>[   23.362702@0] ==========================================
+<4>[   23.369097@0] w1_sdio->*****************aml sdio common driver is rmmoded********************
+<6>[   23.409884@1] aml_wifi wifi: [usb_power_control] Set WiFi power down
+<6>[   23.410611@1] aml_wifi wifi: [wifi_power_ioctl] 6ioctl Set usb_sdio wifi power down!
+<36>[   23.560998@0] type=1400 audit(1483229165.180:87): avc: denied { read } for pid=3240 comm="systemcontrol" name="u:object_r:default_prop:s0" dev="tmpfs" ino=470 scontext=u:r:system_control:s0 tcontext=u:object_r:default_prop:s0 tclass=file permissive=0 duplicate messages suppressed
+<36>[   23.581201@0] type=1400 audit(1483229165.226:88): avc: denied { read } for pid=3265 comm="audioserver" name="u:object_r:vendor_default_prop:s0" dev="tmpfs" ino=536 scontext=u:r:audioserver:s0 tcontext=u:object_r:vendor_default_prop:s0 tclass=file permissive=0
+<36>[   23.616795@3] type=1400 audit(1483229165.226:88): avc: denied { read } for pid=3265 comm="audioserver" name="u:object_r:vendor_default_prop:s0" dev="tmpfs" ino=536 scontext=u:r:audioserver:s0 tcontext=u:object_r:vendor_default_prop:s0 tclass=file permissive=0
+<36>[   23.634656@3] type=1400 audit(1483229165.283:89): avc: denied { read } for pid=3240 comm="systemcontrol" name="u:object_r:default_prop:s0" dev="tmpfs" ino=470 scontext=u:r:system_control:s0 tcontext=u:object_r:default_prop:s0 tclass=file permissive=0
+<6>[   23.822817@1] fb: osd[1] enable: 0 scale:0x0 (composer@2.2-se)
+<6>[   23.823016@1] fb: osd[0] enable: 1 scale:0x10001 (composer@2.2-se)
+<6>[   23.832800@1] fb: free_scale_switch to fb0, mode: 0x10001
+<6>[   23.834556@1] fb: set logo loaded
+<4>[   23.835799@3] audit: audit_lost=51 audit_rate_limit=5 audit_backlog_limit=64
+<3>[   23.835803@3] audit: rate limit exceeded
+<4>[   24.842968@2] audit: audit_lost=56 audit_rate_limit=5 audit_backlog_limit=64
+<3>[   24.844372@2] audit: rate limit exceeded
+<4>[   25.853644@1] audit: audit_lost=61 audit_rate_limit=5 audit_backlog_limit=64
+<3>[   25.855059@1] audit: rate limit exceeded
+<6>[   26.794270@1] capability: warning: `main' uses 32-bit capabilities (legacy support in use)
+<36>[   26.967315@0] type=1400 audit(1483229167.420:110): avc: denied { read } for pid=3240 comm="systemcontrol" name="u:object_r:default_prop:s0" dev="tmpfs" ino=470 scontext=u:r:system_control:s0 tcontext=u:object_r:default_prop:s0 tclass=file permissive=0 duplicate messages suppressed
+<36>[   26.992618@1] type=1400 audit(1483229168.633:112): avc: denied { read } for pid=3240 comm="systemcontrol" name="u:object_r:system_prop:s0" dev="tmpfs" ino=528 scontext=u:r:system_control:s0 tcontext=u:object_r:system_prop:s0 tclass=file permissive=0
+<36>[   27.012404@1] type=1400 audit(1483229168.633:112): avc: denied { read } for pid=3240 comm="systemcontrol" name="u:object_r:system_prop:s0" dev="tmpfs" ino=528 scontext=u:r:system_control:s0 tcontext=u:object_r:system_prop:s0 tclass=file permissive=0
+<36>[   27.032866@1] type=1400 audit(1483229168.633:113): avc: denied { read } for pid=3240 comm="systemcontrol" name="u:object_r:default_prop:s0" dev="tmpfs" ino=470 scontext=u:r:system_control:s0 tcontext=u:object_r:default_prop:s0 tclass=file permissive=0
+<12>[   27.769615@3] healthd: battery none chg=
+<11>[   28.283252@3] init: couldn't write 3451 to /dev/cpuset/camera-daemon/tasks: No such file or directory
+<6>[   29.712248@1] snd_pcm: enter aml_pcm_open, stream:1
+<6>[   29.712295@1] snd_pcm: aml_pcm_timer_create
+<6>[   29.721605@1] snd_pcm: enter aml_pcm_close type: 1
+<36>[   29.894339@0] type=1400 audit(1483229168.633:113): avc: denied { read } for pid=3240 comm="systemcontrol" name="u:object_r:default_prop:s0" dev="tmpfs" ino=470 scontext=u:r:system_control:s0 tcontext=u:object_r:default_prop:s0 tclass=file permissive=0
+<36>[   29.921145@0] type=1400 audit(1483229171.560:114): avc: denied { read } for pid=3450 comm="audioserver" name="u:object_r:vendor_default_prop:s0" dev="tmpfs" ino=536 scontext=u:r:audioserver:s0 tcontext=u:object_r:vendor_default_prop:s0 tclass=file permissive=0
+<11>[   33.283231@3] init: couldn't write 3516 to /dev/cpuset/camera-daemon/tasks: No such file or directory
+<6>[   34.336295@3] snd_pcm: enter aml_pcm_open, stream:1
+<6>[   34.336342@3] snd_pcm: aml_pcm_timer_create
+<6>[   34.340119@3] snd_pcm: enter aml_pcm_close type: 1
+<36>[   34.436705@3] type=1400 audit(1483229171.560:114): avc: denied { read } for pid=3450 comm="audioserver" name="u:object_r:vendor_default_prop:s0" dev="tmpfs" ino=536 scontext=u:r:audioserver:s0 tcontext=u:object_r:vendor_default_prop:s0 tclass=file permissive=0
+<36>[   34.485237@3] type=1400 audit(1483229176.103:115): avc: denied { read } for pid=3515 comm="audioserver" name="u:object_r:vendor_default_prop:s0" dev="tmpfs" ino=536 scontext=u:r:audioserver:s0 tcontext=u:object_r:vendor_default_prop:s0 tclass=file permissive=0
+<36>[   35.502688@2] type=1400 audit(1483229176.103:115): avc: denied { read } for pid=3515 comm="audioserver" name="u:object_r:vendor_default_prop:s0" dev="tmpfs" ino=536 scontext=u:r:audioserver:s0 tcontext=u:object_r:vendor_default_prop:s0 tclass=file permissive=0
+<36>[   35.543362@0] type=1400 audit(1483229177.166:116): avc: denied { read write } for pid=3391 comm="applypatch" name="recovery" dev="tmpfs" ino=11738 scontext=u:r:install_recovery:s0 tcontext=u:object_r:block_device:s0 tclass=blk_file permissive=0
+<11>[   38.286498@1] init: couldn't write 3581 to /dev/cpuset/camera-daemon/tasks: No such file or directory
+<6>[   39.163562@2] snd_pcm: enter aml_pcm_open, stream:1
+<6>[   39.163611@2] snd_pcm: aml_pcm_timer_create
+<6>[   39.167339@2] snd_pcm: enter aml_pcm_close type: 1
+<36>[   39.251723@0] type=1400 audit(1483229177.166:116): avc: denied { read write } for pid=3391 comm="applypatch" name="recovery" dev="tmpfs" ino=11738 scontext=u:r:install_recovery:s0 tcontext=u:object_r:block_device:s0 tclass=blk_file permissive=0
+<36>[   39.268086@0] type=1400 audit(1483229180.916:117): avc: denied { read } for pid=3580 comm="audioserver" name="u:object_r:vendor_default_prop:s0" dev="tmpfs" ino=536 scontext=u:r:audioserver:s0 tcontext=u:object_r:vendor_default_prop:s0 tclass=file permissive=0
+<11>[   43.289832@0] init: couldn't write 3644 to /dev/cpuset/camera-daemon/tasks: No such file or directory
+<6>[   44.086833@0] snd_pcm: enter aml_pcm_open, stream:1
+<6>[   44.086873@0] snd_pcm: aml_pcm_timer_create
+<6>[   44.090736@0] snd_pcm: enter aml_pcm_close type: 1
+<36>[   44.163569@1] type=1400 audit(1483229180.916:117): avc: denied { read } for pid=3580 comm="audioserver" name="u:object_r:vendor_default_prop:s0" dev="tmpfs" ino=536 scontext=u:r:audioserver:s0 tcontext=u:object_r:vendor_default_prop:s0 tclass=file permissive=0
+<36>[   44.182509@1] type=1400 audit(1483229185.830:118): avc: denied { read } for pid=3643 comm="audioserver" name="u:object_r:vendor_default_prop:s0" dev="tmpfs" ino=536 scontext=u:r:audioserver:s0 tcontext=u:object_r:vendor_default_prop:s0 tclass=file permissive=0
+<11>[   48.289821@2] init: couldn't write 3705 to /dev/cpuset/camera-daemon/tasks: No such file or directory
+<6>[   49.183838@2] snd_pcm: enter aml_pcm_open, stream:1
+<6>[   49.183883@2] snd_pcm: aml_pcm_timer_create
+<6>[   49.187672@2] snd_pcm: enter aml_pcm_close type: 1
+<36>[   49.271207@1] type=1400 audit(1483229185.830:118): avc: denied { read } for pid=3643 comm="audioserver" name="u:object_r:vendor_default_prop:s0" dev="tmpfs" ino=536 scontext=u:r:audioserver:s0 tcontext=u:object_r:vendor_default_prop:s0 tclass=file permissive=0
+<6>[   51.400807@2] binder: undelivered TRANSACTION_COMPLETE
+<6>[   51.400849@2] binder: undelivered transaction 18679, process died.
+<4>[   54.028540@0] Hardware name: Amlogic (DT)

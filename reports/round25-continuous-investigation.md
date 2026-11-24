@@ -391,7 +391,7 @@ never counted as command reachability. YES via run_command remains exactly: keym
   question "which range is BL31 on this board"); (b) live `0x23/24/25/27` + `0x20/21`
   base queries to confirm share layout before any struct work; (c) AO regs
   `0xc8100250/24c/254`. none executed here (no live access this round); documented for
-  a future authorized live round. static analysis cannot continue past this point for
+  a future live round. static analysis cannot continue past this point for
   BL31 internals (stop rule B/C).
 
 ## 9. confirmed / unproven / refuted + stop nodes
@@ -432,7 +432,7 @@ next unresolved node: BL31 SMC dispatcher internals for 0x61/0x62/0x64/0xff
                       what 0x40/0x100 validate inside secure world)
 why static cannot continue: BL31 image absent from BL33 range + artifacts + repo;
   BL33 holds only mov+movk IDs + share-base queries, no secure-side code, no symbol,
-  no header pointing to exact BL31. next step needs authorized live read of
+  no header pointing to exact BL31. next step is a live read of
   rsvmem DTB range / share-mem bases (primitives 0x02, 0x34+0x33 only), out of scope here.
 ```
 

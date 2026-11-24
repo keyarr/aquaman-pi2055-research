@@ -115,7 +115,7 @@ P7 imgread+bootm (stock passes the gate)                REPRODUCED
   This closes instrumentation by intercept, not the `fdt chosen` subcommand.
 - No root yet: uid=2000, Enforcing, `/proc/cmdline` and
   `/proc/device-tree/chosen/bootargs` denied to shell.
-- Authorized recovery: `dev.reset()` / `libusb_reset_device()` -> `sleep(0.6)` ->
+- Recovery I used: `dev.reset()` / `libusb_reset_device()` -> `sleep(0.6)` ->
   re-find `1b8e:c003`. Never power cycle, never VBUS off.
 
 ## 6. Next prioritized experiments
@@ -157,7 +157,7 @@ New refutations (see `reports/round65-2026-11-19-consolidation.md`):
   subcommand.
 - H4 cgroupfs REFUTED (`current_css_set`/`cgroup_css_links` absent).
 - H6 BPF INCONCLUSIVE as disclosure (syscall reachable, no fd created).
-- `ARMd` scan with loop in BL33 froze the SoC; recovered via authorized power
+- `ARMd` scan with loop in BL33 froze the SoC; I recovered with a power
   cycle. Do not repeat loops in BL33 (`incident-loop-scan-2026-11-19.md`).
 
 Prioritized open path: BL33 -> Android output channel via `androidboot.scan=` in

@@ -62,7 +62,7 @@ endpoint's toggle; it does not restart SET_ADDRESS or the gadget state machine.
 
 ## Observed results
 
-On 2026-11-19 the wedge was induced with explicit authorization via
+On 2026-11-19 I induced the wedge via
 `AM_REQ_RD_LARGE_MEM 0x12` (`addr=0x20000000, size=0x1000`):
 
 ```

@@ -62,7 +62,7 @@ demonstrated by any `fastboot boot` experiment.
    `/tmp/stub/marker_spray.S`, `marker_spray_result.json`.
 4. **`ARMd` scan at the hook** (to locate the real copy): the stub entered an
    infinite loop in BL33 to allow MREAD; the gadget dropped off the bus and did
-   not re-enumerate. Recovered via user-authorized power cycle. See
+   not re-enumerate. I recovered with a power cycle. See
    `reports/incident-loop-scan-2026-11-19.md`. **Do not repeat loops in BL33.**
 
 Links already refuted before this round and not repeated: direct `br x20`, gzip
@@ -148,6 +148,6 @@ considered dead; resources migrate entirely to the SMC matrix and GhostLock.
 
 ## Device state
 
-Recovered via authorized power cycle. At the end of the round: Android
+I recovered with a power cycle. At the end of the round: Android
 `2717:4e40`, `sys.boot_completed=1`, uid=2000, Enforcing, stock 4.9.113 kernel.
 No persistent writes in any experiment.

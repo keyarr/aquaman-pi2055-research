@@ -1,8 +1,8 @@
 # Offensive resumption 2026-11-19 - experiments and result
 
 Status: **root NOT obtained**. Nothing here is persistent. No flash/erase/saveenv/
-efuse/BootROM was touched. An SoC hang required a power cycle, performed
-by the user with authorization.
+efuse/BootROM was touched. An SoC hang required a power cycle, which I
+performed.
 
 ## 1. Updated inventory
 

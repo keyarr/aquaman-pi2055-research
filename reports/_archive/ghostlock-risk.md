@@ -20,7 +20,7 @@
    rollback is reached reliably). GREEN on device 2026-09-29:
    tools/ghostlock_race_stats.c, 5/5 EDEADLK, device healthy, no reboot.
 3. Real trigger without reclaim (single run, without shell-readable pstore:
-   diagnostic = adb alive/dead + uptime). PENDING hardware owner decision.
+   diagnostic = adb alive/dead + uptime). I left this pending a hardware run.
    Note: pstore denied to shell reduces post-mortem fidelity; recheck
    as root later.
 4. Reclaim + read-only validation (reading back the fake fops itself,

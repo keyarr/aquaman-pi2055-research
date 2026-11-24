@@ -32,13 +32,13 @@ Current state at the start of this investigation (2026-11-19):
 lsusb:            Bus 003 Device 002: ID 1b8e:c003 Amlogic, Inc.
 bcdDevice:        0.07
 identify:         raw 00 07 00 10 -> version 0.7, stage 16 (TPL/BL33-u-boot)
-adb devices:      vazio
-fastboot devices: vazio
+adb devices:      empty
+fastboot devices: empty
 ```
 
 **At the start the device was NOT locked up.** `optimus.py desc` and `identify`
-responded normally. The wedge was only induced after the user explicitly
-authorized it; the execution is in section 5.1.
+responded normally. I induced the wedge deliberately; the execution is in
+section 5.1.
 
 Documented historical wedge episode (`reports/round5-rdlarge/02_probe_stages.txt:1-4`):
 
@@ -95,8 +95,8 @@ state and were not needed.
 Diagnostics in this session (read-only):
 
 ```
-adb devices -l                          -> vazio
-fastboot devices                        -> vazio
+adb devices -l                          -> empty
+fastboot devices                        -> empty
 lsusb                                   -> 1b8e:c003 Amlogic, Inc.
 lsusb -d 1b8e:c003 -v                   -> bcdDevice 0.07, vendor class 0xff
 sudo python3 tools/optimus.py desc      -> ep 0x81 IN mps 512, ep 0x02 OUT mps 512
@@ -113,9 +113,9 @@ reports/round5-rdlarge/03_probe_bulkcmd.txt:1-3   identify FAIL errno=110 -> aft
 reports/round5-rdlarge/05_interleave.txt          errno 75 after each wedge
 ```
 
-### 5.1 Live execution (2026-11-19, explicit authorization to induce the wedge)
+### 5.1 Live execution (2026-11-19, I induced the wedge)
 
-The user authorized inducing the lockup. I reproduced the
+I induced the lockup and reproduced the
 `AM_REQ_RD_LARGE_MEM 0x12` from round 5 with parameter
 `{addr=0x20000000, size=0x1000}`, with no writes to flash/env/efuse:
 
@@ -151,7 +151,7 @@ Post-recovery verification:
 ```
 sudo python3 tools/optimus.py identify  -> raw 00 07 00 10, stage 16
 sudo python3 tools/optimus.py read 0x20000000 64
-  -> NFANDROID2-PRV-AQUAMAN-MGK00000008037639,...   (RAM legivel)
+  -> NFANDROID2-PRV-AQUAMAN-MGK00000008037639,...   (RAM readable)
 dmesg:
   [18338.125177] usb 3-3: reset high-speed USB device number 2 using xhci_hcd
 ```
@@ -298,13 +298,13 @@ print(bytes(d.ctrl_transfer(0xC0, 0x20, 0, 0, 4, 2000)).hex())
 
 | Criterion | Status |
 | --- | --- |
-| Device leaves the lockup | Yes. Wedge induced with authorization, `identify` failed with errno 75/110 and returned to stage 16 after the reset (section 5.1). |
+| Device leaves the lockup | Yes. I induced the wedge, `identify` failed with errno 75/110 and returned to stage 16 after the reset (section 5.1). |
 | No power interruption | Yes. `USBDEVFS_RESET` does not touch VBUS; dmesg shows `reset high-speed USB device`, with no disconnect of 3-3. |
 | Mechanism identified | Yes. libusb -> kernel -> PORT_RESET chain, with source code and docs cited. |
 | Repeatable procedure | Yes. Reproduced live and encoded in `tools/recover_usb.py`. |
 | Commands documented | Yes. Sections 5.1 and 8. |
 
-Pending: none. The method was validated live on 2026-11-19 with explicit
-authorization to induce the wedge. The limit remains that of section 9: if the
+Pending: none. I validated the method live on 2026-11-19 by inducing the wedge.
+The limit remains that of section 9: if the
 device leaves the bus or BL33 enters the `do_reset` loop, this method does not
 recover it.

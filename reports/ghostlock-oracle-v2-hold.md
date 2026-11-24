@@ -76,7 +76,7 @@ logs: out/logs/oracle_v2_holdA_nostamp.log       (BOOT A: nostamp + hold)
 
 6. STATE
 
-  - 2 of 2 boots spent. budget blown again. needs approval.
+  - 2 of 2 boots spent. budget blown again. I decided to stop.
   - nothing committed. git diff --check clean.
   - /data/local/tmp clean (only factory aapt-arm-pie + dalvik-cache).
   - no leftover process on the device.

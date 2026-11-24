@@ -6,13 +6,13 @@
 628fb9dd0724723650b0a80d515f4236235b1557c141319051956ef5f344d7b9  kernelsu-control.ko
 297593726f34dc30062cddd6f5d2394a42975cc12b3b5a14752c1e2b7dc61240  kernelsu-persist.ko
 75e6b99d97943838db2a70d1675efc6ffee89607bbebbab069087ed261ad9d46  ksud-arm32
-262f7ec8484f2812aa2aa3089f0f8d03996f709cc224a2dbade8510bd5d1dceb  su-helper
+dae8d68699fece0033be51c7fa2c5aec8d090abd1264bce06044c0839ed3ddb8  su-helper
 a18aae7ff9fc9d44591f1743e48a0fc2cac459a6af135a90e0d8d10e248ee5f0  harmless/ksu_ext4_noop.ko
 880a575753d694ca0d7fab6a84da82a2c1f3913257261ed4d4d2f03e95939da7  ../../odm/odm20_ksu3.img
 8dd75c3e6146d7b73b4f066a49cd6a4cef547679690a73fc76edddf669a318b6  ../../odm/odm20_stock.img
 695e09d5f23006b126bd0a20fe9e9a91a4f2ff29c58ffc7d672dd232821aeb3c  ../../odm/odm20_root9.img
 0493c34a69b307944972eed45bc3e82c1003067f6083a7ee99b857f9d33c923d  odm20_ksu_control.img
-bae7e9e3b8458c064385bc54fa3963b8d81f8dcf8bf1fa90448577a3d0c44e2b  odm20_ksu_persist.img
+054f50ebe691b5c6c1dfcff4774cd2685ce66507f14a44fb5f6a0ba84a357e34  odm20_ksu_persist.img
 880a69049aa0458f9419819c950ad885cf02047e451da48ac6aec8e950881541  odm20_ksu_persist_diag.img
 f067bf6f27617f43808b6d238f5be2023a1375fc280d579616a057b197318b48  odm20_ksu_avc2.img
 34998dc4d8ca7e9be57711bdb316dcc34915d69e88eab46f8b4550f807f34d94  ../../recovery.img
@@ -34,3 +34,6 @@ f067bf6f27617f43808b6d238f5be2023a1375fc280d579616a057b197318b48  odm20_ksu_avc2
 # odm20_ksu_persist_diag.img  = diagnostic only (permissive + 4444)
 # odm20_ksu_avc2.img          = diagnostic only (Enforcing + 4444, new module)
 # recovery.img                = untouched
+# ODM candidate (5 rc lines)
+054f50ebe691b5c6c1dfcff4774cd2685ce66507f14a44fb5f6a0ba84a357e34  odm20_ksu_persist.img
+# odm20_ksu3.img (base, unchanged): 880a575753d694ca0d7fab6a84da82a2c1f3913257261ed4d4d2f03e95939da7

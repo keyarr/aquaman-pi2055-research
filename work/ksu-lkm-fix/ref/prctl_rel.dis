@@ -1,0 +1,1100 @@
+
+work/ksu-lkm-fix/ref/kernelsu_stock_img.ko:	file format elf64-littleaarch64
+
+Disassembly of section .text:
+
+0000000000002c28 <ksu_handle_prctl>:
+    2c28: d10d43ff     	sub	sp, sp, #0x350
+    2c2c: a9007bfd     	stp	x29, x30, [sp]
+    2c30: 910003fd     	mov	x29, sp
+    2c34: a90153f3     	stp	x19, x20, [sp, #0x10]
+    2c38: a9025bf5     	stp	x21, x22, [sp, #0x20]
+    2c3c: a90363f7     	stp	x23, x24, [sp, #0x30]
+    2c40: 2a0003f3     	mov	w19, w0
+    2c44: aa0103f4     	mov	x20, x1
+    2c48: aa1e03e0     	mov	x0, x30
+    2c4c: aa0203f5     	mov	x21, x2
+    2c50: aa0303f7     	mov	x23, x3
+    2c54: aa0403f6     	mov	x22, x4
+    2c58: 94000000     	bl	0x2c58 <ksu_handle_prctl+0x30>
+		0000000000002c58:  R_AARCH64_CALL26	_mcount
+    2c5c: 5297dde0     	mov	w0, #0xbeef             // =48879
+    2c60: 72bbd5a0     	movk	w0, #0xdead, lsl #16
+    2c64: b90043a0     	str	w0, [x29, #0x40]
+    2c68: 6b00027f     	cmp	w19, w0
+    2c6c: 54000120     	b.eq	0x2c90 <ksu_handle_prctl+0x68>
+    2c70: a94153f3     	ldp	x19, x20, [sp, #0x10]
+    2c74: 52800000     	mov	w0, #0x0                // =0
+    2c78: a9425bf5     	ldp	x21, x22, [sp, #0x20]
+    2c7c: a94363f7     	ldp	x23, x24, [sp, #0x30]
+    2c80: a9407bfd     	ldp	x29, x30, [sp]
+    2c84: 910d43ff     	add	sp, sp, #0x350
+    2c88: d65f03c0     	ret
+    2c8c: d503201f     	nop
+    2c90: d5384100     	mrs	x0, SP_EL0
+    2c94: 58004864     	ldr	x4, 0x35a0 <ksu_handle_prctl+0x978>
+    2c98: f9438800     	ldr	x0, [x0, #0x710]
+    2c9c: b9400081     	ldr	w1, [x4]
+    2ca0: b9400402     	ldr	w2, [x0, #0x4]
+    2ca4: 6b01005f     	cmp	w2, w1
+    2ca8: 54000160     	b.eq	0x2cd4 <ksu_handle_prctl+0xac>
+    2cac: 53057c40     	lsr	w0, w2, #5
+    2cb0: 528b58a5     	mov	w5, #0x5ac5             // =23237
+    2cb4: 72a14f85     	movk	w5, #0xa7c, lsl #16
+    2cb8: 5290d403     	mov	w3, #0x86a0             // =34464
+    2cbc: 72a00023     	movk	w3, #0x1, lsl #16
+    2cc0: 9ba57c00     	umull	x0, w0, w5
+    2cc4: d367fc00     	lsr	x0, x0, #39
+    2cc8: 1b008860     	msub	w0, w3, w0, w2
+    2ccc: 6b01001f     	cmp	w0, w1
+    2cd0: 54000400     	b.eq	0x2d50 <ksu_handle_prctl+0x128>
+    2cd4: d5384102     	mrs	x2, SP_EL0
+    2cd8: f9438840     	ldr	x0, [x2, #0x710]
+    2cdc: b9400400     	ldr	w0, [x0, #0x4]
+    2ce0: 7100001f     	cmp	w0, #0x0
+    2ce4: 7a411004     	ccmp	w0, w1, #0x4, ne
+    2ce8: 54fffc41     	b.ne	0x2c70 <ksu_handle_prctl+0x48>
+    2cec: f100069f     	cmp	x20, #0x1
+    2cf0: 54000380     	b.eq	0x2d60 <ksu_handle_prctl+0x138>
+    2cf4: b5000534     	cbnz	x20, 0x2d98 <ksu_handle_prctl+0x170>
+    2cf8: 6b01001f     	cmp	w0, w1
+    2cfc: 54000080     	b.eq	0x2d0c <ksu_handle_prctl+0xe4>
+    2d00: 94000000     	bl	0x2d00 <ksu_handle_prctl+0xd8>
+		0000000000002d00:  R_AARCH64_CALL26	__ksu_is_allow_uid
+    2d04: 72001c1f     	tst	w0, #0xff
+    2d08: 54fffb40     	b.eq	0x2c70 <ksu_handle_prctl+0x48>
+    2d0c: d5384113     	mrs	x19, SP_EL0
+    2d10: f9438a61     	ldr	x1, [x19, #0x710]
+    2d14: 580044e0     	ldr	x0, 0x35b0 <ksu_handle_prctl+0x988>
+    2d18: b9400421     	ldr	w1, [x1, #0x4]
+    2d1c: 94000000     	bl	0x2d1c <ksu_handle_prctl+0xf4>
+		0000000000002d1c:  R_AARCH64_CALL26	printk
+    2d20: 94000000     	bl	0x2d20 <ksu_handle_prctl+0xf8>
+		0000000000002d20:  R_AARCH64_CALL26	escape_to_root
+    2d24: aa1603e1     	mov	x1, x22
+    2d28: f9400660     	ldr	x0, [x19, #0x8]
+    2d2c: b1001021     	adds	x1, x1, #0x4
+    2d30: 9a8083e0     	csel	x0, xzr, x0, hi
+    2d34: da9f3021     	csinv	x1, x1, xzr, lo
+    2d38: fa00003f     	sbcs	xzr, x1, x0
+    2d3c: 9a9f87e1     	cset	x1, ls
+    2d40: b5003ba1     	cbnz	x1, 0x34b4 <ksu_handle_prctl+0x88c>
+    2d44: 580043a0     	ldr	x0, 0x35b8 <ksu_handle_prctl+0x990>
+    2d48: 94000000     	bl	0x2d48 <ksu_handle_prctl+0x120>
+		0000000000002d48:  R_AARCH64_CALL26	printk
+    2d4c: 17ffffc9     	b	0x2c70 <ksu_handle_prctl+0x48>
+    2d50: 2a0203e1     	mov	w1, w2
+    2d54: b9000082     	str	w2, [x4]
+    2d58: 17ffffdf     	b	0x2cd4 <ksu_handle_prctl+0xac>
+    2d5c: d503201f     	nop
+    2d60: 6b01001f     	cmp	w0, w1
+    2d64: 54fff861     	b.ne	0x2c70 <ksu_handle_prctl+0x48>
+    2d68: aa1603e1     	mov	x1, x22
+    2d6c: f9400440     	ldr	x0, [x2, #0x8]
+    2d70: b1001021     	adds	x1, x1, #0x4
+    2d74: 9a8083e0     	csel	x0, xzr, x0, hi
+    2d78: da9f3021     	csinv	x1, x1, xzr, lo
+    2d7c: fa00003f     	sbcs	xzr, x1, x0
+    2d80: 9a9f87e1     	cset	x1, ls
+    2d84: b5001ba1     	cbnz	x1, 0x30f8 <ksu_handle_prctl+0x4d0>
+    2d88: 58004100     	ldr	x0, 0x35a8 <ksu_handle_prctl+0x980>
+    2d8c: 94000000     	bl	0x2d8c <ksu_handle_prctl+0x164>
+		0000000000002d8c:  R_AARCH64_CALL26	printk
+    2d90: 17ffffb8     	b	0x2c70 <ksu_handle_prctl+0x48>
+    2d94: d503201f     	nop
+    2d98: f1000a9f     	cmp	x20, #0x2
+    2d9c: 54000960     	b.eq	0x2ec8 <ksu_handle_prctl+0x2a0>
+    2da0: f100429f     	cmp	x20, #0x10
+    2da4: 54000620     	b.eq	0x2e68 <ksu_handle_prctl+0x240>
+    2da8: d295a343     	mov	x3, #0xad1a             // =44314
+    2dac: f2b81bc3     	movk	x3, #0xc0de, lsl #16
+    2db0: eb03029f     	cmp	x20, x3
+    2db4: 54000c60     	b.eq	0x2f40 <ksu_handle_prctl+0x318>
+    2db8: f1001e9f     	cmp	x20, #0x7
+    2dbc: 54000d80     	b.eq	0x2f6c <ksu_handle_prctl+0x344>
+    2dc0: f100229f     	cmp	x20, #0x8
+    2dc4: 54000fe0     	b.eq	0x2fc0 <ksu_handle_prctl+0x398>
+    2dc8: f100269f     	cmp	x20, #0x9
+    2dcc: 54001740     	b.eq	0x30b4 <ksu_handle_prctl+0x48c>
+    2dd0: d1001682     	sub	x2, x20, #0x5
+    2dd4: f100045f     	cmp	x2, #0x1
+    2dd8: 540019c9     	b.ls	0x3110 <ksu_handle_prctl+0x4e8>
+    2ddc: d1003282     	sub	x2, x20, #0xc
+    2de0: f100045f     	cmp	x2, #0x1
+    2de4: 54001429     	b.ls	0x3068 <ksu_handle_prctl+0x440>
+    2de8: 6b01001f     	cmp	w0, w1
+    2dec: 54fff421     	b.ne	0x2c70 <ksu_handle_prctl+0x48>
+    2df0: f1002a9f     	cmp	x20, #0xa
+    2df4: 54002d00     	b.eq	0x3394 <ksu_handle_prctl+0x76c>
+    2df8: f1002e9f     	cmp	x20, #0xb
+    2dfc: 540027a0     	b.eq	0x32f0 <ksu_handle_prctl+0x6c8>
+    2e00: f1003a9f     	cmp	x20, #0xe
+    2e04: 54003240     	b.eq	0x344c <ksu_handle_prctl+0x824>
+    2e08: f1003e9f     	cmp	x20, #0xf
+    2e0c: 54fff321     	b.ne	0x2c70 <ksu_handle_prctl+0x48>
+    2e10: 58004293     	ldr	x19, 0x3660 <ksu_handle_prctl+0xa38>
+    2e14: f10002bf     	cmp	x21, #0x0
+    2e18: 1a9f07f4     	cset	w20, ne
+    2e1c: 39402260     	ldrb	w0, [x19, #0x8]
+    2e20: 6b14001f     	cmp	w0, w20
+    2e24: 540036c0     	b.eq	0x34fc <ksu_handle_prctl+0x8d4>
+    2e28: b40030f5     	cbz	x21, 0x3444 <ksu_handle_prctl+0x81c>
+    2e2c: 94000000     	bl	0x2e2c <ksu_handle_prctl+0x204>
+		0000000000002e2c:  R_AARCH64_CALL26	ksu_sucompat_init
+    2e30: d5384100     	mrs	x0, SP_EL0
+    2e34: 39002274     	strb	w20, [x19, #0x8]
+    2e38: aa1603e1     	mov	x1, x22
+    2e3c: f9400400     	ldr	x0, [x0, #0x8]
+    2e40: b1001021     	adds	x1, x1, #0x4
+    2e44: 9a8083e0     	csel	x0, xzr, x0, hi
+    2e48: da9f3021     	csinv	x1, x1, xzr, lo
+    2e4c: fa00003f     	sbcs	xzr, x1, x0
+    2e50: 9a9f87e1     	cset	x1, ls
+    2e54: b50036a1     	cbnz	x1, 0x3528 <ksu_handle_prctl+0x900>
+    2e58: 58003b40     	ldr	x0, 0x35c0 <ksu_handle_prctl+0x998>
+    2e5c: d28001e1     	mov	x1, #0xf                // =15
+    2e60: 94000000     	bl	0x2e60 <ksu_handle_prctl+0x238>
+		0000000000002e60:  R_AARCH64_CALL26	printk
+    2e64: 17ffff83     	b	0x2c70 <ksu_handle_prctl+0x48>
+    2e68: b9004ba1     	str	w1, [x29, #0x48]
+    2e6c: aa1503e1     	mov	x1, x21
+    2e70: f9400440     	ldr	x0, [x2, #0x8]
+    2e74: b1001021     	adds	x1, x1, #0x4
+    2e78: 9a8083e0     	csel	x0, xzr, x0, hi
+    2e7c: da9f3021     	csinv	x1, x1, xzr, lo
+    2e80: fa00003f     	sbcs	xzr, x1, x0
+    2e84: 9a9f87e1     	cset	x1, ls
+    2e88: b5000cc1     	cbnz	x1, 0x3020 <ksu_handle_prctl+0x3f8>
+    2e8c: 580039e0     	ldr	x0, 0x35c8 <ksu_handle_prctl+0x9a0>
+    2e90: 94000000     	bl	0x2e90 <ksu_handle_prctl+0x268>
+		0000000000002e90:  R_AARCH64_CALL26	printk
+    2e94: d5384100     	mrs	x0, SP_EL0
+    2e98: aa1603e1     	mov	x1, x22
+    2e9c: f9400400     	ldr	x0, [x0, #0x8]
+    2ea0: b1001021     	adds	x1, x1, #0x4
+    2ea4: 9a8083e0     	csel	x0, xzr, x0, hi
+    2ea8: da9f3021     	csinv	x1, x1, xzr, lo
+    2eac: fa00003f     	sbcs	xzr, x1, x0
+    2eb0: 9a9f87e1     	cset	x1, ls
+    2eb4: b5000a81     	cbnz	x1, 0x3004 <ksu_handle_prctl+0x3dc>
+    2eb8: 58003840     	ldr	x0, 0x35c0 <ksu_handle_prctl+0x998>
+    2ebc: d2800201     	mov	x1, #0x10               // =16
+    2ec0: 94000000     	bl	0x2ec0 <ksu_handle_prctl+0x298>
+		0000000000002ec0:  R_AARCH64_CALL26	printk
+    2ec4: 17ffff6b     	b	0x2c70 <ksu_handle_prctl+0x48>
+    2ec8: 52864660     	mov	w0, #0x3233             // =12851
+    2ecc: b90047a0     	str	w0, [x29, #0x44]
+    2ed0: aa1503e1     	mov	x1, x21
+    2ed4: f9400440     	ldr	x0, [x2, #0x8]
+    2ed8: b1001021     	adds	x1, x1, #0x4
+    2edc: 9a8083e0     	csel	x0, xzr, x0, hi
+    2ee0: da9f3021     	csinv	x1, x1, xzr, lo
+    2ee4: fa00003f     	sbcs	xzr, x1, x0
+    2ee8: 9a9f87e1     	cset	x1, ls
+    2eec: b50005e1     	cbnz	x1, 0x2fa8 <ksu_handle_prctl+0x380>
+    2ef0: 58003680     	ldr	x0, 0x35c0 <ksu_handle_prctl+0x998>
+    2ef4: d2800041     	mov	x1, #0x2                // =2
+    2ef8: 94000000     	bl	0x2ef8 <ksu_handle_prctl+0x2d0>
+		0000000000002ef8:  R_AARCH64_CALL26	printk
+    2efc: 52800020     	mov	w0, #0x1                // =1
+    2f00: b9004ba0     	str	w0, [x29, #0x48]
+    2f04: b4ffeb77     	cbz	x23, 0x2c70 <ksu_handle_prctl+0x48>
+    2f08: d5384100     	mrs	x0, SP_EL0
+    2f0c: aa1703e1     	mov	x1, x23
+    2f10: f9400400     	ldr	x0, [x0, #0x8]
+    2f14: b1001021     	adds	x1, x1, #0x4
+    2f18: 9a8083e0     	csel	x0, xzr, x0, hi
+    2f1c: da9f3021     	csinv	x1, x1, xzr, lo
+    2f20: fa00003f     	sbcs	xzr, x1, x0
+    2f24: 9a9f87e1     	cset	x1, ls
+    2f28: b5000881     	cbnz	x1, 0x3038 <ksu_handle_prctl+0x410>
+    2f2c: 580034a0     	ldr	x0, 0x35c0 <ksu_handle_prctl+0x998>
+    2f30: d2800041     	mov	x1, #0x2                // =2
+    2f34: 94000000     	bl	0x2f34 <ksu_handle_prctl+0x30c>
+		0000000000002f34:  R_AARCH64_CALL26	printk
+    2f38: 17ffff4e     	b	0x2c70 <ksu_handle_prctl+0x48>
+    2f3c: d503201f     	nop
+    2f40: aa1503e1     	mov	x1, x21
+    2f44: f9400440     	ldr	x0, [x2, #0x8]
+    2f48: b1001c21     	adds	x1, x1, #0x7
+    2f4c: 9a8083e0     	csel	x0, xzr, x0, hi
+    2f50: da9f3021     	csinv	x1, x1, xzr, lo
+    2f54: fa00003f     	sbcs	xzr, x1, x0
+    2f58: 9a9f87e1     	cset	x1, ls
+    2f5c: b50007a1     	cbnz	x1, 0x3050 <ksu_handle_prctl+0x428>
+    2f60: 58003380     	ldr	x0, 0x35d0 <ksu_handle_prctl+0x9a8>
+    2f64: 94000000     	bl	0x2f64 <ksu_handle_prctl+0x33c>
+		0000000000002f64:  R_AARCH64_CALL26	printk
+    2f68: 17ffff42     	b	0x2c70 <ksu_handle_prctl+0x48>
+    2f6c: 35ffe820     	cbnz	w0, 0x2c70 <ksu_handle_prctl+0x48>
+    2f70: f1000abf     	cmp	x21, #0x2
+    2f74: 54001280     	b.eq	0x31c4 <ksu_handle_prctl+0x59c>
+    2f78: f1000ebf     	cmp	x21, #0x3
+    2f7c: 54000f00     	b.eq	0x315c <ksu_handle_prctl+0x534>
+    2f80: f10006bf     	cmp	x21, #0x1
+    2f84: 54ffe761     	b.ne	0x2c70 <ksu_handle_prctl+0x48>
+    2f88: 580032c1     	ldr	x1, 0x35e0 <ksu_handle_prctl+0x9b8>
+    2f8c: 39400020     	ldrb	w0, [x1]
+    2f90: 35ffe700     	cbnz	w0, 0x2c70 <ksu_handle_prctl+0x48>
+    2f94: 580032a0     	ldr	x0, 0x35e8 <ksu_handle_prctl+0x9c0>
+    2f98: 39000035     	strb	w21, [x1]
+    2f9c: 94000000     	bl	0x2f9c <ksu_handle_prctl+0x374>
+		0000000000002f9c:  R_AARCH64_CALL26	printk
+    2fa0: 94000000     	bl	0x2fa0 <ksu_handle_prctl+0x378>
+		0000000000002fa0:  R_AARCH64_CALL26	on_post_fs_data
+    2fa4: 17ffff33     	b	0x2c70 <ksu_handle_prctl+0x48>
+    2fa8: d2800082     	mov	x2, #0x4                // =4
+    2fac: 910113a1     	add	x1, x29, #0x44
+    2fb0: aa1503e0     	mov	x0, x21
+    2fb4: 94000000     	bl	0x2fb4 <ksu_handle_prctl+0x38c>
+		0000000000002fb4:  R_AARCH64_CALL26	__arch_copy_to_user
+    2fb8: b4fffa20     	cbz	x0, 0x2efc <ksu_handle_prctl+0x2d4>
+    2fbc: 17ffffcd     	b	0x2ef0 <ksu_handle_prctl+0x2c8>
+    2fc0: 35ffe580     	cbnz	w0, 0x2c70 <ksu_handle_prctl+0x48>
+    2fc4: aa1703e1     	mov	x1, x23
+    2fc8: aa1503e0     	mov	x0, x21
+    2fcc: 94000000     	bl	0x2fcc <ksu_handle_prctl+0x3a4>
+		0000000000002fcc:  R_AARCH64_CALL26	handle_sepolicy
+    2fd0: 35ffe500     	cbnz	w0, 0x2c70 <ksu_handle_prctl+0x48>
+    2fd4: d5384100     	mrs	x0, SP_EL0
+    2fd8: aa1603e1     	mov	x1, x22
+    2fdc: f9400400     	ldr	x0, [x0, #0x8]
+    2fe0: b1001021     	adds	x1, x1, #0x4
+    2fe4: 9a8083e0     	csel	x0, xzr, x0, hi
+    2fe8: da9f3021     	csinv	x1, x1, xzr, lo
+    2fec: fa00003f     	sbcs	xzr, x1, x0
+    2ff0: 9a9f87e1     	cset	x1, ls
+    2ff4: b5001721     	cbnz	x1, 0x32d8 <ksu_handle_prctl+0x6b0>
+    2ff8: 58003180     	ldr	x0, 0x3628 <ksu_handle_prctl+0xa00>
+    2ffc: 94000000     	bl	0x2ffc <ksu_handle_prctl+0x3d4>
+		0000000000002ffc:  R_AARCH64_CALL26	printk
+    3000: 17ffff1c     	b	0x2c70 <ksu_handle_prctl+0x48>
+    3004: d2800082     	mov	x2, #0x4                // =4
+    3008: 910103a1     	add	x1, x29, #0x40
+    300c: aa1603e0     	mov	x0, x22
+    3010: 94000000     	bl	0x3010 <ksu_handle_prctl+0x3e8>
+		0000000000003010:  R_AARCH64_CALL26	__arch_copy_to_user
+    3014: b4ffe2e0     	cbz	x0, 0x2c70 <ksu_handle_prctl+0x48>
+    3018: 17ffffa8     	b	0x2eb8 <ksu_handle_prctl+0x290>
+    301c: d503201f     	nop
+    3020: d2800082     	mov	x2, #0x4                // =4
+    3024: 910123a1     	add	x1, x29, #0x48
+    3028: aa1503e0     	mov	x0, x21
+    302c: 94000000     	bl	0x302c <ksu_handle_prctl+0x404>
+		000000000000302c:  R_AARCH64_CALL26	__arch_copy_to_user
+    3030: b4fff320     	cbz	x0, 0x2e94 <ksu_handle_prctl+0x26c>
+    3034: 17ffff96     	b	0x2e8c <ksu_handle_prctl+0x264>
+    3038: d2800082     	mov	x2, #0x4                // =4
+    303c: 910123a1     	add	x1, x29, #0x48
+    3040: aa1703e0     	mov	x0, x23
+    3044: 94000000     	bl	0x3044 <ksu_handle_prctl+0x41c>
+		0000000000003044:  R_AARCH64_CALL26	__arch_copy_to_user
+    3048: b4ffe140     	cbz	x0, 0x2c70 <ksu_handle_prctl+0x48>
+    304c: 17ffffb8     	b	0x2f2c <ksu_handle_prctl+0x304>
+    3050: 58002c41     	ldr	x1, 0x35d8 <ksu_handle_prctl+0x9b0>
+    3054: d28000e2     	mov	x2, #0x7                // =7
+    3058: aa1503e0     	mov	x0, x21
+    305c: 94000000     	bl	0x305c <ksu_handle_prctl+0x434>
+		000000000000305c:  R_AARCH64_CALL26	__arch_copy_to_user
+    3060: b4ffe080     	cbz	x0, 0x2c70 <ksu_handle_prctl+0x48>
+    3064: 17ffffbf     	b	0x2f60 <ksu_handle_prctl+0x338>
+    3068: 390123bf     	strb	wzr, [x29, #0x48]
+    306c: 2a1503e0     	mov	w0, w21
+    3070: f100329f     	cmp	x20, #0xc
+    3074: 540012c0     	b.eq	0x32cc <ksu_handle_prctl+0x6a4>
+    3078: 94000000     	bl	0x3078 <ksu_handle_prctl+0x450>
+		0000000000003078:  R_AARCH64_CALL26	ksu_uid_should_umount
+    307c: 390123a0     	strb	w0, [x29, #0x48]
+    3080: d5384113     	mrs	x19, SP_EL0
+    3084: aa1703e1     	mov	x1, x23
+    3088: f9400660     	ldr	x0, [x19, #0x8]
+    308c: b1000421     	adds	x1, x1, #0x1
+    3090: 9a8083e0     	csel	x0, xzr, x0, hi
+    3094: da9f3021     	csinv	x1, x1, xzr, lo
+    3098: fa00003f     	sbcs	xzr, x1, x0
+    309c: 9a9f87e1     	cset	x1, ls
+    30a0: b5000a41     	cbnz	x1, 0x31e8 <ksu_handle_prctl+0x5c0>
+    30a4: 58002d20     	ldr	x0, 0x3648 <ksu_handle_prctl+0xa20>
+    30a8: aa1403e1     	mov	x1, x20
+    30ac: 94000000     	bl	0x30ac <ksu_handle_prctl+0x484>
+		00000000000030ac:  R_AARCH64_CALL26	printk
+    30b0: 17fffef0     	b	0x2c70 <ksu_handle_prctl+0x48>
+    30b4: 94000000     	bl	0x30b4 <ksu_handle_prctl+0x48c>
+		00000000000030b4:  R_AARCH64_CALL26	ksu_is_safe_mode
+    30b8: 72001c1f     	tst	w0, #0xff
+    30bc: 54ffdda0     	b.eq	0x2c70 <ksu_handle_prctl+0x48>
+    30c0: 58002b80     	ldr	x0, 0x3630 <ksu_handle_prctl+0xa08>
+    30c4: 94000000     	bl	0x30c4 <ksu_handle_prctl+0x49c>
+		00000000000030c4:  R_AARCH64_CALL26	printk
+    30c8: aa1603e1     	mov	x1, x22
+    30cc: d5384100     	mrs	x0, SP_EL0
+    30d0: f9400400     	ldr	x0, [x0, #0x8]
+    30d4: b1001021     	adds	x1, x1, #0x4
+    30d8: 9a8083e0     	csel	x0, xzr, x0, hi
+    30dc: da9f3021     	csinv	x1, x1, xzr, lo
+    30e0: fa00003f     	sbcs	xzr, x1, x0
+    30e4: 9a9f87e1     	cset	x1, ls
+    30e8: b5001f21     	cbnz	x1, 0x34cc <ksu_handle_prctl+0x8a4>
+    30ec: 58002a60     	ldr	x0, 0x3638 <ksu_handle_prctl+0xa10>
+    30f0: 94000000     	bl	0x30f0 <ksu_handle_prctl+0x4c8>
+		00000000000030f0:  R_AARCH64_CALL26	printk
+    30f4: 17fffedf     	b	0x2c70 <ksu_handle_prctl+0x48>
+    30f8: d2800082     	mov	x2, #0x4                // =4
+    30fc: 910103a1     	add	x1, x29, #0x40
+    3100: aa1603e0     	mov	x0, x22
+    3104: 94000000     	bl	0x3104 <ksu_handle_prctl+0x4dc>
+		0000000000003104:  R_AARCH64_CALL26	__arch_copy_to_user
+    3108: b4ffdb40     	cbz	x0, 0x2c70 <ksu_handle_prctl+0x48>
+    310c: 17ffff1f     	b	0x2d88 <ksu_handle_prctl+0x160>
+    3110: f100169f     	cmp	x20, #0x5
+    3114: 910113a1     	add	x1, x29, #0x44
+    3118: 1a9f17e2     	cset	w2, eq
+    311c: 910123a0     	add	x0, x29, #0x48
+    3120: 94000000     	bl	0x3120 <ksu_handle_prctl+0x4f8>
+		0000000000003120:  R_AARCH64_CALL26	ksu_get_allow_list
+    3124: 72001c1f     	tst	w0, #0xff
+    3128: 54ffda40     	b.eq	0x2c70 <ksu_handle_prctl+0x48>
+    312c: d5384118     	mrs	x24, SP_EL0
+    3130: aa1703e1     	mov	x1, x23
+    3134: f9400700     	ldr	x0, [x24, #0x8]
+    3138: b1001021     	adds	x1, x1, #0x4
+    313c: 9a8083e0     	csel	x0, xzr, x0, hi
+    3140: da9f3021     	csinv	x1, x1, xzr, lo
+    3144: fa00003f     	sbcs	xzr, x1, x0
+    3148: 9a9f87e1     	cset	x1, ls
+    314c: b5000701     	cbnz	x1, 0x322c <ksu_handle_prctl+0x604>
+    3150: 58002780     	ldr	x0, 0x3640 <ksu_handle_prctl+0xa18>
+    3154: 94000000     	bl	0x3154 <ksu_handle_prctl+0x52c>
+		0000000000003154:  R_AARCH64_CALL26	printk
+    3158: 17fffec6     	b	0x2c70 <ksu_handle_prctl+0x48>
+    315c: 58002421     	ldr	x1, 0x35e0 <ksu_handle_prctl+0x9b8>
+    3160: 52800022     	mov	w2, #0x1                // =1
+    3164: 580024a0     	ldr	x0, 0x35f8 <ksu_handle_prctl+0x9d0>
+    3168: 39000822     	strb	w2, [x1, #0x2]
+    316c: 94000000     	bl	0x316c <ksu_handle_prctl+0x544>
+		000000000000316c:  R_AARCH64_CALL26	printk
+    3170: 58002480     	ldr	x0, 0x3600 <ksu_handle_prctl+0x9d8>
+    3174: 52800001     	mov	w1, #0x0                // =0
+    3178: 910123a2     	add	x2, x29, #0x48
+    317c: 94000000     	bl	0x317c <ksu_handle_prctl+0x554>
+		000000000000317c:  R_AARCH64_CALL26	kern_path
+    3180: 2a0003e1     	mov	w1, w0
+    3184: 35001920     	cbnz	w0, 0x34a8 <ksu_handle_prctl+0x880>
+    3188: f9402ba0     	ldr	x0, [x29, #0x50]
+    318c: 58002421     	ldr	x1, 0x3610 <ksu_handle_prctl+0x9e8>
+    3190: f9401800     	ldr	x0, [x0, #0x30]
+    3194: f9401413     	ldr	x19, [x0, #0x28]
+    3198: f9401660     	ldr	x0, [x19, #0x28]
+    319c: f9400000     	ldr	x0, [x0]
+    31a0: 94000000     	bl	0x31a0 <ksu_handle_prctl+0x578>
+		00000000000031a0:  R_AARCH64_CALL26	strcmp
+    31a4: 35001780     	cbnz	w0, 0x3494 <ksu_handle_prctl+0x86c>
+    31a8: 580023c1     	ldr	x1, 0x3620 <ksu_handle_prctl+0x9f8>
+    31ac: aa1303e0     	mov	x0, x19
+    31b0: f9400021     	ldr	x1, [x1]
+    31b4: d63f0020     	blr	x1
+    31b8: 910123a0     	add	x0, x29, #0x48
+    31bc: 94000000     	bl	0x31bc <ksu_handle_prctl+0x594>
+		00000000000031bc:  R_AARCH64_CALL26	path_put
+    31c0: 17fffeac     	b	0x2c70 <ksu_handle_prctl+0x48>
+    31c4: 580020e1     	ldr	x1, 0x35e0 <ksu_handle_prctl+0x9b8>
+    31c8: 39400420     	ldrb	w0, [x1, #0x1]
+    31cc: 35ffd520     	cbnz	w0, 0x2c70 <ksu_handle_prctl+0x48>
+    31d0: 58002100     	ldr	x0, 0x35f0 <ksu_handle_prctl+0x9c8>
+    31d4: 52800022     	mov	w2, #0x1                // =1
+    31d8: 39000422     	strb	w2, [x1, #0x1]
+    31dc: 94000000     	bl	0x31dc <ksu_handle_prctl+0x5b4>
+		00000000000031dc:  R_AARCH64_CALL26	printk
+    31e0: 17fffea4     	b	0x2c70 <ksu_handle_prctl+0x48>
+    31e4: d503201f     	nop
+    31e8: d2800022     	mov	x2, #0x1                // =1
+    31ec: 910123a1     	add	x1, x29, #0x48
+    31f0: aa1703e0     	mov	x0, x23
+    31f4: 94000000     	bl	0x31f4 <ksu_handle_prctl+0x5cc>
+		00000000000031f4:  R_AARCH64_CALL26	__arch_copy_to_user
+    31f8: b5fff560     	cbnz	x0, 0x30a4 <ksu_handle_prctl+0x47c>
+    31fc: aa1603e1     	mov	x1, x22
+    3200: f9400660     	ldr	x0, [x19, #0x8]
+    3204: b1001021     	adds	x1, x1, #0x4
+    3208: 9a8083e0     	csel	x0, xzr, x0, hi
+    320c: da9f3021     	csinv	x1, x1, xzr, lo
+    3210: fa00003f     	sbcs	xzr, x1, x0
+    3214: 9a9f87e1     	cset	x1, ls
+    3218: b50004e1     	cbnz	x1, 0x32b4 <ksu_handle_prctl+0x68c>
+    321c: 58001d20     	ldr	x0, 0x35c0 <ksu_handle_prctl+0x998>
+    3220: aa1403e1     	mov	x1, x20
+    3224: 94000000     	bl	0x3224 <ksu_handle_prctl+0x5fc>
+		0000000000003224:  R_AARCH64_CALL26	printk
+    3228: 17fffe92     	b	0x2c70 <ksu_handle_prctl+0x48>
+    322c: d2800082     	mov	x2, #0x4                // =4
+    3230: 910113a1     	add	x1, x29, #0x44
+    3234: aa1703e0     	mov	x0, x23
+    3238: 94000000     	bl	0x3238 <ksu_handle_prctl+0x610>
+		0000000000003238:  R_AARCH64_CALL26	__arch_copy_to_user
+    323c: b5fff8a0     	cbnz	x0, 0x3150 <ksu_handle_prctl+0x528>
+    3240: b94047b3     	ldr	w19, [x29, #0x44]
+    3244: aa1503e1     	mov	x1, x21
+    3248: f9400700     	ldr	x0, [x24, #0x8]
+    324c: d37ef673     	lsl	x19, x19, #2
+    3250: ab130021     	adds	x1, x1, x19
+    3254: 9a8083e0     	csel	x0, xzr, x0, hi
+    3258: da9f3021     	csinv	x1, x1, xzr, lo
+    325c: fa00003f     	sbcs	xzr, x1, x0
+    3260: 9a9f87e1     	cset	x1, ls
+    3264: b4000141     	cbz	x1, 0x328c <ksu_handle_prctl+0x664>
+    3268: aa1303e1     	mov	x1, x19
+    326c: 52800022     	mov	w2, #0x1                // =1
+    3270: 910123a0     	add	x0, x29, #0x48
+    3274: 94000000     	bl	0x3274 <ksu_handle_prctl+0x64c>
+		0000000000003274:  R_AARCH64_CALL26	__check_object_size
+    3278: aa1303e2     	mov	x2, x19
+    327c: 910123a1     	add	x1, x29, #0x48
+    3280: aa1503e0     	mov	x0, x21
+    3284: 94000000     	bl	0x3284 <ksu_handle_prctl+0x65c>
+		0000000000003284:  R_AARCH64_CALL26	__arch_copy_to_user
+    3288: aa0003f3     	mov	x19, x0
+    328c: b5fff633     	cbnz	x19, 0x3150 <ksu_handle_prctl+0x528>
+    3290: d5384100     	mrs	x0, SP_EL0
+    3294: aa1603e1     	mov	x1, x22
+    3298: f9400400     	ldr	x0, [x0, #0x8]
+    329c: b1001021     	adds	x1, x1, #0x4
+    32a0: 9a8083e0     	csel	x0, xzr, x0, hi
+    32a4: da9f3021     	csinv	x1, x1, xzr, lo
+    32a8: fa00003f     	sbcs	xzr, x1, x0
+    32ac: 9a9f87e1     	cset	x1, ls
+    32b0: b4fffb61     	cbz	x1, 0x321c <ksu_handle_prctl+0x5f4>
+    32b4: d2800082     	mov	x2, #0x4                // =4
+    32b8: 910103a1     	add	x1, x29, #0x40
+    32bc: aa1603e0     	mov	x0, x22
+    32c0: 94000000     	bl	0x32c0 <ksu_handle_prctl+0x698>
+		00000000000032c0:  R_AARCH64_CALL26	__arch_copy_to_user
+    32c4: b4ffcd60     	cbz	x0, 0x2c70 <ksu_handle_prctl+0x48>
+    32c8: 17ffffd5     	b	0x321c <ksu_handle_prctl+0x5f4>
+    32cc: 94000000     	bl	0x32cc <ksu_handle_prctl+0x6a4>
+		00000000000032cc:  R_AARCH64_CALL26	__ksu_is_allow_uid
+    32d0: 390123a0     	strb	w0, [x29, #0x48]
+    32d4: 17ffff6b     	b	0x3080 <ksu_handle_prctl+0x458>
+    32d8: d2800082     	mov	x2, #0x4                // =4
+    32dc: 910103a1     	add	x1, x29, #0x40
+    32e0: aa1603e0     	mov	x0, x22
+    32e4: 94000000     	bl	0x32e4 <ksu_handle_prctl+0x6bc>
+		00000000000032e4:  R_AARCH64_CALL26	__arch_copy_to_user
+    32e8: b4ffcc40     	cbz	x0, 0x2c70 <ksu_handle_prctl+0x48>
+    32ec: 17ffff43     	b	0x2ff8 <ksu_handle_prctl+0x3d0>
+    32f0: d5384114     	mrs	x20, SP_EL0
+    32f4: aa1503e1     	mov	x1, x21
+    32f8: f9400680     	ldr	x0, [x20, #0x8]
+    32fc: b10c2021     	adds	x1, x1, #0x308
+    3300: 9a8083e0     	csel	x0, xzr, x0, hi
+    3304: da9f3021     	csinv	x1, x1, xzr, lo
+    3308: fa00003f     	sbcs	xzr, x1, x0
+    330c: 9a9f87e1     	cset	x1, ls
+    3310: 910123b3     	add	x19, x29, #0x48
+    3314: b5000141     	cbnz	x1, 0x333c <ksu_handle_prctl+0x714>
+    3318: d2806100     	mov	x0, #0x308              // =776
+    331c: cb000273     	sub	x19, x19, x0
+    3320: aa0003e2     	mov	x2, x0
+    3324: 52800001     	mov	w1, #0x0                // =0
+    3328: 910c2260     	add	x0, x19, #0x308
+    332c: 94000000     	bl	0x332c <ksu_handle_prctl+0x704>
+		000000000000332c:  R_AARCH64_CALL26	memset
+    3330: 58001900     	ldr	x0, 0x3650 <ksu_handle_prctl+0xa28>
+    3334: 94000000     	bl	0x3334 <ksu_handle_prctl+0x70c>
+		0000000000003334:  R_AARCH64_CALL26	printk
+    3338: 17fffe4e     	b	0x2c70 <ksu_handle_prctl+0x48>
+    333c: d2806102     	mov	x2, #0x308              // =776
+    3340: aa1503e1     	mov	x1, x21
+    3344: aa1303e0     	mov	x0, x19
+    3348: 94000000     	bl	0x3348 <ksu_handle_prctl+0x720>
+		0000000000003348:  R_AARCH64_CALL26	__arch_copy_from_user
+    334c: b5fffe80     	cbnz	x0, 0x331c <ksu_handle_prctl+0x6f4>
+    3350: 52800021     	mov	w1, #0x1                // =1
+    3354: aa1303e0     	mov	x0, x19
+    3358: 94000000     	bl	0x3358 <ksu_handle_prctl+0x730>
+		0000000000003358:  R_AARCH64_CALL26	ksu_set_app_profile
+    335c: 72001c1f     	tst	w0, #0xff
+    3360: 54ffc880     	b.eq	0x2c70 <ksu_handle_prctl+0x48>
+    3364: aa1603e1     	mov	x1, x22
+    3368: f9400680     	ldr	x0, [x20, #0x8]
+    336c: b1001021     	adds	x1, x1, #0x4
+    3370: 9a8083e0     	csel	x0, xzr, x0, hi
+    3374: da9f3021     	csinv	x1, x1, xzr, lo
+    3378: fa00003f     	sbcs	xzr, x1, x0
+    337c: 9a9f87e1     	cset	x1, ls
+    3380: b5000b21     	cbnz	x1, 0x34e4 <ksu_handle_prctl+0x8bc>
+    3384: 580011e0     	ldr	x0, 0x35c0 <ksu_handle_prctl+0x998>
+    3388: d2800161     	mov	x1, #0xb                // =11
+    338c: 94000000     	bl	0x338c <ksu_handle_prctl+0x764>
+		000000000000338c:  R_AARCH64_CALL26	printk
+    3390: 17fffe38     	b	0x2c70 <ksu_handle_prctl+0x48>
+    3394: d5384114     	mrs	x20, SP_EL0
+    3398: aa1503e1     	mov	x1, x21
+    339c: f9400680     	ldr	x0, [x20, #0x8]
+    33a0: b10c2021     	adds	x1, x1, #0x308
+    33a4: 9a8083e0     	csel	x0, xzr, x0, hi
+    33a8: da9f3021     	csinv	x1, x1, xzr, lo
+    33ac: fa00003f     	sbcs	xzr, x1, x0
+    33b0: 9a9f87e1     	cset	x1, ls
+    33b4: 910123b3     	add	x19, x29, #0x48
+    33b8: b4fffb01     	cbz	x1, 0x3318 <ksu_handle_prctl+0x6f0>
+    33bc: d2806102     	mov	x2, #0x308              // =776
+    33c0: aa1503e1     	mov	x1, x21
+    33c4: aa1303e0     	mov	x0, x19
+    33c8: 94000000     	bl	0x33c8 <ksu_handle_prctl+0x7a0>
+		00000000000033c8:  R_AARCH64_CALL26	__arch_copy_from_user
+    33cc: b5fffa80     	cbnz	x0, 0x331c <ksu_handle_prctl+0x6f4>
+    33d0: aa1303e0     	mov	x0, x19
+    33d4: 94000000     	bl	0x33d4 <ksu_handle_prctl+0x7ac>
+		00000000000033d4:  R_AARCH64_CALL26	ksu_get_app_profile
+    33d8: 72001c1f     	tst	w0, #0xff
+    33dc: 54ffc4a0     	b.eq	0x2c70 <ksu_handle_prctl+0x48>
+    33e0: aa1503e1     	mov	x1, x21
+    33e4: f9400680     	ldr	x0, [x20, #0x8]
+    33e8: b10c2021     	adds	x1, x1, #0x308
+    33ec: 9a8083e0     	csel	x0, xzr, x0, hi
+    33f0: da9f3021     	csinv	x1, x1, xzr, lo
+    33f4: fa00003f     	sbcs	xzr, x1, x0
+    33f8: 9a9f87e1     	cset	x1, ls
+    33fc: b4fff9a1     	cbz	x1, 0x3330 <ksu_handle_prctl+0x708>
+    3400: d2806102     	mov	x2, #0x308              // =776
+    3404: aa1303e1     	mov	x1, x19
+    3408: aa1503e0     	mov	x0, x21
+    340c: 94000000     	bl	0x340c <ksu_handle_prctl+0x7e4>
+		000000000000340c:  R_AARCH64_CALL26	__arch_copy_to_user
+    3410: b5fff900     	cbnz	x0, 0x3330 <ksu_handle_prctl+0x708>
+    3414: aa1603e1     	mov	x1, x22
+    3418: f9400680     	ldr	x0, [x20, #0x8]
+    341c: b1001021     	adds	x1, x1, #0x4
+    3420: 9a8083e0     	csel	x0, xzr, x0, hi
+    3424: da9f3021     	csinv	x1, x1, xzr, lo
+    3428: fa00003f     	sbcs	xzr, x1, x0
+    342c: 9a9f87e1     	cset	x1, ls
+    3430: b5000261     	cbnz	x1, 0x347c <ksu_handle_prctl+0x854>
+    3434: 58000c60     	ldr	x0, 0x35c0 <ksu_handle_prctl+0x998>
+    3438: d2800141     	mov	x1, #0xa                // =10
+    343c: 94000000     	bl	0x343c <ksu_handle_prctl+0x814>
+		000000000000343c:  R_AARCH64_CALL26	printk
+    3440: 17fffe0c     	b	0x2c70 <ksu_handle_prctl+0x48>
+    3444: 94000000     	bl	0x3444 <ksu_handle_prctl+0x81c>
+		0000000000003444:  R_AARCH64_CALL26	ksu_sucompat_exit
+    3448: 17fffe7a     	b	0x2e30 <ksu_handle_prctl+0x208>
+    344c: d5384113     	mrs	x19, SP_EL0
+    3450: aa1503e1     	mov	x1, x21
+    3454: f9400660     	ldr	x0, [x19, #0x8]
+    3458: b1000421     	adds	x1, x1, #0x1
+    345c: 9a8083e0     	csel	x0, xzr, x0, hi
+    3460: da9f3021     	csinv	x1, x1, xzr, lo
+    3464: fa00003f     	sbcs	xzr, x1, x0
+    3468: 9a9f87e1     	cset	x1, ls
+    346c: b50006a1     	cbnz	x1, 0x3540 <ksu_handle_prctl+0x918>
+    3470: 58000f40     	ldr	x0, 0x3658 <ksu_handle_prctl+0xa30>
+    3474: 94000000     	bl	0x3474 <ksu_handle_prctl+0x84c>
+		0000000000003474:  R_AARCH64_CALL26	printk
+    3478: 17fffdfe     	b	0x2c70 <ksu_handle_prctl+0x48>
+    347c: d2800082     	mov	x2, #0x4                // =4
+    3480: 910103a1     	add	x1, x29, #0x40
+    3484: aa1603e0     	mov	x0, x22
+    3488: 94000000     	bl	0x3488 <ksu_handle_prctl+0x860>
+		0000000000003488:  R_AARCH64_CALL26	__arch_copy_to_user
+    348c: b4ffbf20     	cbz	x0, 0x2c70 <ksu_handle_prctl+0x48>
+    3490: 17ffffe9     	b	0x3434 <ksu_handle_prctl+0x80c>
+    3494: 58000c20     	ldr	x0, 0x3618 <ksu_handle_prctl+0x9f0>
+    3498: 94000000     	bl	0x3498 <ksu_handle_prctl+0x870>
+		0000000000003498:  R_AARCH64_CALL26	printk
+    349c: 910123a0     	add	x0, x29, #0x48
+    34a0: 94000000     	bl	0x34a0 <ksu_handle_prctl+0x878>
+		00000000000034a0:  R_AARCH64_CALL26	path_put
+    34a4: 17fffdf3     	b	0x2c70 <ksu_handle_prctl+0x48>
+    34a8: 58000b00     	ldr	x0, 0x3608 <ksu_handle_prctl+0x9e0>
+    34ac: 94000000     	bl	0x34ac <ksu_handle_prctl+0x884>
+		00000000000034ac:  R_AARCH64_CALL26	printk
+    34b0: 17fffdf0     	b	0x2c70 <ksu_handle_prctl+0x48>
+    34b4: d2800082     	mov	x2, #0x4                // =4
+    34b8: 910103a1     	add	x1, x29, #0x40
+    34bc: aa1603e0     	mov	x0, x22
+    34c0: 94000000     	bl	0x34c0 <ksu_handle_prctl+0x898>
+		00000000000034c0:  R_AARCH64_CALL26	__arch_copy_to_user
+    34c4: b4ffbd60     	cbz	x0, 0x2c70 <ksu_handle_prctl+0x48>
+    34c8: 17fffe1f     	b	0x2d44 <ksu_handle_prctl+0x11c>
+    34cc: d2800082     	mov	x2, #0x4                // =4
+    34d0: 910103a1     	add	x1, x29, #0x40
+    34d4: aa1603e0     	mov	x0, x22
+    34d8: 94000000     	bl	0x34d8 <ksu_handle_prctl+0x8b0>
+		00000000000034d8:  R_AARCH64_CALL26	__arch_copy_to_user
+    34dc: b4ffbca0     	cbz	x0, 0x2c70 <ksu_handle_prctl+0x48>
+    34e0: 17ffff03     	b	0x30ec <ksu_handle_prctl+0x4c4>
+    34e4: d2800082     	mov	x2, #0x4                // =4
+    34e8: 910103a1     	add	x1, x29, #0x40
+    34ec: aa1603e0     	mov	x0, x22
+    34f0: 94000000     	bl	0x34f0 <ksu_handle_prctl+0x8c8>
+		00000000000034f0:  R_AARCH64_CALL26	__arch_copy_to_user
+    34f4: b4ffbbe0     	cbz	x0, 0x2c70 <ksu_handle_prctl+0x48>
+    34f8: 17ffffa3     	b	0x3384 <ksu_handle_prctl+0x75c>
+    34fc: 58000b60     	ldr	x0, 0x3668 <ksu_handle_prctl+0xa40>
+    3500: 94000000     	bl	0x3500 <ksu_handle_prctl+0x8d8>
+		0000000000003500:  R_AARCH64_CALL26	printk
+    3504: aa1603e1     	mov	x1, x22
+    3508: d5384100     	mrs	x0, SP_EL0
+    350c: f9400400     	ldr	x0, [x0, #0x8]
+    3510: b1001021     	adds	x1, x1, #0x4
+    3514: 9a8083e0     	csel	x0, xzr, x0, hi
+    3518: da9f3021     	csinv	x1, x1, xzr, lo
+    351c: fa00003f     	sbcs	xzr, x1, x0
+    3520: 9a9f87e1     	cset	x1, ls
+    3524: b4ffc9a1     	cbz	x1, 0x2e58 <ksu_handle_prctl+0x230>
+    3528: d2800082     	mov	x2, #0x4                // =4
+    352c: 910103a1     	add	x1, x29, #0x40
+    3530: aa1603e0     	mov	x0, x22
+    3534: 94000000     	bl	0x3534 <ksu_handle_prctl+0x90c>
+		0000000000003534:  R_AARCH64_CALL26	__arch_copy_to_user
+    3538: b4ffb9c0     	cbz	x0, 0x2c70 <ksu_handle_prctl+0x48>
+    353c: 17fffe47     	b	0x2e58 <ksu_handle_prctl+0x230>
+    3540: 58000901     	ldr	x1, 0x3660 <ksu_handle_prctl+0xa38>
+    3544: d2800022     	mov	x2, #0x1                // =1
+    3548: aa1503e0     	mov	x0, x21
+    354c: 91002021     	add	x1, x1, #0x8
+    3550: 94000000     	bl	0x3550 <ksu_handle_prctl+0x928>
+		0000000000003550:  R_AARCH64_CALL26	__arch_copy_to_user
+    3554: b5fff8e0     	cbnz	x0, 0x3470 <ksu_handle_prctl+0x848>
+    3558: aa1603e1     	mov	x1, x22
+    355c: f9400660     	ldr	x0, [x19, #0x8]
+    3560: b1001021     	adds	x1, x1, #0x4
+    3564: 9a8083e0     	csel	x0, xzr, x0, hi
+    3568: da9f3021     	csinv	x1, x1, xzr, lo
+    356c: fa00003f     	sbcs	xzr, x1, x0
+    3570: 9a9f87e1     	cset	x1, ls
+    3574: b50000a1     	cbnz	x1, 0x3588 <ksu_handle_prctl+0x960>
+    3578: 58000240     	ldr	x0, 0x35c0 <ksu_handle_prctl+0x998>
+    357c: d28001c1     	mov	x1, #0xe                // =14
+    3580: 94000000     	bl	0x3580 <ksu_handle_prctl+0x958>
+		0000000000003580:  R_AARCH64_CALL26	printk
+    3584: 17fffdbb     	b	0x2c70 <ksu_handle_prctl+0x48>
+    3588: d2800082     	mov	x2, #0x4                // =4
+    358c: 910103a1     	add	x1, x29, #0x40
+    3590: aa1603e0     	mov	x0, x22
+    3594: 94000000     	bl	0x3594 <ksu_handle_prctl+0x96c>
+		0000000000003594:  R_AARCH64_CALL26	__arch_copy_to_user
+    3598: b4ffb6c0     	cbz	x0, 0x2c70 <ksu_handle_prctl+0x48>
+    359c: 17fffff7     	b	0x3578 <ksu_handle_prctl+0x950>
+    35a0: 00 00 00 00  	.word	0x00000000
+		00000000000035a0:  R_AARCH64_ABS64	ksu_manager_uid
+    35a4: 00 00 00 00  	.word	0x00000000
+    35a8: 00 00 00 00  	.word	0x00000000
+		00000000000035a8:  R_AARCH64_ABS64	.rodata.str1.8+0xe40
+    35ac: 00 00 00 00  	.word	0x00000000
+    35b0: 00 00 00 00  	.word	0x00000000
+		00000000000035b0:  R_AARCH64_ABS64	.rodata.str1.8+0xe70
+    35b4: 00 00 00 00  	.word	0x00000000
+    35b8: 00 00 00 00  	.word	0x00000000
+		00000000000035b8:  R_AARCH64_ABS64	.rodata.str1.8+0xe90
+    35bc: 00 00 00 00  	.word	0x00000000
+    35c0: 00 00 00 00  	.word	0x00000000
+		00000000000035c0:  R_AARCH64_ABS64	.rodata.str1.8+0xec0
+    35c4: 00 00 00 00  	.word	0x00000000
+    35c8: 00 00 00 00  	.word	0x00000000
+		00000000000035c8:  R_AARCH64_ABS64	.rodata.str1.8+0xef0
+    35cc: 00 00 00 00  	.word	0x00000000
+    35d0: 00 00 00 00  	.word	0x00000000
+		00000000000035d0:  R_AARCH64_ABS64	.rodata.str1.8+0xf18
+    35d4: 00 00 00 00  	.word	0x00000000
+    35d8: 00 00 00 00  	.word	0x00000000
+		00000000000035d8:  R_AARCH64_ABS64	.rodata.str1.8+0xf48
+    35dc: 00 00 00 00  	.word	0x00000000
+    35e0: 00 00 00 00  	.word	0x00000000
+		00000000000035e0:  R_AARCH64_ABS64	.bss+0x150
+    35e4: 00 00 00 00  	.word	0x00000000
+    35e8: 00 00 00 00  	.word	0x00000000
+		00000000000035e8:  R_AARCH64_ABS64	.rodata.str1.8+0xf50
+    35ec: 00 00 00 00  	.word	0x00000000
+    35f0: 00 00 00 00  	.word	0x00000000
+		00000000000035f0:  R_AARCH64_ABS64	.rodata.str1.8+0xf78
+    35f4: 00 00 00 00  	.word	0x00000000
+    35f8: 00 00 00 00  	.word	0x00000000
+		00000000000035f8:  R_AARCH64_ABS64	.rodata.str1.8+0xfa0
+    35fc: 00 00 00 00  	.word	0x00000000
+    3600: 00 00 00 00  	.word	0x00000000
+		0000000000003600:  R_AARCH64_ABS64	.rodata.str1.8+0xfc0
+    3604: 00 00 00 00  	.word	0x00000000
+    3608: 00 00 00 00  	.word	0x00000000
+		0000000000003608:  R_AARCH64_ABS64	.rodata.str1.8+0xfd8
+    360c: 00 00 00 00  	.word	0x00000000
+    3610: 00 00 00 00  	.word	0x00000000
+		0000000000003610:  R_AARCH64_ABS64	.rodata.str1.8+0xff8
+    3614: 00 00 00 00  	.word	0x00000000
+    3618: 00 00 00 00  	.word	0x00000000
+		0000000000003618:  R_AARCH64_ABS64	.rodata.str1.8+0x1000
+    361c: 00 00 00 00  	.word	0x00000000
+    3620: 00 00 00 00  	.word	0x00000000
+		0000000000003620:  R_AARCH64_ABS64	ksu_ext4_unregister_sysfs
+    3624: 00 00 00 00  	.word	0x00000000
+    3628: 00 00 00 00  	.word	0x00000000
+		0000000000003628:  R_AARCH64_ABS64	.rodata.str1.8+0x1030
+    362c: 00 00 00 00  	.word	0x00000000
+    3630: 00 00 00 00  	.word	0x00000000
+		0000000000003630:  R_AARCH64_ABS64	.rodata.str1.8+0x1060
+    3634: 00 00 00 00  	.word	0x00000000
+    3638: 00 00 00 00  	.word	0x00000000
+		0000000000003638:  R_AARCH64_ABS64	.rodata.str1.8+0x1080
+    363c: 00 00 00 00  	.word	0x00000000
+    3640: 00 00 00 00  	.word	0x00000000
+		0000000000003640:  R_AARCH64_ABS64	.rodata.str1.8+0x10b0
+    3644: 00 00 00 00  	.word	0x00000000
+    3648: 00 00 00 00  	.word	0x00000000
+		0000000000003648:  R_AARCH64_ABS64	.rodata.str1.8+0x10d8
+    364c: 00 00 00 00  	.word	0x00000000
+    3650: 00 00 00 00  	.word	0x00000000
+		0000000000003650:  R_AARCH64_ABS64	.rodata.str1.8+0x1100
+    3654: 00 00 00 00  	.word	0x00000000
+    3658: 00 00 00 00  	.word	0x00000000
+		0000000000003658:  R_AARCH64_ABS64	.rodata.str1.8+0x1128
+    365c: 00 00 00 00  	.word	0x00000000
+    3660: 00 00 00 00  	.word	0x00000000
+		0000000000003660:  R_AARCH64_ABS64	.data+0x88
+    3664: 00 00 00 00  	.word	0x00000000
+    3668: 00 00 00 00  	.word	0x00000000
+		0000000000003668:  R_AARCH64_ABS64	.rodata.str1.8+0x1150
+    366c: 00 00 00 00  	.word	0x00000000
+
+0000000000003670 <ksu_handle_setuid>:
+    3670: a9be7bfd     	stp	x29, x30, [sp, #-0x20]!
+    3674: 910003fd     	mov	x29, sp
+    3678: a90153f3     	stp	x19, x20, [sp, #0x10]
+    367c: aa0003f4     	mov	x20, x0
+    3680: aa0103f3     	mov	x19, x1
+    3684: aa1e03e0     	mov	x0, x30
+    3688: 94000000     	bl	0x3688 <ksu_handle_setuid+0x18>
+		0000000000003688:  R_AARCH64_CALL26	_mcount
+    368c: 580009e0     	ldr	x0, 0x37c8 <ksu_handle_setuid+0x158>
+    3690: 39400800     	ldrb	w0, [x0, #0x2]
+    3694: 34000860     	cbz	w0, 0x37a0 <ksu_handle_setuid+0x130>
+    3698: f100029f     	cmp	x20, #0x0
+    369c: fa401a64     	ccmp	x19, #0x0, #0x4, ne
+    36a0: 54000800     	b.eq	0x37a0 <ksu_handle_setuid+0x130>
+    36a4: b9400660     	ldr	w0, [x19, #0x4]
+    36a8: 350007c0     	cbnz	w0, 0x37a0 <ksu_handle_setuid+0x130>
+    36ac: b9400694     	ldr	w20, [x20, #0x4]
+    36b0: 528b58a3     	mov	w3, #0x5ac5             // =23237
+    36b4: 72a14f83     	movk	w3, #0xa7c, lsl #16
+    36b8: 5290d402     	mov	w2, #0x86a0             // =34464
+    36bc: 72a00022     	movk	w2, #0x1, lsl #16
+    36c0: 5284e1e1     	mov	w1, #0x270f             // =9999
+    36c4: 53057e80     	lsr	w0, w20, #5
+    36c8: 9ba37c00     	umull	x0, w0, w3
+    36cc: d360fc00     	lsr	x0, x0, #32
+    36d0: 53077c00     	lsr	w0, w0, #7
+    36d4: 1b02d000     	msub	w0, w0, w2, w20
+    36d8: 6b01001f     	cmp	w0, w1
+    36dc: 54000629     	b.ls	0x37a0 <ksu_handle_setuid+0x130>
+    36e0: 5289c3e1     	mov	w1, #0x4e1f             // =19999
+    36e4: 6b01001f     	cmp	w0, w1
+    36e8: 54000128     	b.hi	0x370c <ksu_handle_setuid+0x9c>
+    36ec: 2a1403e0     	mov	w0, w20
+    36f0: 94000000     	bl	0x36f0 <ksu_handle_setuid+0x80>
+		00000000000036f0:  R_AARCH64_CALL26	__ksu_is_allow_uid
+    36f4: 72001c1f     	tst	w0, #0xff
+    36f8: 54000541     	b.ne	0x37a0 <ksu_handle_setuid+0x130>
+    36fc: 2a1403e0     	mov	w0, w20
+    3700: 94000000     	bl	0x3700 <ksu_handle_setuid+0x90>
+		0000000000003700:  R_AARCH64_CALL26	ksu_uid_should_umount
+    3704: 72001c1f     	tst	w0, #0xff
+    3708: 540004c0     	b.eq	0x37a0 <ksu_handle_setuid+0x130>
+    370c: f9403e60     	ldr	x0, [x19, #0x78]
+    3710: 94000000     	bl	0x3710 <ksu_handle_setuid+0xa0>
+		0000000000003710:  R_AARCH64_CALL26	is_zygote
+    3714: 72001c1f     	tst	w0, #0xff
+    3718: 540004c0     	b.eq	0x37b0 <ksu_handle_setuid+0x140>
+    371c: 580005e0     	ldr	x0, 0x37d8 <ksu_handle_setuid+0x168>
+    3720: 52800021     	mov	w1, #0x1                // =1
+    3724: 97fffc25     	bl	0x27b8 <try_umount.isra.1>
+    3728: 580005c0     	ldr	x0, 0x37e0 <ksu_handle_setuid+0x170>
+    372c: 52800021     	mov	w1, #0x1                // =1
+    3730: 97fffc22     	bl	0x27b8 <try_umount.isra.1>
+    3734: 580005a0     	ldr	x0, 0x37e8 <ksu_handle_setuid+0x178>
+    3738: 52800021     	mov	w1, #0x1                // =1
+    373c: 97fffc1f     	bl	0x27b8 <try_umount.isra.1>
+    3740: 58000580     	ldr	x0, 0x37f0 <ksu_handle_setuid+0x180>
+    3744: 52800021     	mov	w1, #0x1                // =1
+    3748: 97fffc1c     	bl	0x27b8 <try_umount.isra.1>
+    374c: 58000560     	ldr	x0, 0x37f8 <ksu_handle_setuid+0x188>
+    3750: 52800021     	mov	w1, #0x1                // =1
+    3754: 97fffc19     	bl	0x27b8 <try_umount.isra.1>
+    3758: 58000540     	ldr	x0, 0x3800 <ksu_handle_setuid+0x190>
+    375c: 52800001     	mov	w1, #0x0                // =0
+    3760: 97fffc16     	bl	0x27b8 <try_umount.isra.1>
+    3764: 58000520     	ldr	x0, 0x3808 <ksu_handle_setuid+0x198>
+    3768: 52800001     	mov	w1, #0x0                // =0
+    376c: 97fffc13     	bl	0x27b8 <try_umount.isra.1>
+    3770: 58000500     	ldr	x0, 0x3810 <ksu_handle_setuid+0x1a0>
+    3774: 52800001     	mov	w1, #0x0                // =0
+    3778: 97fffc10     	bl	0x27b8 <try_umount.isra.1>
+    377c: 580004e0     	ldr	x0, 0x3818 <ksu_handle_setuid+0x1a8>
+    3780: 52800001     	mov	w1, #0x0                // =0
+    3784: 97fffc0d     	bl	0x27b8 <try_umount.isra.1>
+    3788: 580004c0     	ldr	x0, 0x3820 <ksu_handle_setuid+0x1b0>
+    378c: 52800001     	mov	w1, #0x0                // =0
+    3790: 97fffc0a     	bl	0x27b8 <try_umount.isra.1>
+    3794: 580004a0     	ldr	x0, 0x3828 <ksu_handle_setuid+0x1b8>
+    3798: 52800001     	mov	w1, #0x0                // =0
+    379c: 97fffc07     	bl	0x27b8 <try_umount.isra.1>
+    37a0: 52800000     	mov	w0, #0x0                // =0
+    37a4: a94153f3     	ldp	x19, x20, [sp, #0x10]
+    37a8: a8c27bfd     	ldp	x29, x30, [sp], #0x20
+    37ac: d65f03c0     	ret
+    37b0: d5384101     	mrs	x1, SP_EL0
+    37b4: 580000e0     	ldr	x0, 0x37d0 <ksu_handle_setuid+0x160>
+    37b8: b9455821     	ldr	w1, [x1, #0x558]
+    37bc: 94000000     	bl	0x37bc <ksu_handle_setuid+0x14c>
+		00000000000037bc:  R_AARCH64_CALL26	printk
+    37c0: 17fffff8     	b	0x37a0 <ksu_handle_setuid+0x130>
+    37c4: d503201f     	nop
+    37c8: 00 00 00 00  	.word	0x00000000
+		00000000000037c8:  R_AARCH64_ABS64	.bss+0x150
+    37cc: 00 00 00 00  	.word	0x00000000
+    37d0: 00 00 00 00  	.word	0x00000000
+		00000000000037d0:  R_AARCH64_ABS64	.rodata.str1.8+0x1188
+    37d4: 00 00 00 00  	.word	0x00000000
+    37d8: 00 00 00 00  	.word	0x00000000
+		00000000000037d8:  R_AARCH64_ABS64	.rodata.str1.8+0x11c0
+    37dc: 00 00 00 00  	.word	0x00000000
+    37e0: 00 00 00 00  	.word	0x00000000
+		00000000000037e0:  R_AARCH64_ABS64	.rodata.str1.8+0x11c8
+    37e4: 00 00 00 00  	.word	0x00000000
+    37e8: 00 00 00 00  	.word	0x00000000
+		00000000000037e8:  R_AARCH64_ABS64	.rodata.str1.8+0x11d0
+    37ec: 00 00 00 00  	.word	0x00000000
+    37f0: 00 00 00 00  	.word	0x00000000
+		00000000000037f0:  R_AARCH64_ABS64	.rodata.str1.8+0x11e0
+    37f4: 00 00 00 00  	.word	0x00000000
+    37f8: 00 00 00 00  	.word	0x00000000
+		00000000000037f8:  R_AARCH64_ABS64	.rodata.str1.8+0x11e8
+    37fc: 00 00 00 00  	.word	0x00000000
+    3800: 00 00 00 00  	.word	0x00000000
+		0000000000003800:  R_AARCH64_ABS64	.rodata.str1.8+0xfc0
+    3804: 00 00 00 00  	.word	0x00000000
+    3808: 00 00 00 00  	.word	0x00000000
+		0000000000003808:  R_AARCH64_ABS64	.rodata.str1.8+0x11f8
+    380c: 00 00 00 00  	.word	0x00000000
+    3810: 00 00 00 00  	.word	0x00000000
+		0000000000003810:  R_AARCH64_ABS64	.rodata.str1.8+0x1208
+    3814: 00 00 00 00  	.word	0x00000000
+    3818: 00 00 00 00  	.word	0x00000000
+		0000000000003818:  R_AARCH64_ABS64	.rodata.str1.8+0x1210
+    381c: 00 00 00 00  	.word	0x00000000
+    3820: 00 00 00 00  	.word	0x00000000
+		0000000000003820:  R_AARCH64_ABS64	.rodata.str1.8+0x1228
+    3824: 00 00 00 00  	.word	0x00000000
+    3828: 00 00 00 00  	.word	0x00000000
+		0000000000003828:  R_AARCH64_ABS64	.rodata.str1.8+0x1250
+    382c: 00 00 00 00  	.word	0x00000000
+
+0000000000003830 <ksu_key_permission>:
+    3830: a9be7bfd     	stp	x29, x30, [sp, #-0x20]!
+    3834: 910003fd     	mov	x29, sp
+    3838: a90153f3     	stp	x19, x20, [sp, #0x10]
+    383c: aa1e03e0     	mov	x0, x30
+    3840: aa0103f4     	mov	x20, x1
+    3844: 94000000     	bl	0x3844 <ksu_key_permission+0x14>
+		0000000000003844:  R_AARCH64_CALL26	_mcount
+    3848: 58000253     	ldr	x19, 0x3890 <ksu_key_permission+0x60>
+    384c: f9400260     	ldr	x0, [x19]
+    3850: b40000c0     	cbz	x0, 0x3868 <ksu_key_permission+0x38>
+    3854: 52800000     	mov	w0, #0x0                // =0
+    3858: a94153f3     	ldp	x19, x20, [sp, #0x10]
+    385c: a8c27bfd     	ldp	x29, x30, [sp], #0x20
+    3860: d65f03c0     	ret
+    3864: d503201f     	nop
+    3868: 58000181     	ldr	x1, 0x3898 <ksu_key_permission+0x68>
+    386c: d5384100     	mrs	x0, SP_EL0
+    3870: 911c6000     	add	x0, x0, #0x718
+    3874: 94000000     	bl	0x3874 <ksu_key_permission+0x44>
+		0000000000003874:  R_AARCH64_CALL26	strcmp
+    3878: 35fffee0     	cbnz	w0, 0x3854 <ksu_key_permission+0x24>
+    387c: f9402e81     	ldr	x1, [x20, #0x58]
+    3880: 58000100     	ldr	x0, 0x38a0 <ksu_key_permission+0x70>
+    3884: f9000261     	str	x1, [x19]
+    3888: 94000000     	bl	0x3888 <ksu_key_permission+0x58>
+		0000000000003888:  R_AARCH64_CALL26	printk
+    388c: 17fffff2     	b	0x3854 <ksu_key_permission+0x24>
+    3890: 00 00 00 00  	.word	0x00000000
+		0000000000003890:  R_AARCH64_ABS64	init_session_keyring
+    3894: 00 00 00 00  	.word	0x00000000
+    3898: 00 00 00 00  	.word	0x00000000
+		0000000000003898:  R_AARCH64_ABS64	.rodata.str1.8+0x1278
+    389c: 00 00 00 00  	.word	0x00000000
+    38a0: 00 00 00 00  	.word	0x00000000
+		00000000000038a0:  R_AARCH64_ABS64	.rodata.str1.8+0x1280
+    38a4: 00 00 00 00  	.word	0x00000000
+
+00000000000038a8 <ksu_core_exit>:
+    38a8: a9bf7bfd     	stp	x29, x30, [sp, #-0x10]!
+    38ac: 910003fd     	mov	x29, sp
+    38b0: aa1e03e0     	mov	x0, x30
+    38b4: 94000000     	bl	0x38b4 <ksu_core_exit+0xc>
+		00000000000038b4:  R_AARCH64_CALL26	_mcount
+    38b8: a8c17bfd     	ldp	x29, x30, [sp], #0x10
+    38bc: d65f03c0     	ret
+
+00000000000038c0 <read_iter_proxy>:
+    38c0: a9bd7bfd     	stp	x29, x30, [sp, #-0x30]!
+    38c4: 910003fd     	mov	x29, sp
+    38c8: a90153f3     	stp	x19, x20, [sp, #0x10]
+    38cc: f90013f5     	str	x21, [sp, #0x20]
+    38d0: aa0003f3     	mov	x19, x0
+    38d4: aa0103f5     	mov	x21, x1
+    38d8: aa1e03e0     	mov	x0, x30
+    38dc: 94000000     	bl	0x38dc <read_iter_proxy+0x1c>
+		00000000000038dc:  R_AARCH64_CALL26	_mcount
+    38e0: 58000294     	ldr	x20, 0x3930 <read_iter_proxy+0x70>
+    38e4: aa1503e1     	mov	x1, x21
+    38e8: f9400675     	ldr	x21, [x19, #0x8]
+    38ec: aa1303e0     	mov	x0, x19
+    38f0: f9400282     	ldr	x2, [x20]
+    38f4: d63f0040     	blr	x2
+    38f8: aa0003f3     	mov	x19, x0
+    38fc: b40000d5     	cbz	x21, 0x3914 <read_iter_proxy+0x54>
+    3900: aa1303e0     	mov	x0, x19
+    3904: f94013f5     	ldr	x21, [sp, #0x20]
+    3908: a94153f3     	ldp	x19, x20, [sp, #0x10]
+    390c: a8c37bfd     	ldp	x29, x30, [sp], #0x30
+    3910: d65f03c0     	ret
+    3914: 58000120     	ldr	x0, 0x3938 <read_iter_proxy+0x78>
+    3918: aa1303e1     	mov	x1, x19
+    391c: f9400682     	ldr	x2, [x20, #0x8]
+    3920: 94000000     	bl	0x3920 <read_iter_proxy+0x60>
+		0000000000003920:  R_AARCH64_CALL26	printk
+    3924: f9400680     	ldr	x0, [x20, #0x8]
+    3928: 8b000273     	add	x19, x19, x0
+    392c: 17fffff5     	b	0x3900 <read_iter_proxy+0x40>
+    3930: 00 00 00 00  	.word	0x00000000
+		0000000000003930:  R_AARCH64_ABS64	.bss+0x158
+    3934: 00 00 00 00  	.word	0x00000000
+    3938: 00 00 00 00  	.word	0x00000000
+		0000000000003938:  R_AARCH64_ABS64	.rodata.str1.8+0x12b8
+    393c: 00 00 00 00  	.word	0x00000000
+
+0000000000003940 <read_proxy>:
+    3940: a9bc7bfd     	stp	x29, x30, [sp, #-0x40]!
+    3944: 910003fd     	mov	x29, sp
+    3948: a90153f3     	stp	x19, x20, [sp, #0x10]
+    394c: a9025bf5     	stp	x21, x22, [sp, #0x20]
+    3950: a90363f7     	stp	x23, x24, [sp, #0x30]
+    3954: aa0003f3     	mov	x19, x0
+    3958: aa0103f6     	mov	x22, x1
+    395c: aa1e03e0     	mov	x0, x30
+    3960: aa0203f7     	mov	x23, x2
+    3964: aa0303f8     	mov	x24, x3
+    3968: 94000000     	bl	0x3968 <read_proxy+0x28>
+		0000000000003968:  R_AARCH64_CALL26	_mcount
+    396c: 580002f4     	ldr	x20, 0x39c8 <read_proxy+0x88>
+    3970: aa1303e0     	mov	x0, x19
+    3974: f9403a75     	ldr	x21, [x19, #0x70]
+    3978: aa1803e3     	mov	x3, x24
+    397c: aa1703e2     	mov	x2, x23
+    3980: aa1603e1     	mov	x1, x22
+    3984: f9400a84     	ldr	x4, [x20, #0x10]
+    3988: d63f0080     	blr	x4
+    398c: aa0003f3     	mov	x19, x0
+    3990: b40000f5     	cbz	x21, 0x39ac <read_proxy+0x6c>
+    3994: aa1303e0     	mov	x0, x19
+    3998: a94153f3     	ldp	x19, x20, [sp, #0x10]
+    399c: a9425bf5     	ldp	x21, x22, [sp, #0x20]
+    39a0: a94363f7     	ldp	x23, x24, [sp, #0x30]
+    39a4: a8c47bfd     	ldp	x29, x30, [sp], #0x40
+    39a8: d65f03c0     	ret
+    39ac: 58000120     	ldr	x0, 0x39d0 <read_proxy+0x90>
+    39b0: aa1303e1     	mov	x1, x19
+    39b4: f9400682     	ldr	x2, [x20, #0x8]
+    39b8: 94000000     	bl	0x39b8 <read_proxy+0x78>
+		00000000000039b8:  R_AARCH64_CALL26	printk
+    39bc: f9400680     	ldr	x0, [x20, #0x8]
+    39c0: 8b000273     	add	x19, x19, x0
+    39c4: 17fffff4     	b	0x3994 <read_proxy+0x54>
+    39c8: 00 00 00 00  	.word	0x00000000
+		00000000000039c8:  R_AARCH64_ABS64	.bss+0x158
+    39cc: 00 00 00 00  	.word	0x00000000
+    39d0: 00 00 00 00  	.word	0x00000000
+		00000000000039d0:  R_AARCH64_ABS64	.rodata.str1.8+0x12e8
+    39d4: 00 00 00 00  	.word	0x00000000
+
+00000000000039d8 <get_user_arg_ptr.isra.1>:
+    39d8: a9bd7bfd     	stp	x29, x30, [sp, #-0x30]!
+    39dc: 910003fd     	mov	x29, sp
+    39e0: a90153f3     	stp	x19, x20, [sp, #0x10]
+    39e4: f90013f5     	str	x21, [sp, #0x20]
+    39e8: 12001c13     	and	w19, w0, #0xff
+    39ec: aa0103f5     	mov	x21, x1
+    39f0: aa1e03e0     	mov	x0, x30
+    39f4: 2a0203f4     	mov	w20, w2
+    39f8: 94000000     	bl	0x39f8 <get_user_arg_ptr.isra.1+0x20>
+		00000000000039f8:  R_AARCH64_CALL26	_mcount
+    39fc: 58000760     	ldr	x0, 0x3ae8 <get_user_arg_ptr.isra.1+0x110>
+    3a00: 35000413     	cbnz	w19, 0x3a80 <get_user_arg_ptr.isra.1+0xa8>
+    3a04: 52800ee1     	mov	w1, #0x77               // =119
+    3a08: 94000000     	bl	0x3a08 <get_user_arg_ptr.isra.1+0x30>
+		0000000000003a08:  R_AARCH64_CALL26	__might_fault
+    3a0c: d5384101     	mrs	x1, SP_EL0
+    3a10: f9400422     	ldr	x2, [x1, #0x8]
+    3a14: 8b34ceb4     	add	x20, x21, w20, sxtw #3
+    3a18: aa1403e0     	mov	x0, x20
+    3a1c: aa0203e1     	mov	x1, x2
+    3a20: b1002000     	adds	x0, x0, #0x8
+    3a24: 9a8183e1     	csel	x1, xzr, x1, hi
+    3a28: da9f3000     	csinv	x0, x0, xzr, lo
+    3a2c: fa01001f     	sbcs	xzr, x0, x1
+    3a30: 9a9f87e0     	cset	x0, ls
+    3a34: b50000e0     	cbnz	x0, 0x3a50 <get_user_arg_ptr.isra.1+0x78>
+    3a38: 928001a0     	mov	x0, #-0xe               // =-14
+    3a3c: a94153f3     	ldp	x19, x20, [sp, #0x10]
+    3a40: f94013f5     	ldr	x21, [sp, #0x20]
+    3a44: a8c37bfd     	ldp	x29, x30, [sp], #0x30
+    3a48: d65f03c0     	ret
+    3a4c: d503201f     	nop
+    3a50: ea22029f     	bics	xzr, x20, x2
+    3a54: 9a9f0281     	csel	x1, x20, xzr, eq
+    3a58: d503229f     	csdb
+    3a5c: d503201f     	nop
+    3a60: f9400020     	ldr	x0, [x1]
+    3a64: d503201f     	nop
+    3a68: 35fffe93     	cbnz	w19, 0x3a38 <get_user_arg_ptr.isra.1+0x60>
+    3a6c: a94153f3     	ldp	x19, x20, [sp, #0x10]
+    3a70: f94013f5     	ldr	x21, [sp, #0x20]
+    3a74: a8c37bfd     	ldp	x29, x30, [sp], #0x30
+    3a78: d65f03c0     	ret
+    3a7c: d503201f     	nop
+    3a80: 52800de1     	mov	w1, #0x6f               // =111
+    3a84: 94000000     	bl	0x3a84 <get_user_arg_ptr.isra.1+0xac>
+		0000000000003a84:  R_AARCH64_CALL26	__might_fault
+    3a88: d5384101     	mrs	x1, SP_EL0
+    3a8c: f9400422     	ldr	x2, [x1, #0x8]
+    3a90: 8b34cab4     	add	x20, x21, w20, sxtw #2
+    3a94: aa1403e0     	mov	x0, x20
+    3a98: aa0203e1     	mov	x1, x2
+    3a9c: b1001000     	adds	x0, x0, #0x4
+    3aa0: 9a8183e1     	csel	x1, xzr, x1, hi
+    3aa4: da9f3000     	csinv	x0, x0, xzr, lo
+    3aa8: fa01001f     	sbcs	xzr, x0, x1
+    3aac: 9a9f87e0     	cset	x0, ls
+    3ab0: b4fffc40     	cbz	x0, 0x3a38 <get_user_arg_ptr.isra.1+0x60>
+    3ab4: ea22029f     	bics	xzr, x20, x2
+    3ab8: 9a9f0283     	csel	x3, x20, xzr, eq
+    3abc: d503229f     	csdb
+    3ac0: d503201f     	nop
+    3ac4: 52800001     	mov	w1, #0x0                // =0
+    3ac8: b9400060     	ldr	w0, [x3]
+    3acc: d503201f     	nop
+    3ad0: 35fffb41     	cbnz	w1, 0x3a38 <get_user_arg_ptr.isra.1+0x60>
+    3ad4: 580000e1     	ldr	x1, 0x3af0 <get_user_arg_ptr.isra.1+0x118>
+    3ad8: 52800022     	mov	w2, #0x1                // =1
+    3adc: 92407c00     	and	x0, x0, #0xffffffff
+    3ae0: 39000022     	strb	w2, [x1]
+    3ae4: 17ffffd6     	b	0x3a3c <get_user_arg_ptr.isra.1+0x64>
+    3ae8: 00 00 00 00  	.word	0x00000000
+		0000000000003ae8:  R_AARCH64_ABS64	.rodata.str1.8+0x1318
+    3aec: 00 00 00 00  	.word	0x00000000
+    3af0: 00 00 00 00  	.word	0x00000000
+		0000000000003af0:  R_AARCH64_ABS64	.data..read_mostly+0x3001
+    3af4: 00 00 00 00  	.word	0x00000000
+
+0000000000003af8 <ksu_handle_vfs_read.part.5>:
+    3af8: a9ab7bfd     	stp	x29, x30, [sp, #-0x150]!
+    3afc: 910003fd     	mov	x29, sp

@@ -1,0 +1,83 @@
+   Compiling lzma-sys v0.1.20
+   Compiling xz2 v0.1.7
+   Compiling zip v3.0.0
+   Compiling zip-extensions v0.8.3
+   Compiling ksud v0.1.0 (/home/erick/Documentos/projetos/aquaman_9_PI_2055/work/ksu-lkm-fix/upstream/userspace/ksud_magic)
+warning: hiding a lifetime that's elided elsewhere is confusing
+  --> src/sepolicy.rs:22:30
+   |
+22 | fn parse_bracket_objs(input: &str) -> IResult<&str, SeObject> {
+   |                              ^^^^             ^^^^  ^^^^^^^^ the same lifetime is hidden here
+   |                              |                |
+   |                              |                the same lifetime is elided here
+   |                              the lifetime is elided here
+   |
+   = help: the same lifetime is referred to in inconsistent ways, making the signature confusing
+   = note: `#[warn(mismatched_lifetime_syntaxes)]` on by default
+help: use `'_` for type paths
+   |
+22 | fn parse_bracket_objs(input: &str) -> IResult<&str, SeObject<'_>> {
+   |                                                             ++++
+
+warning: hiding a lifetime that's elided elsewhere is confusing
+  --> src/sepolicy.rs:32:28
+   |
+32 | fn parse_single_obj(input: &str) -> IResult<&str, SeObject> {
+   |                            ^^^^             ^^^^  ^^^^^^^^ the same lifetime is hidden here
+   |                            |                |
+   |                            |                the same lifetime is elided here
+   |                            the lifetime is elided here
+   |
+   = help: the same lifetime is referred to in inconsistent ways, making the signature confusing
+help: use `'_` for type paths
+   |
+32 | fn parse_single_obj(input: &str) -> IResult<&str, SeObject<'_>> {
+   |                                                           ++++
+
+warning: hiding a lifetime that's elided elsewhere is confusing
+  --> src/sepolicy.rs:37:22
+   |
+37 | fn parse_star(input: &str) -> IResult<&str, SeObject> {
+   |                      ^^^^             ^^^^  ^^^^^^^^ the same lifetime is hidden here
+   |                      |                |
+   |                      |                the same lifetime is elided here
+   |                      the lifetime is elided here
+   |
+   = help: the same lifetime is referred to in inconsistent ways, making the signature confusing
+help: use `'_` for type paths
+   |
+37 | fn parse_star(input: &str) -> IResult<&str, SeObject<'_>> {
+   |                                                     ++++
+
+warning: hiding a lifetime that's elided elsewhere is confusing
+  --> src/sepolicy.rs:45:23
+   |
+45 | fn parse_seobj(input: &str) -> IResult<&str, SeObject> {
+   |                       ^^^^             ^^^^  ^^^^^^^^ the same lifetime is hidden here
+   |                       |                |
+   |                       |                the same lifetime is elided here
+   |                       the lifetime is elided here
+   |
+   = help: the same lifetime is referred to in inconsistent ways, making the signature confusing
+help: use `'_` for type paths
+   |
+45 | fn parse_seobj(input: &str) -> IResult<&str, SeObject<'_>> {
+   |                                                      ++++
+
+warning: hiding a lifetime that's elided elsewhere is confusing
+  --> src/sepolicy.rs:50:31
+   |
+50 | fn parse_seobj_no_star(input: &str) -> IResult<&str, SeObject> {
+   |                               ^^^^             ^^^^  ^^^^^^^^ the same lifetime is hidden here
+   |                               |                |
+   |                               |                the same lifetime is elided here
+   |                               the lifetime is elided here
+   |
+   = help: the same lifetime is referred to in inconsistent ways, making the signature confusing
+help: use `'_` for type paths
+   |
+50 | fn parse_seobj_no_star(input: &str) -> IResult<&str, SeObject<'_>> {
+   |                                                              ++++
+
+warning: `ksud` (bin "ksud") generated 5 warnings (run `cargo fix --bin "ksud" -p ksud` to apply 5 suggestions)
+    Finished `release` profile [optimized] target(s) in 17.52s

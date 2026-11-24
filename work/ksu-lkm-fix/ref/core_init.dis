@@ -1,0 +1,236 @@
+
+work/ksu-lkm-fix/ref/kernelsu_stock_img.ko:	file format elf64-littleaarch64
+
+Disassembly of section .text:
+
+0000000000000040 <ksu_handle_execveat>:
+      a8: f9401bf7     	ldr	x23, [sp, #0x30]
+      ac: a8c47bfd     	ldp	x29, x30, [sp], #0x40
+      b0: d65f03c0     	ret
+      b4: d503201f     	nop
+
+00000000000000b8 <kernelsu_exit>:
+      b8: a9bf7bfd     	stp	x29, x30, [sp, #-0x10]!
+      bc: 910003fd     	mov	x29, sp
+      c0: aa1e03e0     	mov	x0, x30
+      c4: 94000000     	bl	0xc4 <kernelsu_exit+0xc>
+		00000000000000c4:  R_AARCH64_CALL26	_mcount
+      c8: 94000000     	bl	0xc8 <kernelsu_exit+0x10>
+		00000000000000c8:  R_AARCH64_CALL26	ksu_hook_exit
+      cc: 94000000     	bl	0xcc <kernelsu_exit+0x14>
+		00000000000000cc:  R_AARCH64_CALL26	ksu_allowlist_exit
+      d0: 94000000     	bl	0xd0 <kernelsu_exit+0x18>
+		00000000000000d0:  R_AARCH64_CALL26	ksu_throne_tracker_exit
+      d4: 58000120     	ldr	x0, 0xf8 <kernelsu_exit+0x40>
+      d8: f9400000     	ldr	x0, [x0]
+      dc: 94000000     	bl	0xdc <kernelsu_exit+0x24>
+		00000000000000dc:  R_AARCH64_CALL26	destroy_workqueue
+      e0: 94000000     	bl	0xe0 <kernelsu_exit+0x28>
+		00000000000000e0:  R_AARCH64_CALL26	ksu_ksud_exit
+      e4: 94000000     	bl	0xe4 <kernelsu_exit+0x2c>
+		00000000000000e4:  R_AARCH64_CALL26	ksu_sucompat_exit
+      e8: 94000000     	bl	0xe8 <kernelsu_exit+0x30>
+		00000000000000e8:  R_AARCH64_CALL26	ksu_core_exit
+      ec: a8c17bfd     	ldp	x29, x30, [sp], #0x10
+      f0: d65f03c0     	ret
+      f4: d503201f     	nop
+      f8: 00 00 00 00  	.word	0x00000000
+		00000000000000f8:  R_AARCH64_ABS64	.bss
+      fc: 00 00 00 00  	.word	0x00000000
+
+0000000000000100 <do_save_allow_list>:
+     100: a9bc7bfd     	stp	x29, x30, [sp, #-0x40]!
+     104: 910003fd     	mov	x29, sp
+     108: a90153f3     	stp	x19, x20, [sp, #0x10]
+     10c: a9025bf5     	stp	x21, x22, [sp, #0x20]
+     110: aa1e03e0     	mov	x0, x30
+     114: 94000000     	bl	0x114 <do_save_allow_list+0x14>
+		0000000000000114:  R_AARCH64_CALL26	_mcount
+     118: 58000800     	ldr	x0, 0x218 <do_save_allow_list+0x118>
+     11c: 528a6aa2     	mov	w2, #0x5355             // =21333
+     120: 72afe962     	movk	w2, #0x7f4b, lsl #16
+     124: 52800061     	mov	w1, #0x3                // =3
+     128: f9001fbf     	str	xzr, [x29, #0x38]
+     12c: 290607a2     	stp	w2, w1, [x29, #0x30]
+     130: 52803482     	mov	w2, #0x1a4              // =420
+     134: 52804821     	mov	w1, #0x241              // =577
+     138: 94000000     	bl	0x138 <do_save_allow_list+0x38>
+		0000000000000138:  R_AARCH64_CALL26	ksu_filp_open_compat
+     13c: aa0003f3     	mov	x19, x0
+     140: b140041f     	cmn	x0, #0x1, lsl #12       // =0x1000
+     144: 54000328     	b.hi	0x1a8 <do_save_allow_list+0xa8>
+     148: d2800082     	mov	x2, #0x4                // =4
+     14c: 9100e3a3     	add	x3, x29, #0x38
+     150: 9100c3a1     	add	x1, x29, #0x30
+     154: 94000000     	bl	0x154 <do_save_allow_list+0x54>
+		0000000000000154:  R_AARCH64_CALL26	ksu_kernel_write_compat
+     158: f100101f     	cmp	x0, #0x4
+     15c: 54000341     	b.ne	0x1c4 <do_save_allow_list+0xc4>
+     160: aa0003e2     	mov	x2, x0
+     164: 9100e3a3     	add	x3, x29, #0x38
+     168: 9100d3a1     	add	x1, x29, #0x34
+     16c: aa1303e0     	mov	x0, x19
+     170: 94000000     	bl	0x170 <do_save_allow_list+0x70>
+		0000000000000170:  R_AARCH64_CALL26	ksu_kernel_write_compat
+     174: f100101f     	cmp	x0, #0x4
+     178: 540004a1     	b.ne	0x20c <do_save_allow_list+0x10c>
+     17c: 580005f4     	ldr	x20, 0x238 <do_save_allow_list+0x138>
+     180: f9400295     	ldr	x21, [x20]
+     184: eb1402bf     	cmp	x21, x20
+     188: 54000241     	b.ne	0x1d0 <do_save_allow_list+0xd0>
+     18c: d2800001     	mov	x1, #0x0                // =0
+     190: aa1303e0     	mov	x0, x19
+     194: 94000000     	bl	0x194 <do_save_allow_list+0x94>
+		0000000000000194:  R_AARCH64_CALL26	filp_close
+     198: a94153f3     	ldp	x19, x20, [sp, #0x10]
+     19c: a9425bf5     	ldp	x21, x22, [sp, #0x20]
+     1a0: a8c47bfd     	ldp	x29, x30, [sp], #0x40
+     1a4: d65f03c0     	ret
+     1a8: 580003c0     	ldr	x0, 0x220 <do_save_allow_list+0x120>
+     1ac: aa1303e1     	mov	x1, x19
+     1b0: 94000000     	bl	0x1b0 <do_save_allow_list+0xb0>
+		00000000000001b0:  R_AARCH64_CALL26	printk
+     1b4: a94153f3     	ldp	x19, x20, [sp, #0x10]
+     1b8: a9425bf5     	ldp	x21, x22, [sp, #0x20]
+     1bc: a8c47bfd     	ldp	x29, x30, [sp], #0x40
+     1c0: d65f03c0     	ret
+     1c4: 58000320     	ldr	x0, 0x228 <do_save_allow_list+0x128>
+     1c8: 94000000     	bl	0x1c8 <do_save_allow_list+0xc8>
+		00000000000001c8:  R_AARCH64_CALL26	printk
+     1cc: 17fffff0     	b	0x18c <do_save_allow_list+0x8c>
+     1d0: 58000396     	ldr	x22, 0x240 <do_save_allow_list+0x140>
+     1d4: 394462a3     	ldrb	w3, [x21, #0x118]
+     1d8: 910052a1     	add	x1, x21, #0x14
+     1dc: b94116a2     	ldr	w2, [x21, #0x114]
+     1e0: aa1603e0     	mov	x0, x22
+     1e4: 94000000     	bl	0x1e4 <do_save_allow_list+0xe4>
+		00000000000001e4:  R_AARCH64_CALL26	printk
+     1e8: 910042a1     	add	x1, x21, #0x10
+     1ec: 9100e3a3     	add	x3, x29, #0x38
+     1f0: d2806102     	mov	x2, #0x308              // =776
+     1f4: aa1303e0     	mov	x0, x19
+     1f8: 94000000     	bl	0x1f8 <do_save_allow_list+0xf8>
+		00000000000001f8:  R_AARCH64_CALL26	ksu_kernel_write_compat
+     1fc: f94002b5     	ldr	x21, [x21]
+     200: eb1402bf     	cmp	x21, x20
+     204: 54fffc40     	b.eq	0x18c <do_save_allow_list+0x8c>
+     208: 17fffff3     	b	0x1d4 <do_save_allow_list+0xd4>
+     20c: 58000120     	ldr	x0, 0x230 <do_save_allow_list+0x130>
+     210: 94000000     	bl	0x210 <do_save_allow_list+0x110>
+		0000000000000210:  R_AARCH64_CALL26	printk
+     214: 17ffffde     	b	0x18c <do_save_allow_list+0x8c>
+     218: 00 00 00 00  	.word	0x00000000
+		0000000000000218:  R_AARCH64_ABS64	.rodata.str1.8+0x50
+     21c: 00 00 00 00  	.word	0x00000000
+     220: 00 00 00 00  	.word	0x00000000
+		0000000000000220:  R_AARCH64_ABS64	.rodata.str1.8+0x70
+     224: 00 00 00 00  	.word	0x00000000
+     228: 00 00 00 00  	.word	0x00000000
+		0000000000000228:  R_AARCH64_ABS64	.rodata.str1.8+0xa8
+     22c: 00 00 00 00  	.word	0x00000000
+     230: 00 00 00 00  	.word	0x00000000
+		0000000000000230:  R_AARCH64_ABS64	.rodata.str1.8+0xe0
+     234: 00 00 00 00  	.word	0x00000000
+     238: 00 00 00 00  	.word	0x00000000
+		0000000000000238:  R_AARCH64_ABS64	.bss+0x8
+     23c: 00 00 00 00  	.word	0x00000000
+     240: 00 00 00 00  	.word	0x00000000
+		0000000000000240:  R_AARCH64_ABS64	.rodata.str1.8+0x118
+     244: 00 00 00 00  	.word	0x00000000
+
+0000000000000248 <remove_uid_from_arr.part.0>:
+     248: a9be7bfd     	stp	x29, x30, [sp, #-0x20]!
+     24c: 910003fd     	mov	x29, sp
+     250: a90153f3     	stp	x19, x20, [sp, #0x10]
+     254: 2a0003f3     	mov	w19, w0
+     258: aa1e03e0     	mov	x0, x30
+     25c: 94000000     	bl	0x25c <remove_uid_from_arr.part.0+0x14>
+		000000000000025c:  R_AARCH64_CALL26	_mcount
+     260: 58000640     	ldr	x0, 0x328 <remove_uid_from_arr.part.0+0xe0>
+     264: 52801801     	mov	w1, #0xc0               // =192
+     268: d2820002     	mov	x2, #0x1000             // =4096
+     26c: 72a04801     	movk	w1, #0x240, lsl #16
+     270: f9403000     	ldr	x0, [x0, #0x60]
+     274: 94000000     	bl	0x274 <remove_uid_from_arr.part.0+0x2c>
+		0000000000000274:  R_AARCH64_CALL26	kmem_cache_alloc_trace
+     278: aa0003f4     	mov	x20, x0
+     27c: b40004e0     	cbz	x0, 0x318 <remove_uid_from_arr.part.0+0xd0>
+     280: 58000585     	ldr	x5, 0x330 <remove_uid_from_arr.part.0+0xe8>
+     284: b94000a1     	ldr	w1, [x5]
+     288: 7100003f     	cmp	w1, #0x0
+     28c: 540003ed     	b.le	0x308 <remove_uid_from_arr.part.0+0xc0>
+     290: 580005c0     	ldr	x0, 0x348 <remove_uid_from_arr.part.0+0x100>
+     294: 51000424     	sub	w4, w1, #0x1
+     298: 91000484     	add	x4, x4, #0x1
+     29c: 52800003     	mov	w3, #0x0                // =0
+     2a0: aa0003e1     	mov	x1, x0
+     2a4: 8b040804     	add	x4, x0, x4, lsl #2
+
+Disassembly of section .init.text:
+
+00000000000000a8 <ksu_core_init>:
+      a8: a9bf7bfd     	stp	x29, x30, [sp, #-0x10]!
+      ac: 910003fd     	mov	x29, sp
+      b0: 58000080     	ldr	x0, 0xc0 <ksu_core_init+0x18>
+      b4: 94000000     	bl	0xb4 <ksu_core_init+0xc>
+		00000000000000b4:  R_AARCH64_CALL26	printk
+      b8: a8c17bfd     	ldp	x29, x30, [sp], #0x10
+      bc: d65f03c0     	ret
+      c0: 00 00 00 00  	.word	0x00000000
+		00000000000000c0:  R_AARCH64_ABS64	.rodata.str1.8+0xc68
+      c4: 00 00 00 00  	.word	0x00000000
+
+Disassembly of section .text.unlikely:
+
+0000000000000000 <crown_manager>:
+      a8: 9100c3b5     	add	x21, x29, #0x30
+      ac: aa1303e2     	mov	x2, x19
+      b0: 91000681     	add	x1, x20, #0x1
+      b4: aa1503e0     	mov	x0, x21
+      b8: 94000000     	bl	0xb8 <crown_manager+0xb8>
+		00000000000000b8:  R_AARCH64_CALL26	strncpy
+      bc: 580003a0     	ldr	x0, 0x130 <crown_manager+0x130>
+      c0: aa1503e1     	mov	x1, x21
+      c4: 38336abf     	strb	wzr, [x21, x19]
+      c8: 94000000     	bl	0xc8 <crown_manager+0xc8>
+		00000000000000c8:  R_AARCH64_CALL26	printk
+      cc: f94002d3     	ldr	x19, [x22]
+      d0: eb1302df     	cmp	x22, x19
+      d4: 54000260     	b.eq	0x120 <crown_manager+0x120>
+      d8: 91005260     	add	x0, x19, #0x14
+      dc: d2802002     	mov	x2, #0x100              // =256
+      e0: aa1503e1     	mov	x1, x21
+      e4: 94000000     	bl	0xe4 <crown_manager+0xe4>
+		00000000000000e4:  R_AARCH64_CALL26	strncmp
+      e8: 35000120     	cbnz	w0, 0x10c <crown_manager+0x10c>
+      ec: 58000260     	ldr	x0, 0x138 <crown_manager+0x138>
+      f0: aa1503e1     	mov	x1, x21
+      f4: b9401262     	ldr	w2, [x19, #0x10]
+      f8: 94000000     	bl	0xf8 <crown_manager+0xf8>
+		00000000000000f8:  R_AARCH64_CALL26	printk
+      fc: 58000220     	ldr	x0, 0x140 <crown_manager+0x140>
+     100: b9401261     	ldr	w1, [x19, #0x10]
+     104: b9000001     	str	w1, [x0]
+     108: 14000006     	b	0x120 <crown_manager+0x120>
+     10c: f9400273     	ldr	x19, [x19]
+     110: 17fffff0     	b	0xd0 <crown_manager+0xd0>
+     114: 580001a0     	ldr	x0, 0x148 <crown_manager+0x148>
+     118: aa1503e1     	mov	x1, x21
+     11c: 94000000     	bl	0x11c <crown_manager+0x11c>
+		000000000000011c:  R_AARCH64_CALL26	printk
+     120: a94153f3     	ldp	x19, x20, [sp, #0x10]
+     124: a9425bf5     	ldp	x21, x22, [sp, #0x20]
+     128: a8d37bfd     	ldp	x29, x30, [sp], #0x130
+     12c: d65f03c0     	ret
+     130: 00 00 00 00  	.word	0x00000000
+		0000000000000130:  R_AARCH64_ABS64	.rodata.str1.8+0x7e8
+     134: 00 00 00 00  	.word	0x00000000
+     138: 00 00 00 00  	.word	0x00000000
+		0000000000000138:  R_AARCH64_ABS64	.rodata.str1.8+0x808
+     13c: 00 00 00 00  	.word	0x00000000
+     140: 00 00 00 00  	.word	0x00000000
+		0000000000000140:  R_AARCH64_ABS64	.data+0x70
+     144: 00 00 00 00  	.word	0x00000000
+     148: 00 00 00 00  	.word	0x00000000
+		0000000000000148:  R_AARCH64_ABS64	.rodata.str1.8+0x838
+     14c: 00 00 00 00  	.word	0x00000000

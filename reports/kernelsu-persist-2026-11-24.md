@@ -69,14 +69,16 @@ addends in the stock ELF. KASLR `N=0` remains inferred, not read live.
 | -------- | ------ |
 | `work/ksu-lkm-fix/kernelsu-persist.ko` (final module) | `297593726f34dc30062cddd6f5d2394a42975cc12b3b5a14752c1e2b7dc61240` |
 | `work/ksu-lkm-fix/ksud-arm32` | `75e6b99d97943838db2a70d1675efc6ffee89607bbebbab069087ed261ad9d46` |
-| `work/ksu-lkm-fix/su-helper` (`/odm/bin/su`) | `262f7ec8484f2812aa2aa3089f0f8d03996f709cc224a2dbade8510bd5d1dceb` |
-| `work/ksu-lkm-fix/odm20_ksu_persist.img` (final ODM) | `bae7e9e3b8458c064385bc54fa3963b8d81f8dcf8bf1fa90448577a3d0c44e2b` |
+| `work/ksu-lkm-fix/su-helper` (`/odm/bin/su`) | `dae8d68699fece0033be51c7fa2c5aec8d090abd1264bce06044c0839ed3ddb8` |
+| `work/ksu-lkm-fix/odm20_ksu_persist.img` (final ODM) | `054f50ebe691b5c6c1dfcff4774cd2685ce66507f14a44fb5f6a0ba84a357e34` |
 | Manager `KernelSU_Next_v1.1.1_12851-release.apk` | `988dae93c17b5477b8b97952cc5bca6809a386bbbba55940ce45aecc90cacb80` |
 
 Full list in `work/ksu-lkm-fix/HASHES.txt`. The final ODM is `odm20_ksu3.img`
 with the module replaced, ksud32 and `/odm/bin/su` installed, and `root.rc`
 reduced to the `insmod` at `sys.boot_completed`. `seflip.ko` and `root.sh` are
-gone from the image.
+gone from the image. The `bae7e9e3...` hash in the bench logs is the pre-fix
+image from commit `822ebb8`; commit `310d664` replaced it with the corrected
+`su` front-end image listed above.
 
 ## Limitations
 

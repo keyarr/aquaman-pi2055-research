@@ -312,7 +312,7 @@ HARDWARE_REPRODUCED (bytes written, read back, oracle sound), but none
 of the four boot variants executed the injected code. The minimum
 uid=0 criterion was not achieved; `getenforce` remained Enforcing. There is no evidence
 to promote any line of `apatch.md`/`kernelsu-next.md`. Next open question
-(unanswered, not authorized here): why `br`/`bootm` does not deliver
+(unanswered): why `br`/`bootm` does not deliver
 the patched image to the kernel, even though the copy after decrypt is byte-exact.
 Future investigation should begin by identifying the real physical address of the
 decompressed image that bootm executes, instead of repeating patch variants.

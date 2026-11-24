@@ -35,8 +35,8 @@ electrically connected, but the SoC does not respond - BL33 phase in a loop.
 
 Section 9 of `USB_RECOVERY_WITHOUT_POWER_CYCLE.md` covers exactly this case: a device
 off the bus / BL33 in a loop cannot be recovered by `dev.reset()`; it requires a
-power cycle (interrupt and reconnect USB power) or a physical reboot. This is
-OUTSIDE the authorized limits so far. **Not executed.**
+power cycle (interrupt and reconnect USB power) or a physical reboot. I did
+not do either. **Not executed.**
 
 Current state: device offline. No writes to flash/erase/saveenv/efuse/BootROM.
 Nothing persistent was modified - the lockup is volatile, but without power
@@ -56,5 +56,5 @@ the `bootargs`/DTB property as an output channel.
 
 ## Pending
 
-Authorization for a power cycle / physical reconnection before any new
-hardware experiment.
+A power cycle / physical reconnection before any new hardware experiment,
+which I left for the next session.

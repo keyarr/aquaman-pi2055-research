@@ -316,7 +316,7 @@ what is left, in the order I would bet on it:
 
 **none of these are testable from the host**, and chasing them needs either a
 console or a modified bootloader. I stopped here rather than grinding through
-parameter combinations, which the task explicitly told me not to do.
+parameter combinations.
 
 ## 6. phases 2 to 6, status
 

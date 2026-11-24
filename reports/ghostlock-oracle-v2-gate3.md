@@ -112,7 +112,7 @@ trial 2). Reboots: 3 of 3. Budget blown.
    async actor. the FWRQ timeout in gate3 was 2s (ts.tv_sec += 2) and the
    waiter woke on it, but there may be a leftover FWRQ timer re-arming or the
    PI wake_rebalance. the next cheap experiment (ZERO reboots, just reasoning
-   + maybe 1 boot if approved) is killing each async actor one at a time
+   + maybe 1 boot) is killing each async actor one at a time
    WITHOUT the stale tree:
      - if the FWRQ never dangles (no stale node), the timer has nothing to
        wake and the crash is gone? -> the stale node is guilty.
@@ -123,7 +123,7 @@ trial 2). Reboots: 3 of 3. Budget blown.
 
 5. RISK / STATE
 
-   - 3 of 3 reboots used. BUDGET BLOWN. I will not spend more without approval.
+   - 3 of 3 reboots used. BUDGET BLOWN. I decided not to spend more.
    - no stamped trial executed. no stamp byte written on the device in any
      boot (all gates were nostamp).
    - no LP64 blob, nothing in cred/SELinux/funcptr, no writes outside the

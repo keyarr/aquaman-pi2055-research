@@ -399,7 +399,7 @@ the options, in the order I would take them:
    instead of the FDT.
 3. **do not** go below `0x00800000`. round 6 proved `0x00000000` drops the device
    off the bus and recovery is a power cycle. sec 4's exclusion (`>= 0x0169e000`) is
-   a deduction, not permission to probe.
+   a deduction, not a reason to probe.
 
 option 1 is a device read and needs the stick in fastboot and a fresh
 `fastboot oem update 5000`. **not done this round**: the brief for this round was
